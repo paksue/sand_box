@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Munich & Bavaria 2026 — Family Trip Booklet</title>
+  <link rel="preconnect" href="https://commons.wikimedia.org">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #2a2018;
+      --muted: #6e6258;
+      --cream: #f8efe1;
+      --paper: #fffaf2;
+      --wine: #9d2d26;
+      --wine2: #6f1e19;
+      --gold: #c49445;
+      --forest: #17483f;
+      --blue: #1e5672;
+      --line: rgba(42,32,24,.16);
+      --shadow: 0 20px 50px rgba(42,32,24,.18);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(196,148,69,.22), transparent 35%),
+        linear-gradient(135deg, #f5e5cd 0%, #fffaf2 48%, #efe2d2 100%);
+      color: var(--ink);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+
+    .book {
+      width: min(1100px, calc(100% - 36px));
+      margin: 26px auto 60px;
+    }
+
+    .page {
+      min-height: 720px;
+      background: var(--paper);
+      border: 1px solid rgba(42,32,24,.13);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      margin: 26px 0;
+      overflow: hidden;
+      position: relative;
+      break-after: page;
+    }
+
+    .page::before {
+      content: "";
+      position: absolute;
+      inset: 16px;
+      border: 1px solid rgba(196,148,69,.28);
+      border-radius: 22px;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .cover {
+      min-height: 860px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #2d1712;
+      color: #fff7ec;
+    }
+
+    .cover::before { border-color: rgba(255,244,224,.24); }
+
+    .cover-art {
+      position: relative;
+      min-height: 860px;
+      overflow: hidden;
+    }
+
+    .cover-art img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(1.08) contrast(1.04);
+      transform: scale(1.03);
+    }
+
+    .cover-art::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 40%, rgba(45,23,18,.75)),
+                  linear-gradient(0deg, rgba(45,23,18,.48), transparent 48%);
+    }
+
+    .cover-text {
+      padding: 70px 64px 58px 42px;
+      z-index: 3;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .kicker {
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 800;
+      color: #f4d69a;
+    }
+
+    h1, h2, h3 {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      line-height: .96;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(54px, 8vw, 92px);
+      letter-spacing: -0.04em;
+      margin: 22px 0;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      max-width: 440px;
+      color: rgba(255,247,236,.84);
+    }
+
+    .stamp {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      margin-top: 26px;
+      border: 1px solid rgba(244,214,154,.45);
+      border-radius: 999px;
+      padding: 10px 16px;
+      color: #f7ddb0;
+      font-weight: 700;
+      background: rgba(255,255,255,.06);
+      backdrop-filter: blur(6px);
+    }
+
+    .cover-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .mini-photo {
+      height: 150px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.2);
+    }
+    .mini-photo img { width:100%; height:100%; object-fit:cover; }
+
+    .page-inner {
+      padding: 54px 58px;
+      position: relative;
+      z-index: 3;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      border-bottom: 2px solid rgba(157,45,38,.18);
+      padding-bottom: 18px;
+      margin-bottom: 26px;
+    }
+
+    .section-title h2 {
+      font-size: clamp(38px, 5vw, 60px);
+      color: var(--wine2);
+      letter-spacing: -0.035em;
+    }
+
+    .section-title .small {
+      max-width: 290px;
+      text-align: right;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .hero-photo {
+      height: 360px;
+      border-radius: 24px;
+      overflow: hidden;
+      margin: 22px 0;
+      border: 1px solid rgba(42,32,24,.12);
+      position: relative;
+    }
+    .hero-photo img { width:100%; height:100%; object-fit:cover; }
+    .photo-caption {
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      background: rgba(42,32,24,.7);
+      color: #fff7ec;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      backdrop-filter: blur(6px);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255,255,255,.58);
+      padding: 18px;
+      overflow: hidden;
+    }
+
+    .card h3 {
+      font-size: 25px;
+      color: var(--forest);
+      margin-bottom: 8px;
+    }
+
+    .card p, .card li { color: var(--muted); font-size: 13px; }
+    .card ul { margin: 10px 0 0; padding-left: 18px; }
+
+    .card-img {
+      height: 150px;
+      margin: -18px -18px 14px;
+      overflow: hidden;
+    }
+    .card-img img { width: 100%; height: 100%; object-fit: cover; }
+
+    .route {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 22px;
+    }
+
+    .route-line {
+      display: grid;
+      gap: 14px;
+    }
+
+    .stop {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 16px;
+      align-items: start;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255,255,255,.56);
+    }
+
+    .datepill {
+      background: var(--wine);
+      color: #fff8ed;
+      border-radius: 18px;
+      padding: 12px 10px;
+      text-align: center;
+      font-weight: 800;
+      line-height: 1.05;
+      box-shadow: 0 8px 18px rgba(157,45,38,.20);
+    }
+    .datepill span {
+      display: block;
+      font-size: 22px;
+      font-family: "Cormorant Garamond", Georgia, serif;
+    }
+
+    .stop h3 {
+      color: var(--wine2);
+      font-size: 28px;
+      margin-bottom: 4px;
+    }
+    .stop p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .photo-mosaic {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      grid-template-rows: 190px 190px;
+      gap: 12px;
+    }
+    .photo-mosaic .big { grid-row: span 2; }
+    .photo-mosaic div { border-radius: 22px; overflow: hidden; border: 1px solid var(--line); }
+    .photo-mosaic img { width:100%; height:100%; object-fit:cover; }
+
+    .day-grid {
+      display: grid;
+      grid-template-columns: 42% 58%;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .day-photo {
+      border-radius: 24px;
+      overflow: hidden;
+      min-height: 560px;
+      position: relative;
+      border: 1px solid var(--line);
+    }
+    .day-photo img { width:100%; height:100%; object-fit:cover; }
+
+    .day-content {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .day-head {
+      padding: 26px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(157,45,38,.12), rgba(196,148,69,.14));
+      border: 1px solid var(--line);
+    }
+
+    .day-head .date {
+      color: var(--wine);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .day-head h2 {
+      font-size: 48px;
+      color: var(--wine2);
+      margin: 8px 0 10px;
+    }
+
+    .day-head p {
+      margin: 0;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .timeline {
+      border-left: 3px solid rgba(157,45,38,.2);
+      margin-left: 15px;
+      padding-left: 20px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .timeblock {
+      position: relative;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.68);
+      border-radius: 18px;
+    }
+    .timeblock::before {
+      content: "";
+      position: absolute;
+      width: 13px;
+      height: 13px;
+      background: var(--gold);
+      border: 3px solid var(--paper);
+      border-radius: 50%;
+      left: -28px;
+      top: 18px;
+      box-shadow: 0 0 0 1px rgba(42,32,24,.18);
+    }
+    .timeblock b {
+      color: var(--forest);
+      font-size: 13px;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+    .timeblock p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .note-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: auto;
+    }
+    .note {
+      background: #fff7e9;
+      border: 1px solid rgba(196,148,69,.35);
+      border-radius: 18px;
+      padding: 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .note strong { color: var(--wine2); display:block; margin-bottom:4px; }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 13px;
+      margin-top: 20px;
+    }
+    .gallery figure {
+      margin: 0;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.65);
+    }
+    .gallery img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      display: block;
+    }
+    .gallery figcaption {
+      padding: 10px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .checklist {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .checklist .card {
+      min-height: 250px;
+    }
+
+    .checkbox {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin: 10px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .box {
+      width: 17px;
+      height: 17px;
+      border: 2px solid rgba(157,45,38,.42);
+      border-radius: 5px;
+      flex: 0 0 auto;
+      margin-top: 1px;
+      background: #fffaf2;
+    }
+
+    .credits {
+      columns: 2;
+      column-gap: 38px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .credits li {
+      break-inside: avoid;
+      margin-bottom: 9px;
+    }
+    a { color: var(--wine); text-decoration-color: rgba(157,45,38,.35); }
+
+    .print-note {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 99;
+      background: rgba(42,32,24,.88);
+      color: #fff8ed;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 12px;
+      box-shadow: 0 12px 26px rgba(0,0,0,.18);
+    }
+
+    @media print {
+      @page { size: A4; margin: 10mm; }
+      body { background: #fff; }
+      .book { width: 100%; margin: 0; }
+      .page {
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0;
+        min-height: 277mm;
+      }
+      .print-note { display: none; }
+      a { color: inherit; text-decoration: none; }
+      .page::before { inset: 9mm; border-radius: 0; }
+    }
+
+    @media (max-width: 820px) {
+      .cover, .route, .day-grid, .checklist { grid-template-columns: 1fr; }
+      .cover-art, .cover { min-height: auto; }
+      .cover-art { height: 420px; }
+      .cover-text { padding: 44px 34px; }
+      .page-inner { padding: 42px 28px; }
+      .cards, .gallery, .note-strip { grid-template-columns: 1fr; }
+      .day-photo { min-height: 330px; }
+      .section-title { display:block; }
+      .section-title .small { text-align:left; margin-top: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="print-note">Print tip: choose “Save as PDF” → A4 → background graphics ON.</div>
+  <main class="book">
+
+    <section class="page cover">
+      <div class="cover-art">
+        <img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Castle%20Neuschwanstein.jpg?width=1400" alt="Neuschwanstein Castle" loading="lazy">
+      </div>
+      <div class="cover-text">
+        <div>
+          <div class="kicker">Family travel booklet</div>
+          <h1>Munich<br>& Bavaria</h1>
+          <p class="subtitle">A custom physical-style itinerary for the July 19–25 family trip: Munich old town, Rothenburg by night, Dachau history, and the Swan Castle day.</p>
+          <div class="stamp">✦ July 19–25, 2026 ✦ Family of 4</div>
+        </div>
+        <div class="cover-grid">
+          <div class="mini-photo"><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Neues%20Rathaus%20Marienplatz%20Munich.jpg?width=700" alt="Munich Marienplatz" loading="lazy"></div>
+          <div class="mini-photo"><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Rothenburg%20ob%20der%20Tauber%20Pl%C3%B6nlein%20bei%20Nacht%2C%20009.jpg?width=700" alt="Rothenburg at night" loading="lazy"></div>
+          <div class="mini-photo"><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/English%20Garden%2C%20Munchen.JPG?width=700" alt="English Garden Munich" loading="lazy"></div>
+          <div class="mini-photo"><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Alpsee%20%26%20Schloss%20Hohenschwangau.JPG?width=700" alt="Alpsee and Hohenschwangau" loading="lazy"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-inner">
+        <div class="section-title">
+          <h2>Trip at a glance</h2>
+          <div class="small">Fixed anchors: Hotel Andra → Romantik Hotel Markusturm → Cocoon Hauptbahnhof → Swan Castle ticket at 5:20 PM on Jul 24.</div>
+        </div>
+
+        <div class="route">
+          <div class="route-line">
+            <div class="stop">
+              <div class="datepill">SUN<span>19</span></div>
+              <div><h3>Arrive in Munich</h3><p>Hotel Andra. Light old-town walk: Marienplatz, Frauenkirche, Viktualienmarkt, easy dinner.</p></div>
+            </div>
+            <div class="stop">
+              <div class="datepill">MON<span>20</span></div>
+              <div><h3>Munich city day</h3><p>Residenz or Deutsches Museum/Nymphenburg. Keep it visual, flexible, and not too exhausting.</p></div>
+            </div>
+            <div class="stop">
+              <div class="datepill">TUE<span>21</span></div>
+              <div><h3>Rothenburg overnight</h3><p>Travel after breakfast. Town walk, city walls, dinner, then Night Watchman Tour.</p></div>
+            </div>
+            <div class="stop">
+              <div class="datepill">WED<span>22</span></div>
+              <div><h3>Rothenburg morning</h3><p>Early photos, Medieval Crime Museum, optional dungeon, return to Munich and check into Cocoon.</p></div>
+            </div>
+            <div class="stop">
+              <div class="datepill">THU<span>23</span></div>
+              <div><h3>Dachau + calm afternoon</h3><p>Serious history visit in the morning; light Munich recovery in the afternoon.</p></div>
+            </div>
+            <div class="stop">
+              <div class="datepill">FRI<span>24</span></div>
+              <div><h3>Swan Castle day</h3><p>Neuschwanstein ticket at 5:20 PM. Build the whole day around Hohenschwangau, Alpsee, and Marienbrücke.</p></div>
+            </div>
+            <div class="stop">
+              <div class="datepill">SAT<span>25</span></div>
+              <div><h3>Fly home</h3><p>Pack, breakfast, checkout by 11 AM, airport buffer.</p></div>
+            </div>
+          </div>
+
+          <div class="photo-mosaic">
+            <div class="big"><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Rothenburg%20ob%20der%20Tauber%2C%20Pl%C3%B6nlein.jpg?width=900" alt="Rothenburg Plönlein" loading="lazy"></div>
+            <div><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Antiquarium%20of%20Munich%20Residenz.jpg?width=650" alt="Munich Residenz" loading="lazy"></div>
+            <div><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Neuschwanstein%20Castle%2007.jpg?width=650" alt="Neuschwanstein from Marienbrücke" loading="lazy"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-inner">
+        <div class="section-title">
+          <h2>Where you sleep</h2>
+          <div class="small">Designed as a practical hotel spread for printing and carrying.</div>
+        </div>
+        <div class="cards">
+          <article class="card">
+            <div class="card-img"><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Neues%20Rathaus%20Marienplatz%20Munich%20Sunset.jpg?width=700" alt="Munich evening" loading="lazy"></div>
+            <h3>Hotel Andra</h3>
+            <p><b>Sun Jul 19 → Tue Jul 21</b><br>2 nights · Ludwigsvorstadt-Isarvorstadt · check-in 2:00 PM or later · checkout 11:00 AM or earlier.</p>
+            <ul>
+              <li>Good first base near Munich center.</li>
+              <li>Use this stay for old town + main city day.</li>
+              <li>Ask front desk for Eiswürfel if you need ice.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <div class="card-img"><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Rothenburg%20ob%20der%20Tauber%20Pl%C3%B6nlein%20bei%20Nacht%2C%20009.jpg?width=700" alt="Rothenburg night" loading="lazy"></div>
+            <h3>Romantik Hotel Markusturm</h3>
+            <p><b>Tue Jul 21 → Wed Jul 22</b><br>1 night · Rothenburg Old Town · check-in 3:00 PM or later · checkout 11:00 AM or earlier.</p>
+            <ul>
+              <li>Best reason to overnight: Rothenburg after day-trippers leave.</li>
+              <li>Night Watchman Tour fits perfectly at 8 PM.</li>
+              <li>Historic hotel feel; do not expect U.S.-style ice machine.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <div class="card-img"><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Deutsches%20Museum%20in%20the%20Evening.JPG?width=700" alt="Deutsches Museum" loading="lazy"></div>
+            <h3>Cocoon Hauptbahnhof</h3>
+            <p><b>Wed Jul 22 → Sat Jul 25</b><br>3 nights · Ludwigsvorstadt-Isarvorstadt · check-in 3:00 PM or later · checkout 11:00 AM or earlier.</p>
+            <ul>
+              <li>Best base for Dachau, airport, and Neuschwanstein train/rental car logistics.</li>
+              <li>Near Hauptbahnhof for food and late shopping.</li>
+              <li>Keep final morning simple.</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="gallery">
+          <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Munich%2C%20Viktualienmarkt%201.jpg?width=500" alt="Viktualienmarkt market" loading="lazy"><figcaption>Viktualienmarkt snack stop</figcaption></figure>
+          <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/English%20Garden%2C%20Munchen.JPG?width=500" alt="English Garden" loading="lazy"><figcaption>English Garden easy afternoon</figcaption></figure>
+          <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Pl%C3%B6nlein%20%28Rothenburg%20ob%20der%20Tauber%29.JPG?width=500" alt="Rothenburg old town" loading="lazy"><figcaption>Rothenburg streets</figcaption></figure>
+          <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Alpsee%20%26%20Schloss%20Hohenschwangau.JPG?width=500" alt="Alpsee and Hohenschwangau" loading="lazy"><figcaption>Alpsee castle-day scenery</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-inner day-grid">
+        <div class="day-photo"><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Neues%20Rathaus%20Marienplatz%20Munich.jpg?width=1400" alt="Marienplatz New Town Hall" loading="lazy"><div class="photo-caption">Day 1 · Munich first look</div></div>
+        <div class="day-content">
+          <div class="day-head">
+            <div class="date">Sunday · July 19</div>
+            <h2>Arrival + Old Town Glow</h2>
+            <p>First day should feel like landing inside the trip, not “checking off attractions.” Stay outdoors, eat simply, and let everyone adjust to the 6-hour time shift.</p>
+          </div>
+          <div class="timeline">
+            <div class="timeblock"><b>Arrival window</b><p>Airport → hotel → check in at Hotel Andra after 2 PM. Keep passports and hotel confirmation easy to access.</p></div>
+            <div class="timeblock"><b>Late afternoon</b><p>Marienplatz, Neues Rathaus, Frauenkirche exterior, and a slow walk toward Viktualienmarkt.</p></div>
+            <div class="timeblock"><b>Simple dinner</b><p>Pick a low-friction dinner near old town or hotel. Do not schedule a paid tour this evening.</p></div>
+            <div class="timeblock"><b>Jet lag rule</b><p>Stay awake until at least 9 PM local time if possible. No long naps.</p></div>
+          </div>
+          <div class="note-strip">
+            <div class="note"><strong>Photo idea</strong>Family photo in front of Neues Rathaus.</div>
+            <div class="note"><strong>Teen rule</strong>Phone away in crowds and train stations.</div>
+            <div class="note"><strong>Snack plan</strong>Buy water/snacks near hotel before shops close.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-inner day-grid">
+        <div class="day-photo"><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Antiquarium%20of%20Munich%20Residenz.jpg?width=1400" alt="Munich Residenz Antiquarium" loading="lazy"><div class="photo-caption">Day 2 · Royal Munich</div></div>
+        <div class="day-content">
+          <div class="day-head">
+            <div class="date">Monday · July 20</div>
+            <h2>Munich City Day</h2>
+            <p>The best full Munich day: one “grand interior” in the morning, one flexible choice in the afternoon, then a relaxed dinner.</p>
+          </div>
+          <div class="timeline">
+            <div class="timeblock"><b>Morning</b><p>Munich Residenz. The Antiquarium is the strongest “wow” interior and makes the day feel special.</p></div>
+            <div class="timeblock"><b>Lunch</b><p>Viktualienmarkt / old town area. Good for grazing rather than one long sit-down meal.</p></div>
+            <div class="timeblock"><b>Afternoon choice A</b><p>Deutsches Museum if the girls want science, technology, engineering, aviation, or hands-on exhibits.</p></div>
+            <div class="timeblock"><b>Afternoon choice B</b><p>Nymphenburg Palace if the family wants royal gardens, palace photos, and a less dense museum experience.</p></div>
+            <div class="timeblock"><b>Evening</b><p>Easy walk, early dinner, pack a small Rothenburg overnight bag.</p></div>
+          </div>
+          <div class="gallery">
+            <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Munich%2C%20Viktualienmarkt%201.jpg?width=400" alt="Viktualienmarkt market" loading="lazy"><figcaption>Market lunch</figcaption></figure>
+            <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Deutsches%20Museum%20in%20the%20Evening.JPG?width=400" alt="Deutsches Museum" loading="lazy"><figcaption>Science option</figcaption></figure>
+            <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Image-Schloss%20Nymphenburg%20Munich%20CC.jpg?width=400" alt="Nymphenburg Palace" loading="lazy"><figcaption>Palace option</figcaption></figure>
+            <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Eisbach%20Surfing%20-%20M%C3%BCnchen.JPG?width=400" alt="Eisbach surfing" loading="lazy"><figcaption>Surfer stop</figcaption></figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-inner day-grid">
+        <div class="day-photo"><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Rothenburg%20ob%20der%20Tauber%2C%20Pl%C3%B6nlein.jpg?width=1400" alt="Rothenburg Plönlein" loading="lazy"><div class="photo-caption">Day 3 · Rothenburg overnight</div></div>
+        <div class="day-content">
+          <div class="day-head">
+            <div class="date">Tuesday · July 21</div>
+            <h2>Rothenburg: Walls, Towers, Night Watchman</h2>
+            <p>This is the “story-book medieval town” day. The overnight makes it much better because the town changes after the day-trippers leave.</p>
+          </div>
+          <div class="timeline">
+            <div class="timeblock"><b>Morning travel</b><p>Leave Munich after breakfast. If using Bayern Ticket on a weekday, plan after 9 AM. Train is simplest; driving is best only if you already have a rental car.</p></div>
+            <div class="timeblock"><b>Arrive + lunch</b><p>Drop bags or check in at Romantik Hotel Markusturm after 3 PM. Eat in the old town.</p></div>
+            <div class="timeblock"><b>Afternoon route</b><p>Marktplatz → Plönlein → city wall walk → small shops. Keep this atmospheric, not rushed.</p></div>
+            <div class="timeblock"><b>Dinner</b><p>Early enough to be ready for the 8 PM tour.</p></div>
+            <div class="timeblock"><b>8 PM</b><p>Night Watchman Tour. This is the anchor activity for the overnight.</p></div>
+          </div>
+          <div class="note-strip">
+            <div class="note"><strong>Must-do</strong>Night Watchman Tour.</div>
+            <div class="note"><strong>Best photo</strong>Plönlein before/after crowds.</div>
+            <div class="note"><strong>Do not overpack</strong>One overnight bag is enough.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-inner day-grid">
+        <div class="day-photo"><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Rothenburg%20ob%20der%20Tauber%20Pl%C3%B6nlein%20bei%20Nacht%2C%20009.jpg?width=1400" alt="Rothenburg by night" loading="lazy"><div class="photo-caption">Day 4 · Medieval morning</div></div>
+        <div class="day-content">
+          <div class="day-head">
+            <div class="date">Wednesday · July 22</div>
+            <h2>Crime Museum + Return to Munich</h2>
+            <p>Use the early morning for quiet Rothenburg, then one strong museum before returning to Munich.</p>
+          </div>
+          <div class="timeline">
+            <div class="timeblock"><b>Early morning</b><p>Walk the walls and lanes before day-trippers arrive. This is when Rothenburg feels most magical.</p></div>
+            <div class="timeblock"><b>After breakfast</b><p>Medieval Crime and Justice Museum. Best “dark history” stop for teenagers because it connects law, punishment, fear, shame, authority, and society.</p></div>
+            <div class="timeblock"><b>Optional add-on</b><p>Rothenburg Dungeon / Historiengewölbe if you still have energy. Treat it as a short bonus, not the main event.</p></div>
+            <div class="timeblock"><b>Afternoon</b><p>Train or drive back to Munich. Check into Cocoon Hauptbahnhof after 3 PM.</p></div>
+            <div class="timeblock"><b>Evening</b><p>Light dinner near Hauptbahnhof. Laundry/organize if needed. Confirm Dachau plan for tomorrow.</p></div>
+          </div>
+          <div class="gallery">
+            <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Rothenburg%20ob%20der%20Tauber%2C%20Pl%C3%B6nlein.jpg?width=450" alt="Rothenburg Plönlein" loading="lazy"><figcaption>Plönlein</figcaption></figure>
+            <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Pl%C3%B6nlein%20%28Rothenburg%20ob%20der%20Tauber%29.JPG?width=450" alt="Rothenburg old town" loading="lazy"><figcaption>Old streets</figcaption></figure>
+            <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Rothenburg%20ob%20der%20Tauber%20Pl%C3%B6nlein%20bei%20Nacht%2C%20009.jpg?width=450" alt="Rothenburg by night" loading="lazy"><figcaption>Night atmosphere</figcaption></figure>
+            <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Neues%20Rathaus%20Marienplatz%20Munich%20Sunset.jpg?width=450" alt="Marienplatz evening light" loading="lazy"><figcaption>Back to Munich</figcaption></figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-inner day-grid">
+        <div class="day-photo"><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Dachau%20Memorial%20Site%20Entrance%20Sign.jpg?width=1400" alt="Dachau Memorial entrance" loading="lazy"><div class="photo-caption">Day 5 · Serious history</div></div>
+        <div class="day-content">
+          <div class="day-head">
+            <div class="date">Thursday · July 23</div>
+            <h2>Dachau Morning + Gentle Munich</h2>
+            <p>Worth doing with 10th graders, but do not stack it with another heavy site. Let the afternoon breathe.</p>
+          </div>
+          <div class="timeline">
+            <div class="timeblock"><b>Morning</b><p>S-Bahn/bus to Dachau Memorial. Target the official English tour if timing works.</p></div>
+            <div class="timeblock"><b>Midday</b><p>Return to Munich. Eat something simple. Give everyone quiet time.</p></div>
+            <div class="timeblock"><b>Afternoon</b><p>English Garden, Eisbach surfers, or a café. Keep this deliberately light.</p></div>
+            <div class="timeblock"><b>Evening</b><p>Prepare for Swan Castle day: ticket screenshot, route, snacks, water, phone charging, comfortable shoes.</p></div>
+          </div>
+          <div class="gallery">
+            <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Dachau%20concentration%20camp%20memorial%20buildings%20and%20location%2013.jpg?width=450" alt="Dachau Memorial grounds" loading="lazy"><figcaption>Dachau grounds</figcaption></figure>
+            <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/English%20Garden%2C%20Munchen.JPG?width=450" alt="English Garden" loading="lazy"><figcaption>Calm afternoon</figcaption></figure>
+            <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Eisbach%20Surfing%20-%20M%C3%BCnchen.JPG?width=450" alt="Eisbach surfing" loading="lazy"><figcaption>Eisbach surfers</figcaption></figure>
+            <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Munich%2C%20Viktualienmarkt%201.jpg?width=450" alt="Viktualienmarkt market" loading="lazy"><figcaption>Easy food stop</figcaption></figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-inner day-grid">
+        <div class="day-photo"><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Neuschwanstein%20Castle%2007.jpg?width=1400" alt="Neuschwanstein from Marienbrücke" loading="lazy"><div class="photo-caption">Day 6 · Swan Castle ticket 5:20 PM</div></div>
+        <div class="day-content">
+          <div class="day-head">
+            <div class="date">Friday · July 24</div>
+            <h2>Neuschwanstein: The Big Castle Day</h2>
+            <p>Your fixed castle ticket is late afternoon, so this becomes a scenic full day around Hohenschwangau instead of a quick there-and-back.</p>
+          </div>
+          <div class="timeline">
+            <div class="timeblock"><b>Morning departure</b><p>Leave Munich around 9:30–10:30 AM depending on train/car plan. Bring snacks and a battery pack.</p></div>
+            <div class="timeblock"><b>Midday</b><p>Arrive Hohenschwangau/Füssen area, lunch, lake walk by Alpsee, Museum of the Bavarian Kings if you want a cool indoor stop.</p></div>
+            <div class="timeblock"><b>3:20–3:50 PM</b><p>Be in the village 1.5–2 hours before your Neuschwanstein admission time. Do not cut this close.</p></div>
+            <div class="timeblock"><b>Before tour</b><p>Marienbrücke viewpoint if open and conditions are safe. Build in time for uphill walk/shuttle delays.</p></div>
+            <div class="timeblock"><b>5:20 PM</b><p>Neuschwanstein Castle tour for 4. This is the fixed anchor of the entire trip.</p></div>
+            <div class="timeblock"><b>Evening</b><p>Return to Munich late. Keep dinner flexible: train-station food, simple restaurant, or snacks.</p></div>
+          </div>
+          <div class="gallery">
+            <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Castle%20Neuschwanstein.jpg?width=450" alt="Neuschwanstein Castle" loading="lazy"><figcaption>Neuschwanstein</figcaption></figure>
+            <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Alpsee%20%26%20Schloss%20Hohenschwangau.JPG?width=450" alt="Alpsee and Hohenschwangau" loading="lazy"><figcaption>Alpsee</figcaption></figure>
+            <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Museum%20of%20the%20Bavarian%20Kings.jpg?width=450" alt="Museum of the Bavarian Kings" loading="lazy"><figcaption>Museum of Kings</figcaption></figure>
+            <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Hohenschwangau%20Castle%20and%20Village.jpg?width=450" alt="Hohenschwangau Castle and village" loading="lazy"><figcaption>Hohenschwangau</figcaption></figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-inner day-grid">
+        <div class="day-photo"><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Neues%20Rathaus%20Marienplatz%20Munich%20Sunset.jpg?width=1400" alt="Munich sunset" loading="lazy"><div class="photo-caption">Day 7 · Homeward buffer</div></div>
+        <div class="day-content">
+          <div class="day-head">
+            <div class="date">Saturday · July 25</div>
+            <h2>Checkout + Fly Home</h2>
+            <p>Do not create a busy final morning. The win is leaving Munich calm, fed, and with documents organized.</p>
+          </div>
+          <div class="timeline">
+            <div class="timeblock"><b>Morning</b><p>Breakfast, pack, check room, gather passports, chargers, adapters, tickets, medicines, and souvenirs.</p></div>
+            <div class="timeblock"><b>Checkout</b><p>Cocoon Hauptbahnhof checkout by 11 AM or earlier.</p></div>
+            <div class="timeblock"><b>Airport transfer</b><p>Use S-Bahn/airport train route or taxi depending on luggage and flight timing. Build in international-flight buffer.</p></div>
+            <div class="timeblock"><b>Return jet lag</b><p>After landing in Boston, expect early waking for 1–2 days. Stay awake until normal Boston bedtime if possible.</p></div>
+          </div>
+          <div class="note-strip">
+            <div class="note"><strong>Final check</strong>Passports, phones, wallets, glasses, meds.</div>
+            <div class="note"><strong>Teen check</strong>Chargers and earbuds out of hotel outlets.</div>
+            <div class="note"><strong>Money</strong>Spend coins before leaving Europe.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-inner">
+        <div class="section-title">
+          <h2>Field notes</h2>
+          <div class="small">Small practical things that matter during the actual trip.</div>
+        </div>
+        <div class="checklist">
+          <article class="card">
+            <h3>Transport</h3>
+            <div class="checkbox"><span class="box"></span><span>Install DB Navigator and MVV/MVGO before leaving Boston.</span></div>
+            <div class="checkbox"><span class="box"></span><span>For regional train days, check Bayern Ticket first.</span></div>
+            <div class="checkbox"><span class="box"></span><span>Munich transit is not “tap-and-go” like Boston. Buy a valid ticket before boarding.</span></div>
+            <div class="checkbox"><span class="box"></span><span>Screenshot tickets because train stations can have weak signal.</span></div>
+          </article>
+          <article class="card">
+            <h3>Money</h3>
+            <div class="checkbox"><span class="box"></span><span>Bring two Visa/Mastercards and one ATM/debit card.</span></div>
+            <div class="checkbox"><span class="box"></span><span>Withdraw about €200 after arrival; small places and bathrooms may need cash/coins.</span></div>
+            <div class="checkbox"><span class="box"></span><span>If card machine asks USD or EUR, choose EUR.</span></div>
+            <div class="checkbox"><span class="box"></span><span>Ask: “Kartenzahlung möglich?” = “Is card payment possible?”</span></div>
+          </article>
+          <article class="card">
+            <h3>Phones</h3>
+            <div class="checkbox"><span class="box"></span><span>Activate eSIM/roaming on arrival; switch cellular data to travel eSIM if using one.</span></div>
+            <div class="checkbox"><span class="box"></span><span>Turn off data roaming on the home line if avoiding charges.</span></div>
+            <div class="checkbox"><span class="box"></span><span>Do not hold phones loosely in train stations, crowds, or near curbs.</span></div>
+            <div class="checkbox"><span class="box"></span><span>Each person carries a charged phone or battery pack on Swan Castle day.</span></div>
+          </article>
+          <article class="card">
+            <h3>Hotels + comfort</h3>
+            <div class="checkbox"><span class="box"></span><span>Hotels.com app installed and all bookings visible under Trips.</span></div>
+            <div class="checkbox"><span class="box"></span><span>Screenshot each hotel confirmation and save addresses offline.</span></div>
+            <div class="checkbox"><span class="box"></span><span>Do not expect U.S.-style ice makers. Ask: “Haben Sie Eiswürfel?”</span></div>
+            <div class="checkbox"><span class="box"></span><span>Buy snacks/water near Hotel Andra and Cocoon; Rothenburg old-town shops may close earlier.</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-inner">
+        <div class="section-title">
+          <h2>Photo moodboard</h2>
+          <div class="small">A full photo-heavy spread like a physical brochure, with images linked from the web.</div>
+        </div>
+        <div class="gallery">
+          <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Neues%20Rathaus%20Marienplatz%20Munich.jpg?width=500" alt="Munich Marienplatz / New Town Hall" loading="lazy"><figcaption>Marienplatz</figcaption></figure>
+          <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Munich%2C%20Viktualienmarkt%201.jpg?width=500" alt="Viktualienmarkt market" loading="lazy"><figcaption>Viktualienmarkt</figcaption></figure>
+          <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Antiquarium%20of%20Munich%20Residenz.jpg?width=500" alt="Munich Residenz Antiquarium" loading="lazy"><figcaption>Residenz</figcaption></figure>
+          <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Deutsches%20Museum%20in%20the%20Evening.JPG?width=500" alt="Deutsches Museum" loading="lazy"><figcaption>Deutsches Museum</figcaption></figure>
+          <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/English%20Garden%2C%20Munchen.JPG?width=500" alt="English Garden" loading="lazy"><figcaption>English Garden</figcaption></figure>
+          <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Rothenburg%20ob%20der%20Tauber%2C%20Pl%C3%B6nlein.jpg?width=500" alt="Rothenburg Plönlein" loading="lazy"><figcaption>Rothenburg</figcaption></figure>
+          <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Rothenburg%20ob%20der%20Tauber%20Pl%C3%B6nlein%20bei%20Nacht%2C%20009.jpg?width=500" alt="Rothenburg by night" loading="lazy"><figcaption>Night Watchman mood</figcaption></figure>
+          <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Dachau%20Memorial%20Site%20Entrance%20Sign.jpg?width=500" alt="Dachau Memorial entrance" loading="lazy"><figcaption>Dachau Memorial</figcaption></figure>
+          <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Castle%20Neuschwanstein.jpg?width=500" alt="Neuschwanstein Castle" loading="lazy"><figcaption>Neuschwanstein</figcaption></figure>
+          <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Neuschwanstein%20Castle%2007.jpg?width=500" alt="Neuschwanstein from Marienbrücke" loading="lazy"><figcaption>Marienbrücke view</figcaption></figure>
+          <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Alpsee%20%26%20Schloss%20Hohenschwangau.JPG?width=500" alt="Alpsee and Hohenschwangau" loading="lazy"><figcaption>Alpsee</figcaption></figure>
+          <figure><img class="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Museum%20of%20the%20Bavarian%20Kings.jpg?width=500" alt="Museum of the Bavarian Kings" loading="lazy"><figcaption>Museum of Bavarian Kings</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-inner">
+        <div class="section-title">
+          <h2>Photo credits</h2>
+          <div class="small">Images are linked directly from Wikimedia Commons using Special:FilePath, so the HTML stays lightweight and photo-rich.</div>
+        </div>
+        <p style="color:var(--muted); max-width:760px;">This booklet uses web-linked photos for layout mockup and personal trip planning. Review each source page for exact author/license details before commercial printing or redistribution.</p>
+        <ol class="credits">
+          <li><a href="https://commons.wikimedia.org/wiki/File:Neues%20Rathaus%20Marienplatz%20Munich.jpg" target="_blank" rel="noopener">Munich Marienplatz / New Town Hall</a> — Wikimedia Commons</li><li><a href="https://commons.wikimedia.org/wiki/File:Neues%20Rathaus%20Marienplatz%20Munich%20Sunset.jpg" target="_blank" rel="noopener">Marienplatz evening light</a> — Wikimedia Commons</li><li><a href="https://commons.wikimedia.org/wiki/File:Munich%2C%20Viktualienmarkt%201.jpg" target="_blank" rel="noopener">Viktualienmarkt market</a> — Wikimedia Commons</li><li><a href="https://commons.wikimedia.org/wiki/File:Antiquarium%20of%20Munich%20Residenz.jpg" target="_blank" rel="noopener">Munich Residenz Antiquarium</a> — Wikimedia Commons</li><li><a href="https://commons.wikimedia.org/wiki/File:English%20Garden%2C%20Munchen.JPG" target="_blank" rel="noopener">English Garden</a> — Wikimedia Commons</li><li><a href="https://commons.wikimedia.org/wiki/File:Eisbach%20Surfing%20-%20M%C3%BCnchen.JPG" target="_blank" rel="noopener">Eisbach surfing</a> — Wikimedia Commons</li><li><a href="https://commons.wikimedia.org/wiki/File:Deutsches%20Museum%20in%20the%20Evening.JPG" target="_blank" rel="noopener">Deutsches Museum</a> — Wikimedia Commons</li><li><a href="https://commons.wikimedia.org/wiki/File:Image-Schloss%20Nymphenburg%20Munich%20CC.jpg" target="_blank" rel="noopener">Nymphenburg Palace</a> — Wikimedia Commons</li><li><a href="https://commons.wikimedia.org/wiki/File:Rothenburg%20ob%20der%20Tauber%2C%20Pl%C3%B6nlein.jpg" target="_blank" rel="noopener">Rothenburg Plönlein</a> — Wikimedia Commons</li><li><a href="https://commons.wikimedia.org/wiki/File:Rothenburg%20ob%20der%20Tauber%20Pl%C3%B6nlein%20bei%20Nacht%2C%20009.jpg" target="_blank" rel="noopener">Rothenburg by night</a> — Wikimedia Commons</li><li><a href="https://commons.wikimedia.org/wiki/File:Pl%C3%B6nlein%20%28Rothenburg%20ob%20der%20Tauber%29.JPG" target="_blank" rel="noopener">Rothenburg old town</a> — Wikimedia Commons</li><li><a href="https://commons.wikimedia.org/wiki/File:Dachau%20Memorial%20Site%20Entrance%20Sign.jpg" target="_blank" rel="noopener">Dachau Memorial entrance</a> — Wikimedia Commons</li><li><a href="https://commons.wikimedia.org/wiki/File:Dachau%20concentration%20camp%20memorial%20buildings%20and%20location%2013.jpg" target="_blank" rel="noopener">Dachau Memorial grounds</a> — Wikimedia Commons</li><li><a href="https://commons.wikimedia.org/wiki/File:Castle%20Neuschwanstein.jpg" target="_blank" rel="noopener">Neuschwanstein Castle</a> — Wikimedia Commons</li><li><a href="https://commons.wikimedia.org/wiki/File:Neuschwanstein%20Castle%2007.jpg" target="_blank" rel="noopener">Neuschwanstein from Marienbrücke</a> — Wikimedia Commons</li><li><a href="https://commons.wikimedia.org/wiki/File:Neuschwanstein%20Castle%2033%2010.jpg" target="_blank" rel="noopener">Neuschwanstein landscape</a> — Wikimedia Commons</li><li><a href="https://commons.wikimedia.org/wiki/File:Alpsee%20%26%20Schloss%20Hohenschwangau.JPG" target="_blank" rel="noopener">Alpsee and Hohenschwangau</a> — Wikimedia Commons</li><li><a href="https://commons.wikimedia.org/wiki/File:Museum%20of%20the%20Bavarian%20Kings.jpg" target="_blank" rel="noopener">Museum of the Bavarian Kings</a> — Wikimedia Commons</li><li><a href="https://commons.wikimedia.org/wiki/File:Hohenschwangau%20Castle%20and%20Village.jpg" target="_blank" rel="noopener">Hohenschwangau Castle and village</a> — Wikimedia Commons</li>
+        </ol>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>
