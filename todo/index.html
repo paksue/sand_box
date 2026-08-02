@@ -38,6 +38,12 @@
 
     * { box-sizing: border-box; }
 
+    html.reordering,
+    body.reordering {
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+
     body {
       margin: 0;
       min-height: 100svh;
@@ -50,6 +56,7 @@
     body.reordering {
       user-select: none;
       -webkit-user-select: none;
+      cursor: grabbing;
     }
 
     .app { width: min(100%, 680px); margin: 0 auto; }
@@ -139,25 +146,25 @@
 
     .task {
       display: grid;
-      grid-template-columns: 42px 34px minmax(0,1fr) 42px;
+      grid-template-columns: 42px 40px minmax(0,1fr) 42px;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       min-height: 66px;
       padding: 8px 12px;
       border-bottom: 1px solid var(--line);
       background: transparent;
-      transition: box-shadow 140ms ease, transform 140ms ease, background 140ms ease;
+      transition: box-shadow 120ms ease, transform 120ms ease, background 120ms ease;
     }
 
     .task:last-child { border-bottom: 0; }
 
     .task.dragging {
       position: relative;
-      z-index: 3;
+      z-index: 10;
       border-radius: 14px;
       background: var(--accent-soft);
-      box-shadow: 0 10px 30px rgba(0,0,0,.18);
-      transform: scale(1.015);
+      box-shadow: 0 10px 30px rgba(0,0,0,.22);
+      transform: scale(1.02);
     }
 
     .check {
@@ -181,19 +188,22 @@
     .drag-handle {
       display: grid;
       place-items: center;
-      width: 34px;
-      height: 46px;
-      min-width: 34px;
-      min-height: 46px;
+      width: 40px;
+      height: 50px;
+      min-width: 40px;
+      min-height: 50px;
       padding: 0;
       border-radius: 10px;
       background: transparent;
       color: var(--muted);
-      font-size: 23px;
+      font-size: 25px;
       font-weight: 500;
       line-height: 1;
       cursor: grab;
       touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
     }
 
     .drag-handle:active { cursor: grabbing; transform: none; }
@@ -289,7 +299,7 @@
       </footer>
     </section>
 
-    <p class="tip">Drag the ☰ grip to rearrange. Tap a task to edit it. Changes save automatically.</p>
+    <p class="tip">Press and drag the ☰ grip up or down. Tap task text to edit. Changes save automatically.</p>
   </main>
 
   <script>
@@ -341,9 +351,7 @@
 
         if (!localStorage.getItem(GIRLS_TASK_MIGRATION_KEY)) {
           const alreadyExists = loadedTasks.some(task => task && task.text === GIRLS_TASK);
-          if (!alreadyExists) {
-            loadedTasks.push({ id: makeId(), text: GIRLS_TASK, done: false });
-          }
+          if (!alreadyExists) loadedTasks.push({ id: makeId(), text: GIRLS_TASK, done: false });
           localStorage.setItem(GIRLS_TASK_MIGRATION_KEY, '1');
           localStorage.setItem(STORAGE_KEY, JSON.stringify(loadedTasks));
         }
@@ -388,7 +396,50 @@
       }
 
       function attachReordering(handle, item) {
-        let pointerId = null;
+        let dragging = false;
+        let lastClientY = 0;
+
+        function startDrag(clientY) {
+          if (dragging) return;
+          dragging = true;
+          lastClientY = clientY;
+          item.classList.add('dragging');
+          document.documentElement.classList.add('reordering');
+          document.body.classList.add('reordering');
+          if (navigator.vibrate) navigator.vibrate(15);
+        }
+
+        function moveDrag(clientY) {
+          if (!dragging) return;
+          lastClientY = clientY;
+
+          const siblings = [...elements.list.querySelectorAll('.task:not(.dragging)')];
+          const nextItem = siblings.find(sibling => {
+            const rect = sibling.getBoundingClientRect();
+            return clientY < rect.top + rect.height / 2;
+          });
+
+          const previousNextSibling = item.nextElementSibling;
+          if (nextItem) elements.list.insertBefore(item, nextItem);
+          else elements.list.append(item);
+
+          if (item.nextElementSibling !== previousNextSibling && navigator.vibrate) {
+            navigator.vibrate(8);
+          }
+
+          const edge = 72;
+          if (clientY < edge) window.scrollBy(0, -10);
+          else if (clientY > window.innerHeight - edge) window.scrollBy(0, 10);
+        }
+
+        function finishDrag() {
+          if (!dragging) return;
+          dragging = false;
+          item.classList.remove('dragging');
+          document.documentElement.classList.remove('reordering');
+          document.body.classList.remove('reordering');
+          saveOrderFromDom();
+        }
 
         handle.addEventListener('keydown', event => {
           if (event.key === 'ArrowUp') {
@@ -400,39 +451,35 @@
           }
         });
 
-        handle.addEventListener('pointerdown', event => {
-          if (event.button !== undefined && event.button !== 0) return;
-          pointerId = event.pointerId;
-          handle.setPointerCapture(pointerId);
-          item.classList.add('dragging');
-          document.body.classList.add('reordering');
-        });
-
-        handle.addEventListener('pointermove', event => {
-          if (event.pointerId !== pointerId || !item.classList.contains('dragging')) return;
+        handle.addEventListener('touchstart', event => {
+          if (event.touches.length !== 1) return;
           event.preventDefault();
+          startDrag(event.touches[0].clientY);
+        }, { passive: false });
 
-          const siblings = [...elements.list.querySelectorAll('.task:not(.dragging)')];
-          const nextItem = siblings.find(sibling => {
-            const rect = sibling.getBoundingClientRect();
-            return event.clientY < rect.top + rect.height / 2;
-          });
+        document.addEventListener('touchmove', event => {
+          if (!dragging || event.touches.length !== 1) return;
+          event.preventDefault();
+          moveDrag(event.touches[0].clientY);
+        }, { passive: false });
 
-          if (nextItem) elements.list.insertBefore(item, nextItem);
-          else elements.list.append(item);
+        document.addEventListener('touchend', finishDrag);
+        document.addEventListener('touchcancel', finishDrag);
+
+        handle.addEventListener('mousedown', event => {
+          if (event.button !== 0) return;
+          event.preventDefault();
+          startDrag(event.clientY);
         });
 
-        const finishReordering = event => {
-          if (event.pointerId !== pointerId) return;
-          if (handle.hasPointerCapture(pointerId)) handle.releasePointerCapture(pointerId);
-          pointerId = null;
-          item.classList.remove('dragging');
-          document.body.classList.remove('reordering');
-          saveOrderFromDom();
-        };
+        document.addEventListener('mousemove', event => {
+          if (!dragging) return;
+          event.preventDefault();
+          moveDrag(event.clientY || lastClientY);
+        });
 
-        handle.addEventListener('pointerup', finishReordering);
-        handle.addEventListener('pointercancel', finishReordering);
+        document.addEventListener('mouseup', finishDrag);
+        window.addEventListener('blur', finishDrag);
       }
 
       function render() {
@@ -466,7 +513,7 @@
           handle.className = 'drag-handle';
           handle.textContent = '☰';
           handle.setAttribute('aria-label', `Rearrange ${task.text}. Drag, or use the up and down arrow keys.`);
-          handle.title = 'Drag to rearrange';
+          handle.title = 'Press and drag to rearrange';
           attachReordering(handle, item);
 
           const text = document.createElement('button');
