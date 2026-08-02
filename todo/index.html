@@ -110,7 +110,7 @@
       border-bottom: 1px solid var(--line);
     }
 
-    input {
+    #newTask {
       min-width: 0;
       flex: 1;
       border: 1px solid var(--line);
@@ -123,7 +123,7 @@
       outline: none;
     }
 
-    input:focus { border-color: var(--accent); }
+    #newTask:focus { border-color: var(--accent); }
 
     button {
       border: 0;
@@ -209,22 +209,37 @@
     .drag-handle:active { cursor: grabbing; transform: none; }
     .drag-handle:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
-    .task-text {
-      border: 0;
-      padding: 10px 4px;
+    .task-edit {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 9px 7px;
       background: transparent;
       color: var(--text);
+      font: inherit;
       font-size: 17px;
       font-weight: 680;
       line-height: 1.25;
-      text-align: left;
-      overflow-wrap: anywhere;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
     }
 
-    .task.done .task-text {
+    .task-edit:focus {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .task.done .task-edit {
       color: var(--muted);
       text-decoration: line-through;
       text-decoration-thickness: 2px;
+    }
+
+    .task.done .task-edit:focus {
+      color: var(--text);
+      text-decoration: none;
     }
 
     .delete {
@@ -299,7 +314,7 @@
       </footer>
     </section>
 
-    <p class="tip">Press and drag the ☰ grip up or down. Tap task text to edit. Changes save automatically.</p>
+    <p class="tip">Tap any task and type directly. Press Return to finish. Drag the ☰ grip to rearrange.</p>
   </main>
 
   <script>
@@ -516,19 +531,53 @@
           handle.title = 'Press and drag to rearrange';
           attachReordering(handle, item);
 
-          const text = document.createElement('button');
-          text.type = 'button';
-          text.className = 'task-text';
-          text.textContent = task.text;
-          text.title = 'Tap to edit';
-          text.addEventListener('click', () => {
-            const nextText = window.prompt('Edit task', task.text);
-            if (nextText === null) return;
-            const cleanText = nextText.trim();
-            if (!cleanText) return;
-            task.text = cleanText.slice(0, 120);
+          const editor = document.createElement('input');
+          editor.type = 'text';
+          editor.className = 'task-edit';
+          editor.value = task.text;
+          editor.maxLength = 120;
+          editor.autocomplete = 'off';
+          editor.setAttribute('aria-label', `Edit task: ${task.text}`);
+
+          let originalText = task.text;
+
+          editor.addEventListener('focus', () => {
+            originalText = task.text;
+            requestAnimationFrame(() => editor.select());
+          });
+
+          editor.addEventListener('input', () => {
+            task.text = editor.value.slice(0, 120);
             saveTasks();
-            render();
+          });
+
+          editor.addEventListener('blur', () => {
+            const cleanText = editor.value.trim();
+            if (cleanText) {
+              task.text = cleanText;
+              editor.value = cleanText;
+            } else {
+              task.text = originalText || 'Untitled task';
+              editor.value = task.text;
+            }
+            saveTasks();
+            check.setAttribute('aria-label', task.done ? `Mark ${task.text} incomplete` : `Mark ${task.text} complete`);
+            handle.setAttribute('aria-label', `Rearrange ${task.text}. Drag, or use the up and down arrow keys.`);
+            editor.setAttribute('aria-label', `Edit task: ${task.text}`);
+            remove.setAttribute('aria-label', `Delete ${task.text}`);
+          });
+
+          editor.addEventListener('keydown', event => {
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              editor.blur();
+            } else if (event.key === 'Escape') {
+              event.preventDefault();
+              task.text = originalText;
+              editor.value = originalText;
+              saveTasks();
+              editor.blur();
+            }
           });
 
           const remove = document.createElement('button');
@@ -542,7 +591,7 @@
             render();
           });
 
-          item.append(check, handle, text, remove);
+          item.append(check, handle, editor, remove);
           elements.list.append(item);
         });
 
