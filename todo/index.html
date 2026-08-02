@@ -12,27 +12,27 @@
     :root {
       color-scheme: light dark;
       --bg: #f4f1e8;
-      --card: rgba(255, 255, 255, 0.86);
+      --card: rgba(255,255,255,.86);
       --text: #17211b;
       --muted: #667168;
-      --line: rgba(23, 33, 27, 0.12);
+      --line: rgba(23,33,27,.12);
       --accent: #1e6b45;
       --accent-soft: #dff1e7;
       --danger: #a23d32;
-      --shadow: 0 18px 45px rgba(39, 48, 42, 0.12);
+      --shadow: 0 18px 45px rgba(39,48,42,.12);
     }
 
     @media (prefers-color-scheme: dark) {
       :root {
         --bg: #111713;
-        --card: rgba(28, 37, 31, 0.94);
+        --card: rgba(28,37,31,.94);
         --text: #f1f5f2;
         --muted: #a7b0aa;
-        --line: rgba(255, 255, 255, 0.11);
+        --line: rgba(255,255,255,.11);
         --accent: #72d39f;
         --accent-soft: #173d2a;
         --danger: #ff9a8f;
-        --shadow: 0 18px 45px rgba(0, 0, 0, 0.3);
+        --shadow: 0 18px 45px rgba(0,0,0,.3);
       }
     }
 
@@ -42,9 +42,7 @@
       margin: 0;
       min-height: 100svh;
       padding: max(22px, env(safe-area-inset-top)) 16px max(30px, env(safe-area-inset-bottom));
-      background:
-        radial-gradient(circle at top left, rgba(103, 183, 139, 0.18), transparent 34rem),
-        var(--bg);
+      background: radial-gradient(circle at top left, rgba(103,183,139,.18), transparent 34rem), var(--bg);
       color: var(--text);
       font-family: ui-rounded, "SF Pro Rounded", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
@@ -54,10 +52,7 @@
       -webkit-user-select: none;
     }
 
-    .app {
-      width: min(100%, 680px);
-      margin: 0 auto;
-    }
+    .app { width: min(100%, 680px); margin: 0 auto; }
 
     header {
       display: flex;
@@ -70,15 +65,11 @@
     h1 {
       margin: 0;
       font-size: clamp(2.2rem, 10vw, 4.5rem);
-      line-height: 0.95;
-      letter-spacing: -0.06em;
+      line-height: .95;
+      letter-spacing: -.06em;
     }
 
-    .date {
-      margin: 8px 0 0;
-      color: var(--muted);
-      font-weight: 650;
-    }
+    .date { margin: 8px 0 0; color: var(--muted); font-weight: 650; }
 
     .count {
       flex: 0 0 auto;
@@ -102,17 +93,8 @@
       -webkit-backdrop-filter: blur(18px);
     }
 
-    .progress-track {
-      height: 7px;
-      background: var(--line);
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 0;
-      background: var(--accent);
-      transition: width 220ms ease;
-    }
+    .progress-track { height: 7px; background: var(--line); }
+    .progress-bar { height: 100%; width: 0; background: var(--accent); transition: width 220ms ease; }
 
     form {
       display: flex;
@@ -150,21 +132,14 @@
       touch-action: manipulation;
     }
 
-    @media (prefers-color-scheme: dark) {
-      button { color: #0c2115; }
-    }
+    @media (prefers-color-scheme: dark) { button { color: #0c2115; } }
+    button:active { transform: scale(.98); }
 
-    button:active { transform: scale(0.98); }
-
-    ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
+    ul { list-style: none; margin: 0; padding: 0; }
 
     .task {
       display: grid;
-      grid-template-columns: 42px 34px minmax(0, 1fr) 42px;
+      grid-template-columns: 42px 34px minmax(0,1fr) 42px;
       align-items: center;
       gap: 5px;
       min-height: 66px;
@@ -181,7 +156,7 @@
       z-index: 3;
       border-radius: 14px;
       background: var(--accent-soft);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+      box-shadow: 0 10px 30px rgba(0,0,0,.18);
       transform: scale(1.015);
     }
 
@@ -200,14 +175,8 @@
       font-size: 18px;
     }
 
-    .task.done .check {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      .task.done .check { color: #0c2115; }
-    }
+    .task.done .check { background: var(--accent); color: #fff; }
+    @media (prefers-color-scheme: dark) { .task.done .check { color: #0c2115; } }
 
     .drag-handle {
       display: grid;
@@ -227,15 +196,8 @@
       touch-action: none;
     }
 
-    .drag-handle:active {
-      cursor: grabbing;
-      transform: none;
-    }
-
-    .drag-handle:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 1px;
-    }
+    .drag-handle:active { cursor: grabbing; transform: none; }
+    .drag-handle:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
     .task-text {
       border: 0;
@@ -268,12 +230,7 @@
     }
 
     .delete:hover { color: var(--danger); }
-
-    .empty {
-      padding: 38px 20px;
-      color: var(--muted);
-      text-align: center;
-    }
+    .empty { padding: 38px 20px; color: var(--muted); text-align: center; }
 
     footer {
       display: flex;
@@ -295,10 +252,7 @@
       color: var(--accent);
     }
 
-    .text-button:disabled {
-      opacity: 0.45;
-      cursor: default;
-    }
+    .text-button:disabled { opacity: .45; cursor: default; }
 
     .tip {
       margin: 14px 6px 0;
@@ -320,9 +274,7 @@
     </header>
 
     <section class="panel" aria-label="Today's tasks">
-      <div class="progress-track" aria-hidden="true">
-        <div class="progress-bar" id="progress"></div>
-      </div>
+      <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progress"></div></div>
 
       <form id="taskForm">
         <input id="newTask" type="text" maxlength="120" autocomplete="off" placeholder="Add a task…" aria-label="New task">
@@ -345,6 +297,9 @@
       'use strict';
 
       const STORAGE_KEY = 'paksue-today-tasks-v1';
+      const GIRLS_TASK_MIGRATION_KEY = 'paksue-added-girls-cleanup-v1';
+      const GIRLS_TASK = 'Girls: clean up by ___ — session 1 room, session 2 desk';
+
       const defaultTasks = [
         'Print handle',
         'Mow lawn',
@@ -352,7 +307,8 @@
         'Print window blocker',
         'Fix Ubuntu',
         'Build kneeling chair',
-        'Clean sunroom'
+        'Clean sunroom',
+        GIRLS_TASK
       ];
 
       const elements = {
@@ -369,13 +325,30 @@
       const makeId = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
       function loadTasks() {
+        let loadedTasks = null;
+
         try {
           const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-          if (Array.isArray(saved)) return saved;
+          if (Array.isArray(saved)) loadedTasks = saved;
         } catch (error) {
           console.warn('Could not load saved tasks.', error);
         }
-        return defaultTasks.map(text => ({ id: makeId(), text, done: false }));
+
+        if (!loadedTasks) {
+          localStorage.setItem(GIRLS_TASK_MIGRATION_KEY, '1');
+          return defaultTasks.map(text => ({ id: makeId(), text, done: false }));
+        }
+
+        if (!localStorage.getItem(GIRLS_TASK_MIGRATION_KEY)) {
+          const alreadyExists = loadedTasks.some(task => task && task.text === GIRLS_TASK);
+          if (!alreadyExists) {
+            loadedTasks.push({ id: makeId(), text: GIRLS_TASK, done: false });
+          }
+          localStorage.setItem(GIRLS_TASK_MIGRATION_KEY, '1');
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(loadedTasks));
+        }
+
+        return loadedTasks;
       }
 
       let tasks = loadTasks();
@@ -445,11 +418,8 @@
             return event.clientY < rect.top + rect.height / 2;
           });
 
-          if (nextItem) {
-            elements.list.insertBefore(item, nextItem);
-          } else {
-            elements.list.append(item);
-          }
+          if (nextItem) elements.list.insertBefore(item, nextItem);
+          else elements.list.append(item);
         });
 
         const finishReordering = event => {
@@ -553,9 +523,7 @@
       });
 
       elements.date.textContent = new Intl.DateTimeFormat(undefined, {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric'
+        weekday: 'long', month: 'long', day: 'numeric'
       }).format(new Date());
 
       render();
