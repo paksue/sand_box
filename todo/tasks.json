@@ -1,17 +1,17 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-02T21:14:32.341Z",
+  "updatedAt": "2026-08-02T21:29:01.205Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
       "title": "Mow lawn",
       "details": "",
-      "done": false,
+      "done": true,
       "deleted": false,
       "order": 0,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
+      "doneUpdatedAt": "2026-08-02T21:14:46.787Z",
       "orderUpdatedAt": "2026-08-02T20:30:27.237Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
@@ -34,11 +34,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 2,
+      "order": 4,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "orderUpdatedAt": "2026-08-02T20:30:27.237Z",
+      "orderUpdatedAt": "2026-08-02T21:28:57.439Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
@@ -47,11 +47,11 @@
       "details": "By ___ · Session 1: room · Session 2: desk",
       "done": false,
       "deleted": false,
-      "order": 3,
+      "order": 2,
       "createdAt": "2026-08-02T20:30:27.237Z",
-      "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
+      "contentUpdatedAt": "2026-08-02T21:14:59.117Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "orderUpdatedAt": "2026-08-02T20:30:27.237Z",
+      "orderUpdatedAt": "2026-08-02T21:14:56.807Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
@@ -60,11 +60,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 4,
+      "order": 5,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "orderUpdatedAt": "2026-08-02T20:30:27.237Z",
+      "orderUpdatedAt": "2026-08-02T21:28:57.439Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
@@ -73,11 +73,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 5,
+      "order": 6,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "orderUpdatedAt": "2026-08-02T20:30:27.237Z",
+      "orderUpdatedAt": "2026-08-02T21:28:57.439Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
@@ -86,11 +86,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 6,
+      "order": 7,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "orderUpdatedAt": "2026-08-02T20:30:27.237Z",
+      "orderUpdatedAt": "2026-08-02T21:28:57.439Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
@@ -99,11 +99,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 7,
+      "order": 3,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "orderUpdatedAt": "2026-08-02T20:30:27.237Z",
+      "orderUpdatedAt": "2026-08-02T21:28:57.439Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
