@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-02T21:10:00.000Z",
+  "updatedAt": "2026-08-02T21:14:32.341Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -137,13 +137,13 @@
       "title": "token_test",
       "details": "",
       "done": false,
-      "deleted": false,
+      "deleted": true,
       "order": 9,
       "createdAt": "2026-08-02T20:43:44.120Z",
       "contentUpdatedAt": "2026-08-02T20:43:44.120Z",
       "doneUpdatedAt": "2026-08-02T20:43:44.120Z",
       "orderUpdatedAt": "2026-08-02T20:43:44.120Z",
-      "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
+      "deletedUpdatedAt": "2026-08-02T21:14:29.834Z"
     }
   ]
 }
