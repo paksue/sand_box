@@ -49,6 +49,11 @@
       font-family: ui-rounded, "SF Pro Rounded", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
+    body.reordering {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
     .app {
       width: min(100%, 680px);
       margin: 0 auto;
@@ -159,15 +164,26 @@
 
     .task {
       display: grid;
-      grid-template-columns: 42px minmax(0, 1fr) 42px;
+      grid-template-columns: 42px 34px minmax(0, 1fr) 42px;
       align-items: center;
-      gap: 8px;
+      gap: 5px;
       min-height: 66px;
       padding: 8px 12px;
       border-bottom: 1px solid var(--line);
+      background: transparent;
+      transition: box-shadow 140ms ease, transform 140ms ease, background 140ms ease;
     }
 
     .task:last-child { border-bottom: 0; }
+
+    .task.dragging {
+      position: relative;
+      z-index: 3;
+      border-radius: 14px;
+      background: var(--accent-soft);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+      transform: scale(1.015);
+    }
 
     .check {
       display: grid;
@@ -191,6 +207,34 @@
 
     @media (prefers-color-scheme: dark) {
       .task.done .check { color: #0c2115; }
+    }
+
+    .drag-handle {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 46px;
+      min-width: 34px;
+      min-height: 46px;
+      padding: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 23px;
+      font-weight: 500;
+      line-height: 1;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .drag-handle:active {
+      cursor: grabbing;
+      transform: none;
+    }
+
+    .drag-handle:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
     }
 
     .task-text {
@@ -293,7 +337,7 @@
       </footer>
     </section>
 
-    <p class="tip">Tap a task to edit it. Your list is saved automatically on this device.</p>
+    <p class="tip">Drag the ☰ grip to rearrange. Tap a task to edit it. Changes save automatically.</p>
   </main>
 
   <script>
@@ -350,6 +394,77 @@
         elements.clear.disabled = completed === 0;
       }
 
+      function saveOrderFromDom() {
+        const tasksById = new Map(tasks.map(task => [task.id, task]));
+        tasks = [...elements.list.querySelectorAll('.task')]
+          .map(item => tasksById.get(item.dataset.id))
+          .filter(Boolean);
+        saveTasks();
+      }
+
+      function moveTaskByKeyboard(taskId, direction) {
+        const currentIndex = tasks.findIndex(task => task.id === taskId);
+        const nextIndex = currentIndex + direction;
+        if (currentIndex < 0 || nextIndex < 0 || nextIndex >= tasks.length) return;
+        [tasks[currentIndex], tasks[nextIndex]] = [tasks[nextIndex], tasks[currentIndex]];
+        saveTasks();
+        render();
+        requestAnimationFrame(() => {
+          elements.list.querySelector(`[data-id="${CSS.escape(taskId)}"] .drag-handle`)?.focus();
+        });
+      }
+
+      function attachReordering(handle, item) {
+        let pointerId = null;
+
+        handle.addEventListener('keydown', event => {
+          if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            moveTaskByKeyboard(item.dataset.id, -1);
+          } else if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            moveTaskByKeyboard(item.dataset.id, 1);
+          }
+        });
+
+        handle.addEventListener('pointerdown', event => {
+          if (event.button !== undefined && event.button !== 0) return;
+          pointerId = event.pointerId;
+          handle.setPointerCapture(pointerId);
+          item.classList.add('dragging');
+          document.body.classList.add('reordering');
+        });
+
+        handle.addEventListener('pointermove', event => {
+          if (event.pointerId !== pointerId || !item.classList.contains('dragging')) return;
+          event.preventDefault();
+
+          const siblings = [...elements.list.querySelectorAll('.task:not(.dragging)')];
+          const nextItem = siblings.find(sibling => {
+            const rect = sibling.getBoundingClientRect();
+            return event.clientY < rect.top + rect.height / 2;
+          });
+
+          if (nextItem) {
+            elements.list.insertBefore(item, nextItem);
+          } else {
+            elements.list.append(item);
+          }
+        });
+
+        const finishReordering = event => {
+          if (event.pointerId !== pointerId) return;
+          if (handle.hasPointerCapture(pointerId)) handle.releasePointerCapture(pointerId);
+          pointerId = null;
+          item.classList.remove('dragging');
+          document.body.classList.remove('reordering');
+          saveOrderFromDom();
+        };
+
+        handle.addEventListener('pointerup', finishReordering);
+        handle.addEventListener('pointercancel', finishReordering);
+      }
+
       function render() {
         elements.list.replaceChildren();
 
@@ -363,6 +478,7 @@
         tasks.forEach(task => {
           const item = document.createElement('li');
           item.className = `task${task.done ? ' done' : ''}`;
+          item.dataset.id = task.id;
 
           const check = document.createElement('button');
           check.type = 'button';
@@ -374,6 +490,14 @@
             saveTasks();
             render();
           });
+
+          const handle = document.createElement('button');
+          handle.type = 'button';
+          handle.className = 'drag-handle';
+          handle.textContent = '☰';
+          handle.setAttribute('aria-label', `Rearrange ${task.text}. Drag, or use the up and down arrow keys.`);
+          handle.title = 'Drag to rearrange';
+          attachReordering(handle, item);
 
           const text = document.createElement('button');
           text.type = 'button';
@@ -401,7 +525,7 @@
             render();
           });
 
-          item.append(check, text, remove);
+          item.append(check, handle, text, remove);
           elements.list.append(item);
         });
 
