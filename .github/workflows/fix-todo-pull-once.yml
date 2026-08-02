@@ -1,0 +1,44 @@
+name: Fix todo pull recovery
+
+on:
+  push:
+    paths:
+      - .github/workflows/fix-todo-pull-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Make Pull replace local data
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          path = Path("todo/index.html")
+          text = path.read_text(encoding="utf-8")
+
+          pattern = r"      async function pullFromGitHub\(\)\{.*?\}\n      async function pushToGitHub"
+          replacement = """      async function pullFromGitHub(){if(isSyncing)return;setSyncing(true);setSyncStatus('Pulling from GitHub…','working','Replacing this device with the GitHub copy.');try{const remote=await fetchRemote();tasks=(remote.document.tasks||[]).map((task,index)=>normalizeTask(task,index));saveTasks();render();syncMeta.lastSyncAt=nowStamp();syncMeta.lastRemoteSha=remote.sha;saveSyncMeta();const count=visibleTasks().length;setSyncStatus('Pulled from GitHub','success',`${count} ${count===1?'item':'items'} restored. Last pull: ${new Date(syncMeta.lastSyncAt).toLocaleString()}`);}catch(error){setSyncStatus('Pull failed','error',error.message);}finally{setSyncing(false);}}
+      async function pushToGitHub"""
+
+          text, count = re.subn(pattern, replacement, text, count=1, flags=re.S)
+          if count != 1:
+              raise SystemExit(f"Expected to replace one pull function, replaced {count}")
+
+          text = text.replace('id="pullButton" type="button">Pull</button>', 'id="pullButton" type="button">Pull from GitHub</button>')
+          text = text.replace('Pull merges GitHub changes into this device. Save to GitHub merges again and uploads the result.', 'Pull from GitHub replaces this device with the shared copy. Save to GitHub merges local changes and uploads them.')
+
+          path.write_text(text, encoding="utf-8")
+      - name: Commit the fix and remove this workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add todo/index.html
+          git rm .github/workflows/fix-todo-pull-once.yml
+          git commit -m "Fix todo Pull to restore GitHub copy"
+          git push
