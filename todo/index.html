@@ -9,813 +9,163 @@
   <meta name="apple-mobile-web-app-title" content="Today">
   <title>Today — To-Do List</title>
   <style>
-    :root {
-      color-scheme: light dark;
-      --bg: #f4f1e8;
-      --card: rgba(255,255,255,.86);
-      --text: #17211b;
-      --muted: #667168;
-      --line: rgba(23,33,27,.12);
-      --accent: #1e6b45;
-      --accent-soft: #dff1e7;
-      --danger: #a23d32;
-      --shadow: 0 18px 45px rgba(39,48,42,.12);
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #111713;
-        --card: rgba(28,37,31,.94);
-        --text: #f1f5f2;
-        --muted: #a7b0aa;
-        --line: rgba(255,255,255,.11);
-        --accent: #72d39f;
-        --accent-soft: #173d2a;
-        --danger: #ff9a8f;
-        --shadow: 0 18px 45px rgba(0,0,0,.3);
-      }
-    }
-
-    * { box-sizing: border-box; }
-
-    html.reordering,
-    body.reordering {
-      overflow: hidden;
-      overscroll-behavior: none;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100svh;
-      padding: max(22px, env(safe-area-inset-top)) 16px max(30px, env(safe-area-inset-bottom));
-      background: radial-gradient(circle at top left, rgba(103,183,139,.18), transparent 34rem), var(--bg);
-      color: var(--text);
-      font-family: ui-rounded, "SF Pro Rounded", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    body.reordering {
-      user-select: none;
-      -webkit-user-select: none;
-      cursor: grabbing;
-    }
-
-    .app { width: min(100%, 680px); margin: 0 auto; }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 16px;
-      margin: 8px 4px 18px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(2.2rem, 10vw, 4.5rem);
-      line-height: .95;
-      letter-spacing: -.06em;
-    }
-
-    .date { margin: 8px 0 0; color: var(--muted); font-weight: 650; }
-
-    .count {
-      flex: 0 0 auto;
-      min-width: 76px;
-      padding: 10px 13px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: var(--card);
-      text-align: center;
-      font-weight: 800;
-      box-shadow: var(--shadow);
-    }
-
-    .panel {
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      background: var(--card);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-    }
-
-    .progress-track { height: 7px; background: var(--line); }
-    .progress-bar { height: 100%; width: 0; background: var(--accent); transition: width 220ms ease; }
-
-    form {
-      display: flex;
-      gap: 10px;
-      padding: 16px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    #newTask {
-      min-width: 0;
-      flex: 1;
-      border: 1px solid var(--line);
-      border-radius: 15px;
-      padding: 14px 15px;
-      background: transparent;
-      color: var(--text);
-      font: inherit;
-      font-size: 16px;
-      outline: none;
-    }
-
-    #newTask:focus { border-color: var(--accent); }
-
-    button {
-      border: 0;
-      border-radius: 14px;
-      min-width: 46px;
-      min-height: 46px;
-      padding: 0 15px;
-      background: var(--accent);
-      color: #fff;
-      font: inherit;
-      font-weight: 800;
-      cursor: pointer;
-      touch-action: manipulation;
-    }
-
-    @media (prefers-color-scheme: dark) { button { color: #0c2115; } }
-    button:active { transform: scale(.98); }
-
-    ul { list-style: none; margin: 0; padding: 0; }
-
-    .task {
-      display: grid;
-      grid-template-columns: 42px 40px minmax(0,1fr) 42px;
-      align-items: start;
-      gap: 4px;
-      min-height: 76px;
-      padding: 11px 12px;
-      border-bottom: 1px solid var(--line);
-      background: transparent;
-      transition: box-shadow 120ms ease, transform 120ms ease, background 120ms ease;
-    }
-
-    .task:last-child { border-bottom: 0; }
-
-    .task.dragging {
-      position: relative;
-      z-index: 10;
-      border-radius: 14px;
-      background: var(--accent-soft);
-      box-shadow: 0 10px 30px rgba(0,0,0,.22);
-      transform: scale(1.02);
-    }
-
-    .check {
-      display: grid;
-      place-items: center;
-      width: 32px;
-      height: 32px;
-      min-width: 32px;
-      min-height: 32px;
-      margin-top: 5px;
-      padding: 0;
-      border: 2px solid var(--accent);
-      border-radius: 50%;
-      background: transparent;
-      color: transparent;
-      font-size: 18px;
-    }
-
-    .task.done .check { background: var(--accent); color: #fff; }
-    @media (prefers-color-scheme: dark) { .task.done .check { color: #0c2115; } }
-
-    .drag-handle {
-      display: grid;
-      place-items: center;
-      width: 40px;
-      height: 46px;
-      min-width: 40px;
-      min-height: 46px;
-      padding: 0;
-      border-radius: 10px;
-      background: transparent;
-      color: var(--muted);
-      font-size: 25px;
-      font-weight: 500;
-      line-height: 1;
-      cursor: grab;
-      touch-action: none;
-      -webkit-user-select: none;
-      user-select: none;
-      -webkit-touch-callout: none;
-    }
-
-    .drag-handle:active { cursor: grabbing; transform: none; }
-    .drag-handle:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-
-    .task-content {
-      display: block;
-      width: 100%;
-      min-width: 0;
-      min-height: 52px;
-      padding: 5px 7px 7px;
-      border: 1px solid transparent;
-      border-radius: 11px;
-      background: transparent;
-      color: var(--text);
-      text-align: left;
-    }
-
-    .task-content:active { transform: none; background: var(--accent-soft); }
-    .task-content:focus-visible { border-color: var(--accent); outline: none; }
-
-    .task-title {
-      display: block;
-      color: var(--text);
-      font-size: 17px;
-      font-weight: 760;
-      line-height: 1.3;
-      overflow-wrap: anywhere;
-      white-space: normal;
-    }
-
-    .task-details {
-      display: block;
-      margin-top: 4px;
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 560;
-      line-height: 1.38;
-      overflow-wrap: anywhere;
-      white-space: pre-wrap;
-    }
-
-    .task.done .task-title {
-      color: var(--muted);
-      text-decoration: line-through;
-      text-decoration-thickness: 2px;
-    }
-
-    .task.done .task-details {
-      opacity: .68;
-      text-decoration: line-through;
-    }
-
-    .task-editor {
-      display: grid;
-      gap: 8px;
-      min-width: 0;
-      padding: 2px 4px 5px;
-    }
-
-    .task-title-edit,
-    .task-details-edit {
-      width: 100%;
-      min-width: 0;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 10px 11px;
-      background: var(--accent-soft);
-      color: var(--text);
-      font: inherit;
-      outline: none;
-      appearance: none;
-      -webkit-appearance: none;
-    }
-
-    .task-title-edit {
-      font-size: 17px;
-      font-weight: 760;
-      line-height: 1.25;
-    }
-
-    .task-details-edit {
-      min-height: 74px;
-      max-height: 190px;
-      resize: none;
-      overflow-y: auto;
-      font-size: 15px;
-      font-weight: 520;
-      line-height: 1.4;
-    }
-
-    .task-title-edit:focus,
-    .task-details-edit:focus {
-      border-color: var(--accent);
-    }
-
-    .editor-actions {
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    .done-editing {
-      min-width: 72px;
-      min-height: 38px;
-      padding: 0 15px;
-      border-radius: 999px;
-      font-size: 14px;
-    }
-
-    .delete {
-      width: 38px;
-      height: 38px;
-      min-width: 38px;
-      min-height: 38px;
-      margin-top: 2px;
-      padding: 0;
-      background: transparent;
-      color: var(--muted);
-      font-size: 22px;
-      font-weight: 500;
-    }
-
-    .delete:hover { color: var(--danger); }
-    .empty { padding: 38px 20px; color: var(--muted); text-align: center; }
-
-    footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .text-button {
-      min-height: auto;
-      min-width: auto;
-      padding: 7px 0;
-      border-radius: 0;
-      background: transparent;
-      color: var(--accent);
-    }
-
-    .text-button:disabled { opacity: .45; cursor: default; }
-
-    .tip {
-      margin: 14px 6px 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
-      text-align: center;
-    }
-
-    @media (max-width: 430px) {
-      body { padding-left: 8px; padding-right: 8px; }
-      .task {
-        grid-template-columns: 40px 36px minmax(0,1fr) 38px;
-        gap: 2px;
-        padding-left: 8px;
-        padding-right: 8px;
-      }
-      .drag-handle { width: 36px; min-width: 36px; }
-      .task-content { padding-left: 5px; padding-right: 5px; }
-    }
+    :root { color-scheme: light dark; --bg:#f4f1e8; --card:rgba(255,255,255,.88); --text:#17211b; --muted:#667168; --line:rgba(23,33,27,.13); --accent:#1e6b45; --accent-soft:#dff1e7; --danger:#a23d32; --warning:#8a5a00; --shadow:0 18px 45px rgba(39,48,42,.12); }
+    @media (prefers-color-scheme: dark) { :root { --bg:#111713; --card:rgba(28,37,31,.95); --text:#f1f5f2; --muted:#a7b0aa; --line:rgba(255,255,255,.12); --accent:#72d39f; --accent-soft:#173d2a; --danger:#ff9a8f; --warning:#ffd27a; --shadow:0 18px 45px rgba(0,0,0,.3); } }
+    * { box-sizing:border-box; }
+    html { overscroll-behavior:none; }
+    body { margin:0; min-height:100svh; padding:max(22px,env(safe-area-inset-top)) 8px max(30px,env(safe-area-inset-bottom)); background:radial-gradient(circle at top left,rgba(103,183,139,.18),transparent 34rem),var(--bg); color:var(--text); font-family:ui-rounded,"SF Pro Rounded","SF Pro Display",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    body.reordering { user-select:none; -webkit-user-select:none; cursor:grabbing; }
+    .app { width:min(100%,680px); margin:0 auto; }
+    header { display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin:8px 4px 18px; }
+    h1 { margin:0; font-size:clamp(2.2rem,10vw,4.5rem); line-height:.95; letter-spacing:-.06em; }
+    .date { margin:8px 0 0; color:var(--muted); font-weight:650; }
+    .count { flex:0 0 auto; min-width:76px; padding:10px 13px; border:1px solid var(--line); border-radius:999px; background:var(--card); text-align:center; font-weight:800; box-shadow:var(--shadow); }
+    .panel { overflow:hidden; border:1px solid var(--line); border-radius:24px; background:var(--card); box-shadow:var(--shadow); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); }
+    .progress-track { height:7px; background:var(--line); }
+    .progress-bar { height:100%; width:0; background:var(--accent); transition:width 220ms ease; }
+    .sync-bar { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:10px; padding:11px 14px; border-bottom:1px solid var(--line); background:color-mix(in srgb,var(--accent-soft) 55%,transparent); }
+    .sync-summary { min-width:0; }
+    .sync-status { display:flex; align-items:center; gap:7px; min-width:0; font-size:14px; font-weight:720; }
+    .sync-dot { width:9px; height:9px; flex:0 0 auto; border-radius:50%; background:var(--muted); }
+    .sync-status[data-type="success"] .sync-dot { background:var(--accent); }
+    .sync-status[data-type="working"] .sync-dot { background:var(--warning); animation:pulse 1s infinite alternate; }
+    .sync-status[data-type="error"] .sync-dot { background:var(--danger); }
+    @keyframes pulse { to { opacity:.3; } }
+    .sync-message { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .sync-time { margin:3px 0 0 16px; color:var(--muted); font-size:12px; }
+    .sync-actions { display:flex; gap:7px; }
+    button { border:0; border-radius:14px; min-width:46px; min-height:46px; padding:0 15px; background:var(--accent); color:#fff; font:inherit; font-weight:800; cursor:pointer; touch-action:manipulation; }
+    @media (prefers-color-scheme: dark) { button { color:#0c2115; } }
+    button:active { transform:scale(.98); }
+    button:disabled { opacity:.48; cursor:wait; }
+    .compact-button { min-width:auto; min-height:38px; padding:0 12px; border:1px solid var(--line); border-radius:999px; background:var(--card); color:var(--text); font-size:13px; }
+    .save-sync { border-color:transparent; background:var(--accent); color:#fff; }
+    @media (prefers-color-scheme: dark) { .save-sync { color:#0c2115; } }
+    .settings-button { width:38px; min-width:38px; padding:0; font-size:18px; }
+    .sync-settings { display:none; padding:15px; border-bottom:1px solid var(--line); background:color-mix(in srgb,var(--card) 88%,var(--accent-soft)); }
+    .sync-settings.open { display:block; }
+    .settings-title { margin:0 0 6px; font-size:16px; }
+    .settings-copy { margin:0 0 11px; color:var(--muted); font-size:13px; line-height:1.45; }
+    .privacy-warning { margin:0 0 12px; padding:10px 11px; border:1px solid color-mix(in srgb,var(--warning) 55%,var(--line)); border-radius:12px; color:var(--warning); font-size:12px; font-weight:680; line-height:1.42; }
+    .token-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; }
+    .token-input { width:100%; min-width:0; border:1px solid var(--line); border-radius:12px; padding:11px 12px; background:transparent; color:var(--text); font:inherit; font-size:16px; outline:none; }
+    .token-input:focus { border-color:var(--accent); }
+    .settings-links { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:10px; font-size:12px; }
+    .settings-links a { color:var(--accent); font-weight:750; }
+    .clear-token { min-height:34px; padding:0; background:transparent; color:var(--danger); }
+    form { display:flex; gap:10px; padding:16px; border-bottom:1px solid var(--line); }
+    #newTask { min-width:0; flex:1; border:1px solid var(--line); border-radius:15px; padding:14px 15px; background:transparent; color:var(--text); font:inherit; font-size:16px; outline:none; }
+    #newTask:focus { border-color:var(--accent); }
+    ul { list-style:none; margin:0; padding:0; }
+    .task { display:grid; grid-template-columns:42px 40px minmax(0,1fr) 42px; align-items:start; gap:4px; min-height:76px; padding:11px 12px; border-bottom:1px solid var(--line); background:transparent; transition:box-shadow 120ms ease,transform 120ms ease,background 120ms ease; }
+    .task:last-child { border-bottom:0; }
+    .task.dragging { position:relative; z-index:10; border-radius:14px; background:var(--accent-soft); box-shadow:0 10px 30px rgba(0,0,0,.22); transform:scale(1.02); }
+    .check { display:grid; place-items:center; width:32px; height:32px; min-width:32px; min-height:32px; margin-top:5px; padding:0; border:2px solid var(--accent); border-radius:50%; background:transparent; color:transparent; font-size:18px; }
+    .task.done .check { background:var(--accent); color:#fff; }
+    @media (prefers-color-scheme: dark) { .task.done .check { color:#0c2115; } }
+    .drag-handle { display:grid; place-items:center; width:40px; height:46px; min-width:40px; min-height:46px; padding:0; border-radius:10px; background:transparent; color:var(--muted); font-size:25px; font-weight:500; line-height:1; cursor:grab; touch-action:none; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+    .drag-handle:active { cursor:grabbing; transform:none; }
+    .drag-handle:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
+    .task-content { display:block; width:100%; min-width:0; min-height:52px; padding:5px 7px 7px; border:1px solid transparent; border-radius:11px; background:transparent; color:var(--text); text-align:left; }
+    .task-content:active { transform:none; background:var(--accent-soft); }
+    .task-content:focus-visible { border-color:var(--accent); outline:none; }
+    .task-title { display:block; color:var(--text); font-size:17px; font-weight:760; line-height:1.3; overflow-wrap:anywhere; white-space:normal; }
+    .task-details { display:block; margin-top:4px; color:var(--muted); font-size:14px; font-weight:560; line-height:1.38; overflow-wrap:anywhere; white-space:pre-wrap; }
+    .task.done .task-title { color:var(--muted); text-decoration:line-through; text-decoration-thickness:2px; }
+    .task.done .task-details { opacity:.68; text-decoration:line-through; }
+    .task-editor { display:grid; gap:8px; min-width:0; padding:2px 4px 5px; }
+    .task-title-edit,.task-details-edit { width:100%; min-width:0; border:1px solid var(--line); border-radius:10px; padding:10px 11px; background:var(--accent-soft); color:var(--text); font:inherit; outline:none; appearance:none; -webkit-appearance:none; }
+    .task-title-edit { font-size:17px; font-weight:760; line-height:1.25; }
+    .task-details-edit { min-height:74px; max-height:190px; resize:none; overflow-y:auto; font-size:15px; font-weight:520; line-height:1.4; }
+    .task-title-edit:focus,.task-details-edit:focus { border-color:var(--accent); }
+    .editor-actions { display:flex; justify-content:flex-end; }
+    .done-editing { min-width:72px; min-height:38px; padding:0 15px; border-radius:999px; font-size:14px; }
+    .delete { width:38px; height:38px; min-width:38px; min-height:38px; margin-top:2px; padding:0; background:transparent; color:var(--muted); font-size:22px; font-weight:500; }
+    .delete:hover { color:var(--danger); }
+    .empty { padding:38px 20px; color:var(--muted); text-align:center; }
+    footer { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:14px 16px; border-top:1px solid var(--line); color:var(--muted); font-size:14px; }
+    .text-button { min-height:auto; min-width:auto; padding:7px 0; border-radius:0; background:transparent; color:var(--accent); }
+    .text-button:disabled { opacity:.45; cursor:default; }
+    .tip { margin:14px 6px 0; color:var(--muted); font-size:13px; line-height:1.45; text-align:center; }
+    @media (max-width:500px) { .sync-bar { grid-template-columns:1fr; } .sync-actions { display:grid; grid-template-columns:1fr 1fr 38px; } .compact-button { min-height:40px; } }
+    @media (max-width:430px) { .task { grid-template-columns:40px 36px minmax(0,1fr) 38px; gap:2px; padding-left:8px; padding-right:8px; } .drag-handle { width:36px; min-width:36px; } .task-content { padding-left:5px; padding-right:5px; } }
   </style>
 </head>
 <body>
   <main class="app">
-    <header>
-      <div>
-        <h1>Today</h1>
-        <p class="date" id="date"></p>
-      </div>
-      <div class="count" id="count" aria-live="polite">0 / 0</div>
-    </header>
-
+    <header><div><h1>Today</h1><p class="date" id="date"></p></div><div class="count" id="count" aria-live="polite">0 / 0</div></header>
     <section class="panel" aria-label="Today's tasks">
       <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progress"></div></div>
-
-      <form id="taskForm">
-        <input id="newTask" type="text" maxlength="120" autocomplete="off" placeholder="Add a task…" aria-label="New task">
-        <button type="submit" aria-label="Add task">Add</button>
-      </form>
-
+      <div class="sync-bar">
+        <div class="sync-summary"><div class="sync-status" id="syncStatus" data-type="idle" aria-live="polite"><span class="sync-dot" aria-hidden="true"></span><span class="sync-message" id="syncMessage">Local only</span></div><p class="sync-time" id="syncTime">Set a GitHub token to save across devices.</p></div>
+        <div class="sync-actions"><button class="compact-button" id="pullButton" type="button">Pull</button><button class="compact-button save-sync" id="pushButton" type="button">Save to GitHub</button><button class="compact-button settings-button" id="settingsButton" type="button" aria-label="GitHub sync settings">⚙︎</button></div>
+      </div>
+      <section class="sync-settings" id="syncSettings" aria-label="GitHub sync settings">
+        <h2 class="settings-title">GitHub sync</h2>
+        <p class="settings-copy">Create a fine-grained token limited to <strong>paksue/sand_box</strong> with <strong>Contents: read and write</strong>. Paste it here once on each device.</p>
+        <p class="privacy-warning">The repository is public. Anything saved to tasks.json—including task titles and details—will be publicly readable. The token itself stays only in this browser.</p>
+        <div class="token-row"><input class="token-input" id="tokenInput" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="github_pat_…"><button class="compact-button save-sync" id="saveTokenButton" type="button">Save token</button></div>
+        <div class="settings-links"><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Create fine-grained token</a><button class="clear-token" id="clearTokenButton" type="button">Remove saved token</button></div>
+      </section>
+      <form id="taskForm"><input id="newTask" type="text" maxlength="120" autocomplete="off" placeholder="Add a task…" aria-label="New task"><button type="submit" aria-label="Add task">Add</button></form>
       <ul id="taskList"></ul>
-
-      <footer>
-        <span id="remaining">0 remaining</span>
-        <button class="text-button" id="clearCompleted" type="button">Clear completed</button>
-      </footer>
+      <footer><span id="remaining">0 remaining</span><button class="text-button" id="clearCompleted" type="button">Clear completed</button></footer>
     </section>
-
-    <p class="tip">Long tasks wrap automatically. Tap a task to edit its title and details. Drag ☰ to rearrange.</p>
+    <p class="tip">Pull merges GitHub changes into this device. Save to GitHub merges again and uploads the result.</p>
   </main>
-
   <script>
     (() => {
       'use strict';
-
-      const STORAGE_KEY = 'paksue-today-tasks-v1';
-      const GIRLS_TASK_MIGRATION_KEY = 'paksue-added-girls-cleanup-v1';
-      const GIRLS_TASK = 'Girls: clean up by ___ — session 1 room, session 2 desk';
-
-      const defaultTasks = [
-        'Print handle',
-        'Mow lawn',
-        'Set alarm: collect 529',
-        'Print window blocker',
-        'Fix Ubuntu',
-        'Build kneeling chair',
-        'Clean sunroom',
-        GIRLS_TASK
-      ];
-
-      const elements = {
-        date: document.getElementById('date'),
-        count: document.getElementById('count'),
-        progress: document.getElementById('progress'),
-        form: document.getElementById('taskForm'),
-        input: document.getElementById('newTask'),
-        list: document.getElementById('taskList'),
-        remaining: document.getElementById('remaining'),
-        clear: document.getElementById('clearCompleted')
-      };
-
-      const makeId = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-      let editingTaskId = null;
-
-      function splitLegacyText(text) {
-        const cleanText = String(text || '').trim();
-
-        if (cleanText === GIRLS_TASK) {
-          return {
-            title: 'Girls clean up',
-            details: 'By ___ · Session 1: room · Session 2: desk'
-          };
-        }
-
-        const separatorIndex = cleanText.indexOf(' — ');
-        if (separatorIndex > 0) {
-          return {
-            title: cleanText.slice(0, separatorIndex).trim(),
-            details: cleanText.slice(separatorIndex + 3).trim()
-          };
-        }
-
-        return { title: cleanText || 'Untitled task', details: '' };
-      }
-
-      function normalizeTask(task) {
-        const source = task && typeof task === 'object' ? task : {};
-        const legacy = splitLegacyText(source.text);
-        return {
-          id: source.id || makeId(),
-          title: String(source.title || legacy.title || 'Untitled task').trim() || 'Untitled task',
-          details: String(source.details || legacy.details || '').trim(),
-          done: Boolean(source.done)
-        };
-      }
-
-      function loadTasks() {
-        let loadedTasks = null;
-
-        try {
-          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-          if (Array.isArray(saved)) loadedTasks = saved;
-        } catch (error) {
-          console.warn('Could not load saved tasks.', error);
-        }
-
-        if (!loadedTasks) {
-          localStorage.setItem(GIRLS_TASK_MIGRATION_KEY, '1');
-          const freshTasks = defaultTasks.map(text => normalizeTask({ text, done: false }));
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(freshTasks));
-          return freshTasks;
-        }
-
-        if (!localStorage.getItem(GIRLS_TASK_MIGRATION_KEY)) {
-          const alreadyExists = loadedTasks.some(task => {
-            const combined = `${task?.title || ''} ${task?.text || ''}`;
-            return /girls.*clean up/i.test(combined);
-          });
-          if (!alreadyExists) loadedTasks.push({ id: makeId(), text: GIRLS_TASK, done: false });
-          localStorage.setItem(GIRLS_TASK_MIGRATION_KEY, '1');
-        }
-
-        const normalizedTasks = loadedTasks.map(normalizeTask);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizedTasks));
-        return normalizedTasks;
-      }
-
-      let tasks = loadTasks();
-
-      function saveTasks() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-      }
-
-      function taskLabel(task) {
-        return [task.title, task.details].filter(Boolean).join('. ');
-      }
-
-      function updateSummary() {
-        const completed = tasks.filter(task => task.done).length;
-        const total = tasks.length;
-        const remaining = total - completed;
-        elements.count.textContent = `${completed} / ${total}`;
-        elements.remaining.textContent = `${remaining} remaining`;
-        elements.progress.style.width = total ? `${(completed / total) * 100}%` : '0%';
-        elements.clear.disabled = completed === 0;
-      }
-
-      function saveOrderFromDom() {
-        const tasksById = new Map(tasks.map(task => [task.id, task]));
-        tasks = [...elements.list.querySelectorAll('.task')]
-          .map(item => tasksById.get(item.dataset.id))
-          .filter(Boolean);
-        saveTasks();
-      }
-
-      function moveTaskByKeyboard(taskId, direction) {
-        const currentIndex = tasks.findIndex(task => task.id === taskId);
-        const nextIndex = currentIndex + direction;
-        if (currentIndex < 0 || nextIndex < 0 || nextIndex >= tasks.length) return;
-        [tasks[currentIndex], tasks[nextIndex]] = [tasks[nextIndex], tasks[currentIndex]];
-        saveTasks();
-        render();
-        requestAnimationFrame(() => {
-          elements.list.querySelector(`[data-id="${CSS.escape(taskId)}"] .drag-handle`)?.focus();
-        });
-      }
-
-      function attachReordering(handle, item) {
-        let dragging = false;
-        let lastClientY = 0;
-
-        function startDrag(clientY) {
-          if (dragging) return;
-          dragging = true;
-          lastClientY = clientY;
-          item.classList.add('dragging');
-          document.documentElement.classList.add('reordering');
-          document.body.classList.add('reordering');
-          if (navigator.vibrate) navigator.vibrate(15);
-        }
-
-        function moveDrag(clientY) {
-          if (!dragging) return;
-          lastClientY = clientY;
-
-          const siblings = [...elements.list.querySelectorAll('.task:not(.dragging)')];
-          const nextItem = siblings.find(sibling => {
-            const rect = sibling.getBoundingClientRect();
-            return clientY < rect.top + rect.height / 2;
-          });
-
-          const previousNextSibling = item.nextElementSibling;
-          if (nextItem) elements.list.insertBefore(item, nextItem);
-          else elements.list.append(item);
-
-          if (item.nextElementSibling !== previousNextSibling && navigator.vibrate) {
-            navigator.vibrate(8);
-          }
-
-          const edge = 72;
-          if (clientY < edge) window.scrollBy(0, -10);
-          else if (clientY > window.innerHeight - edge) window.scrollBy(0, 10);
-        }
-
-        function finishDrag() {
-          if (!dragging) return;
-          dragging = false;
-          item.classList.remove('dragging');
-          document.documentElement.classList.remove('reordering');
-          document.body.classList.remove('reordering');
-          saveOrderFromDom();
-        }
-
-        handle.addEventListener('keydown', event => {
-          if (event.key === 'ArrowUp') {
-            event.preventDefault();
-            moveTaskByKeyboard(item.dataset.id, -1);
-          } else if (event.key === 'ArrowDown') {
-            event.preventDefault();
-            moveTaskByKeyboard(item.dataset.id, 1);
-          }
-        });
-
-        handle.addEventListener('touchstart', event => {
-          if (event.touches.length !== 1) return;
-          event.preventDefault();
-          startDrag(event.touches[0].clientY);
-        }, { passive: false });
-
-        document.addEventListener('touchmove', event => {
-          if (!dragging || event.touches.length !== 1) return;
-          event.preventDefault();
-          moveDrag(event.touches[0].clientY);
-        }, { passive: false });
-
-        document.addEventListener('touchend', finishDrag);
-        document.addEventListener('touchcancel', finishDrag);
-
-        handle.addEventListener('mousedown', event => {
-          if (event.button !== 0) return;
-          event.preventDefault();
-          startDrag(event.clientY);
-        });
-
-        document.addEventListener('mousemove', event => {
-          if (!dragging) return;
-          event.preventDefault();
-          moveDrag(event.clientY || lastClientY);
-        });
-
-        document.addEventListener('mouseup', finishDrag);
-        window.addEventListener('blur', finishDrag);
-      }
-
-      function resizeDetailsEditor(textarea) {
-        textarea.style.height = 'auto';
-        textarea.style.height = `${Math.min(Math.max(textarea.scrollHeight, 74), 190)}px`;
-      }
-
-      function finishEditing(task) {
-        task.title = task.title.trim() || 'Untitled task';
-        task.details = task.details.trim();
-        editingTaskId = null;
-        saveTasks();
-        render();
-      }
-
-      function render() {
-        elements.list.replaceChildren();
-
-        if (tasks.length === 0) {
-          const empty = document.createElement('li');
-          empty.className = 'empty';
-          empty.textContent = 'Nothing left. Add a task when you need one.';
-          elements.list.append(empty);
-        }
-
-        tasks.forEach(task => {
-          const item = document.createElement('li');
-          item.className = `task${task.done ? ' done' : ''}${editingTaskId === task.id ? ' editing' : ''}`;
-          item.dataset.id = task.id;
-
-          const check = document.createElement('button');
-          check.type = 'button';
-          check.className = 'check';
-          check.textContent = '✓';
-          check.setAttribute('aria-label', task.done ? `Mark ${taskLabel(task)} incomplete` : `Mark ${taskLabel(task)} complete`);
-          check.addEventListener('click', () => {
-            task.done = !task.done;
-            saveTasks();
-            render();
-          });
-
-          const handle = document.createElement('button');
-          handle.type = 'button';
-          handle.className = 'drag-handle';
-          handle.textContent = '☰';
-          handle.setAttribute('aria-label', `Rearrange ${taskLabel(task)}. Drag, or use the up and down arrow keys.`);
-          handle.title = 'Press and drag to rearrange';
-          attachReordering(handle, item);
-
-          let taskMiddle;
-
-          if (editingTaskId === task.id) {
-            const editor = document.createElement('div');
-            editor.className = 'task-editor';
-
-            const titleInput = document.createElement('input');
-            titleInput.type = 'text';
-            titleInput.className = 'task-title-edit';
-            titleInput.value = task.title;
-            titleInput.maxLength = 120;
-            titleInput.autocomplete = 'off';
-            titleInput.placeholder = 'Task title';
-            titleInput.setAttribute('aria-label', 'Task title');
-
-            const detailsInput = document.createElement('textarea');
-            detailsInput.className = 'task-details-edit';
-            detailsInput.value = task.details;
-            detailsInput.maxLength = 500;
-            detailsInput.placeholder = 'Details, time, or steps…';
-            detailsInput.setAttribute('aria-label', 'Task details');
-
-            const actions = document.createElement('div');
-            actions.className = 'editor-actions';
-
-            const doneButton = document.createElement('button');
-            doneButton.type = 'button';
-            doneButton.className = 'done-editing';
-            doneButton.textContent = 'Done';
-            doneButton.addEventListener('click', () => finishEditing(task));
-
-            titleInput.addEventListener('input', () => {
-              task.title = titleInput.value.slice(0, 120);
-              saveTasks();
-            });
-
-            titleInput.addEventListener('keydown', event => {
-              if (event.key === 'Enter') {
-                event.preventDefault();
-                detailsInput.focus();
-              } else if (event.key === 'Escape') {
-                event.preventDefault();
-                finishEditing(task);
-              }
-            });
-
-            detailsInput.addEventListener('input', () => {
-              task.details = detailsInput.value.slice(0, 500);
-              resizeDetailsEditor(detailsInput);
-              saveTasks();
-            });
-
-            detailsInput.addEventListener('keydown', event => {
-              if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
-                event.preventDefault();
-                finishEditing(task);
-              } else if (event.key === 'Escape') {
-                event.preventDefault();
-                finishEditing(task);
-              }
-            });
-
-            actions.append(doneButton);
-            editor.append(titleInput, detailsInput, actions);
-            taskMiddle = editor;
-
-            requestAnimationFrame(() => {
-              resizeDetailsEditor(detailsInput);
-              titleInput.focus();
-              const end = titleInput.value.length;
-              titleInput.setSelectionRange(end, end);
-            });
-          } else {
-            const content = document.createElement('button');
-            content.type = 'button';
-            content.className = 'task-content';
-            content.setAttribute('aria-label', `Edit ${taskLabel(task)}`);
-
-            const title = document.createElement('span');
-            title.className = 'task-title';
-            title.textContent = task.title;
-            content.append(title);
-
-            if (task.details) {
-              const details = document.createElement('span');
-              details.className = 'task-details';
-              details.textContent = task.details;
-              content.append(details);
-            }
-
-            content.addEventListener('click', () => {
-              editingTaskId = task.id;
-              render();
-            });
-
-            taskMiddle = content;
-          }
-
-          const remove = document.createElement('button');
-          remove.type = 'button';
-          remove.className = 'delete';
-          remove.textContent = '×';
-          remove.setAttribute('aria-label', `Delete ${taskLabel(task)}`);
-          remove.addEventListener('click', () => {
-            tasks = tasks.filter(candidate => candidate.id !== task.id);
-            if (editingTaskId === task.id) editingTaskId = null;
-            saveTasks();
-            render();
-          });
-
-          item.append(check, handle, taskMiddle, remove);
-          elements.list.append(item);
-        });
-
-        updateSummary();
-      }
-
-      elements.form.addEventListener('submit', event => {
-        event.preventDefault();
-        const title = elements.input.value.trim();
-        if (!title) {
-          elements.input.focus();
-          return;
-        }
-        const task = { id: makeId(), title, details: '', done: false };
-        tasks.push(task);
-        elements.input.value = '';
-        editingTaskId = task.id;
-        saveTasks();
-        render();
-      });
-
-      elements.clear.addEventListener('click', () => {
-        tasks = tasks.filter(task => !task.done);
-        editingTaskId = null;
-        saveTasks();
-        render();
-      });
-
-      elements.date.textContent = new Intl.DateTimeFormat(undefined, {
-        weekday: 'long', month: 'long', day: 'numeric'
-      }).format(new Date());
-
-      render();
+      const STORAGE_KEY='paksue-today-tasks-v1',TOKEN_KEY='paksue-github-token-v1',SYNC_META_KEY='paksue-github-sync-meta-v1',GIRLS_TASK_MIGRATION_KEY='paksue-added-girls-cleanup-v1',GIRLS_TASK='Girls: clean up by ___ — session 1 room, session 2 desk';
+      const REPO_OWNER='paksue',REPO_NAME='sand_box',REPO_BRANCH='main',REMOTE_PATH='todo/tasks.json',API_URL=`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${REMOTE_PATH}`;
+      const defaultTasks=['Print handle','Mow lawn','Set alarm: collect 529','Print window blocker','Fix Ubuntu','Build kneeling chair','Clean sunroom',GIRLS_TASK];
+      const elements={date:document.getElementById('date'),count:document.getElementById('count'),progress:document.getElementById('progress'),form:document.getElementById('taskForm'),input:document.getElementById('newTask'),list:document.getElementById('taskList'),remaining:document.getElementById('remaining'),clear:document.getElementById('clearCompleted'),syncStatus:document.getElementById('syncStatus'),syncMessage:document.getElementById('syncMessage'),syncTime:document.getElementById('syncTime'),pull:document.getElementById('pullButton'),push:document.getElementById('pushButton'),settingsButton:document.getElementById('settingsButton'),settings:document.getElementById('syncSettings'),tokenInput:document.getElementById('tokenInput'),saveToken:document.getElementById('saveTokenButton'),clearToken:document.getElementById('clearTokenButton')};
+      const makeId=()=>globalThis.crypto&&typeof globalThis.crypto.randomUUID==='function'?globalThis.crypto.randomUUID():`${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      const nowStamp=()=>new Date().toISOString(),stampNumber=value=>Number.isFinite(Date.parse(value||''))?Date.parse(value):0;
+      let editingTaskId=null,isSyncing=false,tasks=loadTasks(),syncMeta=loadSyncMeta(),dragState=null;
+      function splitLegacyText(text){const clean=String(text||'').trim();if(clean===GIRLS_TASK)return{title:'Girls clean up',details:'By ___ · Session 1: room · Session 2: desk'};const i=clean.indexOf(' — ');if(i>0)return{title:clean.slice(0,i).trim(),details:clean.slice(i+3).trim()};return{title:clean||'Untitled task',details:''};}
+      function normalizeTask(task,index=0,fallback=nowStamp()){const s=task&&typeof task==='object'?task:{},legacy=splitLegacyText(s.text),created=s.createdAt||s.updatedAt||fallback;return{id:String(s.id||makeId()),title:String(s.title||legacy.title||'Untitled task').trim()||'Untitled task',details:String(s.details||legacy.details||'').trim(),done:Boolean(s.done),deleted:Boolean(s.deleted),order:Number.isFinite(Number(s.order))?Number(s.order):index,createdAt:created,contentUpdatedAt:s.contentUpdatedAt||s.updatedAt||created,doneUpdatedAt:s.doneUpdatedAt||s.updatedAt||created,orderUpdatedAt:s.orderUpdatedAt||s.updatedAt||created,deletedUpdatedAt:s.deletedUpdatedAt||(s.deleted?s.updatedAt||created:'')};}
+      function loadTasks(){let loaded=null;try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY));if(Array.isArray(saved))loaded=saved;}catch(error){console.warn('Could not load saved tasks.',error);}const stamp=nowStamp();if(!loaded){localStorage.setItem(GIRLS_TASK_MIGRATION_KEY,'1');const initial=defaultTasks.map((text,index)=>normalizeTask({id:makeId(),text,order:index},index,stamp));localStorage.setItem(STORAGE_KEY,JSON.stringify(initial));return initial;}if(!localStorage.getItem(GIRLS_TASK_MIGRATION_KEY)){const exists=loaded.some(task=>`${task?.title||''} ${task?.details||''} ${task?.text||''}`.toLowerCase().includes('girls'));if(!exists)loaded.push({id:makeId(),text:GIRLS_TASK,order:loaded.length});localStorage.setItem(GIRLS_TASK_MIGRATION_KEY,'1');}const normalized=loaded.map((task,index)=>normalizeTask(task,index,stamp));localStorage.setItem(STORAGE_KEY,JSON.stringify(normalized));return normalized;}
+      function loadSyncMeta(){try{const value=JSON.parse(localStorage.getItem(SYNC_META_KEY));if(value&&typeof value==='object')return value;}catch(error){console.warn('Could not load sync metadata.',error);}return{lastSyncAt:'',lastRemoteSha:''};}
+      function saveSyncMeta(){localStorage.setItem(SYNC_META_KEY,JSON.stringify(syncMeta));}
+      function saveTasks(){localStorage.setItem(STORAGE_KEY,JSON.stringify(tasks));}
+      function visibleTasks(){return tasks.filter(task=>!task.deleted).sort((a,b)=>a.order-b.order||stampNumber(a.createdAt)-stampNumber(b.createdAt));}
+      function updateSummary(){const visible=visibleTasks(),completed=visible.filter(task=>task.done).length,total=visible.length;elements.count.textContent=`${completed} / ${total}`;elements.remaining.textContent=`${total-completed} remaining`;elements.progress.style.width=total?`${completed/total*100}%`:'0%';elements.clear.disabled=completed===0;}
+      function getToken(){return localStorage.getItem(TOKEN_KEY)||'';}
+      function updateTokenUi(){const has=Boolean(getToken());elements.tokenInput.value='';elements.tokenInput.placeholder=has?'Token saved on this device':'github_pat_…';elements.clearToken.hidden=!has;if(!syncMeta.lastSyncAt)elements.syncTime.textContent=has?'Ready. Save to GitHub to create the first shared copy.':'Set a GitHub token to save across devices.';}
+      function setSyncStatus(message,type='idle',timeText=null){elements.syncStatus.dataset.type=type;elements.syncMessage.textContent=message;if(timeText!==null)elements.syncTime.textContent=timeText;}
+      function setSyncing(value){isSyncing=value;elements.pull.disabled=value;elements.push.disabled=value;elements.saveToken.disabled=value;}
+      function githubHeaders(withAuth=true){const headers={Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'},token=getToken();if(withAuth&&token)headers.Authorization=`Bearer ${token}`;return headers;}
+      function decodeBase64Utf8(value){const binary=atob(String(value||'').replace(/\s/g,'')),bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));return new TextDecoder().decode(bytes);}
+      function encodeBase64Utf8(value){const bytes=new TextEncoder().encode(value);let binary='';for(const byte of bytes)binary+=String.fromCharCode(byte);return btoa(binary);}
+      function newerValue(local,remote,field,stamp){return stampNumber(remote?.[stamp])>stampNumber(local?.[stamp])?remote?.[field]:local?.[field];}
+      function newerStamp(local,remote,field){return stampNumber(remote?.[field])>stampNumber(local?.[field])?remote?.[field]:local?.[field];}
+      function mergeTask(localRaw,remoteRaw,index=0){if(!localRaw)return normalizeTask(remoteRaw,index);if(!remoteRaw)return normalizeTask(localRaw,index);const local=normalizeTask(localRaw,index,localRaw.createdAt||nowStamp()),remote=normalizeTask(remoteRaw,index,remoteRaw.createdAt||nowStamp());return{id:local.id,title:newerValue(local,remote,'title','contentUpdatedAt'),details:newerValue(local,remote,'details','contentUpdatedAt'),done:Boolean(newerValue(local,remote,'done','doneUpdatedAt')),deleted:Boolean(newerValue(local,remote,'deleted','deletedUpdatedAt')),order:Number(newerValue(local,remote,'order','orderUpdatedAt')),createdAt:stampNumber(local.createdAt)<=stampNumber(remote.createdAt)?local.createdAt:remote.createdAt,contentUpdatedAt:newerStamp(local,remote,'contentUpdatedAt'),doneUpdatedAt:newerStamp(local,remote,'doneUpdatedAt'),orderUpdatedAt:newerStamp(local,remote,'orderUpdatedAt'),deletedUpdatedAt:newerStamp(local,remote,'deletedUpdatedAt')};}
+      function mergeTaskSets(localTasks,remoteTasks){const localMap=new Map((localTasks||[]).map((task,index)=>{const n=normalizeTask(task,index);return[n.id,n];})),remoteMap=new Map((remoteTasks||[]).map((task,index)=>{const n=normalizeTask(task,index);return[n.id,n];})),ids=new Set([...localMap.keys(),...remoteMap.keys()]);return[...ids].map((id,index)=>mergeTask(localMap.get(id),remoteMap.get(id),index));}
+      function documentFor(value){return{version:2,updatedAt:nowStamp(),tasks:value};}
+      async function parseApiError(response){try{const body=await response.json();return body.message||`GitHub returned ${response.status}`;}catch{return`GitHub returned ${response.status}`;}}
+      async function fetchRemote(){const response=await fetch(`${API_URL}?ref=${encodeURIComponent(REPO_BRANCH)}&_=${Date.now()}`,{method:'GET',headers:githubHeaders(Boolean(getToken())),cache:'no-store'});if(response.status===404)return{sha:'',document:{version:2,updatedAt:'',tasks:[]}};if(!response.ok)throw new Error(await parseApiError(response));const payload=await response.json(),parsed=JSON.parse(decodeBase64Utf8(payload.content));return{sha:payload.sha||'',document:{version:Number(parsed.version)||1,updatedAt:parsed.updatedAt||'',tasks:Array.isArray(parsed.tasks)?parsed.tasks:[]}};}
+      async function putRemote(documentValue,sha=''){const token=getToken();if(!token)throw new Error('Add your GitHub token first.');const body={message:`Sync todo list ${new Date().toLocaleString()}`,content:encodeBase64Utf8(`${JSON.stringify(documentValue,null,2)}\n`),branch:REPO_BRANCH};if(sha)body.sha=sha;const response=await fetch(API_URL,{method:'PUT',headers:{...githubHeaders(true),'Content-Type':'application/json'},body:JSON.stringify(body)});if(!response.ok){const error=new Error(await parseApiError(response));error.status=response.status;throw error;}return response.json();}
+      async function pullFromGitHub(){if(isSyncing)return;setSyncing(true);setSyncStatus('Pulling from GitHub…','working','Merging remote and local changes.');try{const remote=await fetchRemote();tasks=mergeTaskSets(tasks,remote.document.tasks);saveTasks();render();syncMeta.lastSyncAt=nowStamp();syncMeta.lastRemoteSha=remote.sha;saveSyncMeta();const remoteIds=new Set(remote.document.tasks.map(task=>task.id)),localOnly=tasks.some(task=>!remoteIds.has(task.id));setSyncStatus('Pulled and merged','success',localOnly?'Local-only changes remain. Tap Save to GitHub to upload them.':`Last pull: ${new Date(syncMeta.lastSyncAt).toLocaleString()}`);}catch(error){setSyncStatus('Pull failed','error',error.message);}finally{setSyncing(false);}}
+      async function pushToGitHub(){if(isSyncing)return;if(!getToken()){elements.settings.classList.add('open');elements.tokenInput.focus();setSyncStatus('GitHub token required','error','Paste a fine-grained token in Sync settings.');return;}setSyncing(true);setSyncStatus('Saving to GitHub…','working','Fetching the latest copy before upload.');try{let remote=await fetchRemote(),merged=mergeTaskSets(tasks,remote.document.tasks),outgoing=documentFor(merged);try{await putRemote(outgoing,remote.sha);}catch(error){if(error.status!==409)throw error;remote=await fetchRemote();merged=mergeTaskSets(merged,remote.document.tasks);outgoing=documentFor(merged);await putRemote(outgoing,remote.sha);}tasks=merged;saveTasks();render();syncMeta.lastSyncAt=outgoing.updatedAt;saveSyncMeta();setSyncStatus('Saved to GitHub','success',`Last save: ${new Date(syncMeta.lastSyncAt).toLocaleString()}`);}catch(error){setSyncStatus('Save failed','error',error.message);}finally{setSyncing(false);}}
+      function saveOrderFromDom(){const ids=[...elements.list.querySelectorAll('.task')].map(item=>item.dataset.id),stamp=nowStamp();ids.forEach((id,index)=>{const task=tasks.find(candidate=>candidate.id===id);if(task&&task.order!==index){task.order=index;task.orderUpdatedAt=stamp;}});saveTasks();render();}
+      function moveTaskByKeyboard(id,direction){const visible=visibleTasks(),current=visible.findIndex(task=>task.id===id),next=current+direction;if(current<0||next<0||next>=visible.length)return;[visible[current],visible[next]]=[visible[next],visible[current]];const stamp=nowStamp();visible.forEach((task,index)=>{task.order=index;task.orderUpdatedAt=stamp;});saveTasks();render();requestAnimationFrame(()=>elements.list.querySelector(`[data-id="${CSS.escape(id)}"] .drag-handle`)?.focus());}
+      function startDrag(item,clientY){if(dragState)return;dragState={item,lastClientY:clientY};item.classList.add('dragging');document.body.classList.add('reordering');if(navigator.vibrate)navigator.vibrate(15);}
+      function moveDrag(clientY){if(!dragState)return;dragState.lastClientY=clientY;const item=dragState.item,siblings=[...elements.list.querySelectorAll('.task:not(.dragging)')],next=siblings.find(sibling=>{const rect=sibling.getBoundingClientRect();return clientY<rect.top+rect.height/2;}),previous=item.nextElementSibling;if(next)elements.list.insertBefore(item,next);else elements.list.append(item);if(item.nextElementSibling!==previous&&navigator.vibrate)navigator.vibrate(8);const edge=72;if(clientY<edge)window.scrollBy(0,-10);else if(clientY>window.innerHeight-edge)window.scrollBy(0,10);}
+      function finishDrag(){if(!dragState)return;dragState.item.classList.remove('dragging');dragState=null;document.body.classList.remove('reordering');saveOrderFromDom();}
+      document.addEventListener('touchmove',event=>{if(!dragState||event.touches.length!==1)return;event.preventDefault();moveDrag(event.touches[0].clientY);},{passive:false});document.addEventListener('touchend',finishDrag);document.addEventListener('touchcancel',finishDrag);document.addEventListener('mousemove',event=>{if(!dragState)return;event.preventDefault();moveDrag(event.clientY||dragState.lastClientY);});document.addEventListener('mouseup',finishDrag);window.addEventListener('blur',finishDrag);
+      function autoSizeTextarea(area){area.style.height='auto';area.style.height=`${Math.min(Math.max(area.scrollHeight,74),190)}px`;}
+      function renderTask(task){const item=document.createElement('li');item.className=`task${task.done?' done':''}`;item.dataset.id=task.id;const check=document.createElement('button');check.type='button';check.className='check';check.textContent='✓';check.setAttribute('aria-label',task.done?`Mark ${task.title} incomplete`:`Mark ${task.title} complete`);check.addEventListener('click',()=>{task.done=!task.done;task.doneUpdatedAt=nowStamp();saveTasks();render();});const handle=document.createElement('button');handle.type='button';handle.className='drag-handle';handle.textContent='☰';handle.setAttribute('aria-label',`Rearrange ${task.title}. Drag, or use the up and down arrow keys.`);handle.title='Press and drag to rearrange';handle.addEventListener('keydown',event=>{if(event.key==='ArrowUp'){event.preventDefault();moveTaskByKeyboard(task.id,-1);}else if(event.key==='ArrowDown'){event.preventDefault();moveTaskByKeyboard(task.id,1);}});handle.addEventListener('touchstart',event=>{if(event.touches.length!==1)return;event.preventDefault();startDrag(item,event.touches[0].clientY);},{passive:false});handle.addEventListener('mousedown',event=>{if(event.button!==0)return;event.preventDefault();startDrag(item,event.clientY);});const remove=document.createElement('button');remove.type='button';remove.className='delete';remove.textContent='×';remove.setAttribute('aria-label',`Delete ${task.title}`);remove.addEventListener('click',()=>{task.deleted=true;task.deletedUpdatedAt=nowStamp();if(editingTaskId===task.id)editingTaskId=null;saveTasks();render();});let center;if(editingTaskId===task.id){center=document.createElement('div');center.className='task-editor';const title=document.createElement('input');title.type='text';title.className='task-title-edit';title.maxLength=120;title.value=task.title;title.autocomplete='off';title.setAttribute('aria-label','Task title');const details=document.createElement('textarea');details.className='task-details-edit';details.maxLength=600;details.value=task.details;details.placeholder='Details, deadline, or steps…';details.setAttribute('aria-label','Task details');const saveEditor=()=>{task.title=title.value.trim()||'Untitled task';task.details=details.value.trim();task.contentUpdatedAt=nowStamp();editingTaskId=null;saveTasks();render();};title.addEventListener('input',()=>{task.title=title.value.slice(0,120);task.contentUpdatedAt=nowStamp();saveTasks();});details.addEventListener('input',()=>{task.details=details.value.slice(0,600);task.contentUpdatedAt=nowStamp();autoSizeTextarea(details);saveTasks();});title.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();details.focus();}else if(event.key==='Escape'){editingTaskId=null;render();}});details.addEventListener('keydown',event=>{if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();saveEditor();}else if(event.key==='Escape'){editingTaskId=null;render();}});const actions=document.createElement('div');actions.className='editor-actions';const done=document.createElement('button');done.type='button';done.className='done-editing';done.textContent='Done';done.addEventListener('click',saveEditor);actions.append(done);center.append(title,details,actions);requestAnimationFrame(()=>{title.focus();title.setSelectionRange(title.value.length,title.value.length);autoSizeTextarea(details);});}else{center=document.createElement('button');center.type='button';center.className='task-content';center.setAttribute('aria-label',`Edit ${task.title}`);const title=document.createElement('span');title.className='task-title';title.textContent=task.title;center.append(title);if(task.details){const details=document.createElement('span');details.className='task-details';details.textContent=task.details;center.append(details);}center.addEventListener('click',()=>{editingTaskId=task.id;render();});}item.append(check,handle,center,remove);return item;}
+      function render(){elements.list.replaceChildren();const visible=visibleTasks();if(!visible.length){const empty=document.createElement('li');empty.className='empty';empty.textContent='Nothing left. Add a task when you need one.';elements.list.append(empty);}else visible.forEach(task=>elements.list.append(renderTask(task)));updateSummary();}
+      elements.form.addEventListener('submit',event=>{event.preventDefault();const title=elements.input.value.trim();if(!title){elements.input.focus();return;}const stamp=nowStamp();tasks.push({id:makeId(),title,details:'',done:false,deleted:false,order:visibleTasks().length,createdAt:stamp,contentUpdatedAt:stamp,doneUpdatedAt:stamp,orderUpdatedAt:stamp,deletedUpdatedAt:''});elements.input.value='';saveTasks();render();elements.input.focus();});
+      elements.clear.addEventListener('click',()=>{const stamp=nowStamp();visibleTasks().filter(task=>task.done).forEach(task=>{task.deleted=true;task.deletedUpdatedAt=stamp;});saveTasks();render();});
+      elements.settingsButton.addEventListener('click',()=>{elements.settings.classList.toggle('open');if(elements.settings.classList.contains('open'))elements.tokenInput.focus();});
+      elements.saveToken.addEventListener('click',()=>{const token=elements.tokenInput.value.trim();if(!token){setSyncStatus('Token not saved','error','Paste a GitHub fine-grained token first.');return;}localStorage.setItem(TOKEN_KEY,token);elements.tokenInput.value='';updateTokenUi();setSyncStatus('Token saved','success','It remains only in this browser. Tap Save to GitHub.');});
+      elements.clearToken.addEventListener('click',()=>{localStorage.removeItem(TOKEN_KEY);updateTokenUi();setSyncStatus('Token removed','idle','This device is back to local-only mode.');});
+      elements.pull.addEventListener('click',pullFromGitHub);elements.push.addEventListener('click',pushToGitHub);
+      elements.date.textContent=new Intl.DateTimeFormat(undefined,{weekday:'long',month:'long',day:'numeric'}).format(new Date());
+      if(syncMeta.lastSyncAt)setSyncStatus(getToken()?'GitHub sync ready':'Local copy loaded',getToken()?'success':'idle',`Last sync: ${new Date(syncMeta.lastSyncAt).toLocaleString()}`);
+      updateTokenUi();render();
     })();
   </script>
 </body>
