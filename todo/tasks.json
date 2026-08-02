@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-02T20:58:24.415Z",
+  "updatedAt": "2026-08-02T21:10:00.000Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -13,7 +13,7 @@
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
       "orderUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "deletedUpdatedAt": ""
+      "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
       "id": "1785674520215-0c142ba9428e18",
@@ -26,7 +26,7 @@
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
       "orderUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "deletedUpdatedAt": ""
+      "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
       "id": "1785674520215-3664441d1c084",
@@ -39,7 +39,7 @@
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
       "orderUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "deletedUpdatedAt": ""
+      "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
       "id": "1785674520215-78387cb42475b8",
@@ -52,7 +52,7 @@
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
       "orderUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "deletedUpdatedAt": ""
+      "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
       "id": "1785674520215-fc9e803b94d5c",
@@ -65,7 +65,7 @@
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
       "orderUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "deletedUpdatedAt": ""
+      "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
       "id": "1785674520215-b8ec1d69c523f8",
@@ -78,7 +78,7 @@
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
       "orderUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "deletedUpdatedAt": ""
+      "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
       "id": "1785674520215-1e0ad2ca21f2f",
@@ -91,7 +91,7 @@
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
       "orderUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "deletedUpdatedAt": ""
+      "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
       "id": "1785674541617-f79e619cba9758",
@@ -104,7 +104,7 @@
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
       "orderUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "deletedUpdatedAt": ""
+      "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
       "id": "1785674520215-ed50426ad518d",
@@ -117,7 +117,7 @@
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
       "orderUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "deletedUpdatedAt": ""
+      "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
       "id": "a4038ae2-6c00-44d6-86d5-b110cea9b51d",
@@ -143,7 +143,7 @@
       "contentUpdatedAt": "2026-08-02T20:43:44.120Z",
       "doneUpdatedAt": "2026-08-02T20:43:44.120Z",
       "orderUpdatedAt": "2026-08-02T20:43:44.120Z",
-      "deletedUpdatedAt": ""
+      "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     }
   ]
 }
