@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-02T22:09:22.888Z",
+  "updatedAt": "2026-08-02T22:20:27.016Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -149,12 +149,12 @@
       "id": "8339b194-6a57-48b8-8e49-3d4caea496a1",
       "title": "Pay Jack",
       "details": "",
-      "done": false,
+      "done": true,
       "deleted": false,
       "order": 1,
       "createdAt": "2026-08-02T22:09:16.715Z",
       "contentUpdatedAt": "2026-08-02T22:09:16.715Z",
-      "doneUpdatedAt": "2026-08-02T22:09:16.715Z",
+      "doneUpdatedAt": "2026-08-02T22:20:25.488Z",
       "orderUpdatedAt": "2026-08-02T22:09:19.962Z",
       "deletedUpdatedAt": ""
     }
