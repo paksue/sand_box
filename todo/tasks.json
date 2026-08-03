@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-03T11:29:52.450Z",
+  "updatedAt": "2026-08-03T11:30:31.048Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -169,6 +169,19 @@
       "contentUpdatedAt": "2026-08-03T11:29:50.565Z",
       "doneUpdatedAt": "2026-08-03T11:29:50.565Z",
       "orderUpdatedAt": "2026-08-03T11:29:50.565Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "8729264f-553e-4f83-9147-46f110195f55",
+      "title": "Bike cape Francis",
+      "details": "",
+      "done": false,
+      "deleted": false,
+      "order": 11,
+      "createdAt": "2026-08-03T11:30:28.242Z",
+      "contentUpdatedAt": "2026-08-03T11:30:28.242Z",
+      "doneUpdatedAt": "2026-08-03T11:30:28.242Z",
+      "orderUpdatedAt": "2026-08-03T11:30:28.242Z",
       "deletedUpdatedAt": ""
     }
   ]
