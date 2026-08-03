@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-03T11:30:31.048Z",
+  "updatedAt": "2026-08-03T11:33:58.962Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -182,6 +182,19 @@
       "contentUpdatedAt": "2026-08-03T11:30:28.242Z",
       "doneUpdatedAt": "2026-08-03T11:30:28.242Z",
       "orderUpdatedAt": "2026-08-03T11:30:28.242Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "e682661b-94a1-495e-83de-76c6d5ec0816",
+      "title": "Footbath: make daily by hour schedule exercises etc",
+      "details": "",
+      "done": false,
+      "deleted": false,
+      "order": 12,
+      "createdAt": "2026-08-03T11:33:57.434Z",
+      "contentUpdatedAt": "2026-08-03T11:33:57.434Z",
+      "doneUpdatedAt": "2026-08-03T11:33:57.434Z",
+      "orderUpdatedAt": "2026-08-03T11:33:57.434Z",
       "deletedUpdatedAt": ""
     }
   ]
