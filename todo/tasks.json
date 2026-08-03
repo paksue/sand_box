@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-03T00:45:37.916Z",
+  "updatedAt": "2026-08-03T11:29:52.450Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -156,6 +156,19 @@
       "contentUpdatedAt": "2026-08-02T22:09:16.715Z",
       "doneUpdatedAt": "2026-08-02T22:20:25.488Z",
       "orderUpdatedAt": "2026-08-02T22:09:19.962Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "da4e021b-de13-49cb-a7c6-8ff40f6b981c",
+      "title": "Sun mitochondria girl no all indoor",
+      "details": "",
+      "done": false,
+      "deleted": false,
+      "order": 10,
+      "createdAt": "2026-08-03T11:29:50.565Z",
+      "contentUpdatedAt": "2026-08-03T11:29:50.565Z",
+      "doneUpdatedAt": "2026-08-03T11:29:50.565Z",
+      "orderUpdatedAt": "2026-08-03T11:29:50.565Z",
       "deletedUpdatedAt": ""
     }
   ]
