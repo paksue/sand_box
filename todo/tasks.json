@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-02T22:20:40.421Z",
+  "updatedAt": "2026-08-03T00:45:37.916Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -34,11 +34,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 5,
+      "order": 3,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "orderUpdatedAt": "2026-08-02T22:09:19.962Z",
+      "orderUpdatedAt": "2026-08-03T00:45:25.753Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
@@ -47,11 +47,11 @@
       "details": "By ___ · Session 1: room · Session 2: desk",
       "done": false,
       "deleted": false,
-      "order": 3,
+      "order": 4,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T21:14:59.117Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "orderUpdatedAt": "2026-08-02T22:09:19.962Z",
+      "orderUpdatedAt": "2026-08-03T00:45:25.753Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
@@ -99,11 +99,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 4,
+      "order": 5,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "orderUpdatedAt": "2026-08-02T22:09:19.962Z",
+      "orderUpdatedAt": "2026-08-03T00:45:25.753Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
