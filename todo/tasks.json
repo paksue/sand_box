@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-03T15:28:54.187Z",
+  "updatedAt": "2026-08-03T21:37:36.156Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -34,11 +34,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 3,
+      "order": 4,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "orderUpdatedAt": "2026-08-03T11:34:25.307Z",
+      "orderUpdatedAt": "2026-08-03T21:37:33.783Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
@@ -99,11 +99,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 5,
+      "order": 3,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "orderUpdatedAt": "2026-08-03T15:28:50.898Z",
+      "orderUpdatedAt": "2026-08-03T21:37:33.783Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
@@ -164,11 +164,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 4,
+      "order": 5,
       "createdAt": "2026-08-03T11:29:50.565Z",
       "contentUpdatedAt": "2026-08-03T11:34:14.583Z",
       "doneUpdatedAt": "2026-08-03T11:29:50.565Z",
-      "orderUpdatedAt": "2026-08-03T15:28:50.898Z",
+      "orderUpdatedAt": "2026-08-03T21:37:33.783Z",
       "deletedUpdatedAt": ""
     },
     {
