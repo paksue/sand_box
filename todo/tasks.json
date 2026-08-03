@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-03T11:34:30.095Z",
+  "updatedAt": "2026-08-03T11:45:42.374Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -8,11 +8,11 @@
       "details": "",
       "done": true,
       "deleted": false,
-      "order": 0,
+      "order": 1,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T21:14:46.787Z",
-      "orderUpdatedAt": "2026-08-02T20:30:27.237Z",
+      "orderUpdatedAt": "2026-08-03T11:36:25.828Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
@@ -46,13 +46,13 @@
       "title": "Girls clean up",
       "details": "By ___ · Session 1: room · Session 2: desk",
       "done": false,
-      "deleted": false,
+      "deleted": true,
       "order": 4,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T21:14:59.117Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
       "orderUpdatedAt": "2026-08-03T11:34:25.307Z",
-      "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
+      "deletedUpdatedAt": "2026-08-03T11:36:35.523Z"
     },
     {
       "id": "1785674520215-fc9e803b94d5c",
@@ -151,11 +151,11 @@
       "details": "",
       "done": true,
       "deleted": false,
-      "order": 1,
+      "order": 0,
       "createdAt": "2026-08-02T22:09:16.715Z",
       "contentUpdatedAt": "2026-08-02T22:09:16.715Z",
       "doneUpdatedAt": "2026-08-02T22:20:25.488Z",
-      "orderUpdatedAt": "2026-08-02T22:09:19.962Z",
+      "orderUpdatedAt": "2026-08-03T11:36:25.828Z",
       "deletedUpdatedAt": ""
     },
     {
@@ -195,6 +195,19 @@
       "contentUpdatedAt": "2026-08-03T11:33:57.434Z",
       "doneUpdatedAt": "2026-08-03T11:33:57.434Z",
       "orderUpdatedAt": "2026-08-03T11:33:57.434Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "2bf18a86-8d50-434e-9862-20be3fb74a70",
+      "title": "Water track intake vs dryness",
+      "details": "",
+      "done": false,
+      "deleted": false,
+      "order": 12,
+      "createdAt": "2026-08-03T11:45:41.020Z",
+      "contentUpdatedAt": "2026-08-03T11:45:41.020Z",
+      "doneUpdatedAt": "2026-08-03T11:45:41.020Z",
+      "orderUpdatedAt": "2026-08-03T11:45:41.020Z",
       "deletedUpdatedAt": ""
     }
   ]
