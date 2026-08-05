@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-05T00:26:06.811Z",
+  "updatedAt": "2026-08-05T14:23:38.582Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -98,13 +98,13 @@
       "title": "Finish LTC Renewal",
       "details": "maybe add a new task linked to this as things happen more from it, like payment.",
       "done": false,
-      "deleted": false,
+      "deleted": true,
       "order": 3,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-05T00:26:04.679Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
       "orderUpdatedAt": "2026-08-03T21:37:33.783Z",
-      "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
+      "deletedUpdatedAt": "2026-08-05T00:54:23.284Z"
     },
     {
       "id": "1785674520215-ed50426ad518d",
@@ -221,6 +221,19 @@
       "contentUpdatedAt": "2026-08-03T15:28:41.329Z",
       "doneUpdatedAt": "2026-08-03T15:28:41.329Z",
       "orderUpdatedAt": "2026-08-03T15:28:50.898Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "f1dd373c-ace1-455b-a596-a1c73c81ada0",
+      "title": "Check shingle shots",
+      "details": "",
+      "done": false,
+      "deleted": false,
+      "order": 13,
+      "createdAt": "2026-08-05T14:23:36.338Z",
+      "contentUpdatedAt": "2026-08-05T14:23:36.338Z",
+      "doneUpdatedAt": "2026-08-05T14:23:36.338Z",
+      "orderUpdatedAt": "2026-08-05T14:23:36.338Z",
       "deletedUpdatedAt": ""
     }
   ]
