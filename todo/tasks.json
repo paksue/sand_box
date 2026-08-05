@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-03T21:37:36.156Z",
+  "updatedAt": "2026-08-05T00:26:06.811Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -96,12 +96,12 @@
     {
       "id": "1785674541617-f79e619cba9758",
       "title": "Finish LTC Renewal",
-      "details": "",
+      "details": "maybe add a new task linked to this as things happen more from it, like payment.",
       "done": false,
       "deleted": false,
       "order": 3,
       "createdAt": "2026-08-02T20:30:27.237Z",
-      "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
+      "contentUpdatedAt": "2026-08-05T00:26:04.679Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
       "orderUpdatedAt": "2026-08-03T21:37:33.783Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
