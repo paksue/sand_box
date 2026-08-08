@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#25170f" />
+  <title>Frontier Journey</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <header class="site-header">
+      <div>
+        <p class="eyebrow">A CLIENT-SIDE TRAIL SURVIVAL PROTOTYPE</p>
+        <h1>FRONTIER JOURNEY</h1>
+      </div>
+      <div class="header-actions">
+        <button id="resumeButton" class="button ghost hidden">Resume saved run</button>
+        <button id="newRunButton" class="button ghost hidden">New run</button>
+      </div>
+    </header>
+
+    <main>
+      <section id="setupScreen" class="screen setup-screen">
+        <div class="hero-card panel">
+          <div>
+            <p class="eyebrow">INDEPENDENCE, MISSOURI — 1848</p>
+            <h2>Outfit your party. Choose your risks. Make the valley alive.</h2>
+            <p class="lede">A spiritual-successor prototype built around the classic loop: prepare, travel, hunt, repair, cross rivers, and survive the consequences.</p>
+          </div>
+          <div class="wagon-mark" aria-hidden="true">◖▰◗</div>
+        </div>
+
+        <div class="setup-grid">
+          <section class="panel">
+            <h3>1. Trail leader</h3>
+            <label>Profession
+              <select id="professionSelect"></select>
+            </label>
+            <div id="professionCard" class="info-card"></div>
+
+            <label>Departure
+              <select id="departureSelect">
+                <option value="3">March</option>
+                <option value="4" selected>April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+              </select>
+            </label>
+
+            <label>Run seed
+              <input id="seedInput" value="BUFFALO-1848" maxlength="32" />
+            </label>
+            <button id="randomSeedButton" class="button secondary">Random seed</button>
+          </section>
+
+          <section class="panel">
+            <h3>2. Name your party</h3>
+            <div id="partyInputs" class="party-inputs"></div>
+            <p class="hint">Names matter: illness, injury, and death are tracked per person.</p>
+          </section>
+
+          <section class="panel outfitting-panel">
+            <div class="section-title-row">
+              <h3>3. Matt's General Store</h3>
+              <div class="money-card"><span>Budget</span><strong id="budgetValue">$0</strong></div>
+            </div>
+            <div id="storeRows" class="store-rows"></div>
+            <div class="store-total">
+              <span>Total outfitting</span>
+              <strong id="storeTotal">$0</strong>
+            </div>
+            <div id="storeWarning" class="warning hidden"></div>
+          </section>
+        </div>
+
+        <div class="launch-row">
+          <div>
+            <strong>Everything stays in your browser.</strong>
+            <p class="hint">No account, server, or backend. A saved run uses IndexedDB.</p>
+          </div>
+          <button id="startButton" class="button primary large">Begin the journey</button>
+        </div>
+      </section>
+
+      <section id="gameScreen" class="screen hidden">
+        <div class="status-strip panel">
+          <div><span>Date</span><strong id="dateValue">—</strong></div>
+          <div><span>Distance</span><strong id="distanceValue">—</strong></div>
+          <div><span>Next landmark</span><strong id="landmarkValue">—</strong></div>
+          <div><span>Weather</span><strong id="weatherValue">—</strong></div>
+          <div><span>Seed</span><strong id="seedValue">—</strong></div>
+        </div>
+
+        <div class="game-grid">
+          <aside class="panel party-panel">
+            <div class="section-title-row"><h3>Party</h3><span id="professionBadge" class="badge"></span></div>
+            <div id="partyStatus" class="party-status"></div>
+          </aside>
+
+          <section class="scene-column">
+            <div class="scene-frame panel">
+              <div id="pixiScene" class="pixi-scene" aria-label="Animated wagon trail scene"></div>
+              <div id="sceneCaption" class="scene-caption"></div>
+            </div>
+
+            <div class="action-panel panel">
+              <button class="button primary action-button" data-action="continue">Continue</button>
+              <button class="button action-button" data-action="rest">Rest</button>
+              <button class="button action-button" data-action="hunt">Hunt</button>
+              <button class="button action-button" data-action="repair">Repair</button>
+              <button class="button action-button" data-action="pace">Change pace</button>
+              <button class="button action-button" data-action="rations">Change rations</button>
+              <button class="button action-button" data-action="map">Map</button>
+              <button class="button action-button" data-action="journal">Journal</button>
+            </div>
+          </section>
+
+          <aside class="panel resources-panel">
+            <h3>Wagon</h3>
+            <div id="resourceList" class="resource-list"></div>
+            <div class="meter-card">
+              <div><span>Wagon</span><strong id="wagonConditionValue">—</strong></div>
+              <div class="meter"><i id="wagonMeter"></i></div>
+            </div>
+            <div class="meter-card">
+              <div><span>Oxen</span><strong id="oxConditionValue">—</strong></div>
+              <div class="meter"><i id="oxMeter"></i></div>
+            </div>
+            <div class="settings-summary">
+              <div><span>Pace</span><strong id="paceValue">—</strong></div>
+              <div><span>Rations</span><strong id="rationsValue">—</strong></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="modal" class="game-modal">
+    <form method="dialog" class="modal-card">
+      <p id="modalEyebrow" class="eyebrow"></p>
+      <h2 id="modalTitle"></h2>
+      <div id="modalBody" class="modal-body"></div>
+      <div id="modalChoices" class="modal-choices"></div>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/pixi.js@8.6.6/dist/pixi.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dexie@4.0.10/dist/dexie.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
+  <script type="module" src="./js/game.js"></script>
+</body>
+</html>
