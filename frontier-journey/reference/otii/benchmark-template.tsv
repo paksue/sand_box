@@ -1,0 +1,8 @@
+timestamp_or_day	category	action_or_event	location	calendar_date	food	water	money	draft_animals	party_alive	party_health	result_or_notes
+	setup	start run									
+	travel	travel command									
+	interrupt	landmark/event									
+	obstacle	decision									
+	health	illness/injury									
+	resource	hunt/rest/buy/trade									
+	finish	arrival/failure									
