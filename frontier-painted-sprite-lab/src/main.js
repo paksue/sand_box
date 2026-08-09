@@ -50,15 +50,18 @@ ox.setDepth(state.depth);
 ox.setMotionStrength(state.motionStrength);
 
 function rendererName() {
-  const raw = app.renderer?.constructor?.name || 'Pixi renderer';
+  const renderer = app.renderer;
+  if (renderer?.gl) return 'WebGL';
+  if (renderer?.gpu) return 'WebGPU';
+  const raw = renderer?.constructor?.name || '';
   if (/webgpu/i.test(raw)) return 'WebGPU';
   if (/webgl/i.test(raw) || /gl/i.test(raw)) return 'WebGL';
-  return raw;
+  return 'GPU renderer';
 }
 
 const backend = rendererName();
 rendererMetric.textContent = `PixiJS 8.19 · ${backend}`;
-rendererCaption.textContent = `PixiJS · ${backend} · GrabCut matte`;
+rendererCaption.textContent = `PixiJS · ${backend} · pre-matted oil-paint sprite`;
 
 function layout() {
   ox.layout(app.screen.width, app.screen.height);
@@ -90,7 +93,7 @@ function applyViewMode() {
     ox.setIntegration(currentIntegrationState());
     ox.setDebugMesh(true);
   } else if (state.view === 'source') {
-    modeCaption.textContent = 'George Stubbs source painting · 1790';
+    modeCaption.textContent = 'Rosa Bonheur source painting · A Pair of Oxen';
     ox.setDebugMesh(false);
   } else {
     modeCaption.textContent = 'Scene integration';
