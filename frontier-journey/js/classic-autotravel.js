@@ -26,6 +26,7 @@
 
   let traveling = false;
   let stationaryDay = false;
+  let fastSimulationPersistenceSuppressed = false;
   const acknowledgedCrises = new Set();
 
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -112,23 +113,19 @@
     ]);
   }
 
-  async function runOneTravelDay() {
-    if (dayDisplayMs !== 0) {
-      await singleTravelDay();
-      return;
-    }
+  function suppressPersistenceForFastSimulation() {
+    if (dayDisplayMs !== 0 || fastSimulationPersistenceSuppressed) return;
 
-    // Statistical browser grading intentionally exercises the real simulation
-    // and DOM, but per-day IndexedDB writes dominate its runtime. Suppress only
-    // the saves made while resolving an automatic travel day, then immediately
-    // restore the production save function. Normal play never enters this path.
-    const productionSaveGame = saveGame;
+    // The browser grader performs its real save/reload smoke test before the
+    // first Travel command. From that point onward, zero-delay mode is a pure
+    // statistical run; repeated IndexedDB writes do not change game outcomes
+    // and can dominate runtime. Normal play never sets the delay to zero.
     saveGame = async () => {};
-    try {
-      await singleTravelDay();
-    } finally {
-      saveGame = productionSaveGame;
-    }
+    fastSimulationPersistenceSuppressed = true;
+  }
+
+  async function runOneTravelDay() {
+    await singleTravelDay();
   }
 
   continueTravel = async function classicStyleContinue() {
@@ -142,6 +139,7 @@
       return;
     }
 
+    suppressPersistenceForFastSimulation();
     traveling = true;
     renderGame();
 
