@@ -56,7 +56,7 @@ function rendererName() {
 
 const backend = rendererName();
 rendererMetric.textContent = `PixiJS 8.19 · ${backend}`;
-rendererCaption.textContent = `PixiJS · ${backend} · articulated painted raster actor`;
+rendererCaption.textContent = `PixiJS · ${backend} · layered painted raster actor`;
 
 function drawGrassLayer(graphics, foreground) {
   const w = app.screen.width;
@@ -94,10 +94,12 @@ function layoutScene() {
 function updateRootTravel() {
   const w = app.screen.width;
   if (state.travel === 'in-place') {
-    rig.root.x = w * 0.59;
+    // Keep the quality-test actor away from the prominent historical wagon in
+    // the background so the silhouette and ground contact are easy to judge.
+    rig.root.x = w * 0.66;
   } else {
-    const progress = (state.elapsed * 0.078) % 1;
-    rig.root.x = w * (0.79 - progress * 0.52);
+    const progress = (state.elapsed * 0.12) % 1;
+    rig.root.x = w * (0.82 - progress * 0.54);
   }
 }
 
@@ -114,7 +116,7 @@ function applyView() {
   rig.setDustEnabled(scene && dustToggle.checked);
   canvasGrain.classList.toggle('off', !grainToggle.checked || !scene);
   modeCaption.textContent = state.view === 'rig'
-    ? 'Articulated hip → knee → hoof chains'
+    ? 'Painted limb pivots → animated hoof endpoints'
     : state.view === 'neutral'
       ? 'Painterly reusable raster parts on neutral gray'
       : state.travel === 'in-place'
@@ -214,7 +216,7 @@ app.ticker.add((ticker) => {
   state.elapsed += scaledDelta;
   const phase = state.elapsed * 2.65;
   rig.updatePose(phase);
-  rig.updateContinuous(scaledDelta, phase);
+  rig.updateContinuous(scaledDelta);
   updateRootTravel();
 });
 
