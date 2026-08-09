@@ -54,9 +54,9 @@ class LegacyOxTeam {
   async init() {
     this.back = await new PaintedOx().init();
     this.front = await new PaintedOx().init();
-    this.back.root.position.set(-72, -42);
-    this.back.root.scale.set(0.92);
-    this.front.root.position.set(62, 34);
+    this.back.root.position.set(-58, -26);
+    this.back.root.scale.set(0.94);
+    this.front.root.position.set(54, 28);
     this.root.addChild(this.back.root, this.front.root);
     this.root.pivot.set(0, 0);
     this.ready = true;
@@ -89,14 +89,6 @@ class LegacyOxTeam {
     this.back.setDebugMesh(enabled);
   }
 
-  layout(screenWidth, screenHeight) {
-    const targetWidth = screenWidth * (0.44 - this.depth * 0.07);
-    const scale = targetWidth / 930;
-    this.root.scale.set(scale);
-    this.root.x = screenWidth * (0.57 - this.depth * 0.015);
-    this.root.y = screenHeight * (0.80 - this.depth * 0.055);
-  }
-
   resetPose() {
     this.updatePose(0);
   }
@@ -127,6 +119,18 @@ mountEl.appendChild(app.canvas);
 
 const baseline = await new LegacyOxTeam().init();
 const rig = await new WeightedOxTeamRig().init();
+
+// The WeightedOxTeam class uses child-centered pivots. For this comparison page
+// the team container itself must remain unpivoted; otherwise the team is offset
+// upward a second time. Individual ox contact shadows remain active, so the
+// broader prototype team shadow is deliberately disabled here.
+rig.root.pivot.set(0, 0);
+rig.backOx.root.position.set(-58, -26);
+rig.backOx.root.scale.set(0.94);
+rig.frontOx.root.position.set(54, 28);
+rig.teamShadow.renderable = false;
+rig.dustLayer.position.set(-430, -310);
+
 app.stage.addChild(baseline.root, rig.root);
 baseline.root.visible = false;
 
@@ -158,8 +162,18 @@ function currentIntegrationState() {
 }
 
 function layout() {
-  rig.layout(app.screen.width, app.screen.height);
-  baseline.layout(app.screen.width, app.screen.height);
+  // Both methods deliberately receive the exact same stage transform. The team
+  // should read as a trail-scale subject inside the painting, not as a giant UI
+  // demonstration object.
+  const targetWidth = app.screen.width * (0.30 - state.depth * 0.035);
+  const scale = targetWidth / 930;
+  const x = app.screen.width * (0.61 - state.depth * 0.01);
+  const y = app.screen.height * (0.735 - state.depth * 0.025);
+  for (const actor of [rig, baseline]) {
+    actor.root.scale.set(scale);
+    actor.root.x = x;
+    actor.root.y = y;
+  }
 }
 
 function applyDepthAndMotion() {
