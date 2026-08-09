@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#18130f" />
+  <title>Frontier Journey — Living Painting Visual Lab</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://upload.wikimedia.org" crossorigin>
+  <link rel="stylesheet" href="./visual-lab.css" />
+</head>
+<body>
+  <main class="lab-shell">
+    <header class="lab-header">
+      <div>
+        <p class="kicker">FRONTIER JOURNEY / VISUAL R&D</p>
+        <h1>Living Painting Visual Lab</h1>
+        <p class="intro">Two synchronized renderers, one art direction, one clock. Option A uses Babylon.js 2.5D. Option B uses layered 2D painting and PixiJS.</p>
+      </div>
+      <a class="back-link" href="./index.html">← Back to game</a>
+    </header>
+
+    <section class="toolbar" aria-label="Shared visual controls">
+      <label>Reference painting
+        <select id="sourceSelect">
+          <option value="bierstadt" selected>Bierstadt — Emigrants Crossing the Plains (1869)</option>
+          <option value="palmer">Fanny Palmer — The Rocky Mountains (1866)</option>
+        </select>
+      </label>
+      <label>Time of day
+        <select id="timeSelect">
+          <option value="dawn">Dawn</option>
+          <option value="day">Day</option>
+          <option value="golden" selected>Golden hour</option>
+          <option value="dusk">Dusk</option>
+        </select>
+      </label>
+      <label>Weather
+        <select id="weatherSelect">
+          <option value="clear" selected>Clear</option>
+          <option value="wind">Wind</option>
+          <option value="rain">Rain</option>
+          <option value="storm">Storm</option>
+        </select>
+      </label>
+      <label class="slider-label">Travel speed
+        <input id="speedRange" type="range" min="0" max="2" value="1" step="0.05" />
+      </label>
+      <label class="slider-label">Wind
+        <input id="windRange" type="range" min="0" max="1" value="0.45" step="0.01" />
+      </label>
+      <label class="slider-label">Atmosphere
+        <input id="atmosphereRange" type="range" min="0" max="1" value="0.68" step="0.01" />
+      </label>
+      <div class="toolbar-actions">
+        <button id="pauseButton" type="button">Pause</button>
+        <button id="swapButton" type="button">Swap sides</button>
+        <button id="blinkButton" type="button">Blink compare</button>
+        <button id="resetButton" type="button">Reset</button>
+      </div>
+    </section>
+
+    <section id="compareGrid" class="compare-grid">
+      <article id="panelA" class="renderer-card renderer-a">
+        <header class="renderer-heading">
+          <div>
+            <span class="option-pill">OPTION A</span>
+            <h2>Babylon.js 2.5D</h2>
+            <p>Painted backdrop + real 3D wagon, oxen, grass, dust, depth and lighting.</p>
+          </div>
+          <div id="metricA" class="metric-block">initializing…</div>
+        </header>
+        <div class="painting-stage" data-renderer="a">
+          <div class="painting-backdrop"></div>
+          <div class="painting-glow"></div>
+          <canvas id="babylonCanvas" aria-label="Babylon 2.5D animated-painting scene"></canvas>
+          <div class="canvas-grain"></div>
+          <div class="vignette"></div>
+          <div class="renderer-badge" id="backendBadge">Babylon</div>
+        </div>
+      </article>
+
+      <article id="panelB" class="renderer-card renderer-b">
+        <header class="renderer-heading">
+          <div>
+            <span class="option-pill">OPTION B</span>
+            <h2>Layered 2D painting</h2>
+            <p>Separated painting bands + parallax + Pixi wagon, ox gait, brushy weather and dust.</p>
+          </div>
+          <div id="metricB" class="metric-block">initializing…</div>
+        </header>
+        <div class="painting-stage" data-renderer="b">
+          <div class="paint-layer layer-sky"></div>
+          <div class="paint-layer layer-mountains"></div>
+          <div class="paint-layer layer-ground"></div>
+          <div class="painting-glow"></div>
+          <div id="pixiLab" class="pixi-lab" aria-label="Layered 2D animated-painting scene"></div>
+          <div class="canvas-grain"></div>
+          <div class="vignette"></div>
+          <div class="renderer-badge">PixiJS</div>
+        </div>
+      </article>
+    </section>
+
+    <section id="blinkDeck" class="blink-deck hidden" aria-label="Blink comparison">
+      <div class="blink-toolbar">
+        <strong>Blink compare</strong>
+        <span>Same frame, same state. Toggle A/B.</span>
+        <button id="blinkA" type="button" class="active">A</button>
+        <button id="blinkB" type="button">B</button>
+        <button id="blinkExit" type="button">Exit</button>
+      </div>
+      <div id="blinkViewport" class="blink-viewport"></div>
+    </section>
+
+    <footer class="lab-footer">
+      <div><strong>Shared state</strong><span id="clockReadout">0.0s</span></div>
+      <div><strong>Goal</strong><span>Judge “living painting” beauty, depth, motion and performance — not gameplay.</span></div>
+      <div class="source-note">Reference imagery is public-domain historical art; the lab uses it as a visual-study backdrop rather than copying a game asset.</div>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/babylonjs@9.0.0/babylon.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pixi.js@8.6.6/dist/pixi.min.js"></script>
+  <script type="module" src="./js/visual-lab/main.js"></script>
+</body>
+</html>
