@@ -35,15 +35,15 @@ jobs:
           echo $! >/tmp/frontier-http.pid
           sleep 2
 
-      - name: Play three seeded journeys in Chromium
+      - name: Grade ten seeded journeys in Chromium
         env:
           FRONTIER_URL: http://127.0.0.1:4173/
-        run: node frontier-journey/tests/playtest-v2.mjs
+        run: node frontier-journey/tests/fast-grade.mjs
 
-      - name: Upload playtest results
+      - name: Upload grade results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: frontier-playtest-results
-          path: frontier-journey/test-results/
+          name: frontier-grade-results
+          path: frontier-journey/test-results-fast/
           if-no-files-found: ignore
