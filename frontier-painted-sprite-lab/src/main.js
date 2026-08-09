@@ -1,4 +1,4 @@
-import { PaintedOx } from './painted-ox.js';
+import { PaintedOx } from './painted-ox-v2.js';
 
 const PIXI = window.PIXI;
 const stageEl = document.querySelector('#stage');
@@ -58,7 +58,7 @@ function rendererName() {
 
 const backend = rendererName();
 rendererMetric.textContent = `PixiJS 8.19 · ${backend}`;
-rendererCaption.textContent = `PixiJS · ${backend}`;
+rendererCaption.textContent = `PixiJS · ${backend} · GrabCut matte`;
 
 function layout() {
   ox.layout(app.screen.width, app.screen.height);
@@ -82,7 +82,7 @@ function applyViewMode() {
   });
 
   if (state.view === 'neutral') {
-    modeCaption.textContent = 'Raw sprite on neutral gray';
+    modeCaption.textContent = 'Extracted painted sprite on neutral gray';
     ox.setDebugMesh(false);
     ox.setIntegration({ colorMatch: false, atmosphere: false, shadow: false, dust: false });
   } else if (state.view === 'mesh') {
@@ -169,8 +169,6 @@ app.ticker.add((ticker) => {
   state.poseAccumulator += scaledDelta;
   state.posePhase = state.elapsed * 2.15;
 
-  // Preserve a slightly hand-authored cadence for the painted body while dust
-  // and scene-level effects continue smoothly at the renderer frame rate.
   const poseInterval = 1 / state.poseFps;
   if (state.poseAccumulator >= poseInterval) {
     state.poseAccumulator %= poseInterval;
