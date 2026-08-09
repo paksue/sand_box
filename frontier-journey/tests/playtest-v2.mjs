@@ -25,7 +25,6 @@ async function dismissModal(page, preference = {}) {
   const eyebrow = (await page.locator('#modalEyebrow').textContent() || '').trim();
   const title = (await page.locator('#modalTitle').textContent() || '').trim();
 
-  // Async modal handlers may have closed the dialog between loop iterations.
   if (!(await dialog.evaluate((el) => el.open))) return false;
 
   if (eyebrow === 'RIVER CROSSING') {
@@ -110,15 +109,15 @@ async function runJourney(browser, seed, { verifyPersistence = false } = {}) {
   const response = await page.goto(BASE_URL, { waitUntil: 'networkidle' });
   assert(response?.ok(), `Game HTTP response was not OK for ${BASE_URL}`);
   await page.waitForSelector('#startButton');
-  await page.waitForSelector('canvas');
+  await page.waitForSelector('#pixiScene canvas', { state: 'attached' });
   assert((await page.locator('h1').textContent()).includes('FRONTIER JOURNEY'), 'Game title missing');
 
   await page.selectOption('#professionSelect', 'banker');
   await page.fill('#seedInput', seed);
   await clickAndSettle(page.getByRole('button', { name: 'Begin the journey' }), page, 140);
   await page.waitForSelector('#gameScreen:not(.hidden)');
+  await page.waitForSelector('#pixiScene canvas', { state: 'visible' });
 
-  // Exercise treatment through the actual UI before the main run.
   const medicineBefore = await page.evaluate(() => state.inventory.medicine);
   await page.evaluate(() => {
     state.party[1].hp = 65;
@@ -132,12 +131,12 @@ async function runJourney(browser, seed, { verifyPersistence = false } = {}) {
   assert(treatmentState.medicine === medicineBefore - 1, 'Treatment did not consume medicine');
   assert(treatmentState.party[1].hp >= 71, 'Treatment did not improve health');
 
-  // Prove IndexedDB save survives reload and Resume.
   if (verifyPersistence) {
     await page.reload({ waitUntil: 'networkidle' });
     await page.waitForSelector('#resumeButton:not(.hidden)');
     await clickAndSettle(page.getByRole('button', { name: 'Resume saved run' }), page, 140);
     await page.waitForSelector('#gameScreen:not(.hidden)');
+    await page.waitForSelector('#pixiScene canvas', { state: 'visible' });
     const resumed = await snapshot(page);
     assert(resumed.party[1].hp >= 71, 'Saved treatment state did not survive reload/resume');
   }
