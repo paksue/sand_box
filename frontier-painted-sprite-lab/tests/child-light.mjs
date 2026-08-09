@@ -56,11 +56,12 @@ const clearlyMovingToes = toeDeltas.filter((value) => value >= 6).length;
 if (maxToeDelta < 12) throw new Error(`Deterministic hoof arc is visually too small: ${maxToeDelta.toFixed(2)} screen px`);
 if (clearlyMovingToes < 2) throw new Error(`Too few hooves move visibly: ${clearlyMovingToes} of ${toeDeltas.length}`);
 
-// Capture two deliberately different, aesthetically useful gait poses for human
-// art-direction review. A green numeric test is never considered sufficient.
-await page.evaluate(() => window.__childLightLab.rig.updatePose(0.38));
+// Human art-direction captures use the same full gait extrema as the numeric
+// gate. A green motion test is never sufficient if either extreme looks like a
+// broken puppet or exposes a cut seam.
+await page.evaluate(() => window.__childLightLab.rig.updatePose(Math.PI / 2));
 await page.screenshot({ path: path.join(outDir, 'child-light-scene-a.png'), fullPage: true });
-await page.evaluate(() => window.__childLightLab.rig.updatePose(2.05));
+await page.evaluate(() => window.__childLightLab.rig.updatePose(3 * Math.PI / 2));
 await page.screenshot({ path: path.join(outDir, 'child-light-scene-b.png'), fullPage: true });
 
 await page.click('[data-view="neutral"]');
