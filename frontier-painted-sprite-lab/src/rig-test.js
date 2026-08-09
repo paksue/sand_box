@@ -1,5 +1,5 @@
 import { PaintedOx } from './painted-ox.js';
-import { WeightedOxTeamRig } from './weighted-ox-rig.js';
+import { WeightedPaintedPairRig } from './weighted-ox-rig.js';
 
 const PIXI = window.PIXI;
 const stageEl = document.querySelector('#stage');
@@ -14,8 +14,6 @@ const depthInput = document.querySelector('#depth');
 const depthOutput = document.querySelector('#depthOutput');
 const motionInput = document.querySelector('#motionStrength');
 const motionOutput = document.querySelector('#motionOutput');
-const phaseInput = document.querySelector('#phaseOffset');
-const phaseOutput = document.querySelector('#phaseOutput');
 const rigMetric = document.querySelector('#rigMetric');
 
 const state = {
@@ -28,7 +26,6 @@ const state = {
   mode: 'weighted',
   depth: Number(depthInput.value) / 100,
   motionStrength: Number(motionInput.value) / 100,
-  phaseFraction: Number(phaseInput.value) / 100,
 };
 
 const integrations = {
@@ -38,74 +35,6 @@ const integrations = {
   dust: document.querySelector('#dust'),
   grain: document.querySelector('#grain'),
 };
-
-class LegacyOxTeam {
-  constructor() {
-    this.root = new PIXI.Container();
-    this.front = null;
-    this.back = null;
-    this.poseVersion = 0;
-    this.phaseOffset = Math.PI * 0.20;
-    this.depth = 0.42;
-    this.motionStrength = 0.55;
-    this.ready = false;
-  }
-
-  async init() {
-    this.back = await new PaintedOx().init();
-    this.front = await new PaintedOx().init();
-    this.back.root.position.set(-58, -26);
-    this.back.root.scale.set(0.94);
-    this.front.root.position.set(54, 28);
-    this.root.addChild(this.back.root, this.front.root);
-    this.root.pivot.set(0, 0);
-    this.ready = true;
-    return this;
-  }
-
-  setDepth(value) {
-    this.depth = value;
-    this.back.setDepth(value);
-    this.front.setDepth(value);
-  }
-
-  setMotionStrength(value) {
-    this.motionStrength = value;
-    this.front.setMotionStrength(value);
-    this.back.setMotionStrength(value * 0.93);
-  }
-
-  setPhaseOffset(radians) {
-    this.phaseOffset = radians;
-  }
-
-  setIntegration(options) {
-    this.front.setIntegration(options);
-    this.back.setIntegration(options);
-  }
-
-  setDebug(enabled) {
-    this.front.setDebugMesh(enabled);
-    this.back.setDebugMesh(enabled);
-  }
-
-  resetPose() {
-    this.updatePose(0);
-  }
-
-  updatePose(phase) {
-    if (!this.ready) return;
-    this.poseVersion += 1;
-    this.front.updatePose(phase);
-    this.back.updatePose(phase + this.phaseOffset);
-  }
-
-  updateContinuous(deltaSeconds, phase) {
-    if (!this.ready) return;
-    this.front.updateContinuous(deltaSeconds, phase);
-    this.back.updateContinuous(deltaSeconds, phase + this.phaseOffset);
-  }
-}
 
 const app = new PIXI.Application();
 await app.init({
@@ -117,20 +46,8 @@ await app.init({
 });
 mountEl.appendChild(app.canvas);
 
-const baseline = await new LegacyOxTeam().init();
-const rig = await new WeightedOxTeamRig().init();
-
-// The WeightedOxTeam class uses child-centered pivots. For this comparison page
-// the team container itself must remain unpivoted; otherwise the team is offset
-// upward a second time. Individual ox contact shadows remain active, so the
-// broader prototype team shadow is deliberately disabled here.
-rig.root.pivot.set(0, 0);
-rig.backOx.root.position.set(-58, -26);
-rig.backOx.root.scale.set(0.94);
-rig.frontOx.root.position.set(54, 28);
-rig.teamShadow.renderable = false;
-rig.dustLayer.position.set(-430, -310);
-
+const baseline = await new PaintedOx().init();
+const rig = await new WeightedPaintedPairRig().init();
 app.stage.addChild(baseline.root, rig.root);
 baseline.root.visible = false;
 
@@ -146,11 +63,7 @@ function rendererName() {
 
 const backend = rendererName();
 rendererMetric.textContent = `PixiJS 8.19 · ${backend}`;
-rendererCaption.textContent = `PixiJS · ${backend} · weighted painterly team`;
-
-function activeActor() {
-  return state.mode === 'weighted' ? rig : baseline;
-}
+rendererCaption.textContent = `PixiJS · ${backend} · weighted painterly pair`;
 
 function currentIntegrationState() {
   return {
@@ -162,13 +75,12 @@ function currentIntegrationState() {
 }
 
 function layout() {
-  // Both methods deliberately receive the exact same stage transform. The team
-  // should read as a trail-scale subject inside the painting, not as a giant UI
-  // demonstration object.
-  const targetWidth = app.screen.width * (0.30 - state.depth * 0.035);
-  const scale = targetWidth / 930;
-  const x = app.screen.width * (0.61 - state.depth * 0.01);
-  const y = app.screen.height * (0.735 - state.depth * 0.025);
+  // Identical composition for both methods. The only thing being compared is
+  // deformation architecture, not placement or source art.
+  const targetWidth = app.screen.width * (0.27 - state.depth * 0.025);
+  const scale = targetWidth / 800;
+  const x = app.screen.width * (0.61 - state.depth * 0.008);
+  const y = app.screen.height * (0.735 - state.depth * 0.022);
   for (const actor of [rig, baseline]) {
     actor.root.scale.set(scale);
     actor.root.x = x;
@@ -180,7 +92,6 @@ function applyDepthAndMotion() {
   for (const actor of [rig, baseline]) {
     actor.setDepth(state.depth);
     actor.setMotionStrength(state.motionStrength);
-    actor.setPhaseOffset(state.phaseFraction * Math.PI * 2);
   }
   layout();
 }
@@ -193,10 +104,10 @@ function applyMode() {
   });
 
   if (state.mode === 'weighted') {
-    rigMetric.textContent = '2 skeletons · weighted 17×11 meshes';
-    rendererCaption.textContent = `PixiJS · ${backend} · Spine-style weighted rig`;
+    rigMetric.textContent = '1 pair sprite · weighted 19×13 mesh';
+    rendererCaption.textContent = `PixiJS · ${backend} · Spine-style weighted pair rig`;
   } else {
-    rigMetric.textContent = '2 whole-sprite deformation meshes';
+    rigMetric.textContent = '1 pair sprite · whole-mesh 11×7 deformation';
     rendererCaption.textContent = `PixiJS · ${backend} · whole-mesh baseline`;
   }
   applyViewMode();
@@ -209,22 +120,22 @@ function applyViewMode() {
     button.classList.toggle('active', button.dataset.view === state.view);
   });
 
-  const integration = currentIntegrationState();
   rig.setDebugSkeleton(false);
-  baseline.setDebug(false);
+  baseline.setDebugMesh(false);
 
   if (state.view === 'neutral') {
-    modeCaption.textContent = 'Painted team on neutral gray';
+    modeCaption.textContent = 'Original painted two-ox sprite on neutral gray';
     rig.setIntegration({ colorMatch: false, atmosphere: false, shadow: false, dust: false });
     baseline.setIntegration({ colorMatch: false, atmosphere: false, shadow: false, dust: false });
   } else if (state.view === 'skeleton') {
-    modeCaption.textContent = state.mode === 'weighted' ? 'Weighted-bone rig inspection' : 'Baseline deformation-grid inspection';
+    modeCaption.textContent = state.mode === 'weighted' ? 'Virtual weighted-bone fields on the painted pair' : 'Whole-mesh deformation grid';
     rig.setIntegration({ colorMatch: false, atmosphere: false, shadow: false, dust: false });
     baseline.setIntegration({ colorMatch: false, atmosphere: false, shadow: false, dust: false });
     if (state.mode === 'weighted') rig.setDebugSkeleton(true);
-    else baseline.setDebug(true);
+    else baseline.setDebugMesh(true);
   } else {
-    modeCaption.textContent = state.mode === 'weighted' ? 'Weighted rig in scene' : 'Whole-mesh baseline in scene';
+    modeCaption.textContent = state.mode === 'weighted' ? 'Weighted painted pair in scene' : 'Whole-mesh baseline in scene';
+    const integration = currentIntegrationState();
     rig.setIntegration(integration);
     baseline.setIntegration(integration);
   }
@@ -293,12 +204,6 @@ motionInput.addEventListener('input', () => {
   applyDepthAndMotion();
 });
 
-phaseInput.addEventListener('input', () => {
-  state.phaseFraction = Number(phaseInput.value) / 100;
-  phaseOutput.textContent = `${phaseInput.value}% cycle`;
-  applyDepthAndMotion();
-});
-
 Object.values(integrations).forEach((input) => input.addEventListener('change', applyIntegration));
 
 let fpsFrames = 0;
@@ -330,4 +235,4 @@ app.ticker.add((ticker) => {
   baseline.updateContinuous(scaledDelta, phase);
 });
 
-window.__weightedRigLab = { app, rig, baseline, state, activeActor };
+window.__weightedRigLab = { app, rig, baseline, state };
