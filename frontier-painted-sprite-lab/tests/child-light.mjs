@@ -35,13 +35,13 @@ const rootTravel = Math.abs(runtimeAfter.rig.rootX - runtimeBefore.rig.rootX);
 if (rootTravel > 2) throw new Error(`Walk-in-place cheated with root translation: ${rootTravel.toFixed(2)}px`);
 if (runtimeAfter.rig.poseVersion <= runtimeBefore.rig.poseVersion) throw new Error('Articulated rig pose did not advance.');
 
-// Freeze automatic updates, then measure a deterministic half-cycle. This is
-// the real visual motion gate: opposite gait poses must move painted hoof
-// endpoints by a clearly visible amount at the default on-screen scale.
+// Freeze automatic updates, then measure the two opposite extrema of the sine
+// gait. PI/2 and 3PI/2 are the actual forward/backward swing extremes; using 0
+// and PI would incorrectly compare two neutral zero-crossings.
 await page.click('#playPause');
-await page.evaluate(() => window.__childLightLab.rig.updatePose(0));
+await page.evaluate(() => window.__childLightLab.rig.updatePose(Math.PI / 2));
 const poseA = await page.evaluate(() => window.__childLightLab.rig.getDebugState());
-await page.evaluate(() => window.__childLightLab.rig.updatePose(Math.PI));
+await page.evaluate(() => window.__childLightLab.rig.updatePose(3 * Math.PI / 2));
 const poseB = await page.evaluate(() => window.__childLightLab.rig.getDebugState());
 
 const toeKeys = Object.keys(poseA.toes);
