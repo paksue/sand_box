@@ -104,12 +104,12 @@ async function performStrategyAction(page) {
       return 'hunt';
     }
     await continueTravel();
-    return 'continue';
+    return 'travel';
   });
 }
 
 function countAction(stats, action) {
-  if (action === 'continue') stats.travelDays += 1;
+  if (action === 'travel') stats.travelCommands += 1;
   if (action === 'rest') stats.rests += 1;
   if (action === 'hunt') stats.hunts += 1;
   if (action === 'repair') stats.repairs += 1;
@@ -117,6 +117,11 @@ function countAction(stats, action) {
   if (action?.startsWith('river:')) stats.rivers += 1;
   if (action === 'fort-food') stats.fortFoodBuys += 1;
   if (action === 'fort-medicine') stats.fortMedicineBuys += 1;
+}
+
+async function enableFastTravel(page) {
+  await page.waitForFunction(() => window.frontierAutoTravel?.setDayDisplayMs);
+  await page.evaluate(() => window.frontierAutoTravel.setDayDisplayMs(0));
 }
 
 async function playProfile(browser, profile, index) {
@@ -139,6 +144,7 @@ async function playProfile(browser, profile, index) {
   await page.click('#startButton');
   await page.waitForFunction(() => state !== null && !document.querySelector('#gameScreen').classList.contains('hidden'));
   await page.waitForSelector('#pixiScene canvas', { state: 'visible' });
+  await enableFastTravel(page);
 
   if (index === 0) {
     await page.evaluate(() => {
@@ -158,13 +164,15 @@ async function playProfile(browser, profile, index) {
     await page.waitForSelector('#resumeButton:not(.hidden)');
     await page.click('#resumeButton');
     await page.waitForFunction(() => state !== null && !document.querySelector('#gameScreen').classList.contains('hidden'));
+    await enableFastTravel(page);
     const resumed = await stateSnapshot(page);
     assert(resumed.party[1].hp >= 71, 'IndexedDB resume lost treatment state');
   }
 
+  const runStartDate = await page.evaluate(() => state.date);
   await page.evaluate(() => { state.pace = 'Steady'; state.rations = 'Meager'; renderGame(); });
 
-  const stats = { travelDays: 0, rests: 0, hunts: 0, repairs: 0, treatments: 0, rivers: 0, fortFoodBuys: 0, fortMedicineBuys: 0 };
+  const stats = { travelCommands: 0, rests: 0, hunts: 0, repairs: 0, treatments: 0, rivers: 0, fortFoodBuys: 0, fortMedicineBuys: 0 };
   const maxActions = 520;
   let actions = 0;
 
@@ -175,20 +183,21 @@ async function playProfile(browser, profile, index) {
       const result = await handleOpenModal(page);
       if (result === 'terminal') break;
       countAction(stats, result);
-      await page.waitForTimeout(3);
+      await page.waitForTimeout(1);
       continue;
     }
 
     const action = await performStrategyAction(page);
     countAction(stats, action);
     actions += 1;
-    await page.waitForTimeout(3);
+    await page.waitForTimeout(1);
   }
 
   const final = await stateSnapshot(page);
+  const calendarDays = Math.max(0, Math.round((new Date(final.date) - new Date(runStartDate)) / 86400000));
   if (index === 0) await page.screenshot({ path: new URL('./representative-game.png', outDir).pathname, fullPage: true });
 
-  const result = { profile, actions, stats, final, consoleErrors, pageErrors };
+  const result = { profile, actions, calendarDays, stats, final, consoleErrors, pageErrors };
   await context.close();
   return result;
 }
@@ -211,7 +220,9 @@ try {
     completionRate: completions.length / runs.length,
     avgDistance: Math.round(runs.reduce((s, r) => s + r.final.distance, 0) / runs.length),
     avgSurvivors: Number((runs.reduce((s, r) => s + r.final.survivors, 0) / runs.length).toFixed(2)),
-    avgTravelDays: Math.round(runs.reduce((s, r) => s + r.stats.travelDays, 0) / runs.length),
+    avgMeaningfulActions: Math.round(runs.reduce((s, r) => s + r.actions, 0) / runs.length),
+    avgCalendarDays: Math.round(runs.reduce((s, r) => s + r.calendarDays, 0) / runs.length),
+    avgTravelCommands: Number((runs.reduce((s, r) => s + r.stats.travelCommands, 0) / runs.length).toFixed(1)),
     avgHunts: Number((runs.reduce((s, r) => s + r.stats.hunts, 0) / runs.length).toFixed(1)),
     avgRepairs: Number((runs.reduce((s, r) => s + r.stats.repairs, 0) / runs.length).toFixed(1)),
     avgRests: Number((runs.reduce((s, r) => s + r.stats.rests, 0) / runs.length).toFixed(1)),
@@ -222,6 +233,8 @@ try {
         runs: group.length,
         avgDistance: Math.round(group.reduce((s, r) => s + r.final.distance, 0) / group.length),
         avgSurvivors: Number((group.reduce((s, r) => s + r.final.survivors, 0) / group.length).toFixed(1)),
+        avgActions: Math.round(group.reduce((s, r) => s + r.actions, 0) / group.length),
+        avgCalendarDays: Math.round(group.reduce((s, r) => s + r.calendarDays, 0) / group.length),
       }];
     })),
     runs,
