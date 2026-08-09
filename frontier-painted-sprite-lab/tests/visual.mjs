@@ -19,20 +19,19 @@ await page.waitForFunction(() => Boolean(window.__paintedSpriteLab?.ox?.mesh), n
 
 const before = await page.evaluate(() => ({
   poseVersion: window.__paintedSpriteLab.ox.poseVersion,
-  vertex0: window.__paintedSpriteLab.ox.mesh.vertices[0],
-  vertex1: window.__paintedSpriteLab.ox.mesh.vertices[1],
+  vertices: Array.from(window.__paintedSpriteLab.ox.mesh.vertices),
   backend: document.querySelector('#rendererMetric').textContent,
 }));
 
 await page.waitForTimeout(700);
 const after = await page.evaluate(() => ({
   poseVersion: window.__paintedSpriteLab.ox.poseVersion,
-  vertex0: window.__paintedSpriteLab.ox.mesh.vertices[0],
-  vertex1: window.__paintedSpriteLab.ox.mesh.vertices[1],
+  vertices: Array.from(window.__paintedSpriteLab.ox.mesh.vertices),
 }));
 
 if (after.poseVersion <= before.poseVersion) throw new Error('Painterly mesh pose did not advance.');
-if (after.vertex0 === before.vertex0 && after.vertex1 === before.vertex1) throw new Error('Mesh vertices did not deform.');
+const totalVertexDelta = after.vertices.reduce((sum, value, index) => sum + Math.abs(value - before.vertices[index]), 0);
+if (totalVertexDelta < 1) throw new Error(`Mesh vertices did not deform enough; total delta=${totalVertexDelta}.`);
 if (!/PixiJS 8\.19/.test(before.backend)) throw new Error(`Unexpected renderer label: ${before.backend}`);
 
 await page.click('[data-view="neutral"]');
@@ -56,5 +55,10 @@ if (errors.length) {
   throw new Error(`Browser console errors:\n${errors.join('\n')}`);
 }
 
-console.log(JSON.stringify({ status: 'ok', backend: before.backend, poseVersions: [before.poseVersion, after.poseVersion] }, null, 2));
+console.log(JSON.stringify({
+  status: 'ok',
+  backend: before.backend,
+  poseVersions: [before.poseVersion, after.poseVersion],
+  totalVertexDelta: Math.round(totalVertexDelta * 100) / 100,
+}, null, 2));
 await browser.close();
