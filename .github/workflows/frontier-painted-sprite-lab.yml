@@ -35,6 +35,10 @@ jobs:
         env:
           PAINTED_SPRITE_URL: http://127.0.0.1:4175/
         run: node frontier-painted-sprite-lab/tests/rig-test.mjs
+      - name: Run living illustration regression
+        env:
+          PAINTED_SPRITE_URL: http://127.0.0.1:4175/
+        run: node frontier-painted-sprite-lab/tests/child-light.mjs
       - name: Upload living-ox screenshots
         if: always()
         uses: actions/upload-artifact@v4
@@ -43,4 +47,5 @@ jobs:
           path: |
             frontier-painted-sprite-lab/test-results/
             frontier-painted-sprite-lab/test-results-rig/
+            frontier-painted-sprite-lab/test-results-child-light/
           if-no-files-found: ignore
