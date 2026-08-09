@@ -1,0 +1,28 @@
+name: Frontier Painted Sprite Asset Audition
+
+on:
+  push:
+    paths:
+      - 'frontier-painted-sprite-lab/tools/**'
+      - '.github/workflows/frontier-painted-sprite-assets.yml'
+  workflow_dispatch:
+
+jobs:
+  build-candidates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install image matting tools
+        run: python -m pip install --upgrade "rembg[cpu]" pillow
+      - name: Generate transparent painterly candidates
+        run: python frontier-painted-sprite-lab/tools/build_candidates.py
+      - name: Upload candidate sprites
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontier-painted-ox-candidates
+          path: frontier-painted-sprite-lab/candidate-assets/
+          if-no-files-found: error
