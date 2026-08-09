@@ -21,7 +21,7 @@ jobs:
       - name: Install emulator and capture tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y dosbox xvfb xdotool imagemagick unzip jq
+          sudo apt-get install -y dosbox xvfb xdotool imagemagick unzip jq binutils
 
       - name: Fetch Internet Archive metadata and game archive
         run: |
@@ -33,6 +33,9 @@ jobs:
             /tmp/oregon1990/game.zip
           unzip -o /tmp/oregon1990/game.zip -d /tmp/oregon1990/game
           find /tmp/oregon1990/game -maxdepth 4 -type f | sort | tee frontier-journey/reference/results/game-files.txt
+          for f in /tmp/oregon1990/game/oregont/OREGON.EXE /tmp/oregon1990/game/oregont/DIALOGS.REC /tmp/oregon1990/game/oregont/GAMES.REC /tmp/oregon1990/game/oregont/HMS306.ITM; do
+            if [ -f "$f" ]; then strings -a -n 4 "$f" > "frontier-journey/reference/results/strings-$(basename "$f").txt"; fi
+          done
 
       - name: Boot exact archived build in DOSBox and capture screens
         env:
