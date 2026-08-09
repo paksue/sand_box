@@ -1,0 +1,45 @@
+name: Frontier Journey Visual Lab
+
+on:
+  push:
+    paths:
+      - 'frontier-journey/visual-lab.html'
+      - 'frontier-journey/visual-lab.css'
+      - 'frontier-journey/js/visual-lab/**'
+      - 'frontier-journey/tests/visual-lab.mjs'
+      - '.github/workflows/frontier-visual-lab.yml'
+  pull_request:
+    paths:
+      - 'frontier-journey/visual-lab.html'
+      - 'frontier-journey/visual-lab.css'
+      - 'frontier-journey/js/visual-lab/**'
+      - 'frontier-journey/tests/visual-lab.mjs'
+
+jobs:
+  compare-renderers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start static server
+        run: |
+          python3 -m http.server 4173 --directory frontier-journey >/tmp/frontier-visual-lab-http.log 2>&1 &
+          sleep 2
+      - name: Run synchronized A/B visual regression
+        env:
+          FRONTIER_URL: http://127.0.0.1:4173/
+        run: node frontier-journey/tests/visual-lab.mjs
+      - name: Upload visual comparison
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontier-visual-lab-ab
+          path: frontier-journey/test-results-visual-lab/
+          if-no-files-found: ignore
