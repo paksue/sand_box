@@ -17,6 +17,13 @@
   const baseHuntDay = huntDay;
   const baseRepairDay = repairDay;
 
+  // The exact 1990 benchmark covered the opening Independence -> Kansas River
+  // segment at roughly 20 miles/day on Steady pace. Frontier Journey's original
+  // Prairie base produced 17 miles on a clear full-condition day. A Prairie
+  // base of 17 combines with the existing 1.15 full-ox multiplier to round to
+  // 20 miles/day, matching the one terrain/speed pair we have actually measured.
+  REGION_BASE_MILES.Prairie = 17;
+
   let traveling = false;
   let stationaryDay = false;
   const acknowledgedCrises = new Set();
