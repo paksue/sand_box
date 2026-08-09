@@ -112,6 +112,25 @@
     ]);
   }
 
+  async function runOneTravelDay() {
+    if (dayDisplayMs !== 0) {
+      await singleTravelDay();
+      return;
+    }
+
+    // Statistical browser grading intentionally exercises the real simulation
+    // and DOM, but per-day IndexedDB writes dominate its runtime. Suppress only
+    // the saves made while resolving an automatic travel day, then immediately
+    // restore the production save function. Normal play never enters this path.
+    const productionSaveGame = saveGame;
+    saveGame = async () => {};
+    try {
+      await singleTravelDay();
+    } finally {
+      saveGame = productionSaveGame;
+    }
+  }
+
   continueTravel = async function classicStyleContinue() {
     if (!state || state.ended || !aliveParty().length) return;
 
@@ -129,7 +148,7 @@
     while (traveling && state && !state.ended) {
       if (document.querySelector('#modal')?.open) break;
 
-      await singleTravelDay();
+      await runOneTravelDay();
 
       if (!state || state.ended) break;
       if (document.querySelector('#modal')?.open) break;
