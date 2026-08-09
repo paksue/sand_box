@@ -38,7 +38,7 @@ jobs:
       - name: Play three seeded journeys in Chromium
         env:
           FRONTIER_URL: http://127.0.0.1:4173/
-        run: node frontier-journey/tests/playtest.mjs
+        run: node frontier-journey/tests/playtest-v2.mjs
 
       - name: Upload playtest results
         if: always()
