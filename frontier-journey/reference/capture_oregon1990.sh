@@ -63,11 +63,14 @@ answer '1'; capture '04-leader-prompt' 1
 answer 'Benchmark'; capture '05-party-prompt' 1
 for name in A B C D; do answer "$name"; sleep 0.3; done
 capture '06-name-confirmation' 1
-answer 'y'; capture '07-after-name-confirmation' 2
-# Choose the second listed departure month after recording the menu.
-answer '2'; capture '08-after-departure-choice' 2
-# One more Enter often advances period advice / setup into outfitting.
-key Return; capture '09-next-setup-screen' 2
+answer 'y'; capture '07-departure-menu' 1
+answer '2'; capture '08-outfitting-intro-1' 1
+
+# The outfitting introduction uses SPACE BAR pages. Capture each one until a numeric/text prompt appears.
+for n in 09 10 11 12 13 14; do
+  key space
+  capture "${n}-outfitting-sequence" 1
+ done
 
 cp /tmp/dosbox.log "$RESULT_DIR/dosbox.log" || true
 cp /tmp/xvfb.log "$RESULT_DIR/xvfb.log" || true
