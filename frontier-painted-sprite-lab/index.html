@@ -12,7 +12,7 @@
       <div>
         <p class="eyebrow">FRONTIER VISUAL R&D · ISOLATED FROM THE GAME</p>
         <h1>The Living Ox</h1>
-        <p class="lede">A single painterly raster object, extracted and deformed as a reusable sprite. The quality bar: pause anywhere and it should still feel like painted art living inside the landscape.</p>
+        <p class="lede">A reusable painterly raster sprite, pre-matted during asset authoring and gently mesh-deformed at runtime. The quality bar: pause anywhere and it should still feel like painted art living inside the landscape.</p>
       </div>
       <a class="repo-link" href="../frontier-journey/">Back to game</a>
     </header>
@@ -51,7 +51,7 @@
             <button class="view-button" data-view="mesh" type="button">Mesh</button>
             <button class="view-button" data-view="source" type="button">Source</button>
           </div>
-          <p class="hint">Neutral exposes the extracted sprite by itself. Mesh shows the deformation grid. Source shows the original public-domain oil painting before foreground extraction.</p>
+          <p class="hint">Neutral exposes the sprite by itself. Mesh shows its runtime deformation grid. Source shows the original public-domain Rosa Bonheur painting before offline matting.</p>
         </section>
 
         <section>
@@ -87,21 +87,20 @@
           <h2>Runtime</h2>
           <dl>
             <div><dt>Renderer</dt><dd id="rendererMetric">—</dd></div>
-            <div><dt>Matting</dt><dd id="mattingMetric">OpenCV GrabCut</dd></div>
+            <div><dt>Asset</dt><dd>pre-matted WebP</dd></div>
             <div><dt>FPS</dt><dd id="fpsMetric">—</dd></div>
             <div><dt>Pose cadence</dt><dd>15 fps</dd></div>
-            <div><dt>Grid</dt><dd>9 × 6</dd></div>
+            <div><dt>Grid</dt><dd>11 × 7</dd></div>
           </dl>
         </section>
       </aside>
     </section>
 
     <footer class="research-note">
-      <strong>Prototype rule:</strong> no geometric replacement art. The animated object is extracted from a real public-domain oil painting with a soft per-pixel matte, then its painted raster surface is mesh-deformed. This lab is deliberately independent of <code>frontier-journey/</code>.
+      <strong>Prototype rule:</strong> no geometric replacement art. The visible ox pixels come from a public-domain Rosa Bonheur oil painting, matted once during the authoring pipeline, then reused as a transparent game sprite and mesh-deformed in PixiJS. This lab is deliberately independent of <code>frontier-journey/</code>.
     </footer>
   </main>
 
-  <script async src="https://docs.opencv.org/4.x/opencv.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pixi.js@8.19.0/dist/pixi.min.js"></script>
   <script type="module" src="./src/main.js"></script>
 </body>
