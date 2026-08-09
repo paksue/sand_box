@@ -13,10 +13,7 @@ done
 if [[ -z "$TARGET" ]]; then
   TARGET="$(find "$GAME_DIR" -type f \( -iname '*.bat' -o -iname '*.exe' -o -iname '*.com' \) | head -n 1 || true)"
 fi
-if [[ -z "$TARGET" ]]; then
-  echo 'Could not find a DOS executable/batch file.' >&2
-  exit 3
-fi
+[[ -n "$TARGET" ]] || { echo 'Could not find a DOS executable/batch file.' >&2; exit 3; }
 
 echo "Launch target: $TARGET" | tee "$RESULT_DIR/launch-target.txt"
 REL="${TARGET#${GAME_DIR}/}"
@@ -33,7 +30,6 @@ autolock=false
 sensitivity=100
 waitonerror=true
 priority=higher,normal
-mapperfile=/tmp/oregon1990.map
 usescancodes=true
 
 [dosbox]
@@ -57,53 +53,45 @@ nosound=true
 mount c "$GAME_DIR"
 c:
 EOF
-if [[ "$REL_DIR" != "." ]]; then
-  echo "cd ${REL_DIR//\//\\}" >> /tmp/oregon1990.conf
-fi
+if [[ "$REL_DIR" != "." ]]; then echo "cd ${REL_DIR//\//\\}" >> /tmp/oregon1990.conf; fi
 echo "$BASE" >> /tmp/oregon1990.conf
-
-echo 'exit' >> /tmp/oregon1990.conf
 cp /tmp/oregon1990.conf "$RESULT_DIR/dosbox.conf.txt"
 
 export DISPLAY=:99
 export SDL_AUDIODRIVER=dummy
 Xvfb :99 -screen 0 1024x768x24 >/tmp/xvfb.log 2>&1 &
 XVFB_PID=$!
-trap 'kill $XVFB_PID 2>/dev/null || true; kill ${DOSBOX_PID:-0} 2>/dev/null || true' EXIT
+trap 'kill ${DOSBOX_PID:-999999} 2>/dev/null || true; kill $XVFB_PID 2>/dev/null || true' EXIT
 sleep 1
 
 dosbox -conf /tmp/oregon1990.conf >/tmp/dosbox.log 2>&1 &
 DOSBOX_PID=$!
-
-# Wait for DOSBox window.
-for i in {1..40}; do
+for i in {1..60}; do
   if xdotool search --name 'DOSBox' >/tmp/dosbox-window 2>/dev/null; then break; fi
   sleep 0.25
 done
 WINDOW_ID="$(head -n1 /tmp/dosbox-window 2>/dev/null || true)"
-if [[ -z "$WINDOW_ID" ]]; then
-  cat /tmp/dosbox.log >&2 || true
-  exit 4
-fi
+[[ -n "$WINDOW_ID" ]] || { cat /tmp/dosbox.log >&2 || true; exit 4; }
 xdotool windowactivate --sync "$WINDOW_ID" || true
-sleep 4
 
-capture() {
-  local name="$1"
-  import -display :99 -window root "$RESULT_DIR/$name.png"
-}
+capture() { sleep "${2:-1}"; import -display :99 -window root "$RESULT_DIR/$1.png"; }
+key() { xdotool key --window "$WINDOW_ID" "$1"; }
+type() { xdotool type --window "$WINDOW_ID" --delay 40 "$1"; }
 
-capture '01-boot'
-# Advance through common title/introduction prompts without assuming game state.
-xdotool key --window "$WINDOW_ID" Return
-sleep 2
-capture '02-after-enter'
-xdotool key --window "$WINDOW_ID" space
-sleep 2
-capture '03-after-space'
-xdotool key --window "$WINDOW_ID" Return
-sleep 2
-capture '04-after-second-enter'
+capture '01-title' 4
+key Return
+capture '02-main-menu' 2
+type '1'; key Return
+capture '03-after-travel-choice' 2
+# Select the first profession if a numbered profession menu is now visible.
+type '1'; key Return
+capture '04-after-profession-choice' 2
+# Supply a leader name if prompted.
+type 'Benchmark'; key Return
+capture '05-after-leader-name' 2
+# Continue with four short party names if requested one at a time.
+for name in A B C D; do type "$name"; key Return; sleep 0.5; done
+capture '06-after-party-names' 2
 
 cp /tmp/dosbox.log "$RESULT_DIR/dosbox.log" || true
 cp /tmp/xvfb.log "$RESULT_DIR/xvfb.log" || true
