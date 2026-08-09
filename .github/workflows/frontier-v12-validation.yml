@@ -1,0 +1,52 @@
+name: Frontier Journey V1.2 Validation
+
+on:
+  push:
+    branches:
+      - agent/balance-v12-production
+      - main
+    paths:
+      - 'frontier-journey/**'
+      - '.github/workflows/frontier-v12-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-v12:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Start static game server
+        run: |
+          python3 -m http.server 4173 --directory frontier-journey >/tmp/frontier-http.log 2>&1 &
+          sleep 2
+
+      - name: Run visible interaction regression
+        env:
+          FRONTIER_URL: http://127.0.0.1:4173/
+        run: node frontier-journey/tests/classic-autotravel.mjs
+
+      - name: Run 100 production balance simulations
+        env:
+          FRONTIER_URL: http://127.0.0.1:4173/
+        run: node frontier-journey/tests/balance-v12-grade.mjs
+
+      - name: Upload production balance results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontier-v12-grade-results
+          path: frontier-journey/test-results-v12/
+          if-no-files-found: ignore
