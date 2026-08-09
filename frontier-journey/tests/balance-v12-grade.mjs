@@ -26,7 +26,6 @@ try {
   await page.waitForSelector('#pixiScene canvas', { state: 'attached' });
   await page.waitForFunction(() => window.frontierBalance?.version === '1.2' && window.frontierAutoTravel?.setDayDisplayMs);
 
-  // First validate the actual user-facing setup rather than only internal constants.
   const setup = await page.evaluate(() => ({
     balance: window.frontierBalance,
     store: Object.fromEntries(STORE_ITEMS.map((item) => [item.id, {
@@ -53,7 +52,6 @@ try {
   assert(setup.pace.Steady.ox === 0.08 && setup.pace.Steady.wagon === 0.05, 'V1.2 Steady attrition missing');
   assert(setup.rations.Meager.hp === -0.1, `Meager HP is ${setup.rations.Meager.hp}, expected -0.1`);
 
-  // Farmer is the affordability floor: the default outfit must be valid and leave $65.
   await page.selectOption('#professionSelect', 'farmer');
   await page.waitForFunction(() => document.querySelector('#budgetValue').textContent.includes('650'));
   const farmerSetup = await page.evaluate(() => ({
@@ -66,7 +64,6 @@ try {
   assert(farmerSetup.budget - farmerSetup.total === 65, `Farmer should leave with $65, got $${farmerSetup.budget - farmerSetup.total}`);
   assert(farmerSetup.hidden || !/over budget/i.test(farmerSetup.warning), `Farmer is shown over budget: ${farmerSetup.warning}`);
 
-  // Statistical phase: same real game functions/modal logic, no animation/storage/render cost.
   const summary = await page.evaluate(async ({ professions, seeds }) => {
     window.frontierAutoTravel.setDayDisplayMs(0);
     saveGame = async () => {};
@@ -92,8 +89,6 @@ try {
       rng = makeRng(`${seed}-${profession}`);
       state = {
         version:1, seed, profession, date, distance:0, weather:'Clear', pace:'Steady',
-        // New players start Filling. This benchmark models a competent player
-        // making the explicit strategic choice to switch to Meager before travel.
         rations:'Meager',
         money:Math.round((PROFESSIONS[profession].money - cost) * 100) / 100,
         inventory, wagonCondition:100, oxCondition:100,
@@ -163,7 +158,7 @@ try {
     const completed = runs.filter((run) => run.completed).length;
     return {
       balanceVersion:window.frontierBalance.version,
-      runs:runs.length,
+      runCount:runs.length,
       completed,
       completionRate:completed/runs.length,
       avgDistance:Math.round(runs.reduce((s,r)=>s+r.final.distance,0)/runs.length),
@@ -192,7 +187,7 @@ try {
 
   assert(pageErrors.length === 0, `Page errors: ${pageErrors.join('; ')}`);
   assert(consoleErrors.length === 0, `Console errors: ${consoleErrors.join('; ')}`);
-  assert(summary.runs === 100, `Expected 100 production runs, got ${summary.runs}`);
+  assert(summary.runCount === 100, `Expected 100 production runs, got ${summary.runCount}`);
 
   console.log('\n=== FRONTIER JOURNEY V1.2 PRODUCTION GRADE ===');
   console.log(JSON.stringify({ ...summary, runs: undefined }, null, 2));
