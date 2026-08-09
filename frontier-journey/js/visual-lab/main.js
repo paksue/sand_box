@@ -130,6 +130,37 @@ function resizeBoth() {
   rendererB.resize();
 }
 
+function polishComposition() {
+  if (rendererA.engine) rendererA.engine.stopRenderLoop();
+
+  if (rendererA.wagon) {
+    rendererA.wagon.scaling.setAll(.56);
+    rendererA.wagon.position.set(-1.48, -1.02, -.05);
+  }
+  rendererA.oxen.forEach((ox, index) => {
+    ox.root.scaling.setAll(index ? .48 : .51);
+    ox.root.position.set(.56 + index * .28, -1.01 + index * .015, index ? .27 : -.2);
+  });
+  if (rendererA.ground?.material) rendererA.ground.material.alpha = .075;
+
+  const canopy = rendererA.scene?.getMeshByName('wagonCanopy');
+  if (canopy?.material) {
+    canopy.material.albedoColor = BABYLON.Color3.FromHexString('#c7b693');
+    canopy.material.alpha = .9;
+    canopy.material.roughness = 1;
+  }
+  const body = rendererA.scene?.getMeshByName('wagonBody');
+  if (body?.material) {
+    body.material.albedoColor = BABYLON.Color3.FromHexString('#6c422a');
+    body.material.roughness = 1;
+  }
+
+  if (rendererB.team) {
+    rendererB.team.position.x = 370;
+    rendererB.team.scale.set(.9);
+  }
+}
+
 async function init() {
   bindControls();
   syncControls(store.state);
@@ -152,6 +183,8 @@ async function init() {
     console.error('Option B failed to initialize:', bResult.reason);
     $('#metricB').textContent = 'FAILED TO INITIALIZE';
   }
+
+  if (aResult.status === 'fulfilled' && bResult.status === 'fulfilled') polishComposition();
 
   store.addEventListener('change', (event) => applyStateToDocument(event.detail));
   clock.subscribe((delta, state) => {
