@@ -14,6 +14,7 @@ const depthInput = document.querySelector('#depth');
 const depthOutput = document.querySelector('#depthOutput');
 const motionInput = document.querySelector('#motionStrength');
 const motionOutput = document.querySelector('#motionOutput');
+const travelInput = document.querySelector('#travelMotion');
 const rigMetric = document.querySelector('#rigMetric');
 
 const state = {
@@ -26,6 +27,13 @@ const state = {
   mode: 'weighted',
   depth: Number(depthInput.value) / 100,
   motionStrength: Number(motionInput.value) / 100,
+  travelMotion: travelInput.checked,
+};
+
+const placement = {
+  x: 0,
+  y: 0,
+  scale: 1,
 };
 
 const integrations = {
@@ -74,20 +82,38 @@ function currentIntegrationState() {
   };
 }
 
-function layout() {
-  // Identical composition for both methods. The only thing being compared is
-  // deformation architecture, not placement or source art. The Y position is
-  // intentionally grounded on the visible trail instead of hovering over the
-  // background wagon, which made earlier QA impossible to judge fairly.
-  const targetWidth = app.screen.width * (0.27 - state.depth * 0.025);
-  const scale = targetWidth / 800;
-  const x = app.screen.width * (0.61 - state.depth * 0.008);
-  const y = app.screen.height * (0.815 - state.depth * 0.010);
+function currentPhase() {
+  return state.elapsed * 2.15;
+}
+
+function applyActorPlacement(phase = currentPhase()) {
+  // The animal faces left. When travel is enabled, both render methods move
+  // through the exact same leftward loop. This is intentionally separate from
+  // mesh deformation so the A/B comparison remains fair.
+  const loopSeconds = 9.0;
+  const progress = (state.elapsed % loopSeconds) / loopSeconds;
+  const travelX = state.travelMotion
+    ? app.screen.width * (0.12 - progress * 0.24)
+    : 0;
+  const gaitBob = Math.sin(phase * 2) * 2.2 * state.motionStrength;
+  const gaitPitch = Math.sin(phase) * 0.0045 * state.motionStrength;
+
   for (const actor of [rig, baseline]) {
-    actor.root.scale.set(scale);
-    actor.root.x = x;
-    actor.root.y = y;
+    actor.root.scale.set(placement.scale);
+    actor.root.x = placement.x + travelX;
+    actor.root.y = placement.y + gaitBob;
+    actor.root.rotation = gaitPitch;
   }
+}
+
+function layout() {
+  // Slightly larger than the first pass because the old scale reduced a valid
+  // local deformation to nearly sub-pixel movement on a desktop display.
+  const targetWidth = app.screen.width * (0.32 - state.depth * 0.025);
+  placement.scale = targetWidth / 800;
+  placement.x = app.screen.width * (0.61 - state.depth * 0.008);
+  placement.y = app.screen.height * (0.815 - state.depth * 0.010);
+  applyActorPlacement();
 }
 
 function applyDepthAndMotion() {
@@ -126,17 +152,24 @@ function applyViewMode() {
   baseline.setDebugMesh(false);
 
   if (state.view === 'neutral') {
-    modeCaption.textContent = 'Original painted two-ox sprite on neutral gray';
+    modeCaption.textContent = state.travelMotion
+      ? 'Original painted two-ox sprite walking on neutral gray'
+      : 'Original painted two-ox sprite deforming in place';
     rig.setIntegration({ colorMatch: false, atmosphere: false, shadow: false, dust: false });
     baseline.setIntegration({ colorMatch: false, atmosphere: false, shadow: false, dust: false });
   } else if (state.view === 'skeleton') {
-    modeCaption.textContent = state.mode === 'weighted' ? 'Virtual weighted-bone fields on the painted pair' : 'Whole-mesh deformation grid';
+    modeCaption.textContent = state.mode === 'weighted'
+      ? 'Animated virtual bones + weighted painted mesh'
+      : 'Whole-mesh deformation grid';
     rig.setIntegration({ colorMatch: false, atmosphere: false, shadow: false, dust: false });
     baseline.setIntegration({ colorMatch: false, atmosphere: false, shadow: false, dust: false });
     if (state.mode === 'weighted') rig.setDebugSkeleton(true);
     else baseline.setDebugMesh(true);
   } else {
-    modeCaption.textContent = state.mode === 'weighted' ? 'Weighted painted pair in scene' : 'Whole-mesh baseline in scene';
+    const walking = state.travelMotion ? ' walking across scene' : ' walking in place';
+    modeCaption.textContent = state.mode === 'weighted'
+      ? `Weighted painted pair${walking}`
+      : `Whole-mesh baseline${walking}`;
     const integration = currentIntegrationState();
     rig.setIntegration(integration);
     baseline.setIntegration(integration);
@@ -191,6 +224,7 @@ document.querySelector('#resetPose').addEventListener('click', () => {
   state.poseAccumulator = 0;
   rig.resetPose();
   baseline.resetPose();
+  applyActorPlacement(0);
 });
 
 depthInput.addEventListener('input', () => {
@@ -204,6 +238,12 @@ motionInput.addEventListener('input', () => {
   state.motionStrength = Number(motionInput.value) / 100;
   motionOutput.textContent = `${motionInput.value}%`;
   applyDepthAndMotion();
+});
+
+travelInput.addEventListener('change', () => {
+  state.travelMotion = travelInput.checked;
+  applyActorPlacement();
+  applyViewMode();
 });
 
 Object.values(integrations).forEach((input) => input.addEventListener('change', applyIntegration));
@@ -225,7 +265,7 @@ app.ticker.add((ticker) => {
   const scaledDelta = deltaSeconds * state.speed;
   state.elapsed += scaledDelta;
   state.poseAccumulator += scaledDelta;
-  const phase = state.elapsed * 2.15;
+  const phase = currentPhase();
 
   const poseInterval = 1 / state.poseFps;
   if (state.poseAccumulator >= poseInterval) {
@@ -235,6 +275,14 @@ app.ticker.add((ticker) => {
   }
   rig.updateContinuous(scaledDelta, phase);
   baseline.updateContinuous(scaledDelta, phase);
+  applyActorPlacement(phase);
 });
 
-window.__weightedRigLab = { app, rig, baseline, state };
+window.__weightedRigLab = {
+  app,
+  rig,
+  baseline,
+  state,
+  placement,
+  applyActorPlacement,
+};
