@@ -2,11 +2,6 @@ name: Oregon Trail 1990 Reference Benchmark
 
 on:
   workflow_dispatch:
-  push:
-    branches: [agent/oregon1990-benchmark]
-    paths:
-      - '.github/workflows/oregon1990-reference.yml'
-      - 'frontier-journey/reference/**'
 
 permissions:
   contents: read
