@@ -22,11 +22,9 @@ await page.waitForTimeout(750);
 const after = await page.evaluate(() => window.__weightedRigLab.rig.getDebugState());
 
 if (after.poseVersion <= before.poseVersion) throw new Error('Weighted rig pose did not advance.');
-if (Math.abs(after.frontPhase - after.backPhase) < 0.2) throw new Error('Two oxen are not independently phased.');
-
-const frontDelta = after.frontVertices.reduce((sum, value, index) => sum + Math.abs(value - before.frontVertices[index]), 0);
-const backDelta = after.backVertices.reduce((sum, value, index) => sum + Math.abs(value - before.backVertices[index]), 0);
-if (frontDelta < 1 || backDelta < 1) throw new Error(`Weighted meshes did not deform enough: front=${frontDelta}, back=${backDelta}`);
+const totalDelta = after.vertices.reduce((sum, value, index) => sum + Math.abs(value - before.vertices[index]), 0);
+if (totalDelta < 1) throw new Error(`Weighted mesh did not deform enough: delta=${totalDelta}`);
+if (after.grid[0] !== 19 || after.grid[1] !== 13) throw new Error(`Unexpected weighted mesh grid: ${after.grid}`);
 
 await page.click('#playPause');
 await page.evaluate(() => window.__weightedRigLab.rig.updatePose(0));
@@ -39,11 +37,8 @@ if (await page.getAttribute('#stage', 'data-view') !== 'neutral') throw new Erro
 await page.screenshot({ path: path.join(outDir, 'weighted-neutral.png'), fullPage: true });
 
 await page.click('[data-view="skeleton"]');
-const skeletonVisible = await page.evaluate(() => ({
-  front: window.__weightedRigLab.rig.frontOx.debugLayer.visible,
-  back: window.__weightedRigLab.rig.backOx.debugLayer.visible,
-}));
-if (!skeletonVisible.front || !skeletonVisible.back) throw new Error('Weighted skeleton debug view did not activate for both oxen.');
+const skeletonVisible = await page.evaluate(() => window.__weightedRigLab.rig.debugLayer.visible);
+if (!skeletonVisible) throw new Error('Weighted skeleton debug view did not activate.');
 await page.screenshot({ path: path.join(outDir, 'weighted-skeleton.png'), fullPage: true });
 
 await page.click('[data-mode="baseline"]');
@@ -53,6 +48,7 @@ const visibility = await page.evaluate(() => ({
 }));
 if (visibility.rig || !visibility.baseline) throw new Error('Whole-mesh baseline toggle did not switch renderers.');
 await page.click('[data-view="scene"]');
+await page.evaluate(() => window.__weightedRigLab.baseline.updatePose(Math.PI * 0.72));
 await page.screenshot({ path: path.join(outDir, 'baseline-scene.png'), fullPage: true });
 
 const pausedBefore = await page.evaluate(() => window.__weightedRigLab.rig.poseVersion);
@@ -65,9 +61,8 @@ if (errors.length) throw new Error(`Browser console errors:\n${errors.join('\n')
 console.log(JSON.stringify({
   status: 'ok',
   poseVersions: [before.poseVersion, after.poseVersion],
-  phaseOffset: Math.round(after.phaseOffset * 1000) / 1000,
-  frontVertexDelta: Math.round(frontDelta * 100) / 100,
-  backVertexDelta: Math.round(backDelta * 100) / 100,
+  weightedVertexDelta: Math.round(totalDelta * 100) / 100,
+  grid: after.grid,
 }, null, 2));
 
 await browser.close();
