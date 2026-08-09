@@ -1,23 +1,21 @@
 const PIXI = window.PIXI;
 
-export const OX_SOURCE_URL = 'https://upload.wikimedia.org/wikipedia/commons/a/a1/George_Stubbs_-_The_Lincolnshire_Ox_-_Google_Art_Project.jpg';
+const ASSET_URL = './assets/rosa-bonheur-pair-of-oxen.webp';
+const ART_W = 800;
+const ART_H = 538;
+const GRID_COLS = 11;
+const GRID_ROWS = 7;
 
-// The source is a public-domain oil painting. We intentionally preserve raster
-// paint pixels and produce a soft alpha matte client-side rather than redrawing
-// the ox with geometric primitives.
-const SOURCE_CROP = { x: 300, y: 990, w: 1710, h: 1060 };
-const ART_W = 1100;
-const ART_H = 682;
-const GRID_COLS = 9;
-const GRID_ROWS = 6;
-
-function clamp01(value) {
-  return Math.max(0, Math.min(1, value));
-}
+const clamp01 = (value) => Math.max(0, Math.min(1, value));
 
 function smoothstep(edge0, edge1, value) {
   const x = clamp01((value - edge0) / (edge1 - edge0));
   return x * x * (3 - 2 * x);
+}
+
+function bell(center, radius, value) {
+  const x = Math.abs(value - center) / radius;
+  return x >= 1 ? 0 : 1 - smoothstep(0, 1, x);
 }
 
 function buildGrid(cols, rows, width, height) {
@@ -25,7 +23,6 @@ function buildGrid(cols, rows, width, height) {
   const uvs = new Float32Array(cols * rows * 2);
   const indices = [];
   let cursor = 0;
-
   for (let row = 0; row < rows; row += 1) {
     const v = row / (rows - 1);
     for (let col = 0; col < cols; col += 1) {
@@ -37,7 +34,6 @@ function buildGrid(cols, rows, width, height) {
       cursor += 2;
     }
   }
-
   for (let row = 0; row < rows - 1; row += 1) {
     for (let col = 0; col < cols - 1; col += 1) {
       const a = row * cols + col;
@@ -47,109 +43,7 @@ function buildGrid(cols, rows, width, height) {
       indices.push(a, b, d, a, d, c);
     }
   }
-
   return { vertices, uvs, indices: new Uint32Array(indices) };
-}
-
-function loadCrossOriginImage(url) {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.crossOrigin = 'anonymous';
-    image.decoding = 'async';
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error(`Unable to load painterly source: ${url}`));
-    image.src = url;
-  });
-}
-
-function drawSureForeground(mask, cv) {
-  // GrabCut is initialized from a rectangle, then given a few conservative
-  // "definitely foreground" regions that sit well inside the animal. These
-  // strokes deliberately avoid silhouette edges so the algorithm decides the
-  // soft painted boundary from image evidence rather than a hard polygon.
-  const fg = new cv.Scalar(cv.GC_FGD);
-  cv.rectangle(mask, new cv.Point(235, 145), new cv.Point(785, 390), fg, -1);
-  cv.rectangle(mask, new cv.Point(120, 280), new cv.Point(360, 430), fg, -1);
-  cv.rectangle(mask, new cv.Point(690, 250), new cv.Point(870, 420), fg, -1);
-}
-
-async function buildPainterlyMatte() {
-  const cv = await window.cvReady;
-  if (!cv?.grabCut) throw new Error('OpenCV GrabCut did not initialize.');
-
-  const image = await loadCrossOriginImage(OX_SOURCE_URL);
-  const cropCanvas = document.createElement('canvas');
-  cropCanvas.width = ART_W;
-  cropCanvas.height = ART_H;
-  const cropCtx = cropCanvas.getContext('2d', { willReadFrequently: true });
-  cropCtx.imageSmoothingEnabled = true;
-  cropCtx.imageSmoothingQuality = 'high';
-  cropCtx.drawImage(
-    image,
-    SOURCE_CROP.x, SOURCE_CROP.y, SOURCE_CROP.w, SOURCE_CROP.h,
-    0, 0, ART_W, ART_H,
-  );
-
-  let rgba;
-  let rgb;
-  let mask;
-  let bgdModel;
-  let fgdModel;
-  let alpha;
-  let alphaSoft;
-
-  try {
-    rgba = cv.imread(cropCanvas);
-    rgb = new cv.Mat();
-    cv.cvtColor(rgba, rgb, cv.COLOR_RGBA2RGB);
-
-    mask = cv.Mat.zeros(ART_H, ART_W, cv.CV_8UC1);
-    bgdModel = new cv.Mat();
-    fgdModel = new cv.Mat();
-
-    const rect = new cv.Rect(12, 12, ART_W - 24, ART_H - 24);
-    cv.grabCut(rgb, mask, rect, bgdModel, fgdModel, 5, cv.GC_INIT_WITH_RECT);
-
-    drawSureForeground(mask, cv);
-    cv.grabCut(rgb, mask, new cv.Rect(), bgdModel, fgdModel, 3, cv.GC_INIT_WITH_MASK);
-
-    alpha = cv.Mat.zeros(ART_H, ART_W, cv.CV_8UC1);
-    const maskData = mask.data;
-    const alphaData = alpha.data;
-    for (let i = 0; i < maskData.length; i += 1) {
-      const cls = maskData[i];
-      alphaData[i] = cls === cv.GC_FGD || cls === cv.GC_PR_FGD ? 255 : 0;
-    }
-
-    // Close tiny holes and feather only a few pixels so the brushy silhouette
-    // survives without the cut-paper look of the old polygon mask.
-    const kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, new cv.Size(5, 5));
-    cv.morphologyEx(alpha, alpha, cv.MORPH_CLOSE, kernel);
-    kernel.delete();
-    alphaSoft = new cv.Mat();
-    cv.GaussianBlur(alpha, alphaSoft, new cv.Size(7, 7), 0, 0, cv.BORDER_DEFAULT);
-
-    const original = cropCtx.getImageData(0, 0, ART_W, ART_H);
-    const pixels = original.data;
-    const soft = alphaSoft.data;
-    for (let i = 0, p = 0; i < soft.length; i += 1, p += 4) {
-      pixels[p + 3] = soft[i];
-    }
-
-    const result = document.createElement('canvas');
-    result.width = ART_W;
-    result.height = ART_H;
-    result.getContext('2d').putImageData(original, 0, 0);
-    return result;
-  } finally {
-    rgba?.delete();
-    rgb?.delete();
-    mask?.delete();
-    bgdModel?.delete();
-    fgdModel?.delete();
-    alpha?.delete();
-    alphaSoft?.delete();
-  }
 }
 
 export class PaintedOx {
@@ -160,7 +54,6 @@ export class PaintedOx {
     this.dustLayer = new PIXI.Container();
     this.debugLayer = new PIXI.Graphics();
     this.baseVertices = null;
-    this.grid = null;
     this.motionStrength = 0.48;
     this.depth = 0.46;
     this.colorMatch = true;
@@ -168,67 +61,53 @@ export class PaintedOx {
     this.shadowEnabled = true;
     this.dustEnabled = true;
     this.meshDebug = false;
-    this.posePhase = 0;
     this.poseVersion = 0;
     this.dust = [];
-    this.noiseFilter = new PIXI.NoiseFilter({ noise: 0.024, seed: 0.63 });
-    this.dustBlur = new PIXI.BlurFilter({ strength: 3.2, quality: 2 });
-    this.shadowBlur = new PIXI.BlurFilter({ strength: 5.5, quality: 2 });
+    this.noiseFilter = new PIXI.NoiseFilter({ noise: 0.018, seed: 0.63 });
+    this.dustBlur = new PIXI.BlurFilter({ strength: 2.5, quality: 2 });
+    this.shadowBlur = new PIXI.BlurFilter({ strength: 5, quality: 2 });
   }
 
   async init() {
-    const segmentedCanvas = await buildPainterlyMatte();
-    const texture = PIXI.Texture.from(segmentedCanvas);
-
-    this.grid = buildGrid(GRID_COLS, GRID_ROWS, ART_W, ART_H);
-    this.baseVertices = new Float32Array(this.grid.vertices);
-
+    const texture = await PIXI.Assets.load(ASSET_URL);
+    const grid = buildGrid(GRID_COLS, GRID_ROWS, ART_W, ART_H);
+    this.baseVertices = new Float32Array(grid.vertices);
     this.mesh = new PIXI.MeshSimple({
       texture,
-      vertices: new Float32Array(this.grid.vertices),
-      uvs: this.grid.uvs,
-      indices: this.grid.indices,
+      vertices: new Float32Array(grid.vertices),
+      uvs: grid.uvs,
+      indices: grid.indices,
     });
     this.mesh.autoUpdate = true;
     this.mesh.filters = [this.noiseFilter];
 
     this.shadow = new PIXI.Graphics()
-      .ellipse(ART_W * 0.49, ART_H * 0.87, ART_W * 0.29, ART_H * 0.045)
-      .fill({ color: 0x352116, alpha: 0.27 });
+      .ellipse(ART_W * 0.52, ART_H * 0.83, ART_W * 0.38, ART_H * 0.04)
+      .fill({ color: 0x352116, alpha: 0.24 });
     this.shadow.filters = [this.shadowBlur];
 
     this.root.addChild(this.shadow, this.mesh, this.dustLayer, this.debugLayer);
-    this.root.pivot.set(ART_W * 0.50, ART_H * 0.79);
-
+    this.root.pivot.set(ART_W * 0.49, ART_H * 0.77);
     this.createDust();
-    this.setIntegration({});
-    this.setDepth(this.depth);
+    this.applyIntegration();
     return this;
   }
 
   createDust() {
     this.dustLayer.filters = [this.dustBlur];
-    for (let i = 0; i < 13; i += 1) {
-      const radius = 12 + (i % 5) * 5;
+    for (let i = 0; i < 12; i += 1) {
       const puff = new PIXI.Graphics()
-        .circle(0, 0, radius)
-        .fill({ color: 0xb47d45, alpha: 0.08 + (i % 3) * 0.018 });
-      puff.x = ART_W * (0.25 + (i % 7) * 0.072);
-      puff.y = ART_H * (0.84 + (i % 3) * 0.018);
-      puff.scale.set(0.48 + (i % 4) * 0.07);
+        .circle(0, 0, 7 + (i % 4) * 4)
+        .fill({ color: 0xb47d45, alpha: 0.07 + (i % 3) * 0.012 });
+      puff.x = ART_W * (0.27 + (i % 7) * 0.07);
+      puff.y = ART_H * (0.79 + (i % 3) * 0.018);
       this.dustLayer.addChild(puff);
       this.dust.push({ node: puff, seed: i * 0.83, age: (i % 6) / 6 });
     }
   }
 
-  setMotionStrength(value) {
-    this.motionStrength = clamp01(value);
-  }
-
-  setDepth(value) {
-    this.depth = clamp01(value);
-    this.applyIntegration();
-  }
+  setMotionStrength(value) { this.motionStrength = clamp01(value); }
+  setDepth(value) { this.depth = clamp01(value); this.applyIntegration(); }
 
   setDebugMesh(enabled) {
     this.meshDebug = enabled;
@@ -247,39 +126,33 @@ export class PaintedOx {
   applyIntegration() {
     if (!this.mesh) return;
     const haze = this.atmosphere ? this.depth : 0;
-    this.mesh.alpha = 1 - haze * 0.20;
-    this.mesh.tint = this.colorMatch ? 0xffd8ad : 0xffffff;
-    this.noiseFilter.noise = this.colorMatch ? 0.024 : 0.008;
+    this.mesh.alpha = 1 - haze * 0.16;
+    this.mesh.tint = this.colorMatch ? 0xffd8b5 : 0xffffff;
+    this.noiseFilter.noise = this.colorMatch ? 0.018 : 0.005;
     this.shadow.visible = this.shadowEnabled;
-    this.shadow.alpha = 1 - haze * 0.40;
+    this.shadow.alpha = 1 - haze * 0.4;
     this.dustLayer.visible = this.dustEnabled;
-    this.dustLayer.alpha = 1 - haze * 0.28;
+    this.dustLayer.alpha = 1 - haze * 0.25;
   }
 
   layout(screenWidth, screenHeight) {
-    // The previous proof made the ox dominate the Bierstadt landscape. Here it
-    // remains a readable hero object but respects the painting's scale.
-    const targetWidth = screenWidth * (0.31 - this.depth * 0.09);
+    const targetWidth = screenWidth * (0.34 - this.depth * 0.075);
     const scale = targetWidth / ART_W;
     this.root.scale.set(scale);
-    this.root.x = screenWidth * (0.57 - this.depth * 0.02);
-    this.root.y = screenHeight * (0.78 - this.depth * 0.09);
+    this.root.x = screenWidth * (0.58 - this.depth * 0.02);
+    this.root.y = screenHeight * (0.80 - this.depth * 0.07);
   }
 
-  resetPose() {
-    this.posePhase = 0;
-    this.updatePose(0);
-  }
+  resetPose() { this.updatePose(0); }
 
   updatePose(phase) {
     if (!this.mesh) return;
-    this.posePhase = phase;
     this.poseVersion += 1;
     const vertices = this.mesh.vertices;
     const strength = this.motionStrength;
-    const frontStep = Math.sin(phase);
-    const rearStep = Math.sin(phase + Math.PI);
-    const bodyLift = Math.sin(phase * 2) * 2.8 * strength;
+    const breath = Math.sin(phase * 0.48);
+    const weight = Math.sin(phase);
+    const counter = Math.sin(phase + Math.PI * 0.55);
 
     for (let i = 0; i < vertices.length; i += 2) {
       const baseX = this.baseVertices[i];
@@ -287,38 +160,36 @@ export class PaintedOx {
       const u = baseX / ART_W;
       const v = baseY / ART_H;
       let dx = 0;
-      let dy = bodyLift * smoothstep(0.12, 0.60, u) * (1 - smoothstep(0.70, 1, v));
+      let dy = 0;
 
-      // Broad, restrained deformations preserve the original oil-painted
-      // surface. This milestone is intentionally closer to "living painting"
-      // than rubber-limbed procedural locomotion.
-      const headWeight = (1 - smoothstep(0.28, 0.44, u)) * smoothstep(0.24, 0.80, v);
-      dx += Math.cos(phase + 0.35) * 3.2 * strength * headWeight;
-      dy += Math.sin(phase + 0.45) * 5.6 * strength * headWeight;
+      const torso = smoothstep(0.18, 0.35, u) * (1 - smoothstep(0.82, 0.96, u)) *
+        smoothstep(0.12, 0.34, v) * (1 - smoothstep(0.58, 0.78, v));
+      dy -= breath * 2.4 * strength * torso;
+      dx += Math.sin(phase * 0.5) * 1.5 * strength * torso;
 
-      const shoulderWeight = smoothstep(0.20, 0.34, u) * (1 - smoothstep(0.45, 0.55, u)) * smoothstep(0.35, 0.82, v);
-      dy += Math.max(0, frontStep) * 4.0 * strength * shoulderWeight;
-      dx -= frontStep * 2.4 * strength * shoulderWeight;
+      const headFront = (1 - smoothstep(0.18, 0.31, u)) * smoothstep(0.13, 0.58, v);
+      const headRear = bell(0.24, 0.15, u) * smoothstep(0.12, 0.50, v) * (1 - headFront * 0.45);
+      dx += Math.cos(phase * 0.66 + 0.3) * 2.6 * strength * headFront;
+      dy += Math.sin(phase * 0.66 + 0.55) * 3.4 * strength * headFront;
+      dx += Math.cos(phase * 0.61 + 1.25) * 1.8 * strength * headRear;
+      dy += Math.sin(phase * 0.61 + 1.4) * 2.7 * strength * headRear;
 
-      const lower = smoothstep(0.58, 0.98, v);
-      const frontLegU = smoothstep(0.19, 0.29, u) * (1 - smoothstep(0.44, 0.51, u));
-      dx += frontStep * 9.5 * strength * frontLegU * lower;
-      dy += Math.max(0, -frontStep) * 4.2 * strength * frontLegU * lower;
+      const lower = smoothstep(0.58, 0.96, v);
+      const frontLegZone = bell(0.36, 0.16, u);
+      const rearLegZone = bell(0.78, 0.16, u);
+      dx += weight * 3.4 * strength * frontLegZone * lower;
+      dy += Math.max(0, -weight) * 2.3 * strength * frontLegZone * lower;
+      dx += counter * 3.0 * strength * rearLegZone * lower;
+      dy += Math.max(0, -counter) * 1.9 * strength * rearLegZone * lower;
 
-      const rearLegU = smoothstep(0.55, 0.65, u) * (1 - smoothstep(0.82, 0.90, u));
-      dx += rearStep * 8.8 * strength * rearLegU * lower;
-      dy += Math.max(0, -rearStep) * 3.8 * strength * rearLegU * lower;
-
-      const hipWeight = smoothstep(0.66, 0.80, u) * (1 - smoothstep(0.92, 0.99, u)) * smoothstep(0.28, 0.74, v);
-      dy += Math.sin(phase * 2 + 0.55) * 2.4 * strength * hipWeight;
-
-      const tailWeight = smoothstep(0.82, 0.94, u) * smoothstep(0.28, 0.75, v);
-      dx += Math.sin(phase * 0.5 + 1.4) * 3.8 * strength * tailWeight;
+      const shoulder = bell(0.37, 0.18, u) * smoothstep(0.28, 0.68, v);
+      const rump = bell(0.76, 0.18, u) * smoothstep(0.25, 0.65, v);
+      dy += Math.max(0, weight) * 1.8 * strength * shoulder;
+      dy += Math.max(0, counter) * 1.4 * strength * rump;
 
       vertices[i] = baseX + dx;
       vertices[i + 1] = baseY + dy;
     }
-
     if (this.meshDebug) this.drawDebugMesh();
   }
 
@@ -327,7 +198,6 @@ export class PaintedOx {
     const vertices = this.mesh.vertices;
     const g = this.debugLayer;
     g.clear();
-
     for (let row = 0; row < GRID_ROWS; row += 1) {
       for (let col = 0; col < GRID_COLS - 1; col += 1) {
         const a = (row * GRID_COLS + col) * 2;
@@ -342,29 +212,27 @@ export class PaintedOx {
         g.moveTo(vertices[a], vertices[a + 1]).lineTo(vertices[b], vertices[b + 1]);
       }
     }
-    g.stroke({ width: 2.8, color: 0xffc55c, alpha: 0.84 });
-
+    g.stroke({ width: 2.2, color: 0xffc55c, alpha: 0.82 });
     for (let i = 0; i < vertices.length; i += 2) {
-      g.circle(vertices[i], vertices[i + 1], 4.4).fill({ color: 0xffe2a0, alpha: 0.88 });
+      g.circle(vertices[i], vertices[i + 1], 3.2).fill({ color: 0xffe2a0, alpha: 0.9 });
     }
   }
 
   updateContinuous(deltaSeconds, phase) {
     if (this.shadow) {
-      this.shadow.scale.x = 1 + Math.sin(phase * 2) * 0.018 * this.motionStrength;
-      this.shadow.alpha = (this.shadowEnabled ? 0.82 : 0) * (1 - this.depth * 0.32);
+      this.shadow.scale.x = 1 + Math.sin(phase) * 0.012 * this.motionStrength;
+      this.shadow.alpha = (this.shadowEnabled ? 0.78 : 0) * (1 - this.depth * 0.32);
     }
-
     for (const puff of this.dust) {
-      puff.age += deltaSeconds * (0.20 + this.motionStrength * 0.14);
+      puff.age += deltaSeconds * (0.12 + this.motionStrength * 0.08);
       if (puff.age > 1) puff.age -= 1;
       const t = puff.age;
-      puff.node.x += deltaSeconds * (10 + puff.seed * 0.6);
-      if (puff.node.x > ART_W * 0.82) puff.node.x = ART_W * 0.24;
-      puff.node.y = ART_H * (0.86 - t * 0.038) + Math.sin(puff.seed + phase) * 3;
-      const scale = 0.42 + t * 0.58;
+      puff.node.x += deltaSeconds * (4.5 + puff.seed * 0.3);
+      if (puff.node.x > ART_W * 0.82) puff.node.x = ART_W * 0.25;
+      puff.node.y = ART_H * (0.81 - t * 0.025) + Math.sin(puff.seed + phase) * 1.7;
+      const scale = 0.42 + t * 0.48;
       puff.node.scale.set(scale);
-      puff.node.alpha = this.dustEnabled ? Math.sin(Math.PI * t) * 0.12 : 0;
+      puff.node.alpha = this.dustEnabled ? Math.sin(Math.PI * t) * 0.075 : 0;
     }
   }
 }
