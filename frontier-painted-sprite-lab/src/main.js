@@ -1,4 +1,4 @@
-import { PaintedOx } from './painted-ox-v2.js';
+import { PaintedOx } from './painted-ox.js';
 
 const PIXI = window.PIXI;
 const stageEl = document.querySelector('#stage');
