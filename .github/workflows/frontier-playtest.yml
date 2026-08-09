@@ -1,0 +1,49 @@
+name: Frontier Journey Playtest
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontier-journey/**'
+      - '.github/workflows/frontier-playtest.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-playtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Start static game server
+        run: |
+          python3 -m http.server 4173 --directory frontier-journey >/tmp/frontier-http.log 2>&1 &
+          echo $! >/tmp/frontier-http.pid
+          sleep 2
+
+      - name: Play three seeded journeys in Chromium
+        env:
+          FRONTIER_URL: http://127.0.0.1:4173/
+        run: node frontier-journey/tests/playtest.mjs
+
+      - name: Upload playtest results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontier-playtest-results
+          path: frontier-journey/test-results/
+          if-no-files-found: ignore
