@@ -15,32 +15,49 @@ page.on('pageerror', (error) => errors.push(error.message));
 await page.goto(new URL('child-light.html', base).toString(), { waitUntil: 'networkidle', timeout: 60_000 });
 await page.waitForFunction(() => Boolean(window.__childLightLab?.rig?.ready), null, { timeout: 30_000 });
 
-const before = await page.evaluate(() => ({
+// First prove the actual runtime loop advances while the default quality test
+// keeps the actor root planted. Do not use arbitrary runtime phases to measure
+// gait amplitude: two samples can land on visually similar points in the cycle.
+const runtimeBefore = await page.evaluate(() => ({
   rig: window.__childLightLab.rig.getDebugState(),
   scene: window.__childLightLab.getSceneState(),
 }));
 await page.waitForTimeout(850);
-const after = await page.evaluate(() => ({
+const runtimeAfter = await page.evaluate(() => ({
   rig: window.__childLightLab.rig.getDebugState(),
   scene: window.__childLightLab.getSceneState(),
 }));
 
-if (before.scene.travel !== 'in-place') throw new Error(`Expected default in-place mode, got ${before.scene.travel}`);
-const rootTravel = Math.abs(after.rig.rootX - before.rig.rootX);
+if (runtimeBefore.scene.travel !== 'in-place') {
+  throw new Error(`Expected default in-place mode, got ${runtimeBefore.scene.travel}`);
+}
+const rootTravel = Math.abs(runtimeAfter.rig.rootX - runtimeBefore.rig.rootX);
 if (rootTravel > 2) throw new Error(`Walk-in-place cheated with root translation: ${rootTravel.toFixed(2)}px`);
-if (after.rig.poseVersion <= before.rig.poseVersion) throw new Error('Articulated rig pose did not advance.');
+if (runtimeAfter.rig.poseVersion <= runtimeBefore.rig.poseVersion) throw new Error('Articulated rig pose did not advance.');
 
-const toeKeys = Object.keys(before.rig.toes);
+// Freeze automatic updates, then measure a deterministic half-cycle. This is
+// the real visual motion gate: opposite gait poses must move painted hoof
+// endpoints by a clearly visible amount at the default on-screen scale.
+await page.click('#playPause');
+await page.evaluate(() => window.__childLightLab.rig.updatePose(0));
+const poseA = await page.evaluate(() => window.__childLightLab.rig.getDebugState());
+await page.evaluate(() => window.__childLightLab.rig.updatePose(Math.PI));
+const poseB = await page.evaluate(() => window.__childLightLab.rig.getDebugState());
+
+const toeKeys = Object.keys(poseA.toes);
 if (toeKeys.length < 4) throw new Error(`Expected four articulated hoof endpoints, got ${toeKeys.length}`);
 const toeDeltas = toeKeys.map((key) => {
-  const a = before.rig.toes[key];
-  const b = after.rig.toes[key];
-  return Math.hypot(b.x - a.x, b.y - a.y) * after.rig.scale;
+  const a = poseA.toes[key];
+  const b = poseB.toes[key];
+  return Math.hypot(b.x - a.x, b.y - a.y) * poseB.scale;
 });
 const maxToeDelta = Math.max(...toeDeltas);
-if (maxToeDelta < 12) throw new Error(`Hoof animation is still visually too small: ${maxToeDelta.toFixed(2)} screen px`);
+const clearlyMovingToes = toeDeltas.filter((value) => value >= 6).length;
+if (maxToeDelta < 12) throw new Error(`Deterministic hoof arc is visually too small: ${maxToeDelta.toFixed(2)} screen px`);
+if (clearlyMovingToes < 2) throw new Error(`Too few hooves move visibly: ${clearlyMovingToes} of ${toeDeltas.length}`);
 
-await page.click('#playPause');
+// Capture two deliberately different, aesthetically useful gait poses for human
+// art-direction review. A green numeric test is never considered sufficient.
 await page.evaluate(() => window.__childLightLab.rig.updatePose(0.38));
 await page.screenshot({ path: path.join(outDir, 'child-light-scene-a.png'), fullPage: true });
 await page.evaluate(() => window.__childLightLab.rig.updatePose(2.05));
@@ -55,6 +72,8 @@ const rigVisible = await page.evaluate(() => window.__childLightLab.rig.debugLay
 if (!rigVisible) throw new Error('Rig debug view did not activate.');
 await page.screenshot({ path: path.join(outDir, 'child-light-rig.png'), fullPage: true });
 
+// Through-scene mode is a separate presentation feature. It must move visibly,
+// but it is never allowed to substitute for the in-place local gait test above.
 await page.click('[data-view="scene"]');
 await page.click('[data-travel="scene"]');
 await page.click('#playPause');
@@ -82,9 +101,11 @@ if (errors.length) throw new Error(`Browser console errors:\n${errors.join('\n')
 
 console.log(JSON.stringify({
   status: 'ok',
+  runtimePoseVersions: [runtimeBefore.rig.poseVersion, runtimeAfter.rig.poseVersion],
   inPlaceRootTravelPx: Math.round(rootTravel * 100) / 100,
-  maxHoofDeltaPx: Math.round(maxToeDelta * 100) / 100,
-  hoofDeltasPx: toeDeltas.map((value) => Math.round(value * 100) / 100),
+  deterministicMaxHoofDeltaPx: Math.round(maxToeDelta * 100) / 100,
+  deterministicHoofDeltasPx: toeDeltas.map((value) => Math.round(value * 100) / 100),
+  clearlyMovingToes,
   throughSceneTravelPx: Math.round(worldTravel * 100) / 100,
 }, null, 2));
 
