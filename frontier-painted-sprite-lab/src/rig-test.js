@@ -76,11 +76,13 @@ function currentIntegrationState() {
 
 function layout() {
   // Identical composition for both methods. The only thing being compared is
-  // deformation architecture, not placement or source art.
+  // deformation architecture, not placement or source art. The Y position is
+  // intentionally grounded on the visible trail instead of hovering over the
+  // background wagon, which made earlier QA impossible to judge fairly.
   const targetWidth = app.screen.width * (0.27 - state.depth * 0.025);
   const scale = targetWidth / 800;
   const x = app.screen.width * (0.61 - state.depth * 0.008);
-  const y = app.screen.height * (0.735 - state.depth * 0.022);
+  const y = app.screen.height * (0.815 - state.depth * 0.010);
   for (const actor of [rig, baseline]) {
     actor.root.scale.set(scale);
     actor.root.x = x;
