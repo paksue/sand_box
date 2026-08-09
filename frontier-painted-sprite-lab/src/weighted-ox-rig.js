@@ -59,6 +59,11 @@ function rotateDelta(x, y, pivotX, pivotY, angle) {
   return { dx: rx - x, dy: ry - y };
 }
 
+function rotatePointAround(source, pivot, angle) {
+  const delta = rotateDelta(source.x, source.y, pivot.x, pivot.y, angle);
+  return { x: source.x + delta.dx, y: source.y + delta.dy };
+}
+
 function point(u, v) {
   return { x: u * ART_W, y: v * ART_H };
 }
@@ -82,7 +87,7 @@ export class WeightedPaintedPairRig {
     this.dustLayer = new PIXI.Container();
     this.baseVertices = null;
     this.poseVersion = 0;
-    this.motionStrength = 0.55;
+    this.motionStrength = 0.72;
     this.depth = 0.42;
     this.debugSkeleton = false;
     this.colorMatch = true;
@@ -107,6 +112,8 @@ export class WeightedPaintedPairRig {
       uvs: grid.uvs,
       indices: grid.indices,
     });
+    // PixiJS 8 MeshSimple supports dynamic vertices with autoUpdate enabled.
+    // The official docs explicitly call this out for per-frame geometry changes.
     this.mesh.autoUpdate = true;
     this.mesh.filters = [this.noiseFilter];
 
@@ -173,11 +180,11 @@ export class WeightedPaintedPairRig {
   }
 
   layout(screenWidth, screenHeight) {
-    const targetWidth = screenWidth * (0.27 - this.depth * 0.025);
+    const targetWidth = screenWidth * (0.32 - this.depth * 0.025);
     const scale = targetWidth / ART_W;
     this.root.scale.set(scale);
     this.root.x = screenWidth * (0.61 - this.depth * 0.008);
-    this.root.y = screenHeight * (0.735 - this.depth * 0.022);
+    this.root.y = screenHeight * (0.815 - this.depth * 0.010);
   }
 
   resetPose() {
@@ -190,19 +197,23 @@ export class WeightedPaintedPairRig {
     const vertices = this.mesh.vertices;
     const strength = this.motionStrength;
 
-    // Heavy walk timing. Fore/hind regions are deliberately slightly out of
-    // phase, while the two visible heads get subtly different movement.
+    // Deliberately readable draft-animal motion. The prior experiment used
+    // physically tiny values that mostly became sub-pixel after scene scaling,
+    // so CI could measure changes that a human could not see. These values stay
+    // restrained enough to preserve the painting while creating visible gait.
     const foreStride = Math.sin(phase);
     const hindStride = Math.sin(phase + Math.PI * 0.92);
-    const bodyBob = Math.sin(phase * 2) * 1.8 * strength;
-    const bodySway = Math.sin(phase) * 1.0 * strength;
-    const breath = Math.sin(phase * 0.46 + 0.8) * 1.15 * strength;
+    const bodyBob = Math.sin(phase * 2) * 4.8 * strength;
+    const bodySway = Math.sin(phase) * 2.6 * strength;
+    const breath = Math.sin(phase * 0.46 + 0.8) * 1.5 * strength;
 
-    const headFrontAngle = (Math.sin(phase * 0.53 + 0.25) * 0.028 - 0.006) * strength;
-    const headRearAngle = (Math.sin(phase * 0.49 + 1.05) * 0.020 + 0.003) * strength;
-    const neckAngle = Math.sin(phase * 0.56 + 0.65) * 0.018 * strength;
-    const foreAngle = foreStride * 0.060 * strength;
-    const hindAngle = hindStride * 0.054 * strength;
+    const headFrontAngle = (Math.sin(phase * 0.53 + 0.25) * 0.052 - 0.010) * strength;
+    const headRearAngle = (Math.sin(phase * 0.49 + 1.05) * 0.038 + 0.005) * strength;
+    const neckAngle = Math.sin(phase * 0.56 + 0.65) * 0.032 * strength;
+    const foreAngle = foreStride * 0.115 * strength;
+    const hindAngle = hindStride * 0.102 * strength;
+    const foreLift = Math.max(0, foreStride) * 9.0 * strength;
+    const hindLift = Math.max(0, hindStride) * 8.0 * strength;
 
     const headFrontPivot = point(0.20, 0.43);
     const headRearPivot = point(0.29, 0.40);
@@ -233,8 +244,8 @@ export class WeightedPaintedPairRig {
       const frontHeadDelta = rotateDelta(baseX, baseY, headFrontPivot.x, headFrontPivot.y, headFrontAngle);
       const rearHeadDelta = rotateDelta(baseX, baseY, headRearPivot.x, headRearPivot.y, headRearAngle);
       const neckDelta = rotateDelta(baseX, baseY, neckPivot.x, neckPivot.y, neckAngle);
-      dx += frontHeadDelta.dx * frontHeadWeight + rearHeadDelta.dx * rearHeadWeight * 0.58 + neckDelta.dx * neckWeight * 0.55;
-      dy += frontHeadDelta.dy * frontHeadWeight + rearHeadDelta.dy * rearHeadWeight * 0.58 + neckDelta.dy * neckWeight * 0.55;
+      dx += frontHeadDelta.dx * frontHeadWeight + rearHeadDelta.dx * rearHeadWeight * 0.62 + neckDelta.dx * neckWeight * 0.62;
+      dy += frontHeadDelta.dy * frontHeadWeight + rearHeadDelta.dy * rearHeadWeight * 0.62 + neckDelta.dy * neckWeight * 0.62;
 
       // Weighted leg regions are spatially broad because this historical source
       // is flattened. This tests weighted deformation; final production art will
@@ -248,17 +259,17 @@ export class WeightedPaintedPairRig {
       const hoofBand = smoothstep(0.76, 0.94, v);
       const foreStance = foreStride < 0 ? 1 : 0;
       const hindStance = hindStride < 0 ? 1 : 0;
-      const forePlant = 1 - hoofBand * foreStance * 0.72;
-      const hindPlant = 1 - hoofBand * hindStance * 0.72;
+      const forePlant = 1 - hoofBand * foreStance * 0.78;
+      const hindPlant = 1 - hoofBand * hindStance * 0.78;
       dx += foreDelta.dx * foreWeight * forePlant;
-      dy += foreDelta.dy * foreWeight * (0.86 + hoofBand * 0.14);
+      dy += foreDelta.dy * foreWeight * (0.84 + hoofBand * 0.16) - foreLift * foreWeight * hoofBand;
       dx += hindDelta.dx * hindWeight * hindPlant;
-      dy += hindDelta.dy * hindWeight * (0.86 + hoofBand * 0.14);
+      dy += hindDelta.dy * hindWeight * (0.84 + hoofBand * 0.16) - hindLift * hindWeight * hoofBand;
 
       const shoulder = bell(0.40, 0.18, u) * smoothstep(0.32, 0.70, v);
       const hip = bell(0.79, 0.18, u) * smoothstep(0.31, 0.69, v);
-      dy += Math.max(0, foreStride) * 1.9 * strength * shoulder;
-      dy += Math.max(0, hindStride) * 1.6 * strength * hip;
+      dy += Math.max(0, foreStride) * 3.8 * strength * shoulder;
+      dy += Math.max(0, hindStride) * 3.2 * strength * hip;
 
       vertices[i] = baseX + dx;
       vertices[i + 1] = baseY + dy;
@@ -272,54 +283,88 @@ export class WeightedPaintedPairRig {
       hind: { ...hindPivot, angle: hindAngle },
       foreStride,
       hindStride,
+      foreLift,
+      hindLift,
     };
 
     if (this.debugSkeleton) this.drawSkeleton();
+  }
+
+  getAnimatedSkeletonPoints() {
+    if (!this.lastPose) return null;
+    const pose = this.lastPose;
+    const spineA = point(0.34, 0.48);
+    const spineB = point(0.77, 0.49);
+    const frontMuzzleBase = point(0.08, 0.48);
+    const rearMuzzleBase = point(0.17, 0.39);
+    const foreFootBase = point(0.42, 0.89);
+    const hindFootBase = point(0.82, 0.89);
+
+    const frontMuzzle = rotatePointAround(frontMuzzleBase, pose.frontHead, pose.frontHead.angle);
+    const rearMuzzle = rotatePointAround(rearMuzzleBase, pose.rearHead, pose.rearHead.angle);
+    const foreFoot = rotatePointAround(foreFootBase, pose.fore, pose.fore.angle);
+    const hindFoot = rotatePointAround(hindFootBase, pose.hind, pose.hind.angle);
+    foreFoot.y -= pose.foreLift;
+    hindFoot.y -= pose.hindLift;
+
+    return {
+      spineA,
+      spineB,
+      frontMuzzle,
+      rearMuzzle,
+      foreFoot,
+      hindFoot,
+      foreFootBase,
+      hindFootBase,
+    };
   }
 
   drawSkeleton() {
     if (!this.debugSkeleton || !this.lastPose) return;
     const g = this.debugLayer;
     const pose = this.lastPose;
-    const spineA = point(0.34, 0.48);
-    const spineB = point(0.77, 0.49);
-    const frontMuzzle = point(0.08, 0.48);
-    const rearMuzzle = point(0.17, 0.39);
-    const foreFoot = point(0.42, 0.89);
-    const hindFoot = point(0.82, 0.89);
+    const p = this.getAnimatedSkeletonPoints();
 
     g.clear();
-    g.moveTo(frontMuzzle.x, frontMuzzle.y).lineTo(pose.frontHead.x, pose.frontHead.y)
-      .lineTo(pose.neck.x, pose.neck.y).lineTo(spineA.x, spineA.y).lineTo(spineB.x, spineB.y)
+
+    // Faint planted-hoof targets make stance vs swing readable in debug view.
+    g.moveTo(p.foreFootBase.x - 10, p.foreFootBase.y).lineTo(p.foreFootBase.x + 10, p.foreFootBase.y)
+      .stroke({ width: 2, color: 0xffcf66, alpha: 0.28 });
+    g.moveTo(p.hindFootBase.x - 10, p.hindFootBase.y).lineTo(p.hindFootBase.x + 10, p.hindFootBase.y)
+      .stroke({ width: 2, color: 0xffcf66, alpha: 0.28 });
+
+    g.moveTo(p.frontMuzzle.x, p.frontMuzzle.y).lineTo(pose.frontHead.x, pose.frontHead.y)
+      .lineTo(pose.neck.x, pose.neck.y).lineTo(p.spineA.x, p.spineA.y).lineTo(p.spineB.x, p.spineB.y)
       .stroke({ width: 4, color: 0x77d7ff, alpha: 0.93 });
-    g.moveTo(rearMuzzle.x, rearMuzzle.y).lineTo(pose.rearHead.x, pose.rearHead.y)
+    g.moveTo(p.rearMuzzle.x, p.rearMuzzle.y).lineTo(pose.rearHead.x, pose.rearHead.y)
       .lineTo(pose.neck.x, pose.neck.y)
       .stroke({ width: 3.4, color: 0x9ae2ff, alpha: 0.87 });
-    g.moveTo(pose.fore.x, pose.fore.y).lineTo(foreFoot.x, foreFoot.y)
+    g.moveTo(pose.fore.x, pose.fore.y).lineTo(p.foreFoot.x, p.foreFoot.y)
       .stroke({ width: 4, color: 0xffcf66, alpha: 0.93 });
-    g.moveTo(pose.hind.x, pose.hind.y).lineTo(hindFoot.x, hindFoot.y)
+    g.moveTo(pose.hind.x, pose.hind.y).lineTo(p.hindFoot.x, p.hindFoot.y)
       .stroke({ width: 4, color: 0xffcf66, alpha: 0.93 });
 
-    for (const p of [frontMuzzle, rearMuzzle, pose.frontHead, pose.rearHead, pose.neck, spineA, spineB, pose.fore, pose.hind, foreFoot, hindFoot]) {
-      g.circle(p.x, p.y, 5.5).fill({ color: 0xfff1bd, alpha: 0.95 });
+    for (const node of [p.frontMuzzle, p.rearMuzzle, pose.frontHead, pose.rearHead, pose.neck, p.spineA, p.spineB, pose.fore, pose.hind, p.foreFoot, p.hindFoot]) {
+      g.circle(node.x, node.y, 5.5).fill({ color: 0xfff1bd, alpha: 0.95 });
     }
   }
 
   updateContinuous(deltaSeconds, phase) {
     if (!this.mesh) return;
-    this.shadow.scale.x = 1 + Math.sin(phase * 2) * 0.010 * this.motionStrength;
+    this.shadow.scale.x = 1 + Math.sin(phase * 2) * 0.022 * this.motionStrength;
+    this.shadow.scale.y = 1 - Math.sin(phase * 2) * 0.010 * this.motionStrength;
     this.shadow.alpha = this.shadowEnabled ? 0.72 * (1 - this.depth * 0.33) : 0;
 
     for (const puff of this.dust) {
-      puff.age += deltaSeconds * (0.14 + this.motionStrength * 0.08);
+      puff.age += deltaSeconds * (0.18 + this.motionStrength * 0.11);
       if (puff.age > 1) puff.age -= 1;
       const t = puff.age;
-      puff.node.x += deltaSeconds * (5.5 + puff.seed * 0.3);
+      puff.node.x += deltaSeconds * (8.0 + puff.seed * 0.42);
       if (puff.node.x > ART_W * 0.84) puff.node.x = ART_W * 0.27;
-      puff.node.y = ART_H * (0.815 - t * 0.025) + Math.sin(phase + puff.seed) * 1.8;
-      const scale = 0.43 + t * 0.52;
+      puff.node.y = ART_H * (0.815 - t * 0.032) + Math.sin(phase + puff.seed) * 2.4;
+      const scale = 0.43 + t * 0.58;
       puff.node.scale.set(scale);
-      puff.node.alpha = this.dustEnabled ? Math.sin(Math.PI * t) * 0.068 : 0;
+      puff.node.alpha = this.dustEnabled ? Math.sin(Math.PI * t) * 0.085 : 0;
     }
   }
 
@@ -329,6 +374,8 @@ export class WeightedPaintedPairRig {
       vertices: this.mesh ? Array.from(this.mesh.vertices) : [],
       debugSkeleton: this.debugSkeleton,
       grid: [GRID_COLS, GRID_ROWS],
+      skeletonPoints: this.getAnimatedSkeletonPoints(),
+      motionStrength: this.motionStrength,
     };
   }
 }
