@@ -10,7 +10,7 @@
   --gold: #d3a65d;
   --line: rgba(235, 205, 151, .2);
   --painting: url('https://upload.wikimedia.org/wikipedia/commons/0/0d/Emigrants_Crossing_the_Plains%2C_or_The_Oregon_Trail_%28Albert_Bierstadt%29%2C_1869.jpg');
-  --source: url('https://upload.wikimedia.org/wikipedia/commons/a/a1/George_Stubbs_-_The_Lincolnshire_Ox_-_Google_Art_Project.jpg');
+  --source: url('https://upload.wikimedia.org/wikipedia/commons/e/eb/A_Pair_of_Oxen_-_Rosa_Bonheur.webp');
   font-family: 'DM Sans', system-ui, sans-serif;
   background: var(--bg);
   color: var(--ink);
