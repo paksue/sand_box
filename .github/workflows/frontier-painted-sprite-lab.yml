@@ -1,0 +1,40 @@
+name: Frontier Painted Sprite Lab
+
+on:
+  push:
+    paths:
+      - 'frontier-painted-sprite-lab/**'
+      - '.github/workflows/frontier-painted-sprite-lab.yml'
+  pull_request:
+    paths:
+      - 'frontier-painted-sprite-lab/**'
+      - '.github/workflows/frontier-painted-sprite-lab.yml'
+
+jobs:
+  visual-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start static server
+        run: |
+          python3 -m http.server 4175 --directory frontier-painted-sprite-lab >/tmp/painted-sprite-http.log 2>&1 &
+          sleep 2
+      - name: Run painterly sprite regression
+        env:
+          PAINTED_SPRITE_URL: http://127.0.0.1:4175/
+        run: node frontier-painted-sprite-lab/tests/visual.mjs
+      - name: Upload living-ox screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontier-painted-sprite-lab
+          path: frontier-painted-sprite-lab/test-results/
+          if-no-files-found: ignore
