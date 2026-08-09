@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Frontier Painted Sprite Lab</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="lab-shell">
+    <header class="lab-header">
+      <div>
+        <p class="eyebrow">FRONTIER VISUAL R&D · ISOLATED FROM THE GAME</p>
+        <h1>The Living Ox</h1>
+        <p class="lede">A reusable painterly raster sprite, pre-matted during asset authoring and gently mesh-deformed at runtime. The quality bar: pause anywhere and it should still feel like painted art living inside the landscape.</p>
+      </div>
+      <a class="repo-link" href="../frontier-journey/">Back to game</a>
+    </header>
+
+    <section class="lab-grid">
+      <div class="viewer-column">
+        <div id="stage" class="painting-stage" data-view="scene">
+          <div class="painting-backdrop" aria-hidden="true"></div>
+          <div id="neutralBackdrop" class="neutral-backdrop" aria-hidden="true"></div>
+          <div id="sourceBackdrop" class="source-backdrop" aria-hidden="true"></div>
+          <div id="pixiMount" class="pixi-mount" aria-label="Painterly ox animation canvas"></div>
+          <div id="canvasGrain" class="canvas-grain" aria-hidden="true"></div>
+          <div class="vignette" aria-hidden="true"></div>
+          <div class="stage-caption">
+            <span id="modeCaption">Scene integration</span>
+            <span id="rendererCaption">Preparing painted sprite…</span>
+          </div>
+        </div>
+
+        <div class="transport" aria-label="Animation transport">
+          <button id="playPause" type="button">Pause</button>
+          <button class="speed-button" data-speed="0.25" type="button">0.25×</button>
+          <button class="speed-button" data-speed="0.5" type="button">0.5×</button>
+          <button class="speed-button active" data-speed="1" type="button">1×</button>
+          <button class="speed-button" data-speed="1.5" type="button">1.5×</button>
+          <button id="resetPose" type="button">Reset pose</button>
+        </div>
+      </div>
+
+      <aside class="controls-panel">
+        <section>
+          <h2>View</h2>
+          <div class="segmented" role="group" aria-label="View mode">
+            <button class="view-button active" data-view="scene" type="button">Scene</button>
+            <button class="view-button" data-view="neutral" type="button">Neutral</button>
+            <button class="view-button" data-view="mesh" type="button">Mesh</button>
+            <button class="view-button" data-view="source" type="button">Source</button>
+          </div>
+          <p class="hint">Neutral exposes the sprite by itself. Mesh shows its runtime deformation grid. Source shows the original public-domain Rosa Bonheur painting before offline matting.</p>
+        </section>
+
+        <section>
+          <h2>Sprite depth</h2>
+          <label class="range-row">
+            <span>Distance</span>
+            <output id="depthOutput">46%</output>
+            <input id="depth" type="range" min="0" max="100" value="46" />
+          </label>
+          <label class="range-row">
+            <span>Motion strength</span>
+            <output id="motionOutput">48%</output>
+            <input id="motionStrength" type="range" min="15" max="90" value="48" />
+          </label>
+        </section>
+
+        <section>
+          <h2>Scene integration</h2>
+          <label class="toggle"><input id="colorMatch" type="checkbox" checked /> <span>Warm color match</span></label>
+          <label class="toggle"><input id="atmosphere" type="checkbox" checked /> <span>Atmospheric depth</span></label>
+          <label class="toggle"><input id="contactShadow" type="checkbox" checked /> <span>Contact shadow</span></label>
+          <label class="toggle"><input id="dust" type="checkbox" checked /> <span>Hoof dust</span></label>
+          <label class="toggle"><input id="grain" type="checkbox" checked /> <span>Shared canvas grain</span></label>
+        </section>
+
+        <section class="quality-gate">
+          <h2>Quality gate</h2>
+          <p><strong>Static:</strong> pause at a random pose. Does the animal still read as a painting, not a puppet?</p>
+          <p><strong>Motion:</strong> does the movement attract the eye without breaking the painting?</p>
+        </section>
+
+        <section class="metrics">
+          <h2>Runtime</h2>
+          <dl>
+            <div><dt>Renderer</dt><dd id="rendererMetric">—</dd></div>
+            <div><dt>Asset</dt><dd>pre-matted WebP</dd></div>
+            <div><dt>FPS</dt><dd id="fpsMetric">—</dd></div>
+            <div><dt>Pose cadence</dt><dd>15 fps</dd></div>
+            <div><dt>Grid</dt><dd>11 × 7</dd></div>
+          </dl>
+        </section>
+      </aside>
+    </section>
+
+    <footer class="research-note">
+      <strong>Prototype rule:</strong> no geometric replacement art. The visible ox pixels come from a public-domain Rosa Bonheur oil painting, matted once during the authoring pipeline, then reused as a transparent game sprite and mesh-deformed in PixiJS. This lab is deliberately independent of <code>frontier-journey/</code>.
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/pixi.js@8.19.0/dist/pixi.min.js"></script>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
