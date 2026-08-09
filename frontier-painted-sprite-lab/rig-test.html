@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Frontier Painted Sprite Lab · Weighted Rig Test</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./rig-test.css" />
+</head>
+<body>
+  <main class="lab-shell">
+    <header class="lab-header">
+      <div>
+        <p class="eyebrow">FRONTIER VISUAL R&D · RIG TEST</p>
+        <h1>The Living Ox Pair</h1>
+        <p class="lede">The approved Rosa Bonheur asset already contains two overlapping oxen in one painted raster sprite. This page compares that exact sprite animated two ways: the original whole-image mesh deformation versus a Spine-style weighted mesh with virtual head, neck, torso, foreleg and hindleg bones.</p>
+      </div>
+      <div class="header-actions">
+        <a class="repo-link" href="./">Baseline lab</a>
+        <a class="repo-link" href="../frontier-journey/">Back to game</a>
+      </div>
+    </header>
+
+    <section class="experiment-banner">
+      <strong>What can this historical source prove?</strong>
+      <span>It can prove whether bone-weighted mesh deformation preserves painterly pixels better than broad whole-image warping. It cannot honestly prove two fully independent skeletal oxen because the rear animal is partially hidden by the foreground animal in the original painting. That final test requires purpose-painted overlapping layers with hidden anatomy.</span>
+    </section>
+
+    <section class="lab-grid">
+      <div class="viewer-column">
+        <div id="stage" class="painting-stage" data-view="scene">
+          <div class="painting-backdrop" aria-hidden="true"></div>
+          <div class="neutral-backdrop" aria-hidden="true"></div>
+          <div id="pixiMount" class="pixi-mount" aria-label="Painterly weighted ox-pair rig canvas"></div>
+          <div id="canvasGrain" class="canvas-grain" aria-hidden="true"></div>
+          <div class="vignette" aria-hidden="true"></div>
+          <div class="stage-caption">
+            <span id="modeCaption">Weighted painted pair in scene</span>
+            <span id="rendererCaption">Preparing weighted painterly rig…</span>
+          </div>
+        </div>
+
+        <div class="transport" aria-label="Animation transport">
+          <button id="playPause" type="button">Pause</button>
+          <button class="speed-button" data-speed="0.25" type="button">0.25×</button>
+          <button class="speed-button" data-speed="0.5" type="button">0.5×</button>
+          <button class="speed-button active" data-speed="1" type="button">1×</button>
+          <button class="speed-button" data-speed="1.5" type="button">1.5×</button>
+          <button id="resetPose" type="button">Reset pose</button>
+        </div>
+      </div>
+
+      <aside class="controls-panel">
+        <section>
+          <h2>Animation method</h2>
+          <div class="segmented" role="group" aria-label="Animation method">
+            <button class="mode-button active" data-mode="weighted" type="button">Weighted rig</button>
+            <button class="mode-button" data-mode="baseline" type="button">Whole mesh</button>
+          </div>
+          <p class="hint">Same image. Same scale. Same scene. Weighted rig uses multiple virtual bone influence fields over a denser mesh; Whole mesh uses the original broad 11×7 deformation.</p>
+        </section>
+
+        <section>
+          <h2>Inspection</h2>
+          <div class="segmented" role="group" aria-label="View mode">
+            <button class="view-button active" data-view="scene" type="button">Scene</button>
+            <button class="view-button" data-view="neutral" type="button">Neutral</button>
+            <button class="view-button" data-view="skeleton" type="button">Skeleton</button>
+          </div>
+          <p class="hint">Neutral exposes the painted sprite without environmental camouflage. Skeleton shows the invisible bone fields or, for the baseline, the broad deformation grid.</p>
+        </section>
+
+        <section>
+          <h2>Rig behavior</h2>
+          <label class="range-row">
+            <span>Distance</span>
+            <output id="depthOutput">42%</output>
+            <input id="depth" type="range" min="0" max="100" value="42" />
+          </label>
+          <label class="range-row">
+            <span>Motion strength</span>
+            <output id="motionOutput">55%</output>
+            <input id="motionStrength" type="range" min="20" max="85" value="55" />
+          </label>
+        </section>
+
+        <section>
+          <h2>Scene integration</h2>
+          <label class="toggle"><input id="colorMatch" type="checkbox" checked /> <span>Warm color match</span></label>
+          <label class="toggle"><input id="atmosphere" type="checkbox" checked /> <span>Atmospheric depth</span></label>
+          <label class="toggle"><input id="contactShadow" type="checkbox" checked /> <span>Contact shadow</span></label>
+          <label class="toggle"><input id="dust" type="checkbox" checked /> <span>Hoof dust</span></label>
+          <label class="toggle"><input id="grain" type="checkbox" checked /> <span>Shared canvas grain</span></label>
+        </section>
+
+        <section class="quality-gate">
+          <h2>What this test answers</h2>
+          <p><strong>Static:</strong> does the original painted pair still look intact at arbitrary weighted poses?</p>
+          <p><strong>Weight:</strong> does planted-hoof damping and shoulder/hip compression read better than whole-image warping?</p>
+          <p><strong>Art integrity:</strong> do the brushwork, silhouettes and atmosphere survive the extra deformation machinery?</p>
+        </section>
+
+        <section class="metrics">
+          <h2>Runtime</h2>
+          <dl>
+            <div><dt>Renderer</dt><dd id="rendererMetric">—</dd></div>
+            <div><dt>Rig</dt><dd id="rigMetric">1 pair sprite · weighted 19×13 mesh</dd></div>
+            <div><dt>FPS</dt><dd id="fpsMetric">—</dd></div>
+            <div><dt>Pose cadence</dt><dd>15 fps</dd></div>
+            <div><dt>Visible art</dt><dd>Rosa Bonheur raster</dd></div>
+          </dl>
+        </section>
+      </aside>
+    </section>
+
+    <footer class="research-note">
+      <strong>Production interpretation:</strong> if Weighted rig wins, the next art-authoring step is a purpose-painted layered two-ox asset with hidden joint artwork. In Spine Professional, each ox can then have its own skeleton, weighted meshes, IK hoof targets, controlled draw order and occasional alternate painted attachments while the browser renders the exported object through <code>spine-pixi-v8</code>.
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/pixi.js@8.19.0/dist/pixi.min.js"></script>
+  <script type="module" src="./src/rig-test.js"></script>
+</body>
+</html>
