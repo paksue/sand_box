@@ -1,0 +1,50 @@
+name: Oregon Trail 1990 Reference Benchmark
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [agent/oregon1990-benchmark]
+    paths:
+      - '.github/workflows/oregon1990-reference.yml'
+      - 'frontier-journey/reference/**'
+
+permissions:
+  contents: read
+
+jobs:
+  reference-emulation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install emulator and capture tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dosbox xvfb xdotool imagemagick unzip jq
+
+      - name: Fetch Internet Archive metadata and game archive
+        run: |
+          set -euxo pipefail
+          mkdir -p frontier-journey/reference/results /tmp/oregon1990
+          curl -fsSL 'https://archive.org/metadata/msdos_Oregon_Trail_The_1990' -o frontier-journey/reference/results/archive-metadata.json
+          python3 frontier-journey/reference/fetch_oregon1990.py \
+            frontier-journey/reference/results/archive-metadata.json \
+            /tmp/oregon1990/game.zip
+          unzip -o /tmp/oregon1990/game.zip -d /tmp/oregon1990/game
+          find /tmp/oregon1990/game -maxdepth 4 -type f | sort | tee frontier-journey/reference/results/game-files.txt
+
+      - name: Boot exact archived build in DOSBox and capture screens
+        env:
+          SDL_AUDIODRIVER: dummy
+        run: |
+          set -euxo pipefail
+          bash frontier-journey/reference/capture_oregon1990.sh /tmp/oregon1990/game frontier-journey/reference/results
+
+      - name: Upload reference captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oregon1990-reference
+          path: frontier-journey/reference/results/
+          if-no-files-found: error
