@@ -42,8 +42,8 @@ async function stateSnapshot(page) {
   }));
 }
 
-async function handleOpenModal(page, stats) {
-  return page.evaluate(async (stats) => {
+async function handleOpenModal(page) {
+  return page.evaluate(async () => {
     const modal = document.querySelector('#modal');
     if (!modal.open) return 'none';
     const eyebrow = document.querySelector('#modalEyebrow').textContent.trim();
@@ -54,7 +54,6 @@ async function handleOpenModal(page, stats) {
       const landmark = LANDMARKS.find((item) => Math.abs(item.distance - state.distance) < 0.1);
       if (!landmark) throw new Error(`No river landmark at ${state.distance}`);
       const method = state.money >= 45 ? 'ferry' : 'float';
-      stats.rivers += 1;
       await resolveRiver(landmark, method);
       return `river:${method}`;
     }
@@ -65,12 +64,10 @@ async function handleOpenModal(page, stats) {
       const medButton = buttons.find((b) => b.textContent.includes('Buy one medicine'));
       if (state.inventory.food < 180 && foodButton && !foodButton.disabled) {
         foodButton.click();
-        stats.fortFoodBuys += 1;
         return 'fort-food';
       }
       if (state.inventory.medicine < 2 && medButton && !medButton.disabled) {
         medButton.click();
-        stats.fortMedicineBuys += 1;
         return 'fort-medicine';
       }
       closeModal();
@@ -79,43 +76,47 @@ async function handleOpenModal(page, stats) {
 
     closeModal();
     return eyebrow.toLowerCase();
-  }, stats);
+  });
 }
 
-async function performStrategyAction(page, stats) {
-  return page.evaluate(async (stats) => {
+async function performStrategyAction(page) {
+  return page.evaluate(async () => {
     const living = aliveParty();
     const sick = living.filter((m) => m.statuses.length > 0).sort((a, b) => a.hp - b.hp);
 
     if (sick.length && state.inventory.medicine > 0 && sick[0].hp < 68) {
       if (useMedicine(sick[0])) {
-        stats.treatments += 1;
         await saveGame();
         renderGame();
         return 'treat';
       }
     }
-
     if (averageHealth() < 58) {
-      stats.rests += 1;
       await restDay();
       return 'rest';
     }
     if (state.wagonCondition < 48) {
-      stats.repairs += 1;
       await repairDay();
       return 'repair';
     }
     if (state.inventory.food < 120 && state.inventory.ammo >= 5) {
-      stats.hunts += 1;
       await huntDay();
       return 'hunt';
     }
-
-    stats.travelDays += 1;
     await continueTravel();
     return 'continue';
-  }, stats);
+  });
+}
+
+function countAction(stats, action) {
+  if (action === 'continue') stats.travelDays += 1;
+  if (action === 'rest') stats.rests += 1;
+  if (action === 'hunt') stats.hunts += 1;
+  if (action === 'repair') stats.repairs += 1;
+  if (action === 'treat') stats.treatments += 1;
+  if (action?.startsWith('river:')) stats.rivers += 1;
+  if (action === 'fort-food') stats.fortFoodBuys += 1;
+  if (action === 'fort-medicine') stats.fortMedicineBuys += 1;
 }
 
 async function playProfile(browser, profile, index) {
@@ -139,7 +140,6 @@ async function playProfile(browser, profile, index) {
   await page.waitForFunction(() => state !== null && !document.querySelector('#gameScreen').classList.contains('hidden'));
   await page.waitForSelector('#pixiScene canvas', { state: 'visible' });
 
-  // Grade the exposed treatment UI on the first run.
   if (index === 0) {
     await page.evaluate(() => {
       state.party[1].hp = 65;
@@ -149,12 +149,11 @@ async function playProfile(browser, profile, index) {
     const before = await page.evaluate(() => state.inventory.medicine);
     await page.click('button[data-action="treat"]');
     await page.getByRole('button', { name: /^Martha/ }).click();
-    await page.waitForFunction(() => state.inventory.medicine < arguments[0], before);
+    await page.waitForFunction((beforeValue) => state.inventory.medicine < beforeValue, before);
     await page.evaluate(() => closeModal());
     const afterTreatment = await stateSnapshot(page);
     assert(afterTreatment.party[1].hp >= 71, 'Treatment UI did not improve Martha health');
 
-    // Save/resume persistence smoke test.
     await page.reload({ waitUntil: 'networkidle' });
     await page.waitForSelector('#resumeButton:not(.hidden)');
     await page.click('#resumeButton');
@@ -170,20 +169,20 @@ async function playProfile(browser, profile, index) {
   let actions = 0;
 
   while (actions < maxActions) {
-    const ended = await page.evaluate(() => state.ended);
-    if (ended) break;
+    if (await page.evaluate(() => state.ended)) break;
 
-    const modalOpen = await page.locator('#modal').evaluate((el) => el.open);
-    if (modalOpen) {
-      const result = await handleOpenModal(page, stats);
+    if (await page.locator('#modal').evaluate((el) => el.open)) {
+      const result = await handleOpenModal(page);
       if (result === 'terminal') break;
-      await page.waitForTimeout(2);
+      countAction(stats, result);
+      await page.waitForTimeout(3);
       continue;
     }
 
-    await performStrategyAction(page, stats);
+    const action = await performStrategyAction(page);
+    countAction(stats, action);
     actions += 1;
-    await page.waitForTimeout(2);
+    await page.waitForTimeout(3);
   }
 
   const final = await stateSnapshot(page);
