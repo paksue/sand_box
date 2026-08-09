@@ -1,0 +1,42 @@
+name: Frontier Journey Balance Tuning Round 3
+
+on:
+  push:
+    branches:
+      - agent/balance-tuning-round3
+    paths:
+      - 'frontier-journey/**'
+      - '.github/workflows/frontier-tuning-round3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tuning-round3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start static game server
+        run: |
+          python3 -m http.server 4173 --directory frontier-journey >/tmp/frontier-http.log 2>&1 &
+          sleep 2
+      - name: Run round-three candidates
+        env:
+          FRONTIER_URL: http://127.0.0.1:4173/
+        run: node frontier-journey/tests/tuning-round3.mjs
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontier-tuning-round3-results
+          path: frontier-journey/test-results-tuning-round3/
+          if-no-files-found: ignore
