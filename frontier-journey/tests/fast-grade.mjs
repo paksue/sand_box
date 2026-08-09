@@ -91,7 +91,18 @@ async function performStrategyAction(page) {
         return 'treat';
       }
     }
-    if (averageHealth() < 58) {
+
+    // Food recovery comes before resting. The old grader could enter an
+    // artificial infinite-feeling loop at zero food: starvation damage (-4)
+    // exactly cancelled a normal rest's +4 healing, so it kept resting forever.
+    // A competent player should hunt while ammunition remains, and should not
+    // spend days resting if there is not enough food for that rest to improve
+    // the party's net condition.
+    if (state.inventory.food < 120 && state.inventory.ammo >= 5) {
+      await huntDay();
+      return 'hunt';
+    }
+    if (averageHealth() < 58 && state.inventory.food >= dailyFoodNeed()) {
       await restDay();
       return 'rest';
     }
@@ -99,10 +110,9 @@ async function performStrategyAction(page) {
       await repairDay();
       return 'repair';
     }
-    if (state.inventory.food < 120 && state.inventory.ammo >= 5) {
-      await huntDay();
-      return 'hunt';
-    }
+
+    // If food/ammo are exhausted, continuing toward a fort or an eventual loss
+    // is more informative than a no-progress rest loop.
     await continueTravel();
     return 'travel';
   });
@@ -173,7 +183,9 @@ async function playProfile(browser, profile, index) {
   await page.evaluate(() => { state.pace = 'Steady'; state.rations = 'Meager'; renderGame(); });
 
   const stats = { travelCommands: 0, rests: 0, hunts: 0, repairs: 0, treatments: 0, rivers: 0, fortFoodBuys: 0, fortMedicineBuys: 0 };
-  const maxActions = 520;
+  // More than 220 meaningful player actions is itself a pacing failure for this
+  // benchmark, so do not spend CI time grinding out hundreds of extra inputs.
+  const maxActions = 220;
   let actions = 0;
 
   while (actions < maxActions) {
@@ -197,7 +209,7 @@ async function playProfile(browser, profile, index) {
   const calendarDays = Math.max(0, Math.round((new Date(final.date) - new Date(runStartDate)) / 86400000));
   if (index === 0) await page.screenshot({ path: new URL('./representative-game.png', outDir).pathname, fullPage: true });
 
-  const result = { profile, actions, calendarDays, stats, final, consoleErrors, pageErrors };
+  const result = { profile, actions, hitActionCap: actions >= maxActions && !final.ended, calendarDays, stats, final, consoleErrors, pageErrors };
   await context.close();
   return result;
 }
@@ -218,6 +230,7 @@ try {
     totalRuns: runs.length,
     completed: completions.length,
     completionRate: completions.length / runs.length,
+    actionCapHits: runs.filter((run) => run.hitActionCap).length,
     avgDistance: Math.round(runs.reduce((s, r) => s + r.final.distance, 0) / runs.length),
     avgSurvivors: Number((runs.reduce((s, r) => s + r.final.survivors, 0) / runs.length).toFixed(2)),
     avgMeaningfulActions: Math.round(runs.reduce((s, r) => s + r.actions, 0) / runs.length),
@@ -231,6 +244,7 @@ try {
       return [profession, {
         completed: group.filter((r) => r.final.distance >= 2040).length,
         runs: group.length,
+        actionCapHits: group.filter((r) => r.hitActionCap).length,
         avgDistance: Math.round(group.reduce((s, r) => s + r.final.distance, 0) / group.length),
         avgSurvivors: Number((group.reduce((s, r) => s + r.final.survivors, 0) / group.length).toFixed(1)),
         avgActions: Math.round(group.reduce((s, r) => s + r.actions, 0) / group.length),
