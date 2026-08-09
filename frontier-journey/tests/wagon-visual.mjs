@@ -1,5 +1,6 @@
 import { chromium } from 'playwright';
 import fs from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 
 const BASE_URL = process.env.FRONTIER_URL || 'http://127.0.0.1:4173/';
 const outDir = new URL('../test-results-wagon/', import.meta.url);
@@ -77,7 +78,7 @@ try {
   const final = await page.evaluate(() => window.frontierVisualFix.getSnapshot());
   assert(Math.abs(final.wheel1.y - initial.wheel1.y) < 2, 'Wheel did not return to its stopped wagon position');
 
-  await page.screenshot({ path: new URL('./wagon-fixed.png', outDir), fullPage: true });
+  await page.screenshot({ path: fileURLToPath(new URL('./wagon-fixed.png', outDir)), fullPage: true });
 
   assert(pageErrors.length === 0, `Page errors: ${pageErrors.join('; ')}`);
   assert(consoleErrors.length === 0, `Console errors: ${consoleErrors.join('; ')}`);
