@@ -13,7 +13,7 @@
       <div>
         <p class="eyebrow">FRONTIER VISUAL R&D · LIVING ILLUSTRATION</p>
         <h1>Child-of-Light-style actor test</h1>
-        <p class="lede">A painterly raster actor is no longer warped as one flattened image. The visible ox pair is reconstructed as overlapping painted body and leg pieces with a real two-bone gait, then composited inside the Bierstadt-like scene. Default mode walks in place so translation cannot fake animation quality.</p>
+        <p class="lede">A painterly raster actor is no longer warped as one flattened image. The visible ox pair is reconstructed as an overlapping painted torso plus complete painted limb sprites, then composited inside the Bierstadt-like scene. Default mode walks in place so translation cannot fake animation quality.</p>
       </div>
       <div class="header-actions">
         <a class="repo-link" href="./rig-test.html">Previous mesh test</a>
@@ -23,7 +23,7 @@
 
     <section class="benchmark-banner">
       <strong>Quality target: living illustration, not moving photograph.</strong>
-      <span>The active actor may read a little more clearly than the environment, but its brushwork, edge character and palette must still belong to the same painted world. Limbs are separate reusable raster parts; the background can pass behind and foreground grass can pass in front.</span>
+      <span>The active actor may read a little more clearly than the environment, but its brushwork, edge character and palette must still belong to the same painted world. Limbs are separate reusable raster parts with generous torso overlap; background depth stays behind while foreground grass can cross in front.</span>
     </section>
 
     <section class="lab-grid child-grid">
@@ -66,7 +66,7 @@
             <button class="view-button" data-view="neutral" type="button">Neutral</button>
             <button class="view-button" data-view="rig" type="button">Rig</button>
           </div>
-          <p class="hint">Neutral removes environmental camouflage. Rig shows the articulated hip/knee/hoof chains while preserving the painted pixels.</p>
+          <p class="hint">Neutral removes environmental camouflage. Rig shows the invisible limb pivots and hoof endpoints while preserving the painted pixels.</p>
         </section>
 
         <section>
@@ -93,8 +93,8 @@
 
         <section class="quality-gate">
           <h2>Pass / fail</h2>
-          <p><strong>1.</strong> With Walk in place selected, do the feet clearly leave and re-contact the ground?</p>
-          <p><strong>2.</strong> At Pause, does every visible part still look like oil-painted art?</p>
+          <p><strong>1.</strong> With Walk in place selected, do the feet clearly move while the actor stays planted?</p>
+          <p><strong>2.</strong> At Pause, does every visible part still look like oil-painted art rather than a puppet cutout?</p>
           <p><strong>3.</strong> In Scene view, does the actor read as interactive without looking pasted on?</p>
         </section>
 
@@ -102,8 +102,8 @@
           <h2>Runtime</h2>
           <dl>
             <div><dt>Renderer</dt><dd id="rendererMetric">—</dd></div>
-            <div><dt>Actor</dt><dd>1 painted pair · 4 articulated legs</dd></div>
-            <div><dt>Rig</dt><dd>2 bones per leg</dd></div>
+            <div><dt>Actor</dt><dd>1 painted pair · 4 complete limb sprites</dd></div>
+            <div><dt>Rig</dt><dd>torso overlap + limb pivots</dd></div>
             <div><dt>Animation</dt><dd>60 fps interpolation</dd></div>
             <div><dt>FPS</dt><dd id="fpsMetric">—</dd></div>
           </dl>
@@ -112,7 +112,7 @@
     </section>
 
     <footer class="research-note">
-      <strong>Production path if this works:</strong> author the same layered actor in LoongBones/DragonBones or Spine with weighted torso meshes, IK hoof targets, deform/corrective keys and separate complete oxen. LoongBones is especially attractive for the lab because its editor/runtime are browser-oriented and MIT-licensed, while retaining meshes, weights, IK, FFD and PixiJS playback.
+      <strong>Production path if this works:</strong> repaint the actor specifically for animation, with complete hidden anatomy, then author it in LoongBones/DragonBones or Spine using weighted torso meshes, two-bone IK hoof targets and corrective deforms. This page intentionally avoids forcing missing historical pixels through extreme joint bends.
     </footer>
   </main>
 
