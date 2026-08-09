@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - agent/balance-v12-production
+      - agent/fix-wagon-visual
       - main
     paths:
       - 'frontier-journey/**'
@@ -38,6 +39,11 @@ jobs:
           FRONTIER_URL: http://127.0.0.1:4173/
         run: node frontier-journey/tests/classic-autotravel.mjs
 
+      - name: Run wagon rendering regression
+        env:
+          FRONTIER_URL: http://127.0.0.1:4173/
+        run: node frontier-journey/tests/wagon-visual.mjs
+
       - name: Run 100 production balance simulations
         env:
           FRONTIER_URL: http://127.0.0.1:4173/
@@ -49,4 +55,12 @@ jobs:
         with:
           name: frontier-v12-grade-results
           path: frontier-journey/test-results-v12/
+          if-no-files-found: ignore
+
+      - name: Upload wagon visual result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontier-wagon-visual
+          path: frontier-journey/test-results-wagon/
           if-no-files-found: ignore
