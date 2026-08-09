@@ -9,7 +9,7 @@
  */
 
 (() => {
-  const DAY_DISPLAY_MS = 575;
+  let dayDisplayMs = 575;
   const singleTravelDay = continueTravel;
   const baseRenderGame = renderGame;
   const baseSceneCaption = sceneCaption;
@@ -140,7 +140,7 @@
         return;
       }
 
-      await sleep(DAY_DISPLAY_MS);
+      if (dayDisplayMs > 0) await sleep(dayDisplayMs);
     }
 
     // Events, landmarks, rivers, and end-of-run modals are meaningful
@@ -185,10 +185,16 @@
     }
   };
 
-  // Expose a tiny read-only-ish test surface for Playwright and debugging.
+  // Expose a tiny test/debug surface. Normal play keeps the 575 ms display
+  // cadence; statistical browser graders can set this to 0 without changing
+  // simulation rules or the production default.
   window.frontierAutoTravel = {
     get active() { return traveling; },
-    get dayDisplayMs() { return DAY_DISPLAY_MS; },
+    get dayDisplayMs() { return dayDisplayMs; },
+    setDayDisplayMs(ms) {
+      const value = Number(ms);
+      dayDisplayMs = Number.isFinite(value) ? Math.max(0, value) : 575;
+    },
     stop() {
       traveling = false;
       if (state) renderGame();
