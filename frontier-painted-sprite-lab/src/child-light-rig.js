@@ -6,11 +6,8 @@ const ART_H = 538;
 const GROUND_Y = 492;
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-const lerp = (a, b, t) => a + (b - a) * t;
 
 function point(x, y) { return { x, y }; }
-function sub(a, b) { return { x: a.x - b.x, y: a.y - b.y }; }
-function length(v) { return Math.hypot(v.x, v.y); }
 
 function localPolygon(globalPoints, pivot) {
   const output = [];
@@ -34,54 +31,39 @@ function createMaskedPaintPiece(texture, pivot, polygon, tintTargets) {
   return { node, sprite, mask };
 }
 
-function solveTwoBone(hip, target, upperLength, lowerLength, bendSign = 1) {
-  const delta = sub(target, hip);
-  const distance = clamp(length(delta), Math.abs(upperLength - lowerLength) + 0.5, upperLength + lowerLength - 0.5);
-  const baseAngle = Math.atan2(delta.y, delta.x);
-  const cosKnee = clamp(
-    (distance * distance - upperLength * upperLength - lowerLength * lowerLength) /
-      (2 * upperLength * lowerLength),
-    -1,
-    1,
-  );
-  const kneeRelative = Math.acos(cosKnee) * bendSign;
-  const helper = Math.atan2(
-    lowerLength * Math.sin(kneeRelative),
-    upperLength + lowerLength * Math.cos(kneeRelative),
-  );
-  const upperWorld = baseAngle - helper;
-  const knee = point(
-    hip.x + Math.cos(upperWorld) * upperLength,
-    hip.y + Math.sin(upperWorld) * upperLength,
-  );
-  const lowerWorld = Math.atan2(target.y - knee.y, target.x - knee.x);
-  return { upperWorld, lowerWorld, knee, target };
+function rotateVector(x, y, angle) {
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  return { x: x * cos - y * sin, y: x * sin + y * cos };
 }
 
+// This historical painting was never authored with hidden joint artwork. The
+// safest Child-of-Light-style test is therefore to keep each visible limb as a
+// complete painted shape. Small skeletal rotations happen underneath a torso
+// overlap, preserving brushwork and avoiding the hinged-fragment look that the
+// previous two-bone crop produced. A purpose-authored production asset can then
+// split these limbs further and add weighted IK because its hidden anatomy will
+// actually exist.
 const LEG_DEFS = [
   {
-    id: 'foreFar', far: true, phase: Math.PI * 1.06,
-    hip: point(286, 306), knee: point(274, 392), foot: point(268, 486),
-    upperPoly: [point(238, 286), point(326, 286), point(326, 410), point(242, 422)],
-    lowerPoly: [point(235, 366), point(313, 362), point(311, 518), point(233, 520)],
+    id: 'foreFar', far: true, phase: Math.PI * 1.08, maxAngle: 0.105,
+    hip: point(285, 306), foot: point(267, 486),
+    polygon: [point(244, 290), point(322, 290), point(316, 360), point(307, 430), point(303, 520), point(232, 520), point(238, 430), point(239, 350)],
   },
   {
-    id: 'hindFar', far: true, phase: Math.PI * 0.10,
-    hip: point(621, 300), knee: point(630, 389), foot: point(642, 482),
-    upperPoly: [point(582, 278), point(668, 280), point(679, 414), point(594, 419)],
-    lowerPoly: [point(594, 363), point(676, 360), point(690, 514), point(608, 518)],
+    id: 'hindFar', far: true, phase: Math.PI * 0.08, maxAngle: 0.10,
+    hip: point(621, 300), foot: point(642, 482),
+    polygon: [point(586, 278), point(674, 279), point(680, 360), point(676, 430), point(691, 516), point(608, 518), point(612, 430), point(596, 356)],
   },
   {
-    id: 'foreNear', far: false, phase: 0,
-    hip: point(356, 309), knee: point(354, 401), foot: point(351, 500),
-    upperPoly: [point(313, 286), point(400, 288), point(400, 423), point(315, 424)],
-    lowerPoly: [point(313, 369), point(396, 366), point(396, 526), point(315, 527)],
+    id: 'foreNear', far: false, phase: 0, maxAngle: 0.135,
+    hip: point(356, 307), foot: point(351, 500),
+    polygon: [point(314, 286), point(402, 288), point(397, 368), point(392, 438), point(398, 528), point(309, 528), point(316, 438), point(311, 366)],
   },
   {
-    id: 'hindNear', far: false, phase: Math.PI * 1.16,
-    hip: point(706, 299), knee: point(708, 392), foot: point(716, 497),
-    upperPoly: [point(665, 276), point(751, 277), point(758, 416), point(674, 420)],
-    lowerPoly: [point(674, 362), point(754, 360), point(770, 525), point(688, 528)],
+    id: 'hindNear', far: false, phase: Math.PI * 1.16, maxAngle: 0.125,
+    hip: point(706, 299), foot: point(716, 497),
+    polygon: [point(663, 276), point(758, 277), point(762, 365), point(766, 438), point(777, 528), point(686, 528), point(690, 438), point(678, 363)],
   },
 ];
 
@@ -106,18 +88,18 @@ export class ChildLightOxRig {
     this.poseVersion = 0;
     this.currentToePositions = {};
     this.dustPuffs = [];
-    this.noiseFilter = new PIXI.NoiseFilter({ noise: 0.012, seed: 0.41 });
-    this.shadowBlur = new PIXI.BlurFilter({ strength: 6, quality: 2 });
-    this.dustBlur = new PIXI.BlurFilter({ strength: 2.8, quality: 2 });
+    this.noiseFilter = new PIXI.NoiseFilter({ noise: 0.011, seed: 0.41 });
+    this.shadowBlur = new PIXI.BlurFilter({ strength: 5.5, quality: 2 });
+    this.dustBlur = new PIXI.BlurFilter({ strength: 2.6, quality: 2 });
   }
 
   async init() {
     this.texture = await PIXI.Assets.load(ASSET_URL);
-    this.root.pivot.set(ART_W * 0.50, 428);
+    this.root.pivot.set(ART_W * 0.50, 430);
 
     const shadow = new PIXI.Graphics()
-      .ellipse(ART_W * 0.51, 493, 246, 17)
-      .fill({ color: 0x2d1d13, alpha: 0.20 });
+      .ellipse(ART_W * 0.51, 493, 238, 15)
+      .fill({ color: 0x2d1d13, alpha: 0.19 });
     shadow.filters = [this.shadowBlur];
     this.shadowLayer.addChild(shadow);
 
@@ -125,60 +107,44 @@ export class ChildLightOxRig {
     this.dustFront.filters = [this.dustBlur];
     this.createDust();
 
-    const farLegLayer = new PIXI.Container();
-    const nearLegLayer = new PIXI.Container();
+    // Give the illustrated body a natural pivot rather than rotating the entire
+    // painting around its top-left corner.
+    this.bodyGroup.pivot.set(400, 326);
+    this.bodyGroup.position.set(400, 326);
 
+    const legLayer = new PIXI.Container();
     for (const def of LEG_DEFS) {
-      const leg = this.createLeg(def);
-      this.legs.push(leg);
-      (def.far ? farLegLayer : nearLegLayer).addChild(leg.upper.node);
+      const piece = createMaskedPaintPiece(this.texture, def.hip, def.polygon, this.paintedSprites);
+      this.legs.push({ def, piece, angle: 0, lift: 0 });
+      legLayer.addChild(piece.node);
     }
 
+    // The torso deliberately overlaps the tops of all four leg sprites. That
+    // hides their rotation seams and recreates the way a properly prepared
+    // skeletal illustration contains generous hidden paint around joints.
     const bodyPivot = point(400, 300);
     const bodyPoly = [
-      point(15, 22), point(788, 22), point(792, 365), point(748, 374),
-      point(675, 369), point(612, 359), point(531, 366), point(454, 360),
-      point(383, 369), point(312, 363), point(238, 369), point(168, 357),
-      point(96, 349), point(30, 326),
+      point(15, 22), point(788, 22), point(792, 386), point(742, 392),
+      point(678, 384), point(612, 376), point(536, 382), point(458, 377),
+      point(386, 384), point(311, 378), point(239, 384), point(166, 370),
+      point(93, 359), point(27, 333),
     ];
     this.bodyPiece = createMaskedPaintPiece(this.texture, bodyPivot, bodyPoly, this.paintedSprites);
-    this.bodyPiece.node.position.set(bodyPivot.x, bodyPivot.y);
     this.bodyPiece.sprite.filters = [this.noiseFilter];
 
-    this.bodyGroup.addChild(farLegLayer, this.bodyPiece.node, nearLegLayer);
-    this.root.addChild(this.shadowLayer, this.dustBack, this.bodyGroup, this.dustFront, this.debugLayer);
+    this.bodyGroup.addChild(legLayer, this.bodyPiece.node, this.debugLayer);
+    this.root.addChild(this.shadowLayer, this.dustBack, this.bodyGroup, this.dustFront);
     this.applyLook();
     this.updatePose(0);
     this.ready = true;
     return this;
   }
 
-  createLeg(def) {
-    const upper = createMaskedPaintPiece(this.texture, def.hip, def.upperPoly, this.paintedSprites);
-    const lower = createMaskedPaintPiece(this.texture, def.knee, def.lowerPoly, this.paintedSprites);
-    lower.node.position.set(def.knee.x - def.hip.x, def.knee.y - def.hip.y);
-    upper.node.addChild(lower.node);
-
-    const upperVector = sub(def.knee, def.hip);
-    const lowerVector = sub(def.foot, def.knee);
-    return {
-      def,
-      upper,
-      lower,
-      upperLength: length(upperVector),
-      lowerLength: length(lowerVector),
-      bindUpper: Math.atan2(upperVector.y, upperVector.x),
-      bindLower: Math.atan2(lowerVector.y, lowerVector.x),
-      bendSign: def.id.includes('hind') ? -1 : 1,
-      solved: null,
-    };
-  }
-
   createDust() {
-    for (let i = 0; i < 18; i += 1) {
+    for (let i = 0; i < 16; i += 1) {
       const g = new PIXI.Graphics()
-        .circle(0, 0, 5 + (i % 5) * 2.7)
-        .fill({ color: 0xb78654, alpha: 0.06 });
+        .circle(0, 0, 5 + (i % 5) * 2.4)
+        .fill({ color: 0xb78654, alpha: 0.055 });
       const entry = {
         node: g,
         age: ((i * 37) % 100) / 100,
@@ -192,21 +158,21 @@ export class ChildLightOxRig {
 
   setMotionStrength(value) { this.motionStrength = clamp(value, 0, 1); }
   setActorScale(value) { this.actorScale = clamp(value, 0.6, 1.6); }
-  setDebugRig(enabled) { this.debugRig = enabled; this.debugLayer.visible = enabled; }
+  setDebugRig(enabled) { this.debugRig = enabled; this.debugLayer.visible = enabled; if (enabled) this.drawRig(); }
   setHeroFocus(enabled) { this.heroFocus = enabled; this.applyLook(); }
   setDustEnabled(enabled) { this.dustEnabled = enabled; this.dustBack.visible = enabled; this.dustFront.visible = enabled; }
 
   applyLook() {
-    const tint = this.heroFocus ? 0xffe1c8 : 0xffd4b2;
+    const tint = this.heroFocus ? 0xffe4ce : 0xffd7bb;
     for (const sprite of this.paintedSprites) sprite.tint = tint;
   }
 
   layout(screenWidth, screenHeight) {
-    const baseWidth = screenWidth * 0.355 * this.actorScale;
+    const baseWidth = screenWidth * 0.285 * this.actorScale;
     const scale = baseWidth / ART_W;
     this.root.scale.set(scale);
-    this.root.x = screenWidth * 0.59;
-    this.root.y = screenHeight * 0.775;
+    this.root.x = screenWidth * 0.66;
+    this.root.y = screenHeight * 0.815;
   }
 
   resetPose() { this.updatePose(0); }
@@ -217,67 +183,52 @@ export class ChildLightOxRig {
     this.poseVersion += 1;
     const strength = this.motionStrength;
 
-    const bodyBob = Math.sin(phase * 2) * 5.2 * strength;
-    const bodyRock = Math.sin(phase) * 0.014 * strength;
-    const bodySway = Math.sin(phase * 0.5) * 2.4 * strength;
-    this.bodyGroup.position.set(bodySway, bodyBob);
+    const bodyBob = Math.sin(phase * 2) * 2.8 * strength;
+    const bodyRock = Math.sin(phase) * 0.008 * strength;
+    const bodySway = Math.sin(phase * 0.5) * 1.6 * strength;
+    this.bodyGroup.position.set(400 + bodySway, 326 + bodyBob);
     this.bodyGroup.rotation = bodyRock;
 
     this.currentToePositions = {};
-    for (const leg of this.legs) this.updateLeg(leg, phase + leg.def.phase, strength);
+    for (const leg of this.legs) {
+      const localPhase = phase + leg.def.phase;
+      const swing = Math.sin(localPhase);
+      const liftPhase = Math.max(0, Math.sin(localPhase));
+      const angle = swing * leg.def.maxAngle * strength;
+      const lift = liftPhase * 5.5 * strength * (leg.def.far ? 0.82 : 1);
+      leg.angle = angle;
+      leg.lift = lift;
+      leg.piece.node.position.set(leg.def.hip.x, leg.def.hip.y - lift);
+      leg.piece.node.rotation = angle;
+
+      const rest = {
+        x: leg.def.foot.x - leg.def.hip.x,
+        y: leg.def.foot.y - leg.def.hip.y,
+      };
+      const rotated = rotateVector(rest.x, rest.y, angle);
+      this.currentToePositions[leg.def.id] = point(
+        leg.def.hip.x + rotated.x,
+        leg.def.hip.y - lift + rotated.y,
+      );
+    }
+
     if (this.debugRig) this.drawRig();
   }
 
-  updateLeg(leg, phase, strength) {
-    const def = leg.def;
-    const stride = 38 * strength;
-    const lift = 33 * strength;
-    const cycleSin = Math.sin(phase);
-    const cycleCos = Math.cos(phase);
-    const swing = Math.max(0, cycleSin);
-
-    // During stance the hoof tracks backward against the moving body; during
-    // swing it lifts and advances. This creates a readable foot plant even when
-    // the actor root is held perfectly still.
-    const target = point(
-      def.foot.x + cycleCos * stride,
-      GROUND_Y + (def.foot.y - GROUND_Y) * 0.18 - swing * lift,
-    );
-
-    // Keep the far pair a touch quieter so the foreground animal retains a
-    // readable silhouette, similar to layered illustrated character animation.
-    if (def.far) {
-      target.x = lerp(def.foot.x, target.x, 0.86);
-      target.y = lerp(def.foot.y, target.y, 0.86);
-    }
-
-    const solved = solveTwoBone(def.hip, target, leg.upperLength, leg.lowerLength, leg.bendSign);
-    leg.solved = solved;
-
-    leg.upper.node.rotation = solved.upperWorld - leg.bindUpper;
-    const desiredRelative = solved.lowerWorld - solved.upperWorld;
-    const bindRelative = leg.bindLower - leg.bindUpper;
-    leg.lower.node.rotation = desiredRelative - bindRelative;
-
-    this.currentToePositions[def.id] = point(solved.target.x, solved.target.y);
-  }
-
-  updateContinuous(deltaSeconds, phase) {
+  updateContinuous(deltaSeconds) {
     if (!this.ready) return;
     const strength = this.motionStrength;
     for (const puff of this.dustPuffs) {
-      puff.age += deltaSeconds * (0.28 + strength * 0.12);
+      puff.age += deltaSeconds * (0.27 + strength * 0.10);
       if (puff.age >= 1) puff.age -= 1;
       const t = puff.age;
       const footIndex = Math.floor(puff.seed * 10) % LEG_DEFS.length;
       const foot = this.currentToePositions[LEG_DEFS[footIndex].id] || LEG_DEFS[footIndex].foot;
-      puff.node.x = foot.x - t * (38 + (puff.seed % 1) * 24);
-      puff.node.y = GROUND_Y - t * (7 + (puff.seed % 1) * 7);
-      const fade = Math.sin(Math.PI * t);
-      puff.node.alpha = this.dustEnabled ? fade * 0.055 * strength : 0;
-      puff.node.scale.set(0.35 + t * 0.75);
+      puff.node.x = foot.x - t * (34 + (puff.seed % 1) * 20);
+      puff.node.y = GROUND_Y - t * (6 + (puff.seed % 1) * 6);
+      puff.node.alpha = this.dustEnabled ? Math.sin(Math.PI * t) * 0.048 * strength : 0;
+      puff.node.scale.set(0.34 + t * 0.70);
     }
-
     if (this.debugRig) this.drawRig();
   }
 
@@ -285,14 +236,12 @@ export class ChildLightOxRig {
     const g = this.debugLayer;
     g.clear();
     for (const leg of this.legs) {
-      if (!leg.solved) continue;
-      const { hip } = leg.def;
-      const { knee, target } = leg.solved;
-      g.moveTo(hip.x, hip.y).lineTo(knee.x, knee.y).lineTo(target.x, target.y)
-        .stroke({ width: leg.def.far ? 3 : 4, color: leg.def.far ? 0x8ad7ff : 0xffd474, alpha: 0.94 });
-      for (const p of [hip, knee, target]) {
-        g.circle(p.x, p.y, 5).fill({ color: 0xfff0b7, alpha: 0.96 });
-      }
+      const hip = leg.def.hip;
+      const toe = this.currentToePositions[leg.def.id] || leg.def.foot;
+      g.moveTo(hip.x, hip.y - leg.lift).lineTo(toe.x, toe.y)
+        .stroke({ width: leg.def.far ? 2.7 : 3.5, color: leg.def.far ? 0x8ad7ff : 0xffd474, alpha: 0.94 });
+      g.circle(hip.x, hip.y - leg.lift, 4.8).fill({ color: 0xfff0b7, alpha: 0.96 });
+      g.circle(toe.x, toe.y, 4.8).fill({ color: 0xfff0b7, alpha: 0.96 });
     }
   }
 
