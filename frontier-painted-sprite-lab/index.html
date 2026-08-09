@@ -12,7 +12,7 @@
       <div>
         <p class="eyebrow">FRONTIER VISUAL R&D · ISOLATED FROM THE GAME</p>
         <h1>The Living Ox</h1>
-        <p class="lede">A single painterly raster object, deformed as a reusable sprite. The quality bar: pause anywhere and it should still feel like painted art living inside the landscape.</p>
+        <p class="lede">A single painterly raster object, extracted and deformed as a reusable sprite. The quality bar: pause anywhere and it should still feel like painted art living inside the landscape.</p>
       </div>
       <a class="repo-link" href="../frontier-journey/">Back to game</a>
     </header>
@@ -28,7 +28,7 @@
           <div class="vignette" aria-hidden="true"></div>
           <div class="stage-caption">
             <span id="modeCaption">Scene integration</span>
-            <span id="rendererCaption">PixiJS</span>
+            <span id="rendererCaption">Preparing painted sprite…</span>
           </div>
         </div>
 
@@ -51,7 +51,7 @@
             <button class="view-button" data-view="mesh" type="button">Mesh</button>
             <button class="view-button" data-view="source" type="button">Source</button>
           </div>
-          <p class="hint">Neutral exposes the sprite by itself. Mesh shows the deformation grid. Source shows the original public-domain ox painting.</p>
+          <p class="hint">Neutral exposes the extracted sprite by itself. Mesh shows the deformation grid. Source shows the original public-domain oil painting before foreground extraction.</p>
         </section>
 
         <section>
@@ -63,8 +63,8 @@
           </label>
           <label class="range-row">
             <span>Motion strength</span>
-            <output id="motionOutput">62%</output>
-            <input id="motionStrength" type="range" min="20" max="100" value="62" />
+            <output id="motionOutput">48%</output>
+            <input id="motionStrength" type="range" min="15" max="90" value="48" />
           </label>
         </section>
 
@@ -87,6 +87,7 @@
           <h2>Runtime</h2>
           <dl>
             <div><dt>Renderer</dt><dd id="rendererMetric">—</dd></div>
+            <div><dt>Matting</dt><dd id="mattingMetric">OpenCV GrabCut</dd></div>
             <div><dt>FPS</dt><dd id="fpsMetric">—</dd></div>
             <div><dt>Pose cadence</dt><dd>15 fps</dd></div>
             <div><dt>Grid</dt><dd>9 × 6</dd></div>
@@ -96,10 +97,20 @@
     </section>
 
     <footer class="research-note">
-      <strong>Prototype rule:</strong> no geometric replacement art. The animated object is sampled from a real public-domain oil painting and remains raster-painted throughout deformation. This lab is deliberately independent of <code>frontier-journey/</code>.
+      <strong>Prototype rule:</strong> no geometric replacement art. The animated object is extracted from a real public-domain oil painting with a soft per-pixel matte, then its painted raster surface is mesh-deformed. This lab is deliberately independent of <code>frontier-journey/</code>.
     </footer>
   </main>
 
+  <script>
+    window.cvReady = new Promise((resolve) => {
+      window.Module = {
+        onRuntimeInitialized() {
+          resolve(window.cv);
+        },
+      };
+    });
+  </script>
+  <script async src="https://docs.opencv.org/4.13.0/opencv.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pixi.js@8.19.0/dist/pixi.min.js"></script>
   <script type="module" src="./src/main.js"></script>
 </body>
