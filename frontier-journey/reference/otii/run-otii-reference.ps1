@@ -44,6 +44,11 @@ $sessionPath = Join-Path $outputRoot "session-notes.txt"
 # Windows 3.1 PC, 640x480 / 256-color SVGA, 4 MB RAM minimum (8 recommended),
 # mouse, sound, and a double-speed CD-ROM. 16 MB leaves Windows comfortable
 # without changing the period character of the reference machine.
+#
+# DOSBox-X supports cputype=486 directly. Its documentation also notes that the
+# cycles value does not map directly to the clock rate of a real 486, so use
+# cycles=auto rather than pretending a fixed cycle count reproduces a specific
+# MHz model.
 $config = @"
 [sdl]
 fullscreen=false
@@ -61,8 +66,8 @@ scaler=normal2x
 
 [cpu]
 core=normal
-cputype=486_slow
-cycles=fixed 12000
+cputype=486
+cycles=auto
 
 [mixer]
 rate=44100
