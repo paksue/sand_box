@@ -31,10 +31,16 @@ jobs:
         env:
           PAINTED_SPRITE_URL: http://127.0.0.1:4175/
         run: node frontier-painted-sprite-lab/tests/visual.mjs
-      - name: Upload living-ox screenshot
+      - name: Run weighted rig regression
+        env:
+          PAINTED_SPRITE_URL: http://127.0.0.1:4175/
+        run: node frontier-painted-sprite-lab/tests/rig-test.mjs
+      - name: Upload living-ox screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: frontier-painted-sprite-lab
-          path: frontier-painted-sprite-lab/test-results/
+          path: |
+            frontier-painted-sprite-lab/test-results/
+            frontier-painted-sprite-lab/test-results-rig/
           if-no-files-found: ignore
