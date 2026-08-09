@@ -35,7 +35,7 @@
           <div id="canvasGrain" class="canvas-grain" aria-hidden="true"></div>
           <div class="vignette" aria-hidden="true"></div>
           <div class="stage-caption">
-            <span id="modeCaption">Weighted painted pair in scene</span>
+            <span id="modeCaption">Weighted painted pair walking across scene</span>
             <span id="rendererCaption">Preparing weighted painterly rig…</span>
           </div>
         </div>
@@ -57,7 +57,7 @@
             <button class="mode-button active" data-mode="weighted" type="button">Weighted rig</button>
             <button class="mode-button" data-mode="baseline" type="button">Whole mesh</button>
           </div>
-          <p class="hint">Same image. Same scale. Same scene. Weighted rig uses multiple virtual bone influence fields over a denser mesh; Whole mesh uses the original broad 11×7 deformation.</p>
+          <p class="hint">Same image. Same scale. Same scene. Same root travel. Weighted rig uses multiple virtual bone influence fields over a denser mesh; Whole mesh uses the original broad 11×7 deformation.</p>
         </section>
 
         <section>
@@ -67,7 +67,7 @@
             <button class="view-button" data-view="neutral" type="button">Neutral</button>
             <button class="view-button" data-view="skeleton" type="button">Skeleton</button>
           </div>
-          <p class="hint">Neutral exposes the painted sprite without environmental camouflage. Skeleton shows the invisible bone fields or, for the baseline, the broad deformation grid.</p>
+          <p class="hint">Neutral exposes the painted sprite without environmental camouflage. Skeleton now animates the actual virtual bone endpoints so gait motion is visible rather than just numerically changing underneath a static debug drawing.</p>
         </section>
 
         <section>
@@ -79,9 +79,11 @@
           </label>
           <label class="range-row">
             <span>Motion strength</span>
-            <output id="motionOutput">55%</output>
-            <input id="motionStrength" type="range" min="20" max="85" value="55" />
+            <output id="motionOutput">72%</output>
+            <input id="motionStrength" type="range" min="20" max="90" value="72" />
           </label>
+          <label class="toggle"><input id="travelMotion" type="checkbox" checked /> <span>Walk across viewport</span></label>
+          <p class="hint">Walk across viewport translates both A/B methods identically. Turn it off to judge deformation strictly in place.</p>
         </section>
 
         <section>
@@ -95,9 +97,9 @@
 
         <section class="quality-gate">
           <h2>What this test answers</h2>
-          <p><strong>Static:</strong> does the original painted pair still look intact at arbitrary weighted poses?</p>
-          <p><strong>Weight:</strong> does planted-hoof damping and shoulder/hip compression read better than whole-image warping?</p>
-          <p><strong>Art integrity:</strong> do the brushwork, silhouettes and atmosphere survive the extra deformation machinery?</p>
+          <p><strong>Readable motion:</strong> can a human immediately see walking, not merely detect changed vertices in a test?</p>
+          <p><strong>Weight:</strong> does planted-hoof damping, hoof lift and shoulder/hip compression read better than whole-image warping?</p>
+          <p><strong>Art integrity:</strong> do the brushwork, silhouettes and atmosphere survive the stronger deformation machinery?</p>
         </section>
 
         <section class="metrics">
