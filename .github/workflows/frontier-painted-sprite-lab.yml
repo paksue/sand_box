@@ -39,7 +39,11 @@ jobs:
         env:
           PAINTED_SPRITE_URL: http://127.0.0.1:4175/
         run: node frontier-painted-sprite-lab/tests/child-light.mjs
-      - name: Upload living-ox screenshots
+      - name: Run cinematic stage regression
+        env:
+          PAINTED_SPRITE_URL: http://127.0.0.1:4175/
+        run: node frontier-painted-sprite-lab/tests/cinematic.mjs
+      - name: Upload visual screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -48,4 +52,5 @@ jobs:
             frontier-painted-sprite-lab/test-results/
             frontier-painted-sprite-lab/test-results-rig/
             frontier-painted-sprite-lab/test-results-child-light/
+            frontier-painted-sprite-lab/test-results-cinematic/
           if-no-files-found: ignore
