@@ -13,142 +13,49 @@
     html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
     body{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
     header{padding:calc(18px + env(safe-area-inset-top)) 18px 10px;max-width:760px;margin:auto}
-    h1{font-size:29px;line-height:1.05;margin:0 0 7px;letter-spacing:-.8px}
-    .sub{color:var(--muted);font-size:15px}
+    h1{font-size:29px;line-height:1.05;margin:0 0 7px;letter-spacing:-.8px}.sub{color:var(--muted);font-size:15px}
     .wrap{max-width:760px;margin:auto;padding:0 14px}
     #map{height:39vh;min-height:300px;max-height:440px;border-radius:22px;overflow:hidden;border:1px solid var(--line);box-shadow:0 7px 24px rgba(0,0,0,.07)}
-    .status{display:flex;gap:10px;overflow:auto;padding:12px 2px 4px;scrollbar-width:none}
-    .pill{white-space:nowrap;background:var(--card);border:1px solid var(--line);padding:8px 11px;border-radius:999px;font-size:13px}
-    .pill strong{font-weight:700}
-    .concert-pill{border-color:#d8aeb9;background:#fff7f9}
-    .toolbar{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:11px 0 13px}
-    button,a.btn{appearance:none;border:0;border-radius:14px;padding:12px 13px;font:600 15px -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;text-decoration:none;text-align:center;cursor:pointer}
-    .primary{background:#111;color:#fff}.secondary{background:#fff;color:#111;border:1px solid var(--line)!important}
+    .status{display:flex;gap:10px;overflow:auto;padding:12px 2px 4px;scrollbar-width:none}.pill{white-space:nowrap;background:var(--card);border:1px solid var(--line);padding:8px 11px;border-radius:999px;font-size:13px}.pill strong{font-weight:700}.concert-pill{border-color:#d8aeb9;background:#fff7f9}
+    .toolbar{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:11px 0 13px}button,a.btn{appearance:none;border:0;border-radius:14px;padding:12px 13px;font:600 15px -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;text-decoration:none;text-align:center;cursor:pointer}.primary{background:#111;color:#fff}.secondary{background:#fff;color:#111;border:1px solid var(--line)!important}
     .section-title{font-size:20px;margin:18px 3px 10px;letter-spacing:-.3px}
     .stop{background:var(--card);border:1px solid var(--line);border-radius:19px;padding:14px;margin:9px 0;display:grid;grid-template-columns:38px 1fr;gap:11px;box-shadow:0 3px 13px rgba(0,0,0,.035)}
-    .num{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#efede8;font-weight:800}
-    .stop.concert{border-color:#d9a9b7;background:#fff9fb}.stop.concert .num{background:var(--concert);color:white}
-    .toprow{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
-    .name{font-weight:800;font-size:18px;line-height:1.18}.time{font-size:13px;font-weight:700;color:var(--muted);white-space:nowrap;padding-top:2px}
-    .addr{font-size:14px;color:var(--muted);margin:4px 0 8px;line-height:1.3}
-    .transit{font-size:13px;line-height:1.35;background:#fff5ef;border:1px solid #ffd1b8;border-radius:11px;padding:8px 10px;margin:0 0 10px;color:#4f2a16}
-    .train{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--subway);color:#fff;font-weight:900;margin-right:5px;vertical-align:-2px}
-    .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    .actions a,.actions button{font-size:14px;padding:10px 8px;border-radius:12px}
-    .open{background:#111;color:#fff;text-decoration:none;text-align:center;font-weight:700}.done{background:#f0efe9;color:#222;border:0;font-weight:700}
-    .stop.completed{opacity:.57}.stop.completed .num{background:var(--done);color:#fff}.stop.completed .done{background:#e7f4eb;color:#165b30}
-    .note{font-size:13px;color:var(--muted);line-height:1.4;margin:10px 3px 22px}
-    .leaflet-control-attribution{font-size:9px}
-    .marker-number{background:#111;color:white;border-radius:50%;width:28px;height:28px;display:grid;place-items:center;font:bold 13px -apple-system,BlinkMacSystemFont,"SF Pro Display";border:2px solid white;box-shadow:0 1px 5px rgba(0,0,0,.35)}
-    .concert-marker{background:var(--concert)}
+    .num{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#efede8;font-weight:800}.stop.concert{border-color:#d9a9b7;background:#fff9fb}.stop.concert .num{background:var(--concert);color:white}
+    .toprow{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.name{font-weight:800;font-size:18px;line-height:1.18}.time{font-size:13px;font-weight:700;color:var(--muted);white-space:nowrap;padding-top:2px}.addr{font-size:14px;color:var(--muted);margin:4px 0 8px;line-height:1.3}
+    .leg{font-size:14px;line-height:1.4;background:#f7f7f5;border:1px solid #dedbd4;border-radius:12px;padding:10px 11px;margin:0 0 10px;color:#252525}.leg.subway{background:#fff5ef;border-color:#ffd1b8}.leg-title{font-weight:800;margin-bottom:3px}.mode{font-size:18px;margin-right:5px}.train{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--subway);color:#fff;font-weight:900;margin:0 4px;vertical-align:-2px}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.actions a,.actions button{font-size:14px;padding:10px 8px;border-radius:12px}.open{background:#111;color:#fff;text-decoration:none;text-align:center;font-weight:700}.done{background:#f0efe9;color:#222;border:0;font-weight:700}.stop.completed{opacity:.57}.stop.completed .num{background:var(--done);color:#fff}.stop.completed .done{background:#e7f4eb;color:#165b30}
+    .note{font-size:13px;color:var(--muted);line-height:1.4;margin:10px 3px 22px}.leaflet-control-attribution{font-size:9px}.marker-number{background:#111;color:white;border-radius:50%;width:28px;height:28px;display:grid;place-items:center;font:bold 13px -apple-system,BlinkMacSystemFont,"SF Pro Display";border:2px solid white;box-shadow:0 1px 5px rgba(0,0,0,.35)}.concert-marker{background:var(--concert)}
     @media(min-width:700px){#map{height:430px}.toolbar{grid-template-columns:repeat(2,220px);justify-content:start}}
   </style>
 </head>
 <body>
-<header>
-  <h1>NYC shopping → Joe Hisaishi</h1>
-  <div class="sub">Tuesday, Aug 11, 2026 · finish at Radio City for the 8:00 PM show</div>
-</header>
+<header><h1>NYC shopping → Joe Hisaishi</h1><div class="sub">Tuesday, Aug 11, 2026 · finish at Radio City for the 8:00 PM show</div></header>
 <main class="wrap">
   <div id="map" aria-label="Map of today's stops"></div>
-  <div class="status">
-    <div class="pill" id="gpsPill">📍 <strong>Sunset Park</strong> fallback start</div>
-    <div class="pill concert-pill" id="concertPill">🎼 Radio City target: <strong>7:15 PM</strong></div>
-  </div>
-  <div class="toolbar">
-    <button class="primary" id="nextBtn">Open next stop in Apple Maps</button>
-    <button class="secondary" id="locateBtn">Use my current location</button>
-  </div>
-
-  <h2 class="section-title">Best south → north order</h2>
-  <div id="stops"></div>
-  <p class="note">The map is an overview. Each “Apple Maps” button hands the next leg to Apple Maps for live turn-by-turn directions and transit/traffic. Your current location stays only in this browser tab; nothing is sent to this page’s server because there is no server.</p>
+  <div class="status"><div class="pill" id="gpsPill">📍 <strong>Sunset Park</strong> fallback start</div><div class="pill concert-pill" id="concertPill">🎼 Radio City target: <strong>7:15 PM</strong></div></div>
+  <div class="toolbar"><button class="primary" id="nextBtn">Open next stop in Apple Maps</button><button class="secondary" id="locateBtn">Use my current location</button></div>
+  <h2 class="section-title">Best south → north order</h2><div id="stops"></div>
+  <p class="note">Each card now tells you how to travel from the previous stop. The dashed line on the map is only an overview — it is not a walking route. Tap Apple Maps for live transit and walking directions.</p>
 </main>
-
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
-const DAY = '2026-08-11';
-const stops = [
-  {name:'Edikted', address:'518 Broadway, New York, NY 10012', lat:40.722593, lon:-73.998819, time:'12:45–1:45', note:'SoHo', transit:'Take the D train to Broadway–Lafayette St, then walk about 7–10 minutes south on Broadway to 518 Broadway.'},
-  {name:'Koryo Books', address:'35 W 32nd St, New York, NY 10001', lat:40.74814, lon:-73.98704, time:'2:15–2:50', note:'Koreatown'},
-  {name:'KPOP NARA NYC', address:'1237 Broadway, New York, NY 10001', lat:40.74702, lon:-73.98877, time:'2:50–3:40', note:'K-pop shop'},
-  {name:"Nana's Green Tea", address:'1250 Broadway, New York, NY 10001', lat:40.74836, lon:-73.98788, time:'3:40–4:30', note:'Matcha / dessert'},
-  {name:'SALSWEE', address:'1407 Broadway, New York, NY 10018', lat:40.75357, lon:-73.98712, time:'4:45–5:30', note:'Dessert / bakery'},
-  {name:'Radio City Music Hall', address:'1260 6th Ave, New York, NY 10020', lat:40.76002, lon:-73.98002, time:'Arrive 7:15', note:'Joe Hisaishi · show 8:00 PM', concert:true}
+const DAY='2026-08-11';
+const stops=[
+{name:'Edikted',address:'518 Broadway, New York, NY 10012',lat:40.722593,lon:-73.998819,time:'12:45–1:45',note:'SoHo',legType:'subway',legTitle:'Sunset Park → Edikted',leg:'🚇 Take the D train to Broadway–Lafayette St. Then walk about 7–10 min south on Broadway to 518 Broadway.'},
+{name:'Koryo Books',address:'35 W 32nd St, New York, NY 10001',lat:40.74814,lon:-73.98704,time:'2:15–2:50',note:'Koreatown',legType:'subway',legTitle:'Edikted → Koryo Books',leg:'🚶 Walk about 5–7 min north to Prince St. 🚇 Take an uptown R or W to 34 St–Herald Sq. Then walk about 3–5 min to 35 W 32nd St.'},
+{name:'KPOP NARA NYC',address:'1237 Broadway, New York, NY 10001',lat:40.74702,lon:-73.98877,time:'2:50–3:40',note:'K-pop shop',legType:'walk',legTitle:'Koryo Books → KPOP NARA',leg:'🚶 Walk about 3–5 min. They are in the same Koreatown/Herald Square area.'},
+{name:"Nana's Green Tea",address:'1250 Broadway, New York, NY 10001',lat:40.74836,lon:-73.98788,time:'3:40–4:30',note:'Matcha / dessert',legType:'walk',legTitle:'KPOP NARA → Nana’s Green Tea',leg:'🚶 Walk about 2–4 min. It is essentially next door/across Broadway in the same block area.'},
+{name:'SALSWEE',address:'1407 Broadway, New York, NY 10018',lat:40.75357,lon:-73.98712,time:'4:45–5:30',note:'Dessert / bakery',legType:'walk',legTitle:'Nana’s Green Tea → SALSWEE',leg:'🚶 Walk north on Broadway about 8–10 min to 1407 Broadway near W 38th–39th St.'},
+{name:'Radio City Music Hall',address:'1260 6th Ave, New York, NY 10020',lat:40.76002,lon:-73.98002,time:'Arrive 7:15',note:'Joe Hisaishi · show 8:00 PM',concert:true,legType:'walk',legTitle:'SALSWEE → Radio City',leg:'🚶 Walk north toward Rockefeller Center/6th Ave, about 15–20 min. Leave enough time to arrive around 7:15 PM.'}
 ];
-const fallbackStart={name:'Sunset Park, Brooklyn',lat:40.6455,lon:-74.0124};
-let currentStart={...fallbackStart};
-let completed=JSON.parse(localStorage.getItem('nyc-stop-completed')||'[]');
-
-const map=L.map('map',{zoomControl:false}).setView([40.741,-73.993],13);
-L.control.zoom({position:'bottomright'}).addTo(map);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
-let routeLayer, startMarker;
-const markers=[];
-
-function iconFor(i, concert=false){return L.divIcon({className:'',html:`<div class="marker-number ${concert?'concert-marker':''}">${concert?'♪':i+1}</div>`,iconSize:[28,28],iconAnchor:[14,14]})}
-stops.forEach((s,i)=>{
-  const m=L.marker([s.lat,s.lon],{icon:iconFor(i,s.concert)}).addTo(map).bindPopup(`<b>${s.name}</b><br>${s.address}`);
-  markers.push(m);
-});
-function drawRoute(){
-  if(routeLayer) map.removeLayer(routeLayer);
-  if(startMarker) map.removeLayer(startMarker);
-  const pts=[[currentStart.lat,currentStart.lon],...stops.map(s=>[s.lat,s.lon])];
-  routeLayer=L.polyline(pts,{color:'#202020',weight:4,opacity:.55,dashArray:'8 8'}).addTo(map);
-  startMarker=L.circleMarker([currentStart.lat,currentStart.lon],{radius:8,weight:3,color:'#fff',fillColor:'#267a43',fillOpacity:1}).addTo(map).bindPopup(`<b>Start</b><br>${currentStart.name}`);
-  map.fitBounds(L.latLngBounds(pts),{padding:[28,28]});
-}
-drawRoute();
-
-function appleURL(stop, mode='transit'){
-  const dest=encodeURIComponent(stop.address);
-  const origin=`${currentStart.lat},${currentStart.lon}`;
-  return `https://maps.apple.com/?saddr=${encodeURIComponent(origin)}&daddr=${dest}&dirflg=${mode==='walk'?'w':mode==='drive'?'d':'r'}`;
-}
-function firstIncomplete(){
-  const i=stops.findIndex((_,idx)=>!completed.includes(idx));
-  return i<0?stops.length-1:i;
-}
-function render(){
-  const host=document.getElementById('stops');host.innerHTML='';
-  stops.forEach((s,i)=>{
-    const isDone=completed.includes(i);
-    const el=document.createElement('article');el.className=`stop ${s.concert?'concert':''} ${isDone?'completed':''}`;
-    const transit=s.transit?`<div class="transit"><span class="train">D</span><strong>Subway:</strong> ${s.transit}</div>`:'';
-    el.innerHTML=`<div class="num">${s.concert?'♪':i+1}</div><div><div class="toprow"><div class="name">${s.name}</div><div class="time">${s.time}</div></div><div class="addr">${s.address}<br>${s.note}</div>${transit}<div class="actions"><a class="open" href="${appleURL(s)}">Apple Maps</a><button class="done" data-i="${i}">${isDone?'✓ Done':'Mark done'}</button></div></div>`;
-    host.appendChild(el);
-  });
-  document.querySelectorAll('.done').forEach(b=>b.onclick=()=>{
-    const i=+b.dataset.i;
-    completed=completed.includes(i)?completed.filter(x=>x!==i):[...completed,i];
-    localStorage.setItem('nyc-stop-completed',JSON.stringify(completed));render();
-  });
-  const ni=firstIncomplete();document.getElementById('nextBtn').textContent=`Apple Maps → ${stops[ni].name}`;
-}
-render();
-
-document.getElementById('nextBtn').onclick=()=>{window.location.href=appleURL(stops[firstIncomplete()]);};
-document.getElementById('locateBtn').onclick=()=>{
-  if(!navigator.geolocation){alert('Location is not available in this browser.');return;}
-  const b=document.getElementById('locateBtn');b.textContent='Locating…';
-  navigator.geolocation.getCurrentPosition(pos=>{
-    currentStart={name:'My current location',lat:pos.coords.latitude,lon:pos.coords.longitude};
-    document.getElementById('gpsPill').innerHTML='📍 <strong>Current location</strong> enabled';
-    b.textContent='Location updated';drawRoute();render();
-  },()=>{b.textContent='Use my current location';alert('Location permission was not granted. Using Sunset Park as the start instead.');},{enableHighAccuracy:true,timeout:10000});
-};
-
-function updateClock(){
-  const now=new Date();
-  const target=new Date(`${DAY}T19:15:00-04:00`);
-  const show=new Date(`${DAY}T20:00:00-04:00`);
-  const pill=document.getElementById('concertPill');
-  if(now<target){const mins=Math.max(0,Math.round((target-now)/60000));pill.innerHTML=`🎼 Radio City target: <strong>7:15 PM</strong> · ${Math.floor(mins/60)}h ${mins%60}m`;}
-  else if(now<show){const mins=Math.max(0,Math.round((show-now)/60000));pill.innerHTML=`🎼 Be at Radio City now · show in <strong>${mins} min</strong>`;}
-  else{pill.innerHTML='🎼 Joe Hisaishi · <strong>8:00 PM show</strong>';}
-}
-updateClock();setInterval(updateClock,30000);
-</script>
-</body>
-</html>
+const fallbackStart={name:'Sunset Park, Brooklyn',lat:40.6455,lon:-74.0124};let currentStart={...fallbackStart};let completed=JSON.parse(localStorage.getItem('nyc-stop-completed')||'[]');
+const map=L.map('map',{zoomControl:false}).setView([40.741,-73.993],13);L.control.zoom({position:'bottomright'}).addTo(map);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);let routeLayer,startMarker;
+function iconFor(i,concert=false){return L.divIcon({className:'',html:`<div class="marker-number ${concert?'concert-marker':''}">${concert?'♪':i+1}</div>`,iconSize:[28,28],iconAnchor:[14,14]})}
+stops.forEach((s,i)=>L.marker([s.lat,s.lon],{icon:iconFor(i,s.concert)}).addTo(map).bindPopup(`<b>${s.name}</b><br>${s.address}`));
+function drawRoute(){if(routeLayer)map.removeLayer(routeLayer);if(startMarker)map.removeLayer(startMarker);const pts=[[currentStart.lat,currentStart.lon],...stops.map(s=>[s.lat,s.lon])];routeLayer=L.polyline(pts,{color:'#202020',weight:4,opacity:.4,dashArray:'8 8'}).addTo(map);startMarker=L.circleMarker([currentStart.lat,currentStart.lon],{radius:8,weight:3,color:'#fff',fillColor:'#267a43',fillOpacity:1}).addTo(map).bindPopup(`<b>Start</b><br>${currentStart.name}`);map.fitBounds(L.latLngBounds(pts),{padding:[28,28]});}drawRoute();
+function appleURL(stop,mode='transit'){const dest=encodeURIComponent(stop.address);const origin=`${currentStart.lat},${currentStart.lon}`;return `https://maps.apple.com/?saddr=${encodeURIComponent(origin)}&daddr=${dest}&dirflg=${mode==='walk'?'w':mode==='drive'?'d':'r'}`;}
+function firstIncomplete(){const i=stops.findIndex((_,idx)=>!completed.includes(idx));return i<0?stops.length-1:i;}
+function render(){const host=document.getElementById('stops');host.innerHTML='';stops.forEach((s,i)=>{const isDone=completed.includes(i);const el=document.createElement('article');el.className=`stop ${s.concert?'concert':''} ${isDone?'completed':''}`;const leg=`<div class="leg ${s.legType==='subway'?'subway':''}"><div class="leg-title">${s.legTitle}</div>${s.leg}</div>`;el.innerHTML=`<div class="num">${s.concert?'♪':i+1}</div><div><div class="toprow"><div class="name">${s.name}</div><div class="time">${s.time}</div></div><div class="addr">${s.address}<br>${s.note}</div>${leg}<div class="actions"><a class="open" href="${appleURL(s,s.legType==='walk'?'walk':'transit')}">Apple Maps</a><button class="done" data-i="${i}">${isDone?'✓ Done':'Mark done'}</button></div></div>`;host.appendChild(el);});document.querySelectorAll('.done').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;completed=completed.includes(i)?completed.filter(x=>x!==i):[...completed,i];localStorage.setItem('nyc-stop-completed',JSON.stringify(completed));render();});const ni=firstIncomplete();document.getElementById('nextBtn').textContent=`Apple Maps → ${stops[ni].name}`;}render();
+document.getElementById('nextBtn').onclick=()=>{const s=stops[firstIncomplete()];window.location.href=appleURL(s,s.legType==='walk'?'walk':'transit');};document.getElementById('locateBtn').onclick=()=>{if(!navigator.geolocation){alert('Location is not available in this browser.');return;}const b=document.getElementById('locateBtn');b.textContent='Locating…';navigator.geolocation.getCurrentPosition(pos=>{currentStart={name:'My current location',lat:pos.coords.latitude,lon:pos.coords.longitude};document.getElementById('gpsPill').innerHTML='📍 <strong>Current location</strong> enabled';b.textContent='Location updated';drawRoute();render();},()=>{b.textContent='Use my current location';alert('Location permission was not granted. Using Sunset Park as the start instead.');},{enableHighAccuracy:true,timeout:10000});};
+function updateClock(){const now=new Date();const target=new Date(`${DAY}T19:15:00-04:00`);const show=new Date(`${DAY}T20:00:00-04:00`);const pill=document.getElementById('concertPill');if(now<target){const mins=Math.max(0,Math.round((target-now)/60000));pill.innerHTML=`🎼 Radio City target: <strong>7:15 PM</strong> · ${Math.floor(mins/60)}h ${mins%60}m`;}else if(now<show){const mins=Math.max(0,Math.round((show-now)/60000));pill.innerHTML=`🎼 Be at Radio City now · show in <strong>${mins} min</strong>`;}else{pill.innerHTML='🎼 Joe Hisaishi · <strong>8:00 PM show</strong>';}}updateClock();setInterval(updateClock,30000);
+</script></body></html>
