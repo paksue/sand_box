@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://unpkg.com">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <style>
-    :root{--bg:#f7f6f2;--card:#fff;--ink:#161616;--muted:#6d6d72;--line:#e4e1da;--accent:#111;--concert:#8b1e3f;--done:#267a43}
+    :root{--bg:#f7f6f2;--card:#fff;--ink:#161616;--muted:#6d6d72;--line:#e4e1da;--accent:#111;--concert:#8b1e3f;--done:#267a43;--subway:#ff6319}
     *{box-sizing:border-box}
     html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
     body{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
@@ -30,7 +30,9 @@
     .stop.concert{border-color:#d9a9b7;background:#fff9fb}.stop.concert .num{background:var(--concert);color:white}
     .toprow{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
     .name{font-weight:800;font-size:18px;line-height:1.18}.time{font-size:13px;font-weight:700;color:var(--muted);white-space:nowrap;padding-top:2px}
-    .addr{font-size:14px;color:var(--muted);margin:4px 0 10px;line-height:1.3}
+    .addr{font-size:14px;color:var(--muted);margin:4px 0 8px;line-height:1.3}
+    .transit{font-size:13px;line-height:1.35;background:#fff5ef;border:1px solid #ffd1b8;border-radius:11px;padding:8px 10px;margin:0 0 10px;color:#4f2a16}
+    .train{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--subway);color:#fff;font-weight:900;margin-right:5px;vertical-align:-2px}
     .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .actions a,.actions button{font-size:14px;padding:10px 8px;border-radius:12px}
     .open{background:#111;color:#fff;text-decoration:none;text-align:center;font-weight:700}.done{background:#f0efe9;color:#222;border:0;font-weight:700}
@@ -67,7 +69,7 @@
 <script>
 const DAY = '2026-08-11';
 const stops = [
-  {name:'Edikted', address:'518 Broadway, New York, NY 10012', lat:40.722593, lon:-73.998819, time:'12:45–1:45', note:'SoHo'},
+  {name:'Edikted', address:'518 Broadway, New York, NY 10012', lat:40.722593, lon:-73.998819, time:'12:45–1:45', note:'SoHo', transit:'Take the D train to Broadway–Lafayette St, then walk about 7–10 minutes south on Broadway to 518 Broadway.'},
   {name:'Koryo Books', address:'35 W 32nd St, New York, NY 10001', lat:40.74814, lon:-73.98704, time:'2:15–2:50', note:'Koreatown'},
   {name:'KPOP NARA NYC', address:'1237 Broadway, New York, NY 10001', lat:40.74702, lon:-73.98877, time:'2:50–3:40', note:'K-pop shop'},
   {name:"Nana's Green Tea", address:'1250 Broadway, New York, NY 10001', lat:40.74836, lon:-73.98788, time:'3:40–4:30', note:'Matcha / dessert'},
@@ -113,7 +115,8 @@ function render(){
   stops.forEach((s,i)=>{
     const isDone=completed.includes(i);
     const el=document.createElement('article');el.className=`stop ${s.concert?'concert':''} ${isDone?'completed':''}`;
-    el.innerHTML=`<div class="num">${s.concert?'♪':i+1}</div><div><div class="toprow"><div class="name">${s.name}</div><div class="time">${s.time}</div></div><div class="addr">${s.address}<br>${s.note}</div><div class="actions"><a class="open" href="${appleURL(s)}">Apple Maps</a><button class="done" data-i="${i}">${isDone?'✓ Done':'Mark done'}</button></div></div>`;
+    const transit=s.transit?`<div class="transit"><span class="train">D</span><strong>Subway:</strong> ${s.transit}</div>`:'';
+    el.innerHTML=`<div class="num">${s.concert?'♪':i+1}</div><div><div class="toprow"><div class="name">${s.name}</div><div class="time">${s.time}</div></div><div class="addr">${s.address}<br>${s.note}</div>${transit}<div class="actions"><a class="open" href="${appleURL(s)}">Apple Maps</a><button class="done" data-i="${i}">${isDone?'✓ Done':'Mark done'}</button></div></div>`;
     host.appendChild(el);
   });
   document.querySelectorAll('.done').forEach(b=>b.onclick=()=>{
