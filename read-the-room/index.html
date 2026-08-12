@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f6f2ea" />
+  <title>Read the Room</title>
+  <style>
+    :root {
+      --ink:#171717;
+      --muted:#6f6b64;
+      --paper:#f6f2ea;
+      --card:#fffdf8;
+      --line:#d8d1c4;
+      --soft:#ece6da;
+      --accent:#ef5b3f;
+      --accent-dark:#c73f29;
+      --green:#2d775d;
+      --green-soft:#dcebe4;
+      --gold:#a76e14;
+      --shadow:0 14px 36px rgba(40,32,20,.10);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--paper);color:var(--ink);font-family:ui-rounded,"SF Pro Rounded","SF Pro Display",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    body{min-height:100vh;min-height:100dvh}
+    button,input{font:inherit}
+    button{color:inherit}
+    .app{width:min(100%,680px);margin:0 auto;min-height:100vh;min-height:100dvh;padding:env(safe-area-inset-top) 18px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column}
+    header{min-height:62px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{font-weight:950;letter-spacing:-.055em;font-size:20px;display:flex;align-items:center;gap:9px}
+    .logo-dot{width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:10px 0 0 #f3bc3c,20px 0 0 var(--green);margin-right:20px}
+    .day{font-size:12px;color:var(--muted);font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+    main{flex:1;display:flex;flex-direction:column}
+    .screen{display:none;flex:1;animation:fade .22s ease}
+    .screen.active{display:flex;flex-direction:column}
+    @keyframes fade{from{opacity:.2;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+    .hero{padding:7vh 4px 24px;display:flex;flex-direction:column;justify-content:center;flex:1}
+    .eyebrow{font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dark);margin-bottom:12px}
+    h1{font-size:clamp(48px,15vw,82px);line-height:.88;letter-spacing:-.075em;margin:0 0 22px;font-weight:1000;max-width:620px}
+    .hero p{font-size:19px;line-height:1.42;margin:0;max-width:520px;color:#403d38;font-weight:620}
+    .hero strong{color:var(--ink)}
+    .how{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:30px 0 24px}
+    .how-step{border-top:2px solid var(--ink);padding:10px 4px 0;font-size:12px;line-height:1.3;color:var(--muted);font-weight:750}
+    .how-step b{display:block;color:var(--ink);font-size:14px;margin-bottom:4px}
+    .primary{width:100%;border:0;border-radius:18px;background:var(--ink);color:white;font-weight:900;font-size:18px;padding:17px 20px;cursor:pointer;box-shadow:0 7px 0 #00000018;transition:transform .1s ease,box-shadow .1s ease}
+    .primary:active{transform:translateY(3px);box-shadow:0 4px 0 #00000018}
+    .fineprint{text-align:center;color:var(--muted);font-size:11px;line-height:1.35;margin:12px 16px 0}
+
+    .game-top{display:flex;align-items:center;gap:12px;padding:6px 0 18px}
+    .progress{display:flex;gap:7px;flex:1}
+    .pip{height:5px;border-radius:99px;background:#ded8cd;flex:1;overflow:hidden}
+    .pip.done{background:var(--ink)}
+    .pip.current{background:var(--accent)}
+    .score-mini{font-weight:950;font-size:14px;min-width:62px;text-align:right}
+    .round-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px 19px 18px;box-shadow:var(--shadow)}
+    .meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:14px}
+    .pill{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:900;border-radius:999px;background:var(--soft);padding:7px 10px}
+    .round-num{font-size:12px;color:var(--muted);font-weight:800}
+    .context{font-size:23px;line-height:1.22;letter-spacing:-.025em;font-weight:900;margin:0 0 11px}
+    .intent{font-size:14px;line-height:1.45;color:var(--muted);margin:0;padding-bottom:18px;border-bottom:1px solid var(--line)}
+    .prompt{font-size:13px;font-weight:950;text-transform:uppercase;letter-spacing:.07em;margin:18px 0 11px}
+    .choices{display:grid;gap:10px}
+    .choice{border:2px solid #d7d0c4;background:#fff;border-radius:18px;padding:17px 16px;text-align:left;display:grid;grid-template-columns:34px 1fr;gap:10px;cursor:pointer;transition:border-color .15s ease,transform .12s ease,background .15s ease;min-height:92px}
+    .choice:hover{border-color:#999085}
+    .choice:active{transform:scale(.99)}
+    .choice[disabled]{cursor:default}
+    .letter{width:29px;height:29px;border:1.5px solid #b8b0a4;border-radius:9px;display:grid;place-items:center;font-size:12px;font-weight:950}
+    .choice-text{font-size:17px;line-height:1.35;font-weight:690;padding-top:2px}
+    .choice.selected{border-color:var(--ink);background:#f4efe6}
+    .choice.winner{border-color:var(--green);background:var(--green-soft)}
+    .choice.loser.selected{border-color:#aa5847;background:#f6e3de}
+    .choice-label{grid-column:2;font-size:11px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:-4px}
+
+    .reveal{display:none;margin-top:13px;border-radius:18px;background:#201f1d;color:white;padding:17px 16px 15px;animation:pop .22s cubic-bezier(.2,.8,.2,1)}
+    .reveal.show{display:block}
+    @keyframes pop{from{opacity:0;transform:scale(.975) translateY(6px)}to{opacity:1;transform:none}}
+    .reveal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+    .verdict{font-size:20px;line-height:1.1;font-weight:950;letter-spacing:-.025em}
+    .points{font-size:20px;font-weight:1000;color:#f6c95c;white-space:nowrap}
+    .crowd-title{font-size:11px;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:#bdb9b2;margin:16px 0 7px}
+    .bar{height:31px;border-radius:10px;overflow:hidden;display:flex;background:#46433e;font-size:11px;font-weight:950}
+    .bar-a,.bar-b{display:flex;align-items:center;min-width:0;transition:width .55s cubic-bezier(.2,.8,.2,1)}
+    .bar-a{justify-content:flex-start;padding-left:9px;background:#e8e0d3;color:#201f1d}
+    .bar-b{justify-content:flex-end;padding-right:9px;background:#68a487;color:white}
+    .insight{font-size:13px;line-height:1.42;color:#e4dfd6;margin:12px 0 0}
+    .next{margin-top:11px;background:white;color:var(--ink);border:none;border-radius:13px;font-weight:950;padding:13px 15px;width:100%;cursor:pointer}
+
+    .results{padding:4vh 0 20px;text-align:center}
+    .results .eyebrow{margin-bottom:9px}
+    .big-score{font-size:clamp(66px,22vw,110px);font-weight:1000;letter-spacing:-.075em;line-height:.9;margin:8px 0 2px}
+    .outof{font-size:13px;color:var(--muted);font-weight:850;margin-bottom:18px}
+    .result-title{font-size:27px;font-weight:950;letter-spacing:-.035em;margin:0 0 7px}
+    .result-copy{font-size:15px;color:var(--muted);line-height:1.4;margin:0 auto 22px;max-width:470px}
+    .marks{display:flex;justify-content:center;gap:7px;margin:0 0 22px}
+    .mark{width:39px;height:39px;border-radius:12px;display:grid;place-items:center;background:var(--soft);font-size:17px;font-weight:950}
+    .mark.hit{background:var(--green-soft);color:var(--green)}
+    .mark.miss{background:#f1dfda;color:#9c4b3e}
+    .traits{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left;margin:0 0 13px}
+    .trait{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px}
+    .trait small{display:block;color:var(--muted);font-weight:850;margin-bottom:5px}
+    .trait strong{font-size:22px;letter-spacing:-.03em}
+    .share{width:100%;border:none;background:var(--accent);color:white;border-radius:17px;font-size:17px;font-weight:950;padding:16px;cursor:pointer;margin-top:7px}
+    .secondary{width:100%;border:1.5px solid var(--line);background:transparent;border-radius:17px;font-size:15px;font-weight:900;padding:14px;cursor:pointer;margin-top:9px}
+    .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,18px);background:#171717;color:white;padding:11px 16px;border-radius:999px;font-size:13px;font-weight:850;opacity:0;pointer-events:none;transition:.2s ease;z-index:20}
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    footer{text-align:center;color:#8c867c;font-size:10px;padding-top:15px}
+    @media (max-width:420px){.app{padding-left:13px;padding-right:13px}.round-card{padding:18px 14px 14px}.context{font-size:21px}.choice{padding:14px 12px}.choice-text{font-size:16px}.how{gap:6px}.how-step{font-size:11px}.how-step b{font-size:13px}}
+    @media (prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand"><span class="logo-dot"></span>READ THE ROOM</div>
+    <div class="day" id="dayLabel"></div>
+  </header>
+
+  <main>
+    <section class="screen active" id="homeScreen">
+      <div class="hero">
+        <div class="eyebrow">A 3-minute people game</div>
+        <h1>Same meaning.<br>Different delivery.</h1>
+        <p>Can you predict <strong>which wording lands better</strong> with everyone else?</p>
+        <div class="how">
+          <div class="how-step"><b>1 · Read</b>One human situation.</div>
+          <div class="how-step"><b>2 · Choose</b>Same intent, two deliveries.</div>
+          <div class="how-step"><b>3 · Reveal</b>See how the crowd heard it.</div>
+        </div>
+        <button class="primary" id="startBtn">Play today's 5</button>
+        <div class="fineprint">Prototype mode: crowd percentages are seeded test data, not live player votes yet.</div>
+      </div>
+    </section>
+
+    <section class="screen" id="gameScreen">
+      <div class="game-top">
+        <div class="progress" id="progress"></div>
+        <div class="score-mini" id="scoreMini">0 pts</div>
+      </div>
+      <div class="round-card">
+        <div class="meta">
+          <span class="pill" id="category"></span>
+          <span class="round-num" id="roundNum"></span>
+        </div>
+        <h2 class="context" id="context"></h2>
+        <p class="intent" id="intent"></p>
+        <div class="prompt">Which lands better?</div>
+        <div class="choices">
+          <button class="choice" id="choiceA" data-choice="A"><span class="letter">A</span><span class="choice-text" id="textA"></span><span class="choice-label" id="labelA"></span></button>
+          <button class="choice" id="choiceB" data-choice="B"><span class="letter">B</span><span class="choice-text" id="textB"></span><span class="choice-label" id="labelB"></span></button>
+        </div>
+        <div class="reveal" id="reveal">
+          <div class="reveal-head"><div class="verdict" id="verdict"></div><div class="points" id="roundPoints"></div></div>
+          <div class="crowd-title">Prototype crowd</div>
+          <div class="bar"><div class="bar-a" id="barA"></div><div class="bar-b" id="barB"></div></div>
+          <p class="insight" id="insight"></p>
+          <button class="next" id="nextBtn">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="resultScreen">
+      <div class="results">
+        <div class="eyebrow" id="resultDay"></div>
+        <div class="big-score" id="bigScore">0</div>
+        <div class="outof">out of 1000</div>
+        <div class="marks" id="marks"></div>
+        <h2 class="result-title" id="resultTitle"></h2>
+        <p class="result-copy" id="resultCopy"></p>
+        <div class="traits">
+          <div class="trait"><small>Your delivery bias</small><strong id="directTrait">—</strong></div>
+          <div class="trait"><small>Crowd match</small><strong id="matchTrait">—</strong></div>
+        </div>
+        <button class="share" id="shareBtn">Share result</button>
+        <button class="secondary" id="practiceBtn">Play another set</button>
+        <button class="secondary" id="resetBtn">Reset today's demo</button>
+      </div>
+    </section>
+  </main>
+  <footer>READ THE ROOM · prototype v0.1 · no login, no server, no tracking</footer>
+</div>
+<div class="toast" id="toast">Copied</div>
+
+<script>
+(() => {
+  'use strict';
+
+  const QUESTIONS = [
+    {category:'Friend',context:'Your friend is 25 minutes late.',intent:'You are annoyed and want them to text next time.',a:'You could’ve at least texted me.',b:'Next time, can you text me if you’re running late? I was wondering where you were.',pa:24,labels:['Blunt','Direct + warm'],insight:'Both complain. B gives the same boundary, but adds a clear next action instead of only blame.',traits:{A:{direct:82,warm:22},B:{direct:70,warm:72}}},
+    {category:'Work',context:'A coworker sends you sloppy work for the third time.',intent:'You need the quality to improve.',a:'This still isn’t good enough. Please be more careful.',b:'There are still errors in sections 2 and 4. Fix those before you send the next version.',pa:31,labels:['Judgment-first','Specific + firm'],insight:'Specific criticism tells someone what to change. A global judgment can feel harsher while being less useful.',traits:{A:{direct:88,warm:26},B:{direct:91,warm:48}}},
+    {category:'Dating',context:'You do not want a second date.',intent:'You want to say no without leaving the door half-open.',a:'I had a nice time, but I don’t think we’re a match. Wishing you the best.',b:'I’m pretty busy lately, so I probably won’t have time to hang out again.',pa:83,labels:['Clear + kind','Soft dodge'],insight:'A can feel more uncomfortable to send, but clarity often lands better than an excuse that creates uncertainty.',traits:{A:{direct:82,warm:76},B:{direct:28,warm:58}}},
+    {category:'Family',context:'Someone keeps checking their phone while you are talking.',intent:'You want their attention for two minutes.',a:'Can you put your phone down for two minutes? I want to finish telling you this.',b:'Are you seriously incapable of staying off your phone?',pa:89,labels:['Direct request','Contempt'],insight:'The underlying complaint is the same. A targets the behavior; B turns it into a judgment about the person.',traits:{A:{direct:86,warm:57},B:{direct:94,warm:5}}},
+    {category:'Texting',context:'A friend cancels at the last minute again.',intent:'You want them to know this is becoming a problem.',a:'No worries!! Totally fine 😊',b:'Okay. I get that things happen, but the last-minute cancellations are getting frustrating for me.',pa:18,labels:['Conflict-avoidant','Honest + calm'],insight:'Pretending there is no problem can sound pleasant now but stores the conflict for later.',traits:{A:{direct:10,warm:82},B:{direct:79,warm:62}}},
+    {category:'Work',context:'Your manager gives you a Friday deadline you cannot meet.',intent:'You need to push back.',a:'I can’t do Friday. Monday is realistic unless we cut the reporting section.',b:'I’ll try my best and let you know if I run into problems.',pa:72,labels:['Firm + options','Agree now, fail later'],insight:'A sounds firmer, but it gives a concrete tradeoff. Reliability can read as more cooperative than vague agreement.',traits:{A:{direct:90,warm:47},B:{direct:25,warm:68}}},
+    {category:'Parenting',context:'A teenager’s room is a disaster.',intent:'You need it cleaned before guests arrive.',a:'Your room is disgusting. Clean it up.',b:'I need the floor and desk cleared before 5, before everyone gets here.',pa:21,labels:['Shaming','Specific boundary'],insight:'Specific standards reduce the fight over what “clean” means and avoid turning the mess into a character judgment.',traits:{A:{direct:94,warm:8},B:{direct:92,warm:48}}},
+    {category:'Friend',context:'A friend asks for advice, then ignores it repeatedly.',intent:'You do not want to keep having the same conversation.',a:'Why do you even ask me if you never listen?',b:'I care about you, but I don’t think repeating my advice is helping. I’m happy to listen if that’s what you need.',pa:19,labels:['Frustrated','Boundary + care'],insight:'B changes the role from “fixer” to “listener” while still setting a boundary.',traits:{A:{direct:91,warm:15},B:{direct:72,warm:84}}},
+    {category:'Customer',context:'A customer blames you for a policy you cannot change.',intent:'You need to say no.',a:'That’s company policy. There’s nothing I can do.',b:'I can’t override that policy, but I can show you the two options I do have here.',pa:14,labels:['Dead end','Limit + options'],insight:'Both say no. B preserves agency by naming what is still possible.',traits:{A:{direct:83,warm:19},B:{direct:81,warm:73}}},
+    {category:'Relationship',context:'Your partner forgot an errand they promised to do.',intent:'You want them to know you are frustrated.',a:'You never remember anything I ask you to do.',b:'I’m frustrated because I was counting on that getting done today.',pa:17,labels:['Absolute blame','Impact statement'],insight:'“Never” broadens one miss into a global accusation. B keeps the argument attached to the actual event.',traits:{A:{direct:90,warm:10},B:{direct:77,warm:53}}},
+    {category:'Work',context:'A junior teammate made a bad technical decision.',intent:'You need them to change course and learn why.',a:'This approach won’t scale because each request triggers a full scan. Let’s switch to an indexed lookup.',b:'Why would you build it this way? This is obviously going to fall over.',pa:91,labels:['Technical + direct','Belittling'],insight:'A is not softer about the decision; it is simply precise about the problem instead of attacking the decision-maker.',traits:{A:{direct:93,warm:51},B:{direct:97,warm:3}}},
+    {category:'Social',context:'A friend tells a story you have already heard three times.',intent:'You want them to move on without embarrassing them.',a:'You’ve told me this like three times already.',b:'I remember this one — the ending is wild. What happened after that?',pa:27,labels:['Correction','Redirect'],insight:'B signals that you listened before and gives the speaker an easy off-ramp instead of publicly correcting them.',traits:{A:{direct:79,warm:26},B:{direct:47,warm:83}}},
+    {category:'Texting',context:'Someone sends only “K.” after you explain a change of plans.',intent:'You are unsure whether they are annoyed.',a:'Are you mad at me?',b:'That “K” felt a little cold — are we okay?',pa:39,labels:['Mind-reading','Observation + check'],insight:'B separates what you observed from the conclusion you are tempted to draw.',traits:{A:{direct:74,warm:47},B:{direct:76,warm:68}}},
+    {category:'Apology',context:'You made a joke that genuinely hurt someone.',intent:'You want to apologize without debating their reaction.',a:'I’m sorry you were offended. I was only joking.',b:'I’m sorry. That joke was out of line, and I can see why it hurt.',pa:8,labels:['Defensive apology','Owns impact'],insight:'Adding a defense can turn an apology into an argument about whether the other person should have been hurt.',traits:{A:{direct:54,warm:34},B:{direct:76,warm:89}}},
+    {category:'Boundary',context:'A relative keeps dropping by without asking.',intent:'You want visits, but not unannounced visits.',a:'Please text before you come over. If we’re free, we’d love to see you.',b:'You can’t just show up at my house whenever you feel like it.',pa:78,labels:['Boundary + welcome','Boundary + accusation'],insight:'A states nearly the same rule while protecting the relationship around the rule.',traits:{A:{direct:86,warm:83},B:{direct:96,warm:12}}},
+    {category:'Work',context:'A meeting has gone ten minutes past its end time.',intent:'You have to leave now.',a:'Sorry, I hate to be rude, but I really need to go if that’s okay.',b:'I need to drop now for my next commitment. Send me anything I should follow up on.',pa:34,labels:['Over-apologetic','Clean exit'],insight:'Excessive apology can make a normal boundary sound negotiable. B is courteous without asking permission to leave.',traits:{A:{direct:36,warm:80},B:{direct:88,warm:61}}},
+    {category:'Friend',context:'Your friend is venting about the same problem again.',intent:'You want to know whether they want advice or just support.',a:'Do you want ideas, or do you mostly need me to listen right now?',b:'Here’s what you need to do.',pa:86,labels:['Checks the role','Fixes immediately'],insight:'Asking what kind of support is wanted can prevent helpful intent from landing as control.',traits:{A:{direct:52,warm:94},B:{direct:92,warm:26}}},
+    {category:'Feedback',context:'Someone asks what you think of a presentation that was confusing.',intent:'You want to be useful without pretending it was great.',a:'It was good! Maybe just tighten it up a little.',b:'The opening was strong. I got lost in the middle because I couldn’t see how slides 6–9 connected to the main point.',pa:23,labels:['Pleasant + vague','Specific + useful'],insight:'Positive vagueness can feel nicer for five seconds, but concrete feedback respects the request for real information.',traits:{A:{direct:23,warm:81},B:{direct:79,warm:70}}},
+    {category:'Relationship',context:'You need an hour alone after a stressful day.',intent:'You are not angry at your partner; you need space.',a:'I need an hour to decompress. I’m not upset with you — I just need some quiet.',b:'Can you just leave me alone for once?',pa:94,labels:['Reassuring boundary','Rejection'],insight:'The practical request is almost identical. Explaining the boundary prevents the listener from having to invent the reason.',traits:{A:{direct:81,warm:80},B:{direct:97,warm:5}}},
+    {category:'Leadership',context:'A teammate misses an important deadline.',intent:'You need accountability and an explanation.',a:'Walk me through what blocked this and what needs to change so the next deadline holds.',b:'This is unacceptable. I need people I can rely on.',pa:66,labels:['Accountability + diagnosis','Status threat'],insight:'A still holds the missed deadline as a problem, but directs attention toward cause and prevention.',traits:{A:{direct:88,warm:55},B:{direct:96,warm:7}}},
+    {category:'Social',context:'Someone confidently says something you believe is wrong.',intent:'You want to challenge the claim without turning it personal.',a:'I don’t think that’s right. My understanding is the opposite — want to check it?',b:'That makes absolutely no sense.',pa:88,labels:['Challenge + verify','Dismissive'],insight:'Disagreement does not require lowering certainty, but making the claim testable changes the social temperature.',traits:{A:{direct:81,warm:65},B:{direct:94,warm:8}}},
+    {category:'Work',context:'Your boss asks, “Can you take on one more thing?”',intent:'You are already at capacity.',a:'I can. Which current priority should move back?',b:'Sure, no problem.',pa:79,labels:['Yes + tradeoff','Automatic yes'],insight:'A is cooperative while making capacity visible. It converts an invisible overload into a prioritization decision.',traits:{A:{direct:84,warm:66},B:{direct:16,warm:82}}},
+    {category:'Friend',context:'A friend buys an outfit you dislike and asks, “Do you love it?”',intent:'You want to be honest without needlessly insulting their taste.',a:'It’s not really my style, but you look excited in it. How do you feel wearing it?',b:'Honestly? I think it looks bad.',pa:84,labels:['Truth + perspective','Unfiltered verdict'],insight:'Honesty can answer the useful question — whether it suits the wearer — without pretending personal taste is objective truth.',traits:{A:{direct:62,warm:87},B:{direct:97,warm:8}}},
+    {category:'Parenting',context:'A teenager comes home 40 minutes later than agreed.',intent:'You want the curfew taken seriously.',a:'We agreed on 11. Tomorrow we need to talk about what happened and what the consequence should be.',b:'Nice of you to finally show up.',pa:92,labels:['Firm','Sarcastic'],insight:'Sarcasm communicates anger clearly but often hides the actual next step. A makes the accountability explicit.',traits:{A:{direct:90,warm:45},B:{direct:88,warm:7}}},
+    {category:'Texting',context:'You invited someone and they never replied.',intent:'You need a yes or no so you can make plans.',a:'Hey — I’m finalizing plans tonight. Can you let me know by 7 if you’re in?',b:'Guess you’re not interested then lol.',pa:93,labels:['Deadline + easy answer','Passive-aggressive'],insight:'A makes replying easier. B asks the other person to resolve both the logistics and the implied resentment.',traits:{A:{direct:85,warm:71},B:{direct:62,warm:12}}},
+    {category:'Apology',context:'You forgot to reply to an important message for three days.',intent:'You want to repair the miss and respond now.',a:'Sorry for the slow reply — I missed this. Here’s the answer you needed…',b:'Sorry! Things have been absolutely insane and I’ve barely had a second to breathe…',pa:77,labels:['Own + repair','Explanation-heavy'],insight:'A spends more of the message solving the problem. Long explanations can accidentally make the apology about the sender.',traits:{A:{direct:75,warm:76},B:{direct:32,warm:65}}},
+    {category:'Relationship',context:'You disagree about how much money was spent this month.',intent:'You want to talk about the budget without starting a character fight.',a:'You’re terrible with money.',b:'We’re over the number we agreed on. Can we look at what changed this month?',pa:5,labels:['Character attack','Shared problem'],insight:'B turns “you are the problem” into “we have a problem to inspect,” without pretending the overspending did not happen.',traits:{A:{direct:98,warm:2},B:{direct:82,warm:65}}},
+    {category:'Work',context:'Someone interrupts you repeatedly in a meeting.',intent:'You want to finish your point.',a:'Hold on — I want to finish this thought, then I’ll come to you.',b:'Can you stop interrupting me?',pa:71,labels:['Assertive turn-taking','Accusatory'],insight:'Both interrupt the interruption. A claims the floor and gives a clear handoff point.',traits:{A:{direct:91,warm:58},B:{direct:94,warm:18}}},
+    {category:'Family',context:'A relative gives you unwanted parenting advice.',intent:'You do not want to debate your decision.',a:'I know you mean well. We’ve decided how we’re handling this, so I’m not looking for advice on it.',b:'You raised your kids your way. I’ll raise mine my way.',pa:68,labels:['Closed boundary','Counterattack'],insight:'A closes the topic explicitly. B also closes it, but adds a comparison that invites a new argument.',traits:{A:{direct:88,warm:61},B:{direct:94,warm:15}}},
+    {category:'Friend',context:'A friend is excited about an idea you think is unrealistic.',intent:'You want to raise a concern without killing their momentum.',a:'What would have to be true for that to work? The part I’m unsure about is how you’d get the first 100 customers.',b:'That’s never going to work.',pa:93,labels:['Curious challenge','Dismissal'],insight:'A does not hide skepticism; it turns skepticism into a problem the idea can answer.',traits:{A:{direct:77,warm:78},B:{direct:95,warm:4}}}
+  ];
+
+  const $ = s => document.querySelector(s);
+  const home = $('#homeScreen'), game = $('#gameScreen'), result = $('#resultScreen');
+  const dayLabel = $('#dayLabel');
+  const STORAGE_KEY = 'read-the-room-v01';
+  const baseDate = new Date('2026-01-01T00:00:00');
+  const today = new Date();
+  const dayNumber = Math.max(1, Math.floor((new Date(today.getFullYear(),today.getMonth(),today.getDate()) - baseDate) / 86400000) + 1);
+  const dateKey = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  dayLabel.textContent = `#${dayNumber}`;
+
+  let session = null;
+  let practiceOffset = 0;
+
+  function mulberry32(a){return function(){let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+  function dailyQuestions(offset=0){
+    const seed = dayNumber * 991 + offset * 7919;
+    const rng = mulberry32(seed);
+    const arr = QUESTIONS.map((q,i)=>({q,i,sort:rng()})).sort((a,b)=>a.sort-b.sort).slice(0,5);
+    return arr.map(x=>x.i);
+  }
+  function newSession(offset=0){return {dateKey,dayNumber,indices:dailyQuestions(offset),round:0,score:0,answers:[],revealed:false,practice:offset>0}}
+  function showScreen(which){[home,game,result].forEach(s=>s.classList.remove('active'));which.classList.add('active')}
+  function save(){ if(session && !session.practice) localStorage.setItem(STORAGE_KEY,JSON.stringify(session)); }
+  function load(){
+    try{
+      const x=JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if(x && x.dateKey===dateKey && Array.isArray(x.indices) && x.indices.length===5) return x;
+    }catch(e){}
+    return null;
+  }
+
+  function difficultyPoints(q){
+    const winnerShare=Math.max(q.pa,100-q.pa);
+    const difficulty=1-Math.min(1,(winnerShare-50)/50);
+    return Math.round((100+100*difficulty)/5)*5;
+  }
+
+  function renderProgress(){
+    const el=$('#progress');el.innerHTML='';
+    for(let i=0;i<5;i++){const p=document.createElement('div');p.className='pip'+(i<session.round?' done':i===session.round?' current':'');el.appendChild(p)}
+    $('#scoreMini').textContent=`${session.score} pts`;
+  }
+
+  function currentQ(){return QUESTIONS[session.indices[session.round]]}
+
+  function renderRound(){
+    if(session.round>=5){renderResults();return}
+    showScreen(game);renderProgress();
+    const q=currentQ();
+    $('#category').textContent=q.category;
+    $('#roundNum').textContent=`${session.round+1} of 5`;
+    $('#context').textContent=q.context;
+    $('#intent').textContent=q.intent;
+    $('#textA').textContent=q.a;$('#textB').textContent=q.b;
+    $('#labelA').textContent='';$('#labelB').textContent='';
+    ['#choiceA','#choiceB'].forEach(sel=>{const b=$(sel);b.disabled=false;b.className='choice'});
+    $('#reveal').classList.remove('show');
+    session.revealed=false;save();
+  }
+
+  function choose(letter){
+    if(session.revealed)return;
+    const q=currentQ();
+    const winner=q.pa>=50?'A':'B';
+    const correct=letter===winner;
+    const pts=correct?difficultyPoints(q):0;
+    const chosenTraits=q.traits[letter];
+    session.answers.push({letter,winner,correct,pts,direct:chosenTraits.direct,warm:chosenTraits.warm,questionIndex:session.indices[session.round]});
+    session.score+=pts;session.revealed=true;
+    const a=$('#choiceA'),b=$('#choiceB');a.disabled=b.disabled=true;
+    (letter==='A'?a:b).classList.add('selected');
+    (winner==='A'?a:b).classList.add('winner');
+    if(!correct)(letter==='A'?a:b).classList.add('loser');
+    $('#labelA').textContent=q.labels[0];$('#labelB').textContent=q.labels[1];
+    $('#verdict').textContent=correct?'You read the room.':'The crowd heard it differently.';
+    $('#roundPoints').textContent=correct?`+${pts}`:'+0';
+    $('#barA').style.width=`${q.pa}%`;$('#barB').style.width=`${100-q.pa}%`;
+    $('#barA').textContent=`A ${q.pa}%`;$('#barB').textContent=`${100-q.pa}% B`;
+    $('#insight').textContent=q.insight;
+    $('#nextBtn').textContent=session.round===4?'See my result →':'Next →';
+    $('#reveal').classList.add('show');
+    $('#scoreMini').textContent=`${session.score} pts`;
+    save();
+  }
+
+  function next(){
+    if(!session.revealed)return;
+    session.round++;
+    session.revealed=false;
+    save();
+    if(session.round>=5)renderResults();else renderRound();
+  }
+
+  function resultProfile(){
+    const hits=session.answers.filter(a=>a.correct).length;
+    if(hits===5)return ['Human Radar','You matched the majority on all five. Either you read signals frighteningly well, or everyone else thinks like you.'];
+    if(hits===4)return ['Room Reader','You usually spotted how the wording would land, including some non-obvious tradeoffs.'];
+    if(hits===3)return ['Social Splitter','You and the crowd agree more often than not — but a couple of phrases hit very differently than you expected.'];
+    if(hits===2)return ['Independent Ear','You heard several situations differently from the majority. That is exactly where this game gets interesting.'];
+    return ['Wild Card','The crowd surprised you today. Your instincts are unusually far from this test crowd — useful data, not a personality diagnosis.'];
+  }
+
+  function renderResults(){
+    showScreen(result);
+    const answers=session.answers;
+    const hits=answers.filter(a=>a.correct).length;
+    const direct=Math.round(answers.reduce((s,a)=>s+a.direct,0)/Math.max(1,answers.length));
+    const warm=Math.round(answers.reduce((s,a)=>s+a.warm,0)/Math.max(1,answers.length));
+    const profile=resultProfile();
+    $('#resultDay').textContent=`READ THE ROOM #${session.dayNumber}${session.practice?' · PRACTICE':''}`;
+    $('#bigScore').textContent=session.score;
+    const marks=$('#marks');marks.innerHTML='';
+    answers.forEach((a,i)=>{const m=document.createElement('div');m.className='mark '+(a.correct?'hit':'miss');m.textContent=a.correct?'✓':'×';m.title=`Round ${i+1}`;marks.appendChild(m)});
+    $('#resultTitle').textContent=profile[0];$('#resultCopy').textContent=profile[1];
+    let bias='Balanced';
+    if(direct-warm>=18)bias='Direct'; else if(warm-direct>=18)bias='Warm'; else if(direct>=75&&warm>=65)bias='Clear + warm'; else if(direct<50)bias='Soft';
+    $('#directTrait').textContent=bias;
+    $('#matchTrait').textContent=`${Math.round(hits/5*100)}%`;
+    save();
+  }
+
+  function shareText(){
+    const hits=session.answers.filter(a=>a.correct).length;
+    const marks=session.answers.map(a=>a.correct?'🟩':'🟥').join('');
+    return `READ THE ROOM #${session.dayNumber}\n${marks}\n${session.score}/1000 · ${hits}/5 crowd matches\nSame meaning. Different delivery.`;
+  }
+  async function share(){
+    const text=shareText();
+    try{
+      if(navigator.share){await navigator.share({title:'Read the Room',text});return}
+      await navigator.clipboard.writeText(text);toast('Result copied');
+    }catch(e){if(e && e.name!=='AbortError')toast('Could not share');}
+  }
+  function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1500)}
+
+  $('#startBtn').addEventListener('click',()=>{
+    session=load()||newSession(0);
+    if(session.round>=5 && session.answers.length>=5) renderResults(); else renderRound();
+  });
+  $('#choiceA').addEventListener('click',()=>choose('A'));
+  $('#choiceB').addEventListener('click',()=>choose('B'));
+  $('#nextBtn').addEventListener('click',next);
+  $('#shareBtn').addEventListener('click',share);
+  $('#practiceBtn').addEventListener('click',()=>{practiceOffset++;session=newSession(practiceOffset);renderRound()});
+  $('#resetBtn').addEventListener('click',()=>{localStorage.removeItem(STORAGE_KEY);session=newSession(0);renderRound();toast('Today reset')});
+
+  const saved=load();
+  if(saved && saved.round>=5 && saved.answers.length>=5){
+    $('#startBtn').textContent='See today’s result';
+  } else if(saved && (saved.round>0 || saved.answers.length>0)){
+    $('#startBtn').textContent='Continue today’s game';
+  }
+})();
+</script>
+</body>
+</html>
