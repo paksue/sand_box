@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<meta name="theme-color" content="#030812" />
+<title>WorldTap Next — Renderer Lab</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@6.0.0/dist/maplibre-gl.css" />
+<style>
+:root{--bg:#030812;--panel:rgba(8,18,31,.82);--ink:#f5fbff;--muted:#a8bac9;--line:rgba(255,255,255,.13);--cyan:#7de7ff;--green:#73f2a4;--red:#ff7d86;--gold:#ffd66f}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button{font:inherit}
+#app{position:fixed;inset:0;background:#02060e}#map{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,#09233a 0,#030812 48%,#010307 100%)}
+#map:after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 44%,transparent 34%,rgba(0,0,0,.06) 58%,rgba(0,0,0,.42) 100%);z-index:3}
+.hud{position:absolute;z-index:10;left:0;right:0;top:0;padding:max(14px,env(safe-area-inset-top)) 14px 0;pointer-events:none}.top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.brand,.metrics{pointer-events:auto;border:1px solid var(--line);background:var(--panel);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 12px 36px rgba(0,0,0,.25)}.brand{padding:11px 13px;border-radius:18px;max-width:72vw}.eyebrow{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);font-weight:900}.brand h1{font-size:18px;letter-spacing:-.03em;margin:3px 0 0}.brand p{font-size:11px;color:var(--muted);margin:3px 0 0;line-height:1.35}.metrics{padding:9px 10px;border-radius:15px;display:grid;gap:3px;min-width:88px;text-align:right}.metric{font-size:10px;color:var(--muted);font-weight:800}.metric strong{font-size:13px;color:var(--ink);font-variant-numeric:tabular-nums}
+.status{position:absolute;z-index:11;left:50%;top:50%;transform:translate(-50%,-50%);width:min(360px,80vw);padding:11px 14px;border-radius:999px;text-align:center;background:rgba(3,9,18,.88);border:1px solid var(--line);color:#c8d7e4;font-size:12px;font-weight:850;box-shadow:0 12px 35px rgba(0,0,0,.35);pointer-events:none}.status.hidden{display:none}.status.error{color:#ffd0d4;border-color:rgba(255,125,134,.35)}
+.instructions{position:absolute;z-index:9;left:50%;bottom:calc(110px + env(safe-area-inset-bottom));transform:translateX(-50%);padding:8px 11px;border-radius:999px;background:rgba(3,9,18,.72);border:1px solid rgba(255,255,255,.09);color:rgba(240,248,255,.74);font-size:11px;font-weight:800;white-space:nowrap;pointer-events:none;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.controls{position:absolute;z-index:12;left:0;right:0;bottom:0;padding:12px 14px max(14px,env(safe-area-inset-bottom));display:flex;justify-content:center;gap:8px;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(2,6,14,.9) 45%)}.btn{pointer-events:auto;border:1px solid var(--line);border-radius:16px;padding:13px 16px;font-weight:950;letter-spacing:-.01em;background:rgba(13,29,46,.91);color:var(--ink);box-shadow:0 10px 28px rgba(0,0,0,.28);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}.btn.primary{background:linear-gradient(180deg,#86f0ad,#67d999);color:#05120a;border-color:rgba(255,255,255,.35);min-width:220px}.btn:active{transform:scale(.985)}.btn:disabled{opacity:.5}.btn.small{min-width:0;padding-inline:13px;color:#c8d7e4}.reveal-card{position:absolute;z-index:11;left:50%;bottom:calc(176px + env(safe-area-inset-bottom));width:min(390px,calc(100vw - 28px));transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.28s ease;padding:14px 15px;border-radius:20px;background:rgba(7,17,29,.9);border:1px solid rgba(125,231,255,.2);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 22px 55px rgba(0,0,0,.38)}.reveal-card.show{opacity:1;transform:translate(-50%,0)}.reveal-title{display:flex;align-items:center;justify-content:space-between;gap:10px}.reveal-title strong{font-size:20px;letter-spacing:-.03em}.reveal-title span{font-size:11px;color:var(--green);font-weight:900}.reveal-copy{font-size:12px;color:var(--muted);line-height:1.45;margin-top:5px}.guess-readout{position:absolute;z-index:9;right:14px;top:116px;max-width:52vw;padding:8px 10px;border-radius:14px;background:rgba(3,9,18,.72);border:1px solid rgba(255,255,255,.08);font-size:10px;color:var(--muted);font-weight:800;pointer-events:none;opacity:0;transition:.18s}.guess-readout.show{opacity:1}.guess-readout strong{color:#fff}.maplibregl-ctrl-bottom-right,.maplibregl-ctrl-bottom-left{opacity:.28}.maplibregl-ctrl-attrib{background:rgba(2,7,14,.6)!important;color:#9badbb!important;font-size:9px!important}.maplibregl-ctrl-attrib a{color:#b9d2e4!important}
+@media(max-width:520px){.hud{padding-left:10px;padding-right:10px}.brand{max-width:70vw}.brand h1{font-size:17px}.metrics{min-width:76px;padding:8px}.instructions{bottom:calc(100px + env(safe-area-inset-bottom));font-size:10px}.controls{padding-left:10px;padding-right:10px}.btn{padding:12px 13px}.btn.primary{min-width:0;flex:1;max-width:290px}.reveal-card{bottom:calc(155px + env(safe-area-inset-bottom))}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="map"></div>
+  <div class="hud"><div class="top">
+    <div class="brand"><div class="eyebrow">WORLD TAP · GOLD RENDERER LAB</div><h1>MapLibre + Three.js</h1><p>One camera · one WebGL context · Three.js effects georeferenced by MapLibre.</p></div>
+    <div class="metrics"><div class="metric">FPS <strong id="fps">—</strong></div><div class="metric">ENGINE <strong id="engine">…</strong></div></div>
+  </div></div>
+  <div id="status" class="status">Loading MapLibre 6 + Three.js…</div>
+  <div id="guessReadout" class="guess-readout">Tap Earth to test geographic picking.</div>
+  <div class="instructions">Drag to spin · pinch to zoom · tap anywhere</div>
+  <div id="revealCard" class="reveal-card"><div class="reveal-title"><strong>Nairobi 🇰🇪</strong><span>THREE.JS BEACON</span></div><div class="reveal-copy">The green beacon is a Three.js object anchored to Nairobi while MapLibre owns the globe and camera. Spin and zoom now: it should remain glued to the same geographic point.</div></div>
+  <div class="controls"><button id="resetBtn" class="btn small">RESET</button><button id="revealBtn" class="btn primary" disabled>REVEAL TOKYO → NAIROBI</button></div>
+</div>
+<script type="module">
+const statusEl=document.getElementById('status');
+const engineEl=document.getElementById('engine');
+const fpsEl=document.getElementById('fps');
+const revealBtn=document.getElementById('revealBtn');
+const resetBtn=document.getElementById('resetBtn');
+const revealCard=document.getElementById('revealCard');
+const guessReadout=document.getElementById('guessReadout');
+const TOKYO=[139.6917,35.6895];
+const NAIROBI=[36.8219,-1.2921];
+let maplibregl,THREE,map,effectsLayer,arcCoords=[],arcFrame=0,animating=false;
+
+async function loadModule(primary,fallback){try{return await import(primary)}catch(primaryErr){console.warn('Primary module failed',primaryErr);return await import(fallback)}}
+
+try{
+  [maplibregl,THREE]=await Promise.all([
+    loadModule('https://unpkg.com/maplibre-gl@6.0.0/dist/maplibre-gl.mjs','https://cdn.jsdelivr.net/npm/maplibre-gl@6.0.0/dist/maplibre-gl.mjs'),
+    loadModule('https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js','https://unpkg.com/three@0.184.0/build/three.module.js')
+  ]);
+  engineEl.textContent='6.0 / r184';
+  start();
+}catch(err){console.error(err);statusEl.textContent='Renderer modules failed to load. Open console for the exact CDN/import error.';statusEl.classList.add('error')}
+
+function cinematicStyle(){return{
+  version:8,
+  projection:{type:'globe'},
+  sources:{maplibre:{type:'vector',url:'https://demotiles.maplibre.org/tiles/tiles.json'}},
+  layers:[
+    {id:'background',type:'background',paint:{'background-color':'#06131f'}},
+    {id:'land',type:'fill',source:'maplibre','source-layer':'countries',paint:{'fill-color':'#1b494a','fill-opacity':1}},
+    {id:'coast',type:'line',source:'maplibre','source-layer':'countries',paint:{'line-color':'#6fb9bd','line-width':['interpolate',['linear'],['zoom'],0,.55,3,1.15,6,2.5],'line-opacity':.78}},
+    {id:'borders',type:'line',source:'maplibre','source-layer':'countries',paint:{'line-color':'#b4d2c8','line-width':['interpolate',['linear'],['zoom'],0,.24,4,.75],'line-opacity':['interpolate',['linear'],['zoom'],0,.16,2,.3,5,.55]}}
+  ],
+  sky:{'atmosphere-blend':['interpolate',['linear'],['zoom'],0,1,4,.92,7,0]},
+  light:{anchor:'map',position:[1.5,90,80]}
+}}
+
+function start(){
+  statusEl.textContent='Creating globe…';
+  try{
+    map=new maplibregl.Map({container:'map',style:cinematicStyle(),center:[55,18],zoom:.72,minZoom:.18,maxZoom:5,pitch:0,maxPitch:0,bearing:0,renderWorldCopies:false,dragRotate:false,touchPitch:false,cooperativeGestures:false,attributionControl:true,canvasContextAttributes:{antialias:true,powerPreference:'high-performance'}});
+  }catch(err){console.error(err);statusEl.textContent='MapLibre could not create a WebGL2 context on this device/browser.';statusEl.classList.add('error');return}
+
+  map.on('error',e=>console.warn('MapLibre runtime error:',e.error||e));
+  map.on('load',()=>{
+    addGameLayers();
+    effectsLayer=createEffectsLayer();
+    map.addLayer(effectsLayer);
+    statusEl.classList.add('hidden');
+    revealBtn.disabled=false;
+    map.resize();
+  });
+  map.on('click',e=>showGuess([e.lngLat.lng,e.lngLat.lat]));
+  map.on('dragstart',()=>revealCard.classList.remove('show'));
+  window.addEventListener('resize',()=>map&&map.resize());
+  startFpsMeter();
+}
+
+function addGameLayers(){
+  map.addSource('lab-arc',{type:'geojson',lineMetrics:true,data:featureCollection([])});
+  map.addLayer({id:'lab-arc-glow',type:'line',source:'lab-arc',paint:{'line-color':'#4fdcff','line-width':['interpolate',['linear'],['zoom'],0,4,4,7],'line-opacity':.18,'line-blur':5}});
+  map.addLayer({id:'lab-arc-core',type:'line',source:'lab-arc',paint:{'line-color':'#bff7ff','line-width':['interpolate',['linear'],['zoom'],0,1.3,4,2.6],'line-opacity':.95}});
+  map.addSource('lab-guess',{type:'geojson',data:featureCollection([])});
+  map.addLayer({id:'lab-guess-ring',type:'circle',source:'lab-guess',paint:{'circle-radius':11,'circle-color':'rgba(255,125,134,.10)','circle-stroke-color':'#ff7d86','circle-stroke-width':2}});
+  map.addLayer({id:'lab-guess-dot',type:'circle',source:'lab-guess',paint:{'circle-radius':4.2,'circle-color':'#ff7d86','circle-stroke-color':'#fff','circle-stroke-width':1.6}});
+}
+
+function createEffectsLayer(){
+  return{
+    id:'worldtap-three-effects',type:'custom',renderingMode:'3d',
+    onAdd(m,gl){
+      this.map=m;this.camera=new THREE.Camera();
+      this.renderer=new THREE.WebGLRenderer({canvas:m.getCanvas(),context:gl,antialias:true});
+      this.renderer.autoClear=false;
+      this.beaconScene=new THREE.Scene();this.travelerScene=new THREE.Scene();
+      this.beacon=createBeacon();this.beaconScene.add(this.beacon.group);
+      this.traveler=createTraveler();this.travelerScene.add(this.traveler.group);
+      this.beaconVisible=false;this.travelerVisible=false;this.travelerLngLat=TOKYO.slice();
+    },
+    setBeaconVisible(v){this.beaconVisible=v;this.map.triggerRepaint()},
+    setTraveler(coord,v=true){this.travelerLngLat=coord;this.travelerVisible=v;this.map.triggerRepaint()},
+    render(gl,args){
+      const now=performance.now();
+      this.renderer.resetState();
+      if(this.beaconVisible){
+        const pulse=.92+.12*Math.sin(now*.005);this.beacon.ring.scale.setScalar(pulse);this.beacon.ring.material.opacity=.58+.22*Math.sin(now*.005+1);this.beacon.tip.material.opacity=.82+.16*Math.sin(now*.006);
+        renderAt(this,this.beaconScene,NAIROBI,args,46000);
+      }
+      if(this.travelerVisible){
+        const p=1+.18*Math.sin(now*.014);this.traveler.group.scale.setScalar(p);
+        renderAt(this,this.travelerScene,this.travelerLngLat,args,62000);
+      }
+      if(this.beaconVisible||this.travelerVisible)this.map.triggerRepaint();
+    }
+  }
+}
+
+function createBeacon(){
+  const group=new THREE.Group();
+  const green=0x73f2a4;
+  const ringMat=new THREE.MeshBasicMaterial({color:green,transparent:true,opacity:.72,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false});
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(.48,.055,16,64),ringMat);ring.position.z=.035;group.add(ring);
+  const halo=new THREE.Mesh(new THREE.RingGeometry(.62,.82,64),new THREE.MeshBasicMaterial({color:green,transparent:true,opacity:.12,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false}));halo.position.z=.02;group.add(halo);
+  const beam=new THREE.Mesh(new THREE.CylinderGeometry(.06,.17,3.1,18,1,true),new THREE.MeshBasicMaterial({color:green,transparent:true,opacity:.26,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));beam.rotation.x=Math.PI/2;beam.position.z=1.55;group.add(beam);
+  const tip=new THREE.Mesh(new THREE.SphereGeometry(.16,24,18),new THREE.MeshBasicMaterial({color:0xcaffdc,transparent:true,opacity:.95,blending:THREE.AdditiveBlending,depthWrite:false}));tip.position.z=3.1;group.add(tip);
+  return{group,ring,tip}
+}
+
+function createTraveler(){
+  const group=new THREE.Group();
+  const core=new THREE.Mesh(new THREE.SphereGeometry(.18,20,16),new THREE.MeshBasicMaterial({color:0xd6fbff,transparent:true,opacity:.98,blending:THREE.AdditiveBlending,depthWrite:false}));group.add(core);
+  const halo=new THREE.Mesh(new THREE.SphereGeometry(.38,20,16),new THREE.MeshBasicMaterial({color:0x5fe6ff,transparent:true,opacity:.16,blending:THREE.AdditiveBlending,depthWrite:false}));group.add(halo);
+  return{group}
+}
+
+function renderAt(layer,scene,origin,args,scaleMeters){
+  const modelMatrix=layer.map.transform.getMatrixForModel(origin,0);
+  const projection=new THREE.Matrix4().fromArray(args.defaultProjectionData.mainMatrix);
+  const local=new THREE.Matrix4().fromArray(modelMatrix).scale(new THREE.Vector3(scaleMeters,scaleMeters,scaleMeters));
+  layer.camera.projectionMatrix=projection.multiply(local);
+  layer.camera.projectionMatrixInverse.copy(layer.camera.projectionMatrix).invert();
+  layer.renderer.resetState();layer.renderer.render(scene,layer.camera);
+}
+
+function showGuess(coord){
+  const src=map.getSource('lab-guess');if(src)src.setData(featureCollection([point(coord)]));
+  guessReadout.innerHTML=`Tapped <strong>${coord[1].toFixed(2)}°, ${coord[0].toFixed(2)}°</strong>`;guessReadout.classList.add('show');
+  setTimeout(()=>guessReadout.classList.remove('show'),2200)
+}
+
+function resetLab(){
+  if(!map)return;animating=false;cancelAnimationFrame(arcFrame);effectsLayer?.setBeaconVisible(false);effectsLayer?.setTraveler(TOKYO,false);setArc([]);revealCard.classList.remove('show');map.easeTo({center:[55,18],zoom:.72,pitch:0,bearing:0,duration:750});revealBtn.disabled=false;revealBtn.textContent='REVEAL TOKYO → NAIROBI'
+}
+
+async function reveal(){
+  if(animating||!map||!effectsLayer)return;animating=true;revealBtn.disabled=true;revealCard.classList.remove('show');setArc([]);effectsLayer.setBeaconVisible(false);effectsLayer.setTraveler(TOKYO,true);
+  const route=greatCircle(TOKYO,NAIROBI,120);
+  map.easeTo({center:[88,22],zoom:.84,pitch:0,bearing:0,duration:850,easing:easeOutCubic});
+  await wait(340);
+  const startTime=performance.now(),duration=2200;
+  await new Promise(resolve=>{
+    const tick=now=>{
+      const t=Math.min(1,(now-startTime)/duration),e=easeInOutCubic(t),idx=Math.max(1,Math.floor(e*(route.length-1)));
+      setArc(route.slice(0,idx+1));effectsLayer.setTraveler(route[idx],true);
+      if(t<1)arcFrame=requestAnimationFrame(tick);else resolve();
+    };arcFrame=requestAnimationFrame(tick)
+  });
+  effectsLayer.setTraveler(NAIROBI,false);effectsLayer.setBeaconVisible(true);
+  map.easeTo({center:NAIROBI,zoom:1.75,pitch:0,bearing:0,duration:1050,easing:easeOutCubic});
+  await wait(620);revealCard.classList.add('show');revealBtn.disabled=false;revealBtn.textContent='REPLAY REVEAL';animating=false
+}
+
+function setArc(coords){const src=map&&map.getSource('lab-arc');if(src)src.setData(featureCollection(coords.length?[line(coords)]:[]))}
+function featureCollection(features){return{type:'FeatureCollection',features}}
+function point(coords){return{type:'Feature',properties:{},geometry:{type:'Point',coordinates:coords}}}
+function line(coords){return{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:coords}}}
+function wait(ms){return new Promise(r=>setTimeout(r,ms))}
+function easeOutCubic(t){return 1-Math.pow(1-t,3)}
+function easeInOutCubic(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2}
+function llToVec([lng,lat]){const a=lng*Math.PI/180,b=lat*Math.PI/180,c=Math.cos(b);return[c*Math.cos(a),c*Math.sin(a),Math.sin(b)]}
+function vecToLL([x,y,z]){return[Math.atan2(y,x)*180/Math.PI,Math.atan2(z,Math.hypot(x,y))*180/Math.PI]}
+function greatCircle(a,b,steps){const A=llToVec(a),B=llToVec(b),dot=Math.max(-1,Math.min(1,A[0]*B[0]+A[1]*B[1]+A[2]*B[2])),omega=Math.acos(dot);if(omega<1e-6)return[a,b];const so=Math.sin(omega),out=[];for(let i=0;i<=steps;i++){const t=i/steps,p=Math.sin((1-t)*omega)/so,q=Math.sin(t*omega)/so;out.push(vecToLL([A[0]*p+B[0]*q,A[1]*p+B[1]*q,A[2]*p+B[2]*q]))}return out}
+function startFpsMeter(){let frames=0,last=performance.now();function tick(now){frames++;if(now-last>=700){fpsEl.textContent=Math.round(frames*1000/(now-last));frames=0;last=now}requestAnimationFrame(tick)}requestAnimationFrame(tick)}
+
+revealBtn.addEventListener('click',reveal);resetBtn.addEventListener('click',resetLab);
+</script>
+</body>
+</html>
