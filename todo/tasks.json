@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-14T17:43:41.552Z",
+  "updatedAt": "2026-08-14T17:43:54.389Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -73,11 +73,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 8,
+      "order": 3,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "orderUpdatedAt": "2026-08-03T11:34:18.471Z",
+      "orderUpdatedAt": "2026-08-14T17:43:51.015Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
@@ -86,11 +86,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 9,
+      "order": 8,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "orderUpdatedAt": "2026-08-03T11:34:18.471Z",
+      "orderUpdatedAt": "2026-08-14T17:43:51.015Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
@@ -112,11 +112,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 10,
+      "order": 9,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "orderUpdatedAt": "2026-08-03T11:34:18.471Z",
+      "orderUpdatedAt": "2026-08-14T17:43:51.015Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
@@ -177,11 +177,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 11,
+      "order": 10,
       "createdAt": "2026-08-03T11:30:28.242Z",
       "contentUpdatedAt": "2026-08-03T11:30:28.242Z",
       "doneUpdatedAt": "2026-08-03T11:30:28.242Z",
-      "orderUpdatedAt": "2026-08-03T11:30:28.242Z",
+      "orderUpdatedAt": "2026-08-14T17:43:51.015Z",
       "deletedUpdatedAt": ""
     },
     {
@@ -190,11 +190,11 @@
       "details": "Also cardio and full back stretch together",
       "done": false,
       "deleted": false,
-      "order": 12,
+      "order": 11,
       "createdAt": "2026-08-03T11:33:57.434Z",
       "contentUpdatedAt": "2026-08-03T11:47:12.739Z",
       "doneUpdatedAt": "2026-08-03T11:33:57.434Z",
-      "orderUpdatedAt": "2026-08-03T11:33:57.434Z",
+      "orderUpdatedAt": "2026-08-14T17:43:51.015Z",
       "deletedUpdatedAt": ""
     },
     {
@@ -203,11 +203,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 13,
+      "order": 12,
       "createdAt": "2026-08-03T11:45:41.020Z",
       "contentUpdatedAt": "2026-08-03T11:45:41.020Z",
       "doneUpdatedAt": "2026-08-03T11:45:41.020Z",
-      "orderUpdatedAt": "2026-08-03T15:28:50.898Z",
+      "orderUpdatedAt": "2026-08-14T17:43:51.015Z",
       "deletedUpdatedAt": ""
     },
     {
