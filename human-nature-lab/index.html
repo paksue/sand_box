@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f5f1e8" />
+  <title>HUMANS — A Field Guide to People</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <button id="homeBtn" class="brand" aria-label="Go home">
+      <span class="brand-mark">H</span>
+      <span><strong>HUMANS</strong><small>A field guide to people</small></span>
+    </button>
+    <div class="top-actions">
+      <button id="parentToggle" class="ghost">Parent mode: off</button>
+      <button id="resetBtn" class="ghost danger-ghost">Reset</button>
+    </div>
+  </header>
+
+  <main id="app" class="app" aria-live="polite"></main>
+
+  <footer>
+    <p>Practice judgment, not paranoia. Behavior first. Verify before you accuse.</p>
+  </footer>
+
+  <template id="homeTemplate">
+    <section class="hero">
+      <p class="eyebrow">6 SHORT MISSIONS · NO HOMEWORK</p>
+      <h1>People are complicated.<br><em>Get better at reading situations.</em></h1>
+      <p class="hero-copy">Thirty short cases about ordinary opportunists, manipulators, dating pressure, scammers, groups, and real-world judgment. Make a call before you see the explanation.</p>
+      <div class="hero-rules">
+        <span>① Notice</span><span>② Question</span><span>③ Verify</span><span>④ Protect</span>
+      </div>
+    </section>
+    <section>
+      <div class="section-heading">
+        <div><p class="eyebrow">YOUR MISSIONS</p><h2>Start anywhere</h2></div>
+        <div id="overallProgress" class="progress-label"></div>
+      </div>
+      <div id="missionGrid" class="mission-grid"></div>
+    </section>
+    <section class="field-card">
+      <div>
+        <p class="eyebrow">THE FIVE QUESTIONS</p>
+        <h2>Your mental checklist</h2>
+      </div>
+      <div class="five-grid">
+        <article><b>WANT</b><span>What might they want?</span></article>
+        <article><b>ACCESS</b><span>What are they getting access to?</span></article>
+        <article><b>PRESSURE</b><span>What lever are they pulling?</span></article>
+        <article><b>NO</b><span>What happens if you say no?</span></article>
+        <article><b>VERIFY</b><span>What can you independently check?</span></article>
+      </div>
+    </section>
+    <details class="research">
+      <summary>Why this is taught this way</summary>
+      <div class="research-body">
+        <p>This lab emphasizes observable behavior, healthy relationship skills, verification, and practicing decisions in realistic situations. It does not teach teens to diagnose strangers or pretend they can detect lies from body language.</p>
+        <p><strong>Research foundations:</strong> CDC Dating Matters; FTC scam-prevention guidance; FBI youth sextortion safety guidance; and deception-detection research. Source links are in the project README.</p>
+      </div>
+    </details>
+  </template>
+
+  <template id="missionTemplate">
+    <section class="mission-head">
+      <button id="backHome" class="back">← Missions</button>
+      <p id="missionKicker" class="eyebrow"></p>
+      <h1 id="missionTitle"></h1>
+      <p id="missionDesc" class="mission-desc"></p>
+      <div id="missionProgress" class="progress-track"><i></i></div>
+    </section>
+    <section id="caseMount"></section>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
