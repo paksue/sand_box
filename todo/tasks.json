@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-05T14:23:38.582Z",
+  "updatedAt": "2026-08-14T17:43:41.552Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -235,6 +235,19 @@
       "doneUpdatedAt": "2026-08-05T14:23:36.338Z",
       "orderUpdatedAt": "2026-08-05T14:23:36.338Z",
       "deletedUpdatedAt": ""
+    },
+    {
+      "id": "c9fd312c-43e2-443f-b08f-f14d6162a61e",
+      "title": "Knee chair",
+      "details": "",
+      "done": false,
+      "deleted": true,
+      "order": 14,
+      "createdAt": "2026-08-14T17:43:25.099Z",
+      "contentUpdatedAt": "2026-08-14T17:43:25.099Z",
+      "doneUpdatedAt": "2026-08-14T17:43:25.099Z",
+      "orderUpdatedAt": "2026-08-14T17:43:25.099Z",
+      "deletedUpdatedAt": "2026-08-14T17:43:37.476Z"
     }
   ]
 }
