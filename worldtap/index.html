@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#08111f" />
+  <title>WorldTap — Know the world a little better every day</title>
+  <meta name="description" content="A fast daily geography game: five places, five taps, five tiny discoveries." />
+  <style>
+    :root {
+      --bg: #08111f;
+      --panel: rgba(15, 28, 46, .9);
+      --panel-solid: #0f1c2e;
+      --ink: #f7fbff;
+      --muted: #9db0c5;
+      --line: rgba(255,255,255,.12);
+      --blue: #67b7ff;
+      --green: #7de3a6;
+      --yellow: #ffd675;
+      --red: #ff8a8a;
+      --ocean: #0d2845;
+      --land: #2f5d5a;
+      --land-stroke: #82a79f;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { min-height: 100svh; overflow-x: hidden; }
+    button { font: inherit; }
+    button:focus-visible { outline: 3px solid rgba(103,183,255,.55); outline-offset: 3px; }
+
+    .app {
+      min-height: 100svh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(35,99,148,.14), transparent 34%),
+        linear-gradient(180deg, #07101d 0%, #08111f 100%);
+    }
+
+    .topbar {
+      position: relative;
+      z-index: 20;
+      height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: max(10px, env(safe-area-inset-top)) 18px 8px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      background: rgba(8,17,31,.78);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; letter-spacing: -.04em; font-size: 19px; }
+    .brand-dot { width: 13px; height: 13px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 5px rgba(125,227,166,.11); }
+    .nav { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.035); }
+    .nav button { border: 0; color: var(--muted); background: transparent; border-radius: 999px; padding: 8px 12px; font-size: 13px; font-weight: 800; cursor: pointer; }
+    .nav button.active { color: var(--ink); background: rgba(255,255,255,.1); }
+    .mini-score { font-size: 13px; color: var(--muted); font-weight: 750; min-width: 74px; text-align: right; }
+    .mini-score strong { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+    main { position: relative; min-height: 0; }
+    .screen { display: none; min-height: calc(100svh - 66px); }
+    .screen.active { display: block; }
+
+    .intro {
+      min-height: calc(100svh - 66px);
+      display: grid;
+      place-items: center;
+      padding: 28px 18px 44px;
+    }
+    .intro-card { width: min(560px, 100%); text-align: center; }
+    .globe-mark { font-size: clamp(68px, 15vw, 108px); line-height: 1; filter: drop-shadow(0 20px 40px rgba(0,0,0,.3)); }
+    h1 { margin: 18px 0 8px; font-size: clamp(40px, 9vw, 68px); letter-spacing: -.07em; line-height: .95; }
+    .tagline { max-width: 410px; margin: 0 auto; color: var(--muted); font-size: 17px; line-height: 1.5; }
+    .daily-label { display: inline-flex; align-items: center; gap: 8px; margin: 25px 0 14px; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,.04); color: #dce8f5; font-size: 13px; font-weight: 850; letter-spacing: .03em; }
+    .dots { display: flex; justify-content: center; gap: 8px; margin: 5px 0 24px; }
+    .dots span { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,.18); }
+    .dots span:nth-child(1) { background: var(--green); }
+    .primary, .secondary, .ghost {
+      border: 0;
+      border-radius: 16px;
+      cursor: pointer;
+      font-weight: 900;
+      transition: transform .12s ease, filter .12s ease, background .12s ease;
+    }
+    .primary:active, .secondary:active, .ghost:active { transform: scale(.98); }
+    .primary { min-width: 210px; padding: 15px 20px; color: #07140e; background: var(--green); box-shadow: 0 12px 34px rgba(125,227,166,.18); }
+    .secondary { padding: 13px 16px; background: rgba(255,255,255,.09); color: var(--ink); border: 1px solid var(--line); }
+    .ghost { padding: 11px 14px; background: transparent; color: var(--muted); border: 1px solid var(--line); }
+    .stats-row { margin-top: 20px; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 16px; color: var(--muted); font-size: 13px; font-weight: 700; }
+    .stats-row strong { color: var(--ink); }
+
+    .game-layout {
+      min-height: calc(100svh - 66px);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .question-wrap { position: relative; z-index: 8; padding: 16px 16px 0; pointer-events: none; }
+    .question-card { width: min(680px, 100%); margin: 0 auto; background: rgba(15,28,46,.86); border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 12px 40px rgba(0,0,0,.2); backdrop-filter: blur(12px); padding: 14px 16px; pointer-events: auto; }
+    .question-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--muted); font-size: 11px; font-weight: 850; text-transform: uppercase; letter-spacing: .09em; }
+    .question-meta .category { color: var(--blue); }
+    .question { margin: 7px 0 0; font-size: clamp(20px, 4.8vw, 29px); line-height: 1.15; letter-spacing: -.035em; font-weight: 900; }
+    .clue-symbol { font-size: 1.1em; margin-right: 5px; }
+
+    .globe-stage { position: relative; min-height: 380px; overflow: hidden; touch-action: none; }
+    #globe { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+    #globe:active { cursor: grabbing; }
+    .sphere { fill: var(--ocean); stroke: rgba(151,199,230,.35); stroke-width: 1.3px; }
+    .graticule { fill: none; stroke: rgba(194,223,241,.08); stroke-width: .7px; }
+    .country { fill: var(--land); stroke: rgba(166,205,193,.48); stroke-width: .48px; vector-effect: non-scaling-stroke; }
+    .country:hover { fill: #396b66; }
+    .guess-line { fill: none; stroke: rgba(255,255,255,.7); stroke-width: 2.2px; stroke-dasharray: 6 7; vector-effect: non-scaling-stroke; }
+    .route-line { fill: none; stroke: var(--yellow); stroke-width: 3.2px; vector-effect: non-scaling-stroke; opacity: .9; }
+    .marker-guess { fill: var(--red); stroke: #fff; stroke-width: 2.5px; }
+    .marker-answer { fill: var(--green); stroke: #fff; stroke-width: 2.5px; }
+    .marker-route { fill: var(--yellow); stroke: #fff; stroke-width: 2px; }
+    .marker-ring { fill: none; stroke-width: 2px; opacity: .8; animation: ring 1.2s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+    @keyframes ring { from { transform: scale(.8); opacity: .7; } to { transform: scale(2.25); opacity: 0; } }
+
+    .tap-tip { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 5; color: rgba(255,255,255,.66); background: rgba(6,14,26,.66); border: 1px solid rgba(255,255,255,.08); padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; pointer-events: none; backdrop-filter: blur(10px); white-space: nowrap; transition: opacity .2s ease; }
+    .tap-tip.hide { opacity: 0; }
+
+    .controls { position: relative; z-index: 10; min-height: 76px; display: flex; justify-content: center; align-items: center; gap: 10px; padding: 10px 16px max(14px, env(safe-area-inset-bottom)); background: linear-gradient(180deg, rgba(8,17,31,0), rgba(8,17,31,.95) 35%); }
+    .hint-btn { border: 1px solid var(--line); background: rgba(255,255,255,.06); color: #d9e6f3; border-radius: 14px; padding: 11px 14px; font-weight: 850; cursor: pointer; }
+    .hint-btn.used { color: var(--muted); opacity: .58; cursor: default; }
+
+    .reveal {
+      position: fixed;
+      z-index: 40;
+      left: 50%; bottom: max(14px, env(safe-area-inset-bottom));
+      width: min(560px, calc(100% - 24px));
+      transform: translate(-50%, 120%);
+      opacity: 0;
+      transition: transform .32s cubic-bezier(.2,.8,.2,1), opacity .25s ease;
+      background: rgba(15,28,46,.96);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      padding: 16px;
+    }
+    .reveal.show { transform: translate(-50%, 0); opacity: 1; }
+    .reveal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+    .distance { color: var(--muted); font-size: 13px; font-weight: 800; }
+    .answer-name { margin-top: 2px; font-size: 22px; font-weight: 950; letter-spacing: -.035em; }
+    .round-score { min-width: 82px; text-align: right; }
+    .round-score strong { display: block; font-size: 30px; line-height: .95; color: var(--green); font-variant-numeric: tabular-nums; letter-spacing: -.04em; }
+    .round-score span { font-size: 11px; color: var(--muted); font-weight: 850; text-transform: uppercase; letter-spacing: .07em; }
+    .fact { margin: 14px 0 0; color: #e5eef7; line-height: 1.45; font-size: 14px; }
+    .anchor { margin-top: 9px; padding: 10px 12px; border-radius: 13px; background: rgba(103,183,255,.08); border: 1px solid rgba(103,183,255,.16); color: #bfdfff; font-size: 13px; line-height: 1.35; }
+    .reveal-actions { display: flex; gap: 8px; margin-top: 14px; }
+    .reveal-actions .primary { min-width: 0; width: 100%; padding: 13px; border-radius: 14px; }
+
+    .summary { min-height: calc(100svh - 66px); display: grid; place-items: center; padding: 26px 16px 42px; }
+    .summary-card { width: min(580px, 100%); text-align: center; }
+    .eyebrow { color: var(--green); font-size: 12px; font-weight: 950; text-transform: uppercase; letter-spacing: .12em; }
+    .big-score { margin: 8px 0 0; font-size: clamp(72px, 20vw, 118px); line-height: .92; font-weight: 950; letter-spacing: -.08em; font-variant-numeric: tabular-nums; }
+    .score-out-of { color: var(--muted); margin-top: 4px; font-weight: 800; }
+    .result-blocks { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 24px auto 0; max-width: 420px; }
+    .result-block { height: 48px; display: grid; place-items: center; border-radius: 13px; font-size: 12px; font-weight: 900; color: #06121f; }
+    .summary-copy { color: var(--muted); max-width: 430px; margin: 18px auto 0; line-height: 1.5; }
+    .summary-actions { margin-top: 20px; display: flex; justify-content: center; gap: 9px; flex-wrap: wrap; }
+    .memory-card { max-width: 460px; margin: 26px auto 0; text-align: left; border: 1px solid var(--line); background: rgba(255,255,255,.04); border-radius: 18px; padding: 15px; }
+    .memory-card .label { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--blue); font-weight: 950; }
+    .memory-card h3 { margin: 6px 0 4px; font-size: 18px; }
+    .memory-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .memory-card button { margin-top: 12px; width: 100%; }
+
+    .journey-intro { min-height: calc(100svh - 66px); display: grid; place-items: center; padding: 28px 16px 44px; }
+    .journey-card { width: min(600px, 100%); border: 1px solid var(--line); border-radius: 24px; padding: 24px; background: rgba(255,255,255,.035); box-shadow: var(--shadow); }
+    .journey-icon { font-size: 52px; }
+    .journey-card h2 { margin: 12px 0 8px; font-size: 36px; letter-spacing: -.05em; }
+    .journey-card p { color: var(--muted); line-height: 1.55; }
+    .route-preview { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 18px 0 22px; color: #dfeaf4; font-size: 13px; font-weight: 850; }
+    .route-preview span { padding: 6px 8px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.04); }
+    .route-preview i { color: var(--yellow); font-style: normal; }
+
+    .toast { position: fixed; z-index: 100; top: 78px; left: 50%; transform: translate(-50%,-12px); padding: 10px 14px; border-radius: 999px; background: #f5fbff; color: #07111e; font-weight: 850; font-size: 13px; opacity: 0; pointer-events: none; transition: .2s ease; box-shadow: var(--shadow); }
+    .toast.show { opacity: 1; transform: translate(-50%,0); }
+
+    .loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; font-weight: 800; z-index: 2; pointer-events: none; }
+    .loading.hidden { display: none; }
+
+    @media (min-width: 760px) {
+      .topbar { padding-left: 26px; padding-right: 26px; }
+      .question-wrap { padding-top: 20px; }
+      .globe-stage { min-height: 510px; }
+      .controls { min-height: 84px; }
+    }
+
+    @media (max-width: 520px) {
+      .brand span:last-child { display: none; }
+      .topbar { height: 60px; }
+      .screen, .intro, .summary, .journey-intro, .game-layout { min-height: calc(100svh - 60px); }
+      .question-card { border-radius: 17px; padding: 12px 13px; }
+      .globe-stage { min-height: 350px; }
+      .nav button { padding: 7px 10px; }
+      .mini-score { min-width: 56px; }
+      .reveal { padding: 14px; border-radius: 20px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand" aria-label="WorldTap home"><span class="brand-dot"></span><span>WorldTap</span></div>
+    <nav class="nav" aria-label="Game modes">
+      <button id="navToday" class="active">Today</button>
+      <button id="navJourney">Journey</button>
+    </nav>
+    <div class="mini-score" id="miniScore">Best <strong>—</strong></div>
+  </header>
+
+  <main>
+    <section id="introScreen" class="screen active">
+      <div class="intro">
+        <div class="intro-card">
+          <div class="globe-mark" aria-hidden="true">🌍</div>
+          <h1>WorldTap</h1>
+          <p class="tagline">Five places. Five taps. Five tiny discoveries.<br>Know the world a little better every day.</p>
+          <div class="daily-label" id="dailyLabel">DAILY · 5 PLACES · ~90 SEC</div>
+          <div class="dots" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+          <button class="primary" id="playDaily">PLAY TODAY</button>
+          <div class="stats-row">
+            <span>🔥 <strong id="streakStat">0</strong> day streak</span>
+            <span>🧠 <strong id="seenStat">0</strong> places seen</span>
+            <span>🏆 best <strong id="bestStat">—</strong></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen">
+      <div class="game-layout">
+        <div class="question-wrap">
+          <div class="question-card">
+            <div class="question-meta"><span id="roundLabel">ROUND 1 OF 5</span><span class="category" id="categoryLabel">CITY</span></div>
+            <div class="question" id="questionText">Where is Kyoto?</div>
+          </div>
+        </div>
+        <div class="globe-stage" id="globeStage">
+          <div class="loading" id="loading">Drawing the world…</div>
+          <svg id="globe" role="img" aria-label="Interactive globe. Drag to rotate and tap to make your guess."></svg>
+          <div class="tap-tip" id="tapTip">Drag to explore · tap to guess</div>
+        </div>
+        <div class="controls">
+          <button class="hint-btn" id="hintBtn">💡 HINT <span aria-hidden="true">−40 max</span></button>
+        </div>
+      </div>
+    </section>
+
+    <section id="summaryScreen" class="screen">
+      <div class="summary">
+        <div class="summary-card">
+          <div class="eyebrow" id="summaryEyebrow">TODAY COMPLETE</div>
+          <div class="big-score" id="finalScore">0</div>
+          <div class="score-out-of">out of 1000</div>
+          <div class="result-blocks" id="resultBlocks"></div>
+          <p class="summary-copy" id="summaryCopy">Five places added to your mental map.</p>
+          <div class="summary-actions">
+            <button class="primary" id="shareBtn">SHARE RESULT</button>
+            <button class="secondary" id="replayBtn">PLAY AGAIN</button>
+          </div>
+          <div class="memory-card" id="memoryCard">
+            <div class="label">🧠 ONE MORE?</div>
+            <h3 id="memoryTitle">Remember one you missed.</h3>
+            <p id="memoryCopy">Try the toughest place again right now. No studying, just one retrieval.</p>
+            <button class="secondary" id="memoryBtn">TRY IT</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="journeyScreen" class="screen">
+      <div class="journey-intro">
+        <div class="journey-card">
+          <div class="journey-icon">🐫</div>
+          <div class="eyebrow">JOURNEY 01</div>
+          <h2>The Silk Road</h2>
+          <p>Trace a five-stop route across Eurasia. You still do one thing—tap the globe—but every reveal adds another piece of the story.</p>
+          <div class="route-preview"><span>Xi’an</span><i>→</i><span>Dunhuang</span><i>→</i><span>Samarkand</span><i>→</i><span>Baghdad</span><i>→</i><span>Constantinople</span></div>
+          <button class="primary" id="playJourney">START JOURNEY</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="reveal" id="revealCard" aria-live="polite">
+  <div class="reveal-head">
+    <div>
+      <div class="distance" id="distanceText">82 km away</div>
+      <div class="answer-name" id="answerName">Kyoto 🇯🇵</div>
+    </div>
+    <div class="round-score"><strong id="roundScore">196</strong><span>points</span></div>
+  </div>
+  <p class="fact" id="factText"></p>
+  <div class="anchor" id="anchorText"></div>
+  <div class="reveal-actions"><button class="primary" id="nextBtn">NEXT →</button></div>
+</div>
+
+<div class="toast" id="toast">Copied!</div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+<script>
+(() => {
+  'use strict';
+
+  const EARTH_KM = 6371.0088;
+  const TODAY_KEY = new Date().toLocaleDateString('en-CA');
+  const regionCenters = {
+    Europe: [15, 50], Africa: [18, 5], Asia: [92, 34], Americas: [-79, 18], Oceania: [138, -24], MiddleEast: [44, 29]
+  };
+
+  const pools = {
+    city: [
+      { id:'kyoto', category:'City', prompt:'Where is Kyoto?', name:'Kyoto', flag:'🇯🇵', coords:[135.7681,35.0116], region:'Asia', fact:'Kyoto was Japan’s imperial capital for more than a thousand years.', anchor:'Anchor it: Kyoto is in central Honshu, southwest of Tokyo and northeast of Osaka.' },
+      { id:'marrakesh', category:'City', prompt:'Where is Marrakesh?', name:'Marrakesh', flag:'🇲🇦', coords:[-7.9811,31.6295], region:'Africa', fact:'Marrakesh grew as a major trading city at the foot of Morocco’s Atlas Mountains.', anchor:'Anchor it: southern Morocco—below Casablanca, west of the Atlas Mountains.' },
+      { id:'ljubljana', category:'City', prompt:'Where is Ljubljana?', name:'Ljubljana', flag:'🇸🇮', coords:[14.5058,46.0569], region:'Europe', fact:'Ljubljana is the compact capital of Slovenia, where Alpine, Balkan and Mediterranean Europe meet.', anchor:'Anchor it: Slovenia sits between Italy, Austria, Hungary and Croatia.' },
+      { id:'nairobi', category:'City', prompt:'Where is Nairobi?', name:'Nairobi', flag:'🇰🇪', coords:[36.8219,-1.2921], region:'Africa', fact:'Nairobi sits just south of the equator and became a city around a railway depot in the 1890s.', anchor:'Anchor it: inland Kenya, northwest of Mount Kilimanjaro and east of Lake Victoria.' },
+      { id:'montevideo', category:'City', prompt:'Where is Montevideo?', name:'Montevideo', flag:'🇺🇾', coords:[-56.1645,-34.9011], region:'Americas', fact:'Montevideo is Uruguay’s capital on the broad Río de la Plata estuary.', anchor:'Anchor it: Uruguay is the small Atlantic country between Argentina and Brazil.' }
+    ],
+    country: [
+      { id:'kenya', category:'Flag', symbol:'🇰🇪', prompt:'Where does this flag belong?', name:'Kenya', flag:'🇰🇪', coords:[37.9062,0.0236], region:'Africa', fact:'Kenya straddles the equator and stretches from the Indian Ocean to the highlands and Great Rift Valley.', anchor:'Anchor it: east Africa—south of Ethiopia, east of Uganda, north of Tanzania.' },
+      { id:'estonia', category:'Flag', symbol:'🇪🇪', prompt:'Where does this flag belong?', name:'Estonia', flag:'🇪🇪', coords:[25.0136,58.5953], region:'Europe', fact:'Estonia is the northernmost of the three Baltic states.', anchor:'Anchor it: directly south of Finland across the Gulf of Finland, north of Latvia.' },
+      { id:'nepal', category:'Flag', symbol:'🇳🇵', prompt:'Where does this flag belong?', name:'Nepal', flag:'🇳🇵', coords:[84.1240,28.3949], region:'Asia', fact:'Nepal is home to eight of the world’s fourteen mountains above 8,000 meters.', anchor:'Anchor it: a narrow Himalayan country between India and China.' },
+      { id:'uruguay', category:'Flag', symbol:'🇺🇾', prompt:'Where does this flag belong?', name:'Uruguay', flag:'🇺🇾', coords:[-55.7658,-32.5228], region:'Americas', fact:'Uruguay is South America’s second-smallest sovereign country by area.', anchor:'Anchor it: Atlantic coast, tucked between Argentina and southern Brazil.' },
+      { id:'newzealand', category:'Flag', symbol:'🇳🇿', prompt:'Where does this flag belong?', name:'New Zealand', flag:'🇳🇿', coords:[174.8860,-40.9006], region:'Oceania', fact:'New Zealand spans two main islands in the southwest Pacific and sits on the Pacific Ring of Fire.', anchor:'Anchor it: southeast of Australia, across the Tasman Sea.' }
+    ],
+    landmark: [
+      { id:'machupicchu', category:'Landmark', symbol:'⛰️', prompt:'Find Machu Picchu.', name:'Machu Picchu', flag:'🇵🇪', coords:[-72.5450,-13.1631], region:'Americas', fact:'The Inca citadel of Machu Picchu sits high in Peru’s Andes above the Urubamba River.', anchor:'Anchor it: southern Peru, northwest of Cusco, on the western side of South America.' },
+      { id:'petra', category:'Landmark', symbol:'🏛️', prompt:'Find Petra.', name:'Petra', flag:'🇯🇴', coords:[35.4444,30.3285], region:'MiddleEast', fact:'Petra was a Nabataean trading center carved into sandstone cliffs.', anchor:'Anchor it: southern Jordan, between the Dead Sea and the Red Sea.' },
+      { id:'angkor', category:'Landmark', symbol:'🛕', prompt:'Find Angkor Wat.', name:'Angkor Wat', flag:'🇰🇭', coords:[103.8670,13.4125], region:'Asia', fact:'Angkor Wat began as a Hindu temple in the Khmer Empire and later became a Buddhist site.', anchor:'Anchor it: northwestern Cambodia, near Siem Reap, east of Thailand.' },
+      { id:'chichenitza', category:'Landmark', symbol:'🔺', prompt:'Find Chichén Itzá.', name:'Chichén Itzá', flag:'🇲🇽', coords:[-88.5678,20.6843], region:'Americas', fact:'Chichén Itzá was one of the great Maya cities of the northern Yucatán Peninsula.', anchor:'Anchor it: southeastern Mexico on the Yucatán Peninsula, west of Cancún.' },
+      { id:'uluru', category:'Landmark', symbol:'🪨', prompt:'Find Uluru.', name:'Uluru', flag:'🇦🇺', coords:[131.0369,-25.3444], region:'Oceania', fact:'Uluru is a massive sandstone monolith sacred to the Aṉangu people of central Australia.', anchor:'Anchor it: deep in Australia’s interior, southwest of Alice Springs.' }
+    ],
+    history: [
+      { id:'titanic-southampton', category:'History', symbol:'🚢', prompt:'Where did Titanic begin its maiden voyage?', name:'Southampton', flag:'🇬🇧', coords:[-1.4044,50.9097], region:'Europe', fact:'RMS Titanic departed Southampton on 10 April 1912 before calling at Cherbourg and Queenstown.', anchor:'Anchor it: England’s south coast, southwest of London, facing the English Channel.' },
+      { id:'apollo-cape', category:'History', symbol:'🚀', prompt:'Where did Apollo 11 launch from?', name:'Cape Canaveral', flag:'🇺🇸', coords:[-80.6043,28.6084], region:'Americas', fact:'Apollo 11 launched from Kennedy Space Center’s Launch Complex 39A on 16 July 1969.', anchor:'Anchor it: Florida’s Atlantic coast, east of Orlando.' },
+      { id:'printing-mainz', category:'History', symbol:'📚', prompt:'Gutenberg developed his printing press in which place?', name:'Mainz', flag:'🇩🇪', coords:[8.2473,49.9929], region:'Europe', fact:'Johannes Gutenberg’s movable-type printing work in Mainz helped transform the spread of knowledge in Europe.', anchor:'Anchor it: western Germany on the Rhine, southwest of Frankfurt.' },
+      { id:'mandela-robben', category:'History', symbol:'⛓️', prompt:'Where is Robben Island, where Nelson Mandela was imprisoned?', name:'Robben Island', flag:'🇿🇦', coords:[18.3662,-33.8067], region:'Africa', fact:'Nelson Mandela spent 18 of his 27 years in prison on Robben Island.', anchor:'Anchor it: just offshore from Cape Town at the southwestern tip of South Africa.' },
+      { id:'hiroshima', category:'History', symbol:'🕊️', prompt:'Find Hiroshima.', name:'Hiroshima', flag:'🇯🇵', coords:[132.4553,34.3853], region:'Asia', fact:'Hiroshima became the first city attacked with an atomic bomb in warfare on 6 August 1945.', anchor:'Anchor it: western Honshu, Japan, west of Osaka and across the Inland Sea from Shikoku.' }
+    ],
+    physical: [
+      { id:'hormuz', category:'Physical geography', symbol:'🌊', prompt:'Find the Strait of Hormuz.', name:'Strait of Hormuz', flag:'', coords:[56.25,26.56], region:'MiddleEast', fact:'The Strait of Hormuz is the narrow sea passage linking the Persian Gulf with the Gulf of Oman.', anchor:'Anchor it: between Iran to the north and Oman’s Musandam Peninsula to the south.' },
+      { id:'panama', category:'Physical geography', symbol:'🌎', prompt:'Find the Isthmus of Panama.', name:'Isthmus of Panama', flag:'🇵🇦', coords:[-80.0,8.7], region:'Americas', fact:'The Isthmus of Panama forms the land bridge joining North and South America.', anchor:'Anchor it: between Costa Rica and Colombia, with the Caribbean north and Pacific south.' },
+      { id:'victoriafalls', category:'Physical geography', symbol:'💦', prompt:'Find Victoria Falls.', name:'Victoria Falls', flag:'', coords:[25.8572,-17.9243], region:'Africa', fact:'Victoria Falls lies on the Zambezi River at the border of Zambia and Zimbabwe.', anchor:'Anchor it: southern Africa, north of Botswana, well inland from either ocean.' },
+      { id:'bosporus', category:'Physical geography', symbol:'🌉', prompt:'Find the Bosporus.', name:'Bosporus', flag:'🇹🇷', coords:[29.05,41.12], region:'Europe', fact:'The Bosporus divides the European and Asian sides of Istanbul and connects the Black Sea to the Sea of Marmara.', anchor:'Anchor it: Istanbul—one of the clearest geographic boundaries between Europe and Asia.' },
+      { id:'greatbarrier', category:'Physical geography', symbol:'🐠', prompt:'Find the Great Barrier Reef.', name:'Great Barrier Reef', flag:'🇦🇺', coords:[147.7,-18.3], region:'Oceania', fact:'The Great Barrier Reef system extends for more than 2,000 kilometers along northeastern Australia.', anchor:'Anchor it: offshore from Queensland in the Coral Sea.' }
+    ]
+  };
+
+  const journey = [
+    { id:'silk-xian', category:'Journey · 1/5', prompt:'Start the Silk Road in Xi’an.', name:'Xi’an', flag:'🇨🇳', coords:[108.9398,34.3416], region:'Asia', fact:'Chang’an, today’s Xi’an, served as the eastern terminus of major Silk Road routes.', anchor:'The route begins in north-central China, inland from the Pacific coast.' },
+    { id:'silk-dunhuang', category:'Journey · 2/5', prompt:'Next stop: Dunhuang.', name:'Dunhuang', flag:'🇨🇳', coords:[94.6619,40.1421], region:'Asia', fact:'Dunhuang was an oasis gateway where routes split around the dangerous Taklamakan Desert.', anchor:'Move west from Xi’an toward the edge of the Gobi Desert.' },
+    { id:'silk-samarkand', category:'Journey · 3/5', prompt:'Cross Central Asia to Samarkand.', name:'Samarkand', flag:'🇺🇿', coords:[66.9597,39.6542], region:'Asia', fact:'Samarkand became one of Eurasia’s great exchange points for merchants, ideas, religions and technologies.', anchor:'Keep moving west: Uzbekistan lies north of Afghanistan and east of the Caspian Sea.' },
+    { id:'silk-baghdad', category:'Journey · 4/5', prompt:'Continue to Baghdad.', name:'Baghdad', flag:'🇮🇶', coords:[44.3661,33.3152], region:'MiddleEast', fact:'Abbasid Baghdad was a major intellectual and commercial center connected to long-distance trade networks.', anchor:'Follow west-southwest into Mesopotamia, on the Tigris River.' },
+    { id:'silk-constantinople', category:'Journey · 5/5', prompt:'Finish at Constantinople.', name:'Istanbul', flag:'🇹🇷', coords:[28.9784,41.0082], region:'Europe', fact:'Constantinople linked Asian trade routes with Mediterranean and European markets.', anchor:'Finish at the Bosporus, the narrow crossing between Europe and Asia.' }
+  ];
+
+  const els = Object.fromEntries([
+    'introScreen','gameScreen','summaryScreen','journeyScreen','navToday','navJourney','playDaily','playJourney','miniScore','dailyLabel','streakStat','seenStat','bestStat','roundLabel','categoryLabel','questionText','globe','globeStage','loading','tapTip','hintBtn','revealCard','distanceText','answerName','roundScore','factText','anchorText','nextBtn','summaryEyebrow','finalScore','resultBlocks','summaryCopy','shareBtn','replayBtn','memoryCard','memoryTitle','memoryCopy','memoryBtn','toast'
+  ].map(id => [id, document.getElementById(id)]));
+
+  let projection, path, svg, countryLayer, routeLayer, revealLayer, worldFeatures;
+  let mode = 'daily';
+  let questions = [];
+  let index = 0;
+  let results = [];
+  let total = 0;
+  let hinted = false;
+  let locked = false;
+  let dragMoved = false;
+  let zoomScale = 1;
+  let reviewQuestion = null;
+  let routePoints = [];
+
+  function hashString(str) {
+    let h = 2166136261;
+    for (let i=0; i<str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+
+  function rng(seed) {
+    let t = seed >>> 0;
+    return () => {
+      t += 0x6D2B79F5;
+      let r = t;
+      r = Math.imul(r ^ r >>> 15, r | 1);
+      r ^= r + Math.imul(r ^ r >>> 7, r | 61);
+      return ((r ^ r >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  function dailyQuestions() {
+    const random = rng(hashString(TODAY_KEY));
+    return Object.values(pools).map(pool => pool[Math.floor(random()*pool.length)]);
+  }
+
+  function loadStats() {
+    const stats = JSON.parse(localStorage.getItem('worldtap:stats') || '{}');
+    const seen = JSON.parse(localStorage.getItem('worldtap:seen') || '{}');
+    els.streakStat.textContent = stats.streak || 0;
+    els.seenStat.textContent = Object.keys(seen).length;
+    els.bestStat.textContent = stats.best || '—';
+    els.miniScore.innerHTML = `Best <strong>${stats.best || '—'}</strong>`;
+    const date = new Date();
+    els.dailyLabel.textContent = `${date.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'}).toUpperCase()} · 5 PLACES · ~90 SEC`;
+  }
+
+  function saveDailyStats() {
+    if (mode !== 'daily') return;
+    const stats = JSON.parse(localStorage.getItem('worldtap:stats') || '{}');
+    const today = TODAY_KEY;
+    const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+    const yesterdayKey = yesterday.toLocaleDateString('en-CA');
+    let streak = stats.streak || 0;
+    if (stats.lastDay !== today) streak = stats.lastDay === yesterdayKey ? streak + 1 : 1;
+    const next = { best: Math.max(stats.best || 0, total), lastDay: today, streak };
+    localStorage.setItem('worldtap:stats', JSON.stringify(next));
+    loadStats();
+  }
+
+  function markSeen(q, roundScore) {
+    const seen = JSON.parse(localStorage.getItem('worldtap:seen') || '{}');
+    const old = seen[q.id] || { seen:0, best:0 };
+    seen[q.id] = { name:q.name, seen:old.seen+1, best:Math.max(old.best || 0, roundScore), last:TODAY_KEY };
+    localStorage.setItem('worldtap:seen', JSON.stringify(seen));
+  }
+
+  function showScreen(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    els[name].classList.add('active');
+    els.revealCard.classList.remove('show');
+  }
+
+  function setNav(which) {
+    els.navToday.classList.toggle('active', which === 'today');
+    els.navJourney.classList.toggle('active', which === 'journey');
+  }
+
+  async function initGlobe() {
+    svg = d3.select(els.globe);
+    countryLayer = svg.append('g');
+    routeLayer = svg.append('g');
+    revealLayer = svg.append('g');
+
+    try {
+      const world = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
+      worldFeatures = topojson.feature(world, world.objects.countries).features;
+      els.loading.classList.add('hidden');
+    } catch (err) {
+      els.loading.textContent = 'World map could not load. Check your connection and reload.';
+      console.error(err);
+      return;
+    }
+
+    resizeGlobe();
+    window.addEventListener('resize', debounce(resizeGlobe, 120));
+
+    const drag = d3.drag()
+      .on('start', () => { dragMoved = false; })
+      .on('drag', (event) => {
+        if (locked) return;
+        if (Math.abs(event.dx)+Math.abs(event.dy) > 1) dragMoved = true;
+        const r = projection.rotate();
+        projection.rotate([r[0] + event.dx * 0.42, Math.max(-82, Math.min(82, r[1] - event.dy * 0.42)), r[2]]);
+        draw();
+      });
+    svg.call(drag);
+
+    svg.on('wheel', (event) => {
+      event.preventDefault();
+      if (locked) return;
+      zoomScale = Math.max(.78, Math.min(1.75, zoomScale * (event.deltaY > 0 ? .94 : 1.06)));
+      resizeGlobe(false);
+    }, { passive:false });
+
+    svg.on('click', (event) => {
+      if (locked || dragMoved || !projection) return;
+      const [x,y] = d3.pointer(event, els.globe);
+      const [cx,cy] = projection.translate();
+      if (Math.hypot(x-cx, y-cy) > projection.scale()) return;
+      const guess = projection.invert([x,y]);
+      if (!guess) return;
+      handleGuess(guess);
+    });
+  }
+
+  function resizeGlobe(preserveRotation=true) {
+    if (!worldFeatures) return;
+    const rect = els.globeStage.getBoundingClientRect();
+    const w = Math.max(320, rect.width);
+    const h = Math.max(320, rect.height);
+    const oldRotate = projection ? projection.rotate() : [-15,-18,0];
+    const base = Math.min(w, h) * .42;
+    projection = d3.geoOrthographic()
+      .translate([w/2, h/2])
+      .scale(base * zoomScale)
+      .clipAngle(90)
+      .precision(.25)
+      .rotate(preserveRotation ? oldRotate : [-15,-18,0]);
+    path = d3.geoPath(projection);
+    svg.attr('viewBox', `0 0 ${w} ${h}`);
+    draw();
+  }
+
+  function draw() {
+    if (!worldFeatures || !projection) return;
+    countryLayer.selectAll('*').remove();
+    countryLayer.append('path').datum({type:'Sphere'}).attr('class','sphere').attr('d',path);
+    countryLayer.append('path').datum(d3.geoGraticule10()).attr('class','graticule').attr('d',path);
+    countryLayer.selectAll('.country').data(worldFeatures).join('path').attr('class','country').attr('d',path);
+    drawRoute();
+    drawRevealMarkers();
+  }
+
+  function drawRoute() {
+    routeLayer.selectAll('*').remove();
+    if (routePoints.length > 1) {
+      routeLayer.append('path')
+        .datum({type:'LineString', coordinates: densifyRoute(routePoints)})
+        .attr('class','route-line')
+        .attr('d',path);
+    }
+    routePoints.forEach(pt => {
+      const p = projection(pt);
+      if (!p) return;
+      routeLayer.append('circle').attr('class','marker-route').attr('cx',p[0]).attr('cy',p[1]).attr('r',5);
+    });
+  }
+
+  function densifyRoute(points) {
+    const out=[];
+    for (let i=0;i<points.length-1;i++) {
+      const interp=d3.geoInterpolate(points[i],points[i+1]);
+      for (let s=0;s<=20;s++) out.push(interp(s/20));
+    }
+    return out;
+  }
+
+  function drawRevealMarkers() {
+    revealLayer.selectAll('*').remove();
+    if (!window.__worldtapReveal) return;
+    const {guess,target} = window.__worldtapReveal;
+    const line=[]; const interp=d3.geoInterpolate(guess,target);
+    for(let i=0;i<=40;i++) line.push(interp(i/40));
+    revealLayer.append('path').datum({type:'LineString',coordinates:line}).attr('class','guess-line').attr('d',path);
+    const gp=projection(guess), ap=projection(target);
+    if (gp) {
+      revealLayer.append('circle').attr('class','marker-ring').attr('cx',gp[0]).attr('cy',gp[1]).attr('r',7).attr('stroke','var(--red)');
+      revealLayer.append('circle').attr('class','marker-guess').attr('cx',gp[0]).attr('cy',gp[1]).attr('r',7);
+    }
+    if (ap) {
+      revealLayer.append('circle').attr('class','marker-ring').attr('cx',ap[0]).attr('cy',ap[1]).attr('r',7).attr('stroke','var(--green)');
+      revealLayer.append('circle').attr('class','marker-answer').attr('cx',ap[0]).attr('cy',ap[1]).attr('r',7);
+    }
+  }
+
+  function currentQuestion() { return questions[index]; }
+
+  function start(modeName) {
+    mode = modeName;
+    questions = mode === 'daily' ? dailyQuestions() : journey.map(q => ({...q}));
+    index = 0; results = []; total = 0; hinted = false; locked = false; routePoints = [];
+    reviewQuestion = null;
+    window.__worldtapReveal = null;
+    setNav(mode === 'daily' ? 'today' : 'journey');
+    showScreen('gameScreen');
+    requestAnimationFrame(() => { zoomScale=1; resizeGlobe(false); renderQuestion(); });
+  }
+
+  function renderQuestion() {
+    const q = currentQuestion();
+    if (!q) return finish();
+    locked = false; hinted = false; window.__worldtapReveal=null;
+    els.roundLabel.textContent = mode === 'daily' ? `ROUND ${index+1} OF 5` : `STOP ${index+1} OF 5`;
+    els.categoryLabel.textContent = q.category;
+    els.questionText.innerHTML = `${q.symbol ? `<span class="clue-symbol">${q.symbol}</span>` : ''}${q.prompt}`;
+    els.hintBtn.classList.remove('used');
+    els.hintBtn.disabled = false;
+    els.hintBtn.innerHTML = '💡 HINT <span aria-hidden="true">−40 max</span>';
+    els.tapTip.classList.remove('hide');
+    draw();
+  }
+
+  function useHint() {
+    if (locked || hinted) return;
+    hinted = true;
+    els.hintBtn.classList.add('used');
+    els.hintBtn.disabled = true;
+    els.hintBtn.textContent = '💡 REGION SHOWN';
+    const center = regionCenters[currentQuestion().region] || currentQuestion().coords;
+    animateRotate(center, .95);
+    toast(`Hint: ${currentQuestion().region}`);
+  }
+
+  function handleGuess(guess) {
+    if (locked) return;
+    locked = true;
+    const q = currentQuestion();
+    const km = distanceKm(guess, q.coords);
+    let score = scoreForDistance(km);
+    if (hinted) score = Math.min(score, 160);
+
+    const result = { q, guess, km, score, hinted };
+    if (reviewQuestion) return finishReview(result);
+
+    results.push(result);
+    total += score;
+    markSeen(q, score);
+    els.miniScore.innerHTML = `Score <strong>${total}</strong>`;
+    els.tapTip.classList.add('hide');
+    window.__worldtapReveal = {guess, target:q.coords};
+    focusReveal(guess, q.coords);
+    showReveal(result);
+  }
+
+  function distanceKm(a,b) { return d3.geoDistance(a,b) * EARTH_KM; }
+
+  function scoreForDistance(km) {
+    if (km <= 25) return 200;
+    const raw = 200 * Math.exp(-km / 3500);
+    return Math.max(0, Math.min(200, Math.round(raw)));
+  }
+
+  function scoreWord(score) {
+    if (score >= 190) return 'Bullseye';
+    if (score >= 160) return 'Excellent';
+    if (score >= 120) return 'Close';
+    if (score >= 70) return 'Learning';
+    return 'Discovery';
+  }
+
+  function showReveal(r) {
+    els.distanceText.textContent = `${formatKm(r.km)} away · ${scoreWord(r.score)}${r.hinted ? ' · hint used' : ''}`;
+    els.answerName.textContent = `${r.q.name}${r.q.flag ? ' ' + r.q.flag : ''}`;
+    els.roundScore.textContent = r.score;
+    els.factText.textContent = r.q.fact;
+    els.anchorText.textContent = r.q.anchor;
+    els.nextBtn.textContent = index === questions.length-1 ? (mode === 'journey' ? 'FINISH JOURNEY →' : 'SEE RESULTS →') : 'NEXT →';
+    setTimeout(() => els.revealCard.classList.add('show'), 150);
+  }
+
+  function focusReveal(a,b) {
+    const mid = d3.geoInterpolate(a,b)(.5);
+    animateRotate(mid, .84, () => {
+      window.__worldtapReveal = {guess:a,target:b};
+      draw();
+    });
+  }
+
+  function animateRotate(center, scaleFactor=1, done) {
+    if (!projection) return;
+    const start = projection.rotate().slice();
+    const target = [-center[0], -center[1], 0];
+    const startScale = zoomScale;
+    const endScale = Math.max(.78, Math.min(1.25, scaleFactor));
+    const duration = 520;
+    const begin = performance.now();
+    function tick(now) {
+      const t = Math.min(1, (now-begin)/duration);
+      const e = 1 - Math.pow(1-t,3);
+      projection.rotate([
+        lerpAngle(start[0],target[0],e),
+        start[1] + (target[1]-start[1])*e,
+        0
+      ]);
+      zoomScale = startScale + (endScale-startScale)*e;
+      const rect=els.globeStage.getBoundingClientRect();
+      projection.scale(Math.min(rect.width,rect.height)*.42*zoomScale);
+      draw();
+      if (t<1) requestAnimationFrame(tick); else if(done) done();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function lerpAngle(a,b,t) {
+    let d = ((b-a+540)%360)-180;
+    return a+d*t;
+  }
+
+  function nextRound() {
+    els.revealCard.classList.remove('show');
+    if (mode === 'journey') routePoints.push(currentQuestion().coords);
+    index++;
+    if (index >= questions.length) return setTimeout(finish, 220);
+    setTimeout(renderQuestion, 230);
+  }
+
+  function finish() {
+    locked = true;
+    window.__worldtapReveal = null;
+    draw();
+    if (mode === 'daily') saveDailyStats();
+    els.summaryEyebrow.textContent = mode === 'journey' ? 'JOURNEY COMPLETE' : 'TODAY COMPLETE';
+    els.finalScore.textContent = total;
+    els.resultBlocks.innerHTML = results.map(r => {
+      const bg = r.score >= 170 ? 'var(--green)' : r.score >= 120 ? 'var(--yellow)' : r.score >= 70 ? '#9ec5ff' : 'var(--red)';
+      return `<div class="result-block" style="background:${bg}" title="${r.q.name}: ${r.score}">${r.score}</div>`;
+    }).join('');
+    els.summaryCopy.textContent = mode === 'journey'
+      ? 'You traced a route from China to the Bosporus—geography attached to a story instead of five isolated dots.'
+      : summarySentence(total);
+    els.shareBtn.textContent = mode === 'journey' ? 'SHARE JOURNEY' : 'SHARE RESULT';
+
+    if (results.length) {
+      const worst = [...results].sort((a,b)=>a.score-b.score)[0];
+      els.memoryCard.style.display = '';
+      els.memoryTitle.textContent = `Remember ${worst.q.name}?`;
+      els.memoryCopy.textContent = `Your toughest round was ${formatKm(worst.km)} away. Tap it once more to lock in the location.`;
+      els.memoryBtn.textContent = 'TRY IT';
+      els.memoryBtn.onclick = () => startReview(worst.q);
+    } else {
+      els.memoryCard.style.display = 'none';
+    }
+    showScreen('summaryScreen');
+    loadStats();
+  }
+
+  function summarySentence(score) {
+    if (score >= 850) return 'Excellent mental map. The hard part now is keeping those precise anchors fresh.';
+    if (score >= 650) return 'Strong run. Five more places now have a clearer home in your mental map.';
+    if (score >= 450) return 'Good discoveries. The misses are useful—they give your brain something concrete to correct.';
+    return 'A productive round: big misses create the strongest “oh, it’s there” moments to remember.';
+  }
+
+  function startReview(q) {
+    reviewQuestion = q;
+    questions = [q]; index=0; locked=false; hinted=false;
+    window.__worldtapReveal=null;
+    showScreen('gameScreen');
+    requestAnimationFrame(() => {
+      zoomScale=.92; resizeGlobe(false);
+      els.roundLabel.textContent='MEMORY CHECK';
+      els.categoryLabel.textContent='NO POINTS · NO HINT';
+      els.questionText.textContent=`One more time: where is ${q.name}?`;
+      els.hintBtn.style.visibility='hidden';
+      els.tapTip.classList.remove('hide');
+    });
+  }
+
+  function finishReview(r) {
+    window.__worldtapReveal = {guess:r.guess,target:r.q.coords};
+    focusReveal(r.guess,r.q.coords);
+    const success = r.km <= 650;
+    setTimeout(() => {
+      els.distanceText.textContent = `${formatKm(r.km)} away`;
+      els.answerName.textContent = success ? `🎯 Got it — ${r.q.name}` : `Almost — ${r.q.name}`;
+      els.roundScore.textContent = success ? '✓' : '↻';
+      els.factText.textContent = success ? 'That retrieval strengthens the location more than simply rereading the answer.' : 'Notice the direction of the correction. That is the useful part of the miss.';
+      els.anchorText.textContent = r.q.anchor;
+      els.nextBtn.textContent='DONE';
+      els.revealCard.classList.add('show');
+      els.nextBtn.onclick=() => {
+        els.revealCard.classList.remove('show');
+        els.hintBtn.style.visibility='';
+        reviewQuestion=null;
+        finish();
+        els.memoryCard.style.display='none';
+      };
+    },500);
+  }
+
+  function formatKm(km) {
+    if (km < 10) return `${km.toFixed(1)} km`;
+    return `${Math.round(km).toLocaleString()} km`;
+  }
+
+  function shareResult() {
+    const blocks = results.map(r => r.score >= 170 ? '🟩' : r.score >= 120 ? '🟨' : r.score >= 70 ? '🟦' : '🟥').join('');
+    const title = mode === 'journey' ? 'WorldTap · Silk Road' : `WorldTap · ${TODAY_KEY}`;
+    const text = `${title}\n${blocks}\n${total}/1000 · ${results.filter(r=>r.hinted).length ? results.filter(r=>r.hinted).length+' hint(s)' : 'no hints'}\nKnow the world a little better every day.`;
+    if (navigator.share) navigator.share({title:'WorldTap',text}).catch(()=>{});
+    else navigator.clipboard?.writeText(text).then(()=>toast('Result copied'));
+  }
+
+  function toast(text) {
+    els.toast.textContent=text;
+    els.toast.classList.add('show');
+    clearTimeout(toast.timer);
+    toast.timer=setTimeout(()=>els.toast.classList.remove('show'),1400);
+  }
+
+  function debounce(fn, wait) {
+    let t; return (...args) => { clearTimeout(t); t=setTimeout(()=>fn(...args),wait); };
+  }
+
+  els.playDaily.addEventListener('click',()=>start('daily'));
+  els.playJourney.addEventListener('click',()=>start('journey'));
+  els.hintBtn.addEventListener('click',useHint);
+  els.nextBtn.addEventListener('click',nextRound);
+  els.shareBtn.addEventListener('click',shareResult);
+  els.replayBtn.addEventListener('click',()=>start(mode));
+  els.navToday.addEventListener('click',()=>{ setNav('today'); showScreen('introScreen'); loadStats(); });
+  els.navJourney.addEventListener('click',()=>{ setNav('journey'); showScreen('journeyScreen'); });
+
+  loadStats();
+  initGlobe();
+})();
+</script>
+</body>
+</html>
