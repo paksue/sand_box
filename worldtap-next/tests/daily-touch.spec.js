@@ -6,21 +6,17 @@ test.use({
   isMobile: true
 });
 
-test('Play Today enters round one on a phone-sized browser', async ({ page }) => {
+async function verifyPlayFlow(page, url) {
   const pageErrors = [];
   page.on('pageerror', error => pageErrors.push(error.message));
 
-  await page.goto('http://127.0.0.1:8000/worldtap-next/daily-touch.html?smoke=2', {
-    waitUntil: 'domcontentloaded'
-  });
+  await page.goto(url, { waitUntil: 'domcontentloaded' });
 
   const play = page.locator('#playBtn');
   await expect(play).toBeVisible();
   await expect(page.locator('#summary')).toBeHidden();
   await play.click();
 
-  // The click may be queued while MapLibre/Three finish loading, but it must
-  // eventually transition into the playable first round.
   await expect(page.locator('#intro')).toHaveClass(/hidden/, { timeout: 30000 });
   await expect(page.locator('#topbar')).toHaveClass(/show/);
   await expect(page.locator('#roundLabel')).toHaveText('ROUND 1 / 5');
@@ -30,4 +26,12 @@ test('Play Today enters round one on a phone-sized browser', async ({ page }) =>
   if (pageErrors.length) {
     throw new Error(`Browser page errors:\n${pageErrors.join('\n')}`);
   }
+}
+
+test('Play Today works in local repository build', async ({ page }) => {
+  await verifyPlayFlow(page, 'http://127.0.0.1:8000/worldtap-next/daily-touch.html?smoke=3');
+});
+
+test('Play Today works on deployed GitHub Pages build', async ({ page }) => {
+  await verifyPlayFlow(page, 'https://paksue.github.io/sand_box/worldtap-next/daily-touch.html?smoke=3');
 });
