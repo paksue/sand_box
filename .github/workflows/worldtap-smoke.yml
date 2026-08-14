@@ -16,8 +16,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Test daily engine
-        run: node worldtap-next/tests/daily-engine.test.mjs
       - name: Install Playwright
         run: |
           npm init -y
@@ -27,5 +25,9 @@ jobs:
         run: |
           python3 -m http.server 8000 > /tmp/worldtap-http.log 2>&1 &
           sleep 2
-      - name: Run WorldTap smoke test
+      - name: Test daily engine
+        run: node --test worldtap-next/tests/daily-engine.test.mjs
+      - name: Test daily product shell
+        run: npx playwright test worldtap-next/tests/daily-v2.spec.js --reporter=line
+      - name: Test Gold globe play flow
         run: npx playwright test worldtap-next/tests/daily-touch.spec.js --reporter=line
