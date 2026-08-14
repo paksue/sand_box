@@ -10,12 +10,13 @@ test('Play Today enters round one on a phone-sized browser', async ({ page }) =>
   const pageErrors = [];
   page.on('pageerror', error => pageErrors.push(error.message));
 
-  await page.goto('http://127.0.0.1:8000/worldtap-next/daily-touch.html?smoke=1', {
+  await page.goto('http://127.0.0.1:8000/worldtap-next/daily-touch.html?smoke=2', {
     waitUntil: 'domcontentloaded'
   });
 
   const play = page.locator('#playBtn');
   await expect(play).toBeVisible();
+  await expect(page.locator('#summary')).toBeHidden();
   await play.click();
 
   // The click may be queued while MapLibre/Three finish loading, but it must
