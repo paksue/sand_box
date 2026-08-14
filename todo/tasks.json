@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-14T17:43:54.389Z",
+  "updatedAt": "2026-08-14T20:19:30.564Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -248,6 +248,19 @@
       "doneUpdatedAt": "2026-08-14T17:43:25.099Z",
       "orderUpdatedAt": "2026-08-14T17:43:25.099Z",
       "deletedUpdatedAt": "2026-08-14T17:43:37.476Z"
+    },
+    {
+      "id": "1afd425b-ceb8-4d38-9416-c9f72e95f572",
+      "title": "Emma cup shave",
+      "details": "",
+      "done": false,
+      "deleted": false,
+      "order": 14,
+      "createdAt": "2026-08-14T20:19:21.066Z",
+      "contentUpdatedAt": "2026-08-14T20:19:21.066Z",
+      "doneUpdatedAt": "2026-08-14T20:19:21.066Z",
+      "orderUpdatedAt": "2026-08-14T20:19:21.066Z",
+      "deletedUpdatedAt": ""
     }
   ]
 }
