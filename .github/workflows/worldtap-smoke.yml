@@ -16,6 +16,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - name: Test daily engine
+        run: node worldtap-next/tests/daily-engine.test.mjs
       - name: Install Playwright
         run: |
           npm init -y
