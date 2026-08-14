@@ -1,0 +1,46 @@
+name: Apply WorldTap Overlay Hotfix
+
+on:
+  push:
+    paths:
+      - '.github/workflows/worldtap-hotfix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prevent hidden overlays from intercepting taps
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          files = [Path('worldtap-next/daily-touch.html'), Path('worldtap-next/daily.html')]
+          old = '.overlay.hidden{opacity:0;pointer-events:none}'
+          new = '.overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}'
+          changed = 0
+          for path in files:
+              text = path.read_text()
+              if old in text:
+                  path.write_text(text.replace(old, new))
+                  print('patched', path)
+                  changed += 1
+              elif new in text:
+                  print('already patched', path)
+              else:
+                  raise SystemExit(f'expected overlay rule not found in {path}')
+          print('changed files:', changed)
+          PY
+      - name: Commit hotfix
+        run: |
+          if git diff --quiet; then
+            echo 'No changes needed'
+            exit 0
+          fi
+          git config user.name 'paksue'
+          git config user.email 'paksuetablet@gmail.com'
+          git add worldtap-next/daily-touch.html worldtap-next/daily.html
+          git commit -m 'Fix hidden overlay intercepting WorldTap taps'
+          git push
