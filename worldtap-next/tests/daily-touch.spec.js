@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 
 test.use({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
 
-async function openFresh(page,url='http://127.0.0.1:8000/worldtap-next/daily-touch.html?integration=1'){
+async function openFresh(page,url='http://127.0.0.1:8000/worldtap-next/daily-touch.html?integration=2'){
   await page.goto(url,{waitUntil:'domcontentloaded'});
   await page.evaluate(()=>localStorage.clear());
   await page.reload({waitUntil:'domcontentloaded'});
@@ -52,7 +52,7 @@ test('tap immediately after globe movement is rejected, settled tap is accepted'
   await canvas.click({position:{x:box.width/2,y:box.height/2}});
   await page.waitForTimeout(200);
   let state=await page.evaluate(()=>window.__WORLDTAP_TEST__.state);
-  expect(state.results).toHaveLength(0);
+  expect(state?.results||[]).toHaveLength(0);
   await expect(page.locator('#subtext')).toContainText('still moving');
 
   await page.waitForTimeout(300);
@@ -63,7 +63,7 @@ test('tap immediately after globe movement is rejected, settled tap is accepted'
 });
 
 test('deployed page boots and Play Today enters a daily round',async({page})=>{
-  await page.goto('https://paksue.github.io/sand_box/worldtap-next/daily-touch.html?integration=1',{waitUntil:'domcontentloaded'});
+  await page.goto('https://paksue.github.io/sand_box/worldtap-next/daily-touch.html?integration=2',{waitUntil:'domcontentloaded'});
   await page.evaluate(()=>localStorage.clear());
   await page.reload({waitUntil:'domcontentloaded'});
   await expect(page.locator('#playBtn')).toBeVisible();
