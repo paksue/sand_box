@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<meta name="theme-color" content="#030812" />
+<title>WorldTap Next — Reveal Lab</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@6.0.0/dist/maplibre-gl.css" />
+<style>
+:root{--bg:#020711;--panel:rgba(7,17,30,.88);--ink:#f5fbff;--muted:#9fb4c6;--line:rgba(255,255,255,.13);--cyan:#73e9ff;--green:#7cf0a5;--red:#ff7d8a;--gold:#ffd46d}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button{font:inherit}#app{position:fixed;inset:0;background:#02060d}#map{position:absolute;inset:0;background:radial-gradient(circle at 50% 46%,#0a2940 0,#030a14 46%,#010307 100%)}#map:after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;background:radial-gradient(circle at 50% 47%,transparent 30%,rgba(0,0,0,.02) 58%,rgba(0,0,0,.44) 100%)}
+.maplibregl-ctrl-bottom-right,.maplibregl-ctrl-bottom-left{opacity:.25}.maplibregl-ctrl-attrib{font-size:8px!important;background:rgba(2,7,14,.55)!important;color:#94a9ba!important}.maplibregl-ctrl-attrib a{color:#b8d2e5!important}
+.topbar{position:absolute;z-index:20;left:0;right:0;top:0;padding:max(12px,env(safe-area-inset-top)) 12px 0;pointer-events:none}.toprow{display:flex;align-items:flex-start;justify-content:space-between;gap:9px}.question-card,.metrics{pointer-events:auto;background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 16px 42px rgba(0,0,0,.26)}.question-card{border-radius:19px;padding:12px 14px;width:min(460px,72vw)}.eyebrow{font-size:10px;font-weight:950;letter-spacing:.11em;text-transform:uppercase;color:var(--cyan)}.question{font-size:clamp(22px,5.3vw,31px);font-weight:950;letter-spacing:-.04em;line-height:1.04;margin-top:4px}.sub{font-size:11px;color:var(--muted);margin-top:5px;font-weight:720}.metrics{border-radius:16px;padding:9px 10px;text-align:right;min-width:86px}.metric{font-size:9px;color:var(--muted);font-weight:900;letter-spacing:.04em}.metric strong{font-size:14px;color:var(--ink);font-variant-numeric:tabular-nums}
+.status{position:absolute;z-index:30;left:50%;top:50%;transform:translate(-50%,-50%);padding:10px 14px;max-width:82vw;border-radius:999px;background:rgba(3,9,18,.91);border:1px solid var(--line);color:#c8d8e5;font-size:11px;font-weight:850;text-align:center}.status.hidden{display:none}.status.error{color:#ffd0d5;border-color:rgba(255,125,138,.35)}
+.tip{position:absolute;z-index:11;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translateX(-50%);padding:8px 11px;border-radius:999px;background:rgba(3,9,18,.73);border:1px solid rgba(255,255,255,.09);color:rgba(239,248,255,.74);font-size:10px;font-weight:850;white-space:nowrap;pointer-events:none;backdrop-filter:blur(10px);transition:.2s}.tip.hide{opacity:0;transform:translate(-50%,8px)}
+.controls{position:absolute;z-index:25;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:8px;padding:10px 12px max(12px,env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,rgba(2,6,13,.94) 45%);pointer-events:none}.btn{pointer-events:auto;border:1px solid var(--line);border-radius:16px;padding:12px 15px;background:rgba(13,29,46,.93);color:var(--ink);font-weight:950;box-shadow:0 10px 28px rgba(0,0,0,.28);backdrop-filter:blur(14px)}.btn.primary{background:linear-gradient(180deg,#86efae,#68dc9b);color:#05130a;border-color:rgba(255,255,255,.36);min-width:210px}.btn:active{transform:scale(.985)}.btn:disabled{opacity:.45}.btn.small{color:#cbd8e4;min-width:86px}
+.result{position:absolute;z-index:24;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));width:min(430px,calc(100vw - 24px));transform:translate(-50%,26px) scale(.985);opacity:0;pointer-events:none;transition:.3s cubic-bezier(.2,.8,.2,1);padding:14px 15px 15px;border-radius:21px;background:rgba(7,17,29,.92);border:1px solid rgba(124,240,165,.23);box-shadow:0 24px 62px rgba(0,0,0,.42);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}.result.show{opacity:1;transform:translate(-50%,0) scale(1)}.result-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.place{font-size:22px;font-weight:950;letter-spacing:-.035em}.distance{font-size:11px;color:var(--muted);font-weight:800;margin-top:2px}.score{text-align:right;font-size:34px;line-height:.92;font-weight:950;color:var(--green);font-variant-numeric:tabular-nums}.score small{display:block;color:var(--muted);font-size:9px;letter-spacing:.08em;margin-top:4px}.learning{margin-top:11px;padding:10px 11px;border-radius:13px;background:rgba(115,233,255,.07);border:1px solid rgba(115,233,255,.14);font-size:12px;line-height:1.38;color:#dceef8}.learning strong{color:#8deaff}.neighbors{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}.neighbor{padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);color:#b9cbd8;font-size:9px;font-weight:850}
+.context-label{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:#d8f8ff;font-size:9px;font-weight:950;letter-spacing:.08em;text-shadow:0 2px 6px rgba(0,0,0,.8);white-space:nowrap;opacity:0;transform:translateY(5px);transition:.35s ease;pointer-events:none}.context-label.show{opacity:.76;transform:translateY(0)}.context-label.target{color:#9effbd;font-size:10px;opacity:0}.context-label.target.show{opacity:1}
+.flash{position:absolute;z-index:18;left:50%;top:48%;transform:translate(-50%,-50%) scale(.82);opacity:0;pointer-events:none;font-size:12px;font-weight:950;letter-spacing:.11em;text-transform:uppercase;color:white;text-shadow:0 2px 18px rgba(0,0,0,.8)}.flash.show{animation:flash .75s ease both}@keyframes flash{0%{opacity:0;transform:translate(-50%,-50%) scale(.8)}22%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-58%) scale(1)}}
+@media(max-width:520px){.topbar{padding-left:9px;padding-right:9px}.question-card{width:72vw;padding:11px 12px}.metrics{min-width:74px;padding:8px}.tip{bottom:calc(88px + env(safe-area-inset-bottom))}.controls{padding-left:9px;padding-right:9px}.btn.primary{flex:1;min-width:0}.result{bottom:calc(140px + env(safe-area-inset-bottom));padding:13px 14px}.score{font-size:31px}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="map"></div>
+  <div class="topbar"><div class="toprow">
+    <div class="question-card"><div class="eyebrow">WORLD TAP · REVEAL LAB</div><div class="question">Where is Nairobi?</div><div id="subtext" class="sub">Spin the globe and tap your best guess.</div></div>
+    <div class="metrics"><div class="metric">FPS <strong id="fps">—</strong></div><div class="metric">ENGINE <strong>6.0/r184</strong></div></div>
+  </div></div>
+  <div id="status" class="status">Loading cinematic globe…</div>
+  <div id="tip" class="tip">Drag to spin · pinch to zoom · tap to guess</div>
+  <div id="flash" class="flash">LOCKED IN</div>
+  <div id="result" class="result">
+    <div class="result-top"><div><div class="place">Nairobi 🇰🇪</div><div id="distance" class="distance">—</div></div><div id="score" class="score">—<small>POINTS</small></div></div>
+    <div class="learning"><strong>Anchor it:</strong> Kenya is in East Africa, just south of Ethiopia, north of Tanzania, and west of Somalia.</div>
+    <div class="neighbors"><span class="neighbor">↑ ETHIOPIA</span><span class="neighbor">← UGANDA</span><span class="neighbor">KENYA</span><span class="neighbor">SOMALIA →</span><span class="neighbor">↓ TANZANIA</span></div>
+  </div>
+  <div class="controls"><button id="resetBtn" class="btn small">RESET</button><button id="replayBtn" class="btn primary" disabled>MAKE A GUESS</button></div>
+</div>
+<script type="module">
+const statusEl=document.getElementById('status'),fpsEl=document.getElementById('fps'),tipEl=document.getElementById('tip'),subtextEl=document.getElementById('subtext'),flashEl=document.getElementById('flash'),resultEl=document.getElementById('result'),distanceEl=document.getElementById('distance'),scoreEl=document.getElementById('score'),resetBtn=document.getElementById('resetBtn'),replayBtn=document.getElementById('replayBtn');
+const NAIROBI=[36.8219,-1.2921];
+const CONTEXT=[
+  {name:'ETHIOPIA',coord:[39.5,8.5]},
+  {name:'UGANDA',coord:[32.3,1.4]},
+  {name:'NAIROBI',coord:NAIROBI,target:true},
+  {name:'SOMALIA',coord:[45.1,5.1]},
+  {name:'TANZANIA',coord:[34.9,-6.1]}
+];
+let maplibregl,THREE,map,effectsLayer,locked=false,animating=false,raf=0,labels=[];
+async function loadModule(primary,fallback){try{return await import(primary)}catch(e){console.warn('Primary import failed',e);return await import(fallback)}}
+try{
+  [maplibregl,THREE]=await Promise.all([
+    loadModule('https://unpkg.com/maplibre-gl@6.0.0/dist/maplibre-gl.mjs','https://cdn.jsdelivr.net/npm/maplibre-gl@6.0.0/dist/maplibre-gl.mjs'),
+    loadModule('https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js','https://unpkg.com/three@0.184.0/build/three.module.js')
+  ]);
+  start();
+}catch(err){console.error(err);statusEl.textContent='Renderer modules failed to load.';statusEl.classList.add('error')}
+
+function calmStyle(){return{
+  version:8,
+  projection:{type:'globe'},
+  sources:{maplibre:{type:'vector',url:'https://demotiles.maplibre.org/tiles/tiles.json'}},
+  layers:[
+    {id:'background',type:'background',paint:{'background-color':'#06111e'}},
+    {id:'land',type:'fill',source:'maplibre','source-layer':'countries',paint:{'fill-color':'#25585a','fill-opacity':1}},
+    {id:'coast',type:'line',source:'maplibre','source-layer':'countries',paint:{'line-color':'#78c9cf','line-width':['interpolate',['linear'],['zoom'],0,.55,3,1.15,6,2.5],'line-opacity':.83}},
+    {id:'borders',type:'line',source:'maplibre','source-layer':'countries',paint:{'line-color':'#b6d9d1','line-width':['interpolate',['linear'],['zoom'],0,.22,4,.68],'line-opacity':['interpolate',['linear'],['zoom'],0,.18,2,.31,5,.54]}}
+  ],
+  sky:{'atmosphere-blend':['interpolate',['linear'],['zoom'],0,.88,4,.74,7,0]}
+}}
+
+function start(){
+  try{map=new maplibregl.Map({container:'map',style:calmStyle(),center:[42,12],zoom:.74,minZoom:.18,maxZoom:5,pitch:0,maxPitch:0,bearing:0,renderWorldCopies:false,dragRotate:false,touchPitch:false,cooperativeGestures:false,attributionControl:true,canvasContextAttributes:{antialias:true,powerPreference:'high-performance'}})}catch(err){console.error(err);statusEl.textContent='Could not create WebGL2 globe.';statusEl.classList.add('error');return}
+  map.on('error',e=>console.warn('MapLibre',e.error||e));
+  map.on('load',()=>{
+    addMapLayers();
+    effectsLayer=createEffectsLayer();map.addLayer(effectsLayer);
+    statusEl.classList.add('hidden');replayBtn.disabled=false;replayBtn.textContent='TAP THE GLOBE';
+    map.resize();
+  });
+  map.on('click',e=>{if(!locked&&!animating)makeGuess([e.lngLat.lng,e.lngLat.lat])});
+  map.on('dragstart',()=>tipEl.classList.add('hide'));
+  window.addEventListener('resize',()=>map&&map.resize());
+  startFps();
+}
+
+function addMapLayers(){
+  map.addSource('guess',{type:'geojson',data:fc([])});
+  map.addLayer({id:'guessGlow',type:'circle',source:'guess',paint:{'circle-radius':18,'circle-color':'rgba(255,125,138,.08)','circle-stroke-color':'rgba(255,125,138,.35)','circle-stroke-width':2}});
+  map.addLayer({id:'guessDot',type:'circle',source:'guess',paint:{'circle-radius':5.3,'circle-color':'#ff7d8a','circle-stroke-color':'#fff','circle-stroke-width':1.8}});
+  map.addSource('route',{type:'geojson',lineMetrics:true,data:fc([])});
+  map.addLayer({id:'routeGlow',type:'line',source:'route',paint:{'line-color':'#54e7ff','line-width':['interpolate',['linear'],['zoom'],0,5,4,8],'line-opacity':.18,'line-blur':5}});
+  map.addLayer({id:'routeCore',type:'line',source:'route',paint:{'line-color':'#c6f9ff','line-width':['interpolate',['linear'],['zoom'],0,1.4,4,2.7],'line-opacity':.97}});
+  map.addSource('answer',{type:'geojson',data:fc([])});
+  map.addLayer({id:'answerRing',type:'circle',source:'answer',paint:{'circle-radius':13,'circle-color':'rgba(124,240,165,.08)','circle-stroke-color':'#7cf0a5','circle-stroke-width':2.1}});
+  map.addLayer({id:'answerDot',type:'circle',source:'answer',paint:{'circle-radius':4.8,'circle-color':'#7cf0a5','circle-stroke-color':'#fff','circle-stroke-width':1.8}});
+}
+
+function createEffectsLayer(){return{
+  id:'worldtap-cinematic-effects',type:'custom',renderingMode:'3d',
+  onAdd(m,gl){
+    this.map=m;this.camera=new THREE.Camera();this.renderer=new THREE.WebGLRenderer({canvas:m.getCanvas(),context:gl,antialias:true});this.renderer.autoClear=false;
+    this.guess=createPulse(0xff7d8a);this.target=createBeacon();this.traveler=createTraveler();
+    this.guessScene=new THREE.Scene();this.targetScene=new THREE.Scene();this.travelerScene=new THREE.Scene();this.guessScene.add(this.guess.group);this.targetScene.add(this.target.group);this.travelerScene.add(this.traveler.group);
+    this.guessCoord=null;this.guessBorn=0;this.targetVisible=false;this.travelerVisible=false;this.travelerCoord=NAIROBI.slice();
+  },
+  fireGuess(coord){this.guessCoord=coord;this.guessBorn=performance.now();this.map.triggerRepaint()},
+  setTarget(v){this.targetVisible=v;this.map.triggerRepaint()},
+  setTraveler(coord,v=true){this.travelerCoord=coord;this.travelerVisible=v;this.map.triggerRepaint()},
+  clear(){this.guessCoord=null;this.targetVisible=false;this.travelerVisible=false;this.map.triggerRepaint()},
+  render(gl,args){
+    const now=performance.now();this.renderer.resetState();
+    if(this.guessCoord){const age=(now-this.guessBorn)/1000;if(age<1.15){const s=1+age*2.6;this.guess.ring.scale.setScalar(s);this.guess.ring.material.opacity=Math.max(0,.78-age*.65);this.guess.core.scale.setScalar(1+Math.sin(age*16)*.08);renderAt(this,this.guessScene,this.guessCoord,args,52000);this.map.triggerRepaint()}}
+    if(this.travelerVisible){const s=1+.16*Math.sin(now*.014);this.traveler.group.scale.setScalar(s);renderAt(this,this.travelerScene,this.travelerCoord,args,61000);this.map.triggerRepaint()}
+    if(this.targetVisible){const p=.95+.11*Math.sin(now*.006);this.target.ring.scale.setScalar(p);this.target.ring.material.opacity=.55+.2*Math.sin(now*.006+1);renderAt(this,this.targetScene,NAIROBI,args,50000);this.map.triggerRepaint()}
+  }
+}}
+
+function createPulse(color){const group=new THREE.Group();const mat=new THREE.MeshBasicMaterial({color,transparent:true,opacity:.75,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false});const ring=new THREE.Mesh(new THREE.TorusGeometry(.45,.055,14,64),mat);ring.position.z=.03;group.add(ring);const core=new THREE.Mesh(new THREE.SphereGeometry(.16,20,16),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.95,blending:THREE.AdditiveBlending,depthWrite:false}));core.position.z=.2;group.add(core);return{group,ring,core}}
+function createBeacon(){const group=new THREE.Group();const green=0x7cf0a5;const ring=new THREE.Mesh(new THREE.TorusGeometry(.52,.06,16,64),new THREE.MeshBasicMaterial({color:green,transparent:true,opacity:.7,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false}));ring.position.z=.04;group.add(ring);const halo=new THREE.Mesh(new THREE.RingGeometry(.62,.9,64),new THREE.MeshBasicMaterial({color:green,transparent:true,opacity:.12,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false}));halo.position.z=.025;group.add(halo);const beam=new THREE.Mesh(new THREE.CylinderGeometry(.055,.17,2.9,18,1,true),new THREE.MeshBasicMaterial({color:green,transparent:true,opacity:.24,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));beam.rotation.x=Math.PI/2;beam.position.z=1.45;group.add(beam);const tip=new THREE.Mesh(new THREE.SphereGeometry(.17,24,18),new THREE.MeshBasicMaterial({color:0xd9ffe5,transparent:true,opacity:.98,blending:THREE.AdditiveBlending,depthWrite:false}));tip.position.z=2.9;group.add(tip);return{group,ring}}
+function createTraveler(){const group=new THREE.Group();const core=new THREE.Mesh(new THREE.SphereGeometry(.18,20,16),new THREE.MeshBasicMaterial({color:0xe1fcff,transparent:true,opacity:.98,blending:THREE.AdditiveBlending,depthWrite:false}));group.add(core);const halo=new THREE.Mesh(new THREE.SphereGeometry(.42,20,16),new THREE.MeshBasicMaterial({color:0x62e8ff,transparent:true,opacity:.16,blending:THREE.AdditiveBlending,depthWrite:false}));group.add(halo);return{group}}
+function renderAt(layer,scene,origin,args,scaleMeters){const modelMatrix=layer.map.transform.getMatrixForModel(origin,0);const projection=new THREE.Matrix4().fromArray(args.defaultProjectionData.mainMatrix);const local=new THREE.Matrix4().fromArray(modelMatrix).scale(new THREE.Vector3(scaleMeters,scaleMeters,scaleMeters));layer.camera.projectionMatrix=projection.multiply(local);layer.camera.projectionMatrixInverse.copy(layer.camera.projectionMatrix).invert();layer.renderer.resetState();layer.renderer.render(scene,layer.camera)}
+
+async function makeGuess(guess){
+  locked=true;animating=true;tipEl.classList.add('hide');replayBtn.disabled=true;resultEl.classList.remove('show');clearContext();
+  setSource('guess',fc([point(guess)]));setSource('answer',fc([]));setSource('route',fc([]));effectsLayer.fireGuess(guess);effectsLayer.setTarget(false);effectsLayer.setTraveler(guess,false);
+  flashEl.classList.remove('show');void flashEl.offsetWidth;flashEl.classList.add('show');navigator.vibrate?.(14);
+  const km=distanceKm(guess,NAIROBI);const score=scoreFor(km);subtextEl.textContent='Locked in. Finding Nairobi…';
+  await wait(300);
+  const mid=greatCircle(guess,NAIROBI,2)[1];const z=km<400?3.5:km<1400?2.8:km<4000?2.05:1.2;
+  map.easeTo({center:mid,zoom:z,pitch:0,bearing:0,duration:820,easing:easeOutCubic});
+  await wait(230);
+  const route=greatCircle(guess,NAIROBI,120);const duration=Math.max(850,Math.min(2100,700+km*.12));const t0=performance.now();effectsLayer.setTraveler(guess,true);
+  await new Promise(resolve=>{const tick=now=>{const t=Math.min(1,(now-t0)/duration),e=easeInOutCubic(t),idx=Math.max(1,Math.floor(e*(route.length-1)));setSource('route',fc([line(route.slice(0,idx+1))]));effectsLayer.setTraveler(route[idx],true);if(t<1)raf=requestAnimationFrame(tick);else resolve()};raf=requestAnimationFrame(tick)});
+  effectsLayer.setTraveler(NAIROBI,false);effectsLayer.setTarget(true);setSource('answer',fc([point(NAIROBI)]));navigator.vibrate?.([12,35,18]);
+  map.easeTo({center:NAIROBI,zoom:2.15,pitch:0,bearing:0,duration:900,easing:easeOutCubic});
+  await wait(420);showContext();distanceEl.textContent=`${formatKm(km)} away · ${scoreWord(score)}`;scoreEl.innerHTML=`${score}<small>POINTS</small>`;resultEl.classList.add('show');subtextEl.textContent='Notice where Kenya sits relative to its neighbors.';replayBtn.disabled=false;replayBtn.textContent='TRY AGAIN';animating=false;
+}
+
+function showContext(){clearContext();CONTEXT.forEach((c,i)=>{const el=document.createElement('div');el.className='context-label'+(c.target?' target':'');el.textContent=c.name;const marker=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat(c.coord).addTo(map);labels.push({marker,el});setTimeout(()=>el.classList.add('show'),80+i*70)})}
+function clearContext(){labels.forEach(x=>x.marker.remove());labels=[]}
+function reset(){cancelAnimationFrame(raf);locked=false;animating=false;clearContext();effectsLayer?.clear();setSource('guess',fc([]));setSource('answer',fc([]));setSource('route',fc([]));resultEl.classList.remove('show');tipEl.classList.remove('hide');subtextEl.textContent='Spin the globe and tap your best guess.';map?.easeTo({center:[42,12],zoom:.74,pitch:0,bearing:0,duration:700});replayBtn.disabled=false;replayBtn.textContent='TAP THE GLOBE'}
+
+function setSource(id,data){const s=map&&map.getSource(id);if(s)s.setData(data)}function fc(features){return{type:'FeatureCollection',features}}function point(coords){return{type:'Feature',properties:{},geometry:{type:'Point',coordinates:coords}}}function line(coords){return{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:coords}}}
+function distanceKm(a,b){const R=6371,rad=Math.PI/180,p1=a[1]*rad,p2=b[1]*rad,dp=(b[1]-a[1])*rad,dl=(b[0]-a[0])*rad,h=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+function scoreFor(km){if(km<25)return 200;return Math.max(0,Math.min(200,Math.round(200*Math.exp(-km/2300))))}function scoreWord(s){return s>=190?'bullseye':s>=155?'excellent':s>=115?'close':s>=70?'learning':'discovery'}function formatKm(km){return km<10?`${km.toFixed(1)} km`:`${Math.round(km).toLocaleString()} km`}
+function llv([lng,lat]){const a=lng*Math.PI/180,b=lat*Math.PI/180,c=Math.cos(b);return[c*Math.cos(a),c*Math.sin(a),Math.sin(b)]}function vll([x,y,z]){return[Math.atan2(y,x)*180/Math.PI,Math.atan2(z,Math.hypot(x,y))*180/Math.PI]}function greatCircle(a,b,n=36){const A=llv(a),B=llv(b),d=Math.max(-1,Math.min(1,A[0]*B[0]+A[1]*B[1]+A[2]*B[2])),o=Math.acos(d);if(o<1e-6)return[a,b];const so=Math.sin(o),out=[];for(let i=0;i<=n;i++){const t=i/n,p=Math.sin((1-t)*o)/so,q=Math.sin(t*o)/so;out.push(vll([A[0]*p+B[0]*q,A[1]*p+B[1]*q,A[2]*p+B[2]*q]))}return out}
+function wait(ms){return new Promise(r=>setTimeout(r,ms))}function easeOutCubic(t){return 1-Math.pow(1-t,3)}function easeInOutCubic(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2}
+function startFps(){let frames=0,last=performance.now();function tick(now){frames++;if(now-last>=700){fpsEl.textContent=Math.round(frames*1000/(now-last));frames=0;last=now}requestAnimationFrame(tick)}requestAnimationFrame(tick)}
+resetBtn.addEventListener('click',reset);replayBtn.addEventListener('click',()=>{if(locked)reset()});
+</script>
+</body>
+</html>
