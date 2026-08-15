@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-15T12:13:22.673Z",
+  "updatedAt": "2026-08-15T12:35:51.784Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -299,6 +299,19 @@
       "contentUpdatedAt": "2026-08-15T12:13:18.040Z",
       "doneUpdatedAt": "2026-08-15T12:12:46.201Z",
       "orderUpdatedAt": "2026-08-15T12:12:46.201Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "97dc2660-7610-4d1a-bf8d-6852584d182a",
+      "title": "College search and review",
+      "details": "How best to find most fit colleges for them?  What about most safe as in not over fit.  If first major not like or pan out or no job, what to do?",
+      "done": false,
+      "deleted": false,
+      "order": 18,
+      "createdAt": "2026-08-15T12:34:28.443Z",
+      "contentUpdatedAt": "2026-08-15T12:35:43.714Z",
+      "doneUpdatedAt": "2026-08-15T12:34:28.443Z",
+      "orderUpdatedAt": "2026-08-15T12:34:28.443Z",
       "deletedUpdatedAt": ""
     }
   ]
