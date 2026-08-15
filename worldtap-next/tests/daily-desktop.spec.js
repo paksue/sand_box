@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 
 test.use({viewport:{width:1285,height:890},hasTouch:false,isMobile:false});
 
-async function openFresh(page,url='http://127.0.0.1:8000/worldtap-next/daily-touch.html?desktop=3'){
+async function openFresh(page,url='http://127.0.0.1:8000/worldtap-next/daily-touch.html?desktop=4'){
   await page.goto(url,{waitUntil:'domcontentloaded'});
   await page.evaluate(()=>localStorage.clear());
   await page.reload({waitUntil:'domcontentloaded'});
@@ -78,7 +78,7 @@ test('desktop reserves a safe play area for the globe',async({page})=>{
 });
 
 test('deployed desktop keeps the safe area and readable flag card',async({page})=>{
-  await openFresh(page,'https://paksue.github.io/sand_box/worldtap-next/daily-touch.html?desktop=3');
+  await openFresh(page,'https://paksue.github.io/sand_box/worldtap-next/daily-touch.html?desktop=4');
   await expectDesktopPlayArea(page);
   await reachFlagRound(page);
   await expectDesktopFlagReadable(page);
