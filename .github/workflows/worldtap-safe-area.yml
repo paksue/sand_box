@@ -1,0 +1,20 @@
+name: WorldTap Safe Area Patch
+on:
+  push:
+    paths:
+      - 'worldtap-next/tools/apply_safe_area.py'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 worldtap-next/tools/apply_safe_area.py
+      - run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add worldtap-next/daily-touch.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Apply WorldTap desktop safe-area tuning"
+          git push
