@@ -1,0 +1,42 @@
+from pathlib import Path
+
+p = Path('worldtap-next/daily-touch.html')
+s = p.read_text()
+
+s = s.replace('./daily-engine.js?v=20260814-flagfix2', './daily-engine.js?v=20260815-flaghero1')
+
+css = r'''
+.flag-hero{display:none;align-items:center;justify-content:center;height:108px;margin:6px 0 1px;overflow:visible}
+.flag-hero.show{display:flex}
+.flag-hero img{display:block;width:auto;height:auto;max-width:170px;max-height:102px;filter:drop-shadow(0 7px 16px rgba(0,0,0,.38));user-select:none;-webkit-user-drag:none}
+.flag-hero.emoji-fallback{font-size:82px;line-height:1}
+.question-card.flag-round{padding-bottom:10px}
+.question-card.flag-round .question{text-align:center;font-size:22px;line-height:1.04;margin-top:1px}
+.question-card.flag-round .sub{text-align:center;margin-top:5px}
+@media(max-width:520px){.flag-hero{height:98px;margin:5px 0 0}.flag-hero img{max-width:154px;max-height:92px}.flag-hero.emoji-fallback{font-size:74px}.question-card.flag-round .question{font-size:20px}}
+'''
+if '.flag-hero{' not in s:
+    s = s.replace('</style>', css + '</style>', 1)
+
+old = '<div id="question" class="question"></div>'
+new = '<div id="flagHero" class="flag-hero" aria-label="Country flag clue"></div><div id="question" class="question"></div>'
+if old in s:
+    s = s.replace(old, new, 1)
+elif new not in s:
+    raise SystemExit('question node marker not found')
+
+old = "els={topbar:$('topbar'),round:$('roundLabel'),category:$('category'),question:$('question'),"
+new = "els={topbar:$('topbar'),questionCard:document.querySelector('.question-card'),flagHero:$('flagHero'),round:$('roundLabel'),category:$('category'),question:$('question'),"
+if old in s:
+    s = s.replace(old, new, 1)
+elif new not in s:
+    raise SystemExit('els marker not found')
+
+old = "function question(reset=false){const q=current();locked=false;animating=false;hinted=false;clear();els.result.classList.remove('show');els.tip.classList.remove('hide');els.round.textContent=reviewing?'MEMORY CHECK':`ROUND ${index+1} / 5`;els.category.textContent=reviewing?'NO POINTS':q.category.toUpperCase();const cleanPrompt=q.category==='Flag'&&q.flag?q.prompt.split(q.flag).join('').trim():q.prompt;els.question.textContent=`${q.symbol?q.symbol+' ':''}${reviewing?'One more time: where is '+q.name+'?':cleanPrompt}`;els.sub.textContent=reviewing?'Use the correction you just saw.':'Spin the globe and tap your best guess.';els.hint.style.display=reviewing?'none':'';els.hint.disabled=false;els.hint.classList.remove('used');els.hint.textContent='💡 HINT · MAX 160';els.running.textContent=total;if(reset)map.easeTo({center:[18,14],zoom:.64,duration:550})}"
+new = "function question(reset=false){const q=current();locked=false;animating=false;hinted=false;clear();els.result.classList.remove('show');els.tip.classList.remove('hide');els.round.textContent=reviewing?'MEMORY CHECK':`ROUND ${index+1} / 5`;els.category.textContent=reviewing?'NO POINTS':q.category.toUpperCase();const isFlag=!reviewing&&q.category==='Flag';els.questionCard.classList.toggle('flag-round',isFlag);els.flagHero.className='flag-hero'+(isFlag?' show':'');els.flagHero.replaceChildren();if(isFlag){if(q.flagCode){const img=document.createElement('img');img.src=`./flags/${q.flagCode}.svg?v=1`;img.alt='Country flag clue';img.draggable=false;img.addEventListener('error',()=>{els.flagHero.replaceChildren();els.flagHero.textContent=q.flag||'🏳️';els.flagHero.classList.add('emoji-fallback')},{once:true});els.flagHero.appendChild(img)}else{els.flagHero.textContent=q.flag||'🏳️';els.flagHero.classList.add('emoji-fallback')}}const cleanPrompt=q.category==='Flag'&&q.flag?q.prompt.split(q.flag).join('').trim():q.prompt;els.question.textContent=reviewing?'One more time: where is '+q.name+'?':isFlag?'Which country is this?':`${q.symbol?q.symbol+' ':''}${cleanPrompt}`;els.sub.textContent=reviewing?'Use the correction you just saw.':'Spin the globe and tap your best guess.';els.hint.style.display=reviewing?'none':'';els.hint.disabled=false;els.hint.classList.remove('used');els.hint.textContent='💡 HINT · MAX 160';els.running.textContent=total;if(reset)map.easeTo({center:[18,14],zoom:.64,duration:550})}"
+if old in s:
+    s = s.replace(old, new, 1)
+elif new not in s:
+    raise SystemExit('question function marker not found')
+
+p.write_text(s)
