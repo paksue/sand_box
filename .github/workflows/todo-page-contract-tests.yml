@@ -1,0 +1,26 @@
+name: Todo page contract tests
+
+on:
+  push:
+    paths:
+      - 'todo/**'
+      - '.github/workflows/todo-page-contract-tests.yml'
+  pull_request:
+    paths:
+      - 'todo/**'
+      - '.github/workflows/todo-page-contract-tests.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Page contract tests
+        run: node --test todo/tests/page-contract.test.mjs
+      - name: V3 syntax
+        run: |
+          node --check todo/sync-core.mjs
+          node --check todo/sync-v3.mjs
