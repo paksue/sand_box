@@ -1,0 +1,55 @@
+name: WorldTap Self-host Geography
+on:
+  push:
+    paths:
+      - '.github/workflows/worldtap-selfhost-geography.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Vendor Natural Earth countries and switch renderer
+        run: |
+          set -euo pipefail
+          curl -L --fail --retry 3 \
+            https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson \
+            -o worldtap-next/countries-110m.geojson
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          g=Path('worldtap-next/countries-110m.geojson')
+          data=json.loads(g.read_text())
+          # Keep only properties useful for future country-aware gameplay.
+          for f in data.get('features',[]):
+              p=f.get('properties',{})
+              f['properties']={
+                  'name': p.get('NAME_EN') or p.get('ADMIN') or p.get('NAME'),
+                  'iso2': p.get('ISO_A2'),
+                  'iso3': p.get('ISO_A3'),
+                  'continent': p.get('CONTINENT'),
+                  'region': p.get('REGION_UN'),
+                  'subregion': p.get('SUBREGION')
+              }
+              f.pop('bbox',None)
+          data.pop('crs',None); data.pop('name',None)
+          g.write_text(json.dumps(data,separators=(',',':')))
+
+          p=Path('worldtap-next/daily-touch.html')
+          s=p.read_text()
+          old="sources:{world:{type:'vector',url:'https://demotiles.maplibre.org/tiles/tiles.json'}}"
+          new="sources:{world:{type:'geojson',data:'./countries-110m.geojson?v=1'}}"
+          if old not in s and new not in s:
+              raise SystemExit('world source pattern not found')
+          s=s.replace(old,new,1)
+          s=s.replace("source:'world','source-layer':'countries'","source:'world'",2)
+          p.write_text(s)
+          PY
+      - name: Commit geography vendor
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add worldtap-next/countries-110m.geojson worldtap-next/daily-touch.html
+          git commit -m "Self-host WorldTap country geography"
+          git push
