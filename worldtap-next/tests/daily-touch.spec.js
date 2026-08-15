@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 
 test.use({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
 
-async function openFresh(page,url='http://127.0.0.1:8000/worldtap-next/daily-touch.html?integration=5'){
+async function openFresh(page,url='http://127.0.0.1:8000/worldtap-next/daily-touch.html?integration=6'){
   await page.goto(url,{waitUntil:'domcontentloaded'});
   await page.evaluate(()=>localStorage.clear());
   await page.reload({waitUntil:'domcontentloaded'});
@@ -31,19 +31,30 @@ async function answerRound(page){
   await expect(page.locator('#result')).toHaveClass(/show/,{timeout:15000});
 }
 
-async function expectExactlyOneFlag(page){
-  const flagText=await page.locator('#question').textContent();
-  const regionalIndicators=[...flagText].filter(ch=>{const n=ch.codePointAt(0);return n>=0x1F1E6&&n<=0x1F1FF});
-  expect(regionalIndicators).toHaveLength(2); // one country flag = two regional-indicator code points
+async function expectFlagHero(page){
+  await expect(page.locator('#category')).toHaveText('FLAG');
+  await expect(page.locator('#question')).toHaveText('Which country is this?');
+  await expect(page.locator('.question-card')).toHaveClass(/flag-round/);
+  const hero=page.locator('#flagHero');
+  await expect(hero).toHaveClass(/show/);
+  const img=hero.locator('img');
+  await expect(img).toHaveCount(1);
+  await page.waitForFunction(()=>document.querySelector('#flagHero img')?.complete&&document.querySelector('#flagHero img')?.naturalWidth>0);
+  const box=await img.boundingBox();
+  expect(box.height).toBeGreaterThanOrEqual(80);
+  expect(box.width).toBeGreaterThanOrEqual(80);
+  const text=await page.locator('#question').textContent();
+  const regionalIndicators=[...text].filter(ch=>{const n=ch.codePointAt(0);return n>=0x1F1E6&&n<=0x1F1FF});
+  expect(regionalIndicators).toHaveLength(0);
 }
 
-test('Daily game renders land, saves two real rounds, renders one flag, and resumes on round three',async({page})=>{
+test('Daily game renders land, large flag hero, saves two rounds, and resumes on round three',async({page})=>{
   await openFresh(page);
   await expectLandRendered(page);
   await answerRound(page);
   await page.locator('#nextBtn').click();
   await expect(page.locator('#roundLabel')).toHaveText('ROUND 2 / 5');
-  await expectExactlyOneFlag(page);
+  await expectFlagHero(page);
   await page.waitForTimeout(700);
   await answerRound(page);
 
@@ -80,12 +91,11 @@ test('tap immediately after globe movement is rejected, settled tap is accepted'
   expect(state.results).toHaveLength(1);
 });
 
-test('deployed page renders countries and reaches round two with exactly one flag',async({page})=>{
-  await openFresh(page,'https://paksue.github.io/sand_box/worldtap-next/daily-touch.html?integration=5');
+test('deployed page renders countries and a phone-sized SVG flag hero',async({page})=>{
+  await openFresh(page,'https://paksue.github.io/sand_box/worldtap-next/daily-touch.html?integration=6');
   await expectLandRendered(page);
   await answerRound(page);
   await page.locator('#nextBtn').click();
   await expect(page.locator('#roundLabel')).toHaveText('ROUND 2 / 5');
-  await expect(page.locator('#category')).toHaveText('FLAG');
-  await expectExactlyOneFlag(page);
+  await expectFlagHero(page);
 });
