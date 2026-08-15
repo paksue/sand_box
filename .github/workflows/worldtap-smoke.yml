@@ -31,3 +31,5 @@ jobs:
         run: npx playwright test worldtap-next/tests/daily-v2.spec.js --reporter=line
       - name: Test Gold globe play flow
         run: npx playwright test worldtap-next/tests/daily-touch.spec.js --reporter=line
+      - name: Test desktop flag readability
+        run: npx playwright test worldtap-next/tests/daily-desktop.spec.js --reporter=line
