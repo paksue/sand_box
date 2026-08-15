@@ -47,8 +47,8 @@ async function expectDesktopFlagReadable(page){
   expect(card.x+card.width).toBeLessThan(metrics.x);
   const fontSize=await page.locator('#question').evaluate(el=>parseFloat(getComputedStyle(el).fontSize));
   expect(fontSize).toBeGreaterThanOrEqual(30);
-  const bg=await page.locator('#flagHero').evaluate(el=>getComputedStyle(el).backgroundImage+' '+getComputedStyle(el).backgroundColor);
-  expect(bg).not.toContain('rgba(0, 0, 0, 0)');
+  const bgImage=await page.locator('#flagHero').evaluate(el=>getComputedStyle(el).backgroundImage);
+  expect(bgImage).toContain('linear-gradient');
 }
 
 test('desktop starts with a larger globe and uses a high-contrast flag display card',async({page})=>{
