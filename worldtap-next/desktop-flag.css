@@ -2,44 +2,44 @@
 @media (min-width: 900px) {
   .topbar { padding: 16px 18px 0; }
   .question-card.flag-round {
-    width: min(680px, 48vw);
-    padding: 16px 20px 14px;
-    border-radius: 22px;
+    width: min(720px, 52vw);
+    padding: 18px 22px 16px;
+    border-radius: 24px;
   }
   .question-card.flag-round .eyebrow {
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: .11em;
   }
   .question-card.flag-round .flag-hero {
-    height: 176px;
-    margin: 10px 0 4px;
+    height: 200px;
+    margin: 10px 0 5px;
   }
   .question-card.flag-round .flag-hero img {
-    max-width: 290px;
-    max-height: 164px;
+    max-width: 320px;
+    max-height: 188px;
   }
   .question-card.flag-round .question {
-    font-size: 30px;
+    font-size: 32px;
     line-height: 1.02;
-    margin-top: 3px;
+    margin-top: 4px;
   }
   .question-card.flag-round .sub {
-    font-size: 12px;
-    margin-top: 7px;
+    font-size: 13px;
+    margin-top: 8px;
   }
 }
 
 @media (min-width: 1400px) {
   .question-card.flag-round {
-    width: min(760px, 46vw);
+    width: min(800px, 48vw);
   }
   .question-card.flag-round .flag-hero {
-    height: 196px;
+    height: 224px;
   }
   .question-card.flag-round .flag-hero img {
-    max-width: 330px;
-    max-height: 184px;
+    max-width: 370px;
+    max-height: 210px;
   }
-  .question-card.flag-round .question { font-size: 34px; }
-  .question-card.flag-round .sub { font-size: 13px; }
+  .question-card.flag-round .question { font-size: 36px; }
+  .question-card.flag-round .sub { font-size: 14px; }
 }
