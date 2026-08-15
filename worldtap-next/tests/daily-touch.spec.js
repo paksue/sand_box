@@ -42,7 +42,8 @@ async function expectFlagHero(page){
   await page.waitForFunction(()=>document.querySelector('#flagHero img')?.complete&&document.querySelector('#flagHero img')?.naturalWidth>0);
   const box=await img.boundingBox();
   expect(box.height).toBeGreaterThanOrEqual(80);
-  expect(box.width).toBeGreaterThanOrEqual(80);
+  expect(box.width).toBeGreaterThanOrEqual(70); // Nepal is intentionally narrower than rectangular flags.
+  expect(box.width*box.height).toBeGreaterThanOrEqual(6000);
   const text=await page.locator('#question').textContent();
   const regionalIndicators=[...text].filter(ch=>{const n=ch.codePointAt(0);return n>=0x1F1E6&&n<=0x1F1FF});
   expect(regionalIndicators).toHaveLength(0);
