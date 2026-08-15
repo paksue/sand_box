@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 
 test.use({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
 
-async function openFresh(page,url='http://127.0.0.1:8000/worldtap-next/daily-touch.html?integration=2'){
+async function openFresh(page,url='http://127.0.0.1:8000/worldtap-next/daily-touch.html?integration=3'){
   await page.goto(url,{waitUntil:'domcontentloaded'});
   await page.evaluate(()=>localStorage.clear());
   await page.reload({waitUntil:'domcontentloaded'});
@@ -21,11 +21,14 @@ async function answerRound(page){
   await expect(page.locator('#result')).toHaveClass(/show/,{timeout:15000});
 }
 
-test('Daily game saves two real rounds and resumes on round three',async({page})=>{
+test('Daily game saves two real rounds, renders one flag, and resumes on round three',async({page})=>{
   await openFresh(page);
   await answerRound(page);
   await page.locator('#nextBtn').click();
   await expect(page.locator('#roundLabel')).toHaveText('ROUND 2 / 5');
+  const flagText=await page.locator('#question').textContent();
+  const regionalIndicators=[...flagText].filter(ch=>{const n=ch.codePointAt(0);return n>=0x1F1E6&&n<=0x1F1FF});
+  expect(regionalIndicators).toHaveLength(2); // one country flag = two regional-indicator code points
   await page.waitForTimeout(700);
   await answerRound(page);
 
@@ -63,7 +66,7 @@ test('tap immediately after globe movement is rejected, settled tap is accepted'
 });
 
 test('deployed page boots and Play Today enters a daily round',async({page})=>{
-  await page.goto('https://paksue.github.io/sand_box/worldtap-next/daily-touch.html?integration=2',{waitUntil:'domcontentloaded'});
+  await page.goto('https://paksue.github.io/sand_box/worldtap-next/daily-touch.html?integration=3',{waitUntil:'domcontentloaded'});
   await page.evaluate(()=>localStorage.clear());
   await page.reload({waitUntil:'domcontentloaded'});
   await expect(page.locator('#playBtn')).toBeVisible();
