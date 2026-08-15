@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "updatedAt": "2026-08-15T13:27:23.764Z",
+  "version": 3,
+  "updatedAt": "2026-08-15T20:51:22.395Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -312,6 +312,19 @@
       "contentUpdatedAt": "2026-08-15T13:27:20.806Z",
       "doneUpdatedAt": "2026-08-15T12:34:28.443Z",
       "orderUpdatedAt": "2026-08-15T12:34:28.443Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "39783805-370f-4765-8eed-e07515b15885",
+      "title": "Swan castle puzzle frame",
+      "details": "",
+      "done": false,
+      "deleted": false,
+      "order": 19,
+      "createdAt": "2026-08-15T20:25:06.118Z",
+      "contentUpdatedAt": "2026-08-15T20:25:06.118Z",
+      "doneUpdatedAt": "2026-08-15T20:25:06.118Z",
+      "orderUpdatedAt": "2026-08-15T20:25:06.118Z",
       "deletedUpdatedAt": ""
     }
   ]
