@@ -1,3 +1,4 @@
+# One-shot patch: make WorldTap's resting globe scale to the viewport.
 from pathlib import Path
 p=Path('worldtap-next/daily-touch.html')
 s=p.read_text()
