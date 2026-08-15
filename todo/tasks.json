@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-14T23:21:42.163Z",
+  "updatedAt": "2026-08-15T03:51:00.483Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -265,12 +265,12 @@
     {
       "id": "ed4e5d15-52c2-4257-8da7-5d7176e1a7f9",
       "title": "Buy bed cushion twinsize",
-      "details": "Sue need original lower back",
+      "details": "Sue need original lower back, change to hard cushion like mom room",
       "done": false,
       "deleted": false,
       "order": 15,
       "createdAt": "2026-08-14T21:59:09.542Z",
-      "contentUpdatedAt": "2026-08-14T21:59:31.206Z",
+      "contentUpdatedAt": "2026-08-15T03:50:56.945Z",
       "doneUpdatedAt": "2026-08-14T21:59:09.542Z",
       "orderUpdatedAt": "2026-08-14T21:59:09.542Z",
       "deletedUpdatedAt": ""
