@@ -1,0 +1,24 @@
+name: Todo sync tests
+
+on:
+  push:
+    paths:
+      - 'todo/**'
+      - '.github/workflows/todo-sync-tests.yml'
+  pull_request:
+    paths:
+      - 'todo/**'
+      - '.github/workflows/todo-sync-tests.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Core regression tests
+        run: node --test todo/tests/sync-core.test.mjs
+      - name: Browser module syntax
+        run: node --check todo/sync-v3.mjs
