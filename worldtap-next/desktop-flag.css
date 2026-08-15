@@ -1,0 +1,45 @@
+/* Desktop-only tuning for visual Flag rounds. Phone layout remains unchanged. */
+@media (min-width: 900px) {
+  .topbar { padding: 16px 18px 0; }
+  .question-card.flag-round {
+    width: min(680px, 48vw);
+    padding: 16px 20px 14px;
+    border-radius: 22px;
+  }
+  .question-card.flag-round .eyebrow {
+    font-size: 11px;
+    letter-spacing: .11em;
+  }
+  .question-card.flag-round .flag-hero {
+    height: 176px;
+    margin: 10px 0 4px;
+  }
+  .question-card.flag-round .flag-hero img {
+    max-width: 290px;
+    max-height: 164px;
+  }
+  .question-card.flag-round .question {
+    font-size: 30px;
+    line-height: 1.02;
+    margin-top: 3px;
+  }
+  .question-card.flag-round .sub {
+    font-size: 12px;
+    margin-top: 7px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .question-card.flag-round {
+    width: min(760px, 46vw);
+  }
+  .question-card.flag-round .flag-hero {
+    height: 196px;
+  }
+  .question-card.flag-round .flag-hero img {
+    max-width: 330px;
+    max-height: 184px;
+  }
+  .question-card.flag-round .question { font-size: 34px; }
+  .question-card.flag-round .sub { font-size: 13px; }
+}
