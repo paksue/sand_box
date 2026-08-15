@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 
 test.use({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
 
-async function openFresh(page,url='http://127.0.0.1:8000/worldtap-next/daily-touch.html?integration=4'){
+async function openFresh(page,url='http://127.0.0.1:8000/worldtap-next/daily-touch.html?integration=5'){
   await page.goto(url,{waitUntil:'domcontentloaded'});
   await page.evaluate(()=>localStorage.clear());
   await page.reload({waitUntil:'domcontentloaded'});
@@ -12,6 +12,16 @@ async function openFresh(page,url='http://127.0.0.1:8000/worldtap-next/daily-tou
   await expect(page.locator('#roundLabel')).toHaveText('ROUND 1 / 5');
   await page.waitForFunction(()=>window.__WORLDTAP_TEST__?.map);
   await page.waitForTimeout(700);
+}
+
+async function expectLandRendered(page){
+  await page.waitForFunction(()=>{
+    const map=window.__WORLDTAP_TEST__?.map;
+    if(!map||!map.getLayer('land')) return false;
+    try{return map.queryRenderedFeatures({layers:['land']}).length>0}catch{return false}
+  },null,{timeout:15000});
+  const count=await page.evaluate(()=>window.__WORLDTAP_TEST__.map.queryRenderedFeatures({layers:['land']}).length);
+  expect(count).toBeGreaterThan(0);
 }
 
 async function answerRound(page){
@@ -27,8 +37,9 @@ async function expectExactlyOneFlag(page){
   expect(regionalIndicators).toHaveLength(2); // one country flag = two regional-indicator code points
 }
 
-test('Daily game saves two real rounds, renders one flag, and resumes on round three',async({page})=>{
+test('Daily game renders land, saves two real rounds, renders one flag, and resumes on round three',async({page})=>{
   await openFresh(page);
+  await expectLandRendered(page);
   await answerRound(page);
   await page.locator('#nextBtn').click();
   await expect(page.locator('#roundLabel')).toHaveText('ROUND 2 / 5');
@@ -69,8 +80,9 @@ test('tap immediately after globe movement is rejected, settled tap is accepted'
   expect(state.results).toHaveLength(1);
 });
 
-test('deployed page reaches round two with exactly one flag',async({page})=>{
-  await openFresh(page,'https://paksue.github.io/sand_box/worldtap-next/daily-touch.html?integration=4');
+test('deployed page renders countries and reaches round two with exactly one flag',async({page})=>{
+  await openFresh(page,'https://paksue.github.io/sand_box/worldtap-next/daily-touch.html?integration=5');
+  await expectLandRendered(page);
   await answerRound(page);
   await page.locator('#nextBtn').click();
   await expect(page.locator('#roundLabel')).toHaveText('ROUND 2 / 5');
