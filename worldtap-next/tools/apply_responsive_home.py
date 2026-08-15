@@ -1,0 +1,12 @@
+from pathlib import Path
+p=Path('worldtap-next/daily-touch.html')
+s=p.read_text()
+old="function start(){try{map=new maplibregl.Map({container:'map',style:style(),center:[18,14],zoom:.64,minZoom:.18,maxZoom:5"
+new="function homeZoom(){const w=window.innerWidth,h=window.innerHeight;if(w>=1500)return h>=820?1.55:1.42;if(w>=1100)return 1.34;if(w>=800)return .98;return .64}\nfunction start(){try{map=new maplibregl.Map({container:'map',style:style(),center:[18,14],zoom:homeZoom(),minZoom:.18,maxZoom:5"
+if old not in s: raise SystemExit('start zoom marker missing')
+s=s.replace(old,new,1)
+old2="if(reset)map.easeTo({center:[18,14],zoom:.64,duration:550})"
+new2="if(reset)map.easeTo({center:[18,14],zoom:homeZoom(),duration:550})"
+if old2 not in s: raise SystemExit('reset zoom marker missing')
+s=s.replace(old2,new2,1)
+p.write_text(s)
