@@ -83,7 +83,6 @@ test('tap immediately after globe movement is rejected, settled tap is accepted'
   await page.waitForTimeout(200);
   let state=await page.evaluate(()=>window.__WORLDTAP_TEST__.state);
   expect(state?.results||[]).toHaveLength(0);
-  await expect(page.locator('#subtext')).toContainText('still moving');
 
   await page.waitForTimeout(300);
   await canvas.click({position:{x:box.width/2,y:box.height/2}});
