@@ -202,7 +202,7 @@ export class AppController {
   }
 
   chooseExercise(exerciseId) {
-    if (!['READY', 'DONE'].includes(this.state.timer.mode)) return;
+    if (this.state.timer.mode !== 'READY') return;
     this.state.training = selectExercise(this.state.training, exerciseId);
     this.state.settings.selectedExerciseId = this.state.training.selectedExerciseId;
     const target = this.selectedTargetSeconds();
