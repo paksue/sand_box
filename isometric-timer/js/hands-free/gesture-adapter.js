@@ -5,6 +5,16 @@ const MEDIAPIPE_MODULE = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@$
 const MEDIAPIPE_WASM = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MEDIAPIPE_VERSION}/wasm`;
 const MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task';
 const SAMPLE_INTERVAL_MS = 120;
+const DIAGNOSTIC_MIN_INTERVAL_MS = 220;
+const DIAGNOSTIC_REPEAT_MS = 500;
+const NO_GESTURE_DELAY_MS = 420;
+
+function gestureDiagnostic(label, score) {
+  const percent = Math.max(0, Math.min(100, Math.round((Number(score) || 0) * 100)));
+  if (label === 'Open_Palm') return { key: `Open_Palm:${Math.round(percent / 5) * 5}`, text: `✋ Open Palm · ${percent}%` };
+  if (label === 'Thumb_Up') return { key: `Thumb_Up:${Math.round(percent / 5) * 5}`, text: `👍 Thumbs up · ${percent}%` };
+  return { key: 'none', text: 'No gesture' };
+}
 
 export class GestureAdapter {
   constructor({ onCandidate, onStatus, getMode }) {
@@ -16,6 +26,24 @@ export class GestureAdapter {
     this.recognizer = null;
     this.frameTimer = null;
     this.running = false;
+    this.lastDiagnosticAt = 0;
+    this.lastDiagnosticKey = '';
+    this.lastGestureSeenAt = 0;
+  }
+
+  reportDiagnostic(label, score, { force = false } = {}) {
+    const now = performance.now();
+    if (label) this.lastGestureSeenAt = now;
+    if (!label && !force && this.lastGestureSeenAt && now - this.lastGestureSeenAt < NO_GESTURE_DELAY_MS) return;
+
+    const diagnostic = gestureDiagnostic(label, score);
+    const elapsed = now - this.lastDiagnosticAt;
+    if (!force && elapsed < DIAGNOSTIC_MIN_INTERVAL_MS) return;
+    if (!force && diagnostic.key === this.lastDiagnosticKey && elapsed < DIAGNOSTIC_REPEAT_MS) return;
+
+    this.lastDiagnosticAt = now;
+    this.lastDiagnosticKey = diagnostic.key;
+    this.onStatus('ACTIVE', diagnostic.text);
   }
 
   async start() {
@@ -77,7 +105,7 @@ export class GestureAdapter {
     document.body.appendChild(this.video);
     await this.video.play();
     this.running = true;
-    this.onStatus('ACTIVE', 'Gestures ready: 👍 start · ✋ pause');
+    this.reportDiagnostic(null, 0, { force: true });
     this.loop();
   }
 
@@ -88,15 +116,18 @@ export class GestureAdapter {
         const result = this.recognizer.recognizeForVideo(this.video, performance.now());
         const category = result?.gestures?.[0]?.[0];
         if (category?.categoryName) {
+          const confidence = Number(category.score) || 0;
+          this.reportDiagnostic(category.categoryName, confidence);
           const intent = contextualGestureIntent(this.getMode(), category.categoryName);
           this.onCandidate({
             intent,
             source: 'gesture',
-            confidence: Number(category.score) || 0,
+            confidence,
             timestamp: Date.now(),
             rawLabel: category.categoryName
           });
         } else {
+          this.reportDiagnostic(null, 0);
           this.onCandidate({ intent: null, source: 'gesture', confidence: 0, timestamp: Date.now(), rawLabel: 'None' });
         }
       } catch {
@@ -119,6 +150,9 @@ export class GestureAdapter {
     this.video = null;
     try { this.recognizer?.close?.(); } catch { /* no-op */ }
     this.recognizer = null;
+    this.lastDiagnosticAt = 0;
+    this.lastDiagnosticKey = '';
+    this.lastGestureSeenAt = 0;
     this.onStatus('OFF', '');
   }
 }
