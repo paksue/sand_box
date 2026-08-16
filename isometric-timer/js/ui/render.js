@@ -114,7 +114,7 @@ function renderUtilities(elements, state) {
 
   const timerLocked = ['PREPARE', 'HOLD', 'PAUSED'].includes(state.timer.mode);
   elements.durationButton.disabled = timerLocked;
-  elements.exerciseButton.disabled = timerLocked;
+  elements.exerciseButton.disabled = state.timer.mode !== 'READY';
   elements.settingsButton.disabled = timerLocked;
   elements.handsFreeButton.disabled = ['PREPARE', 'HOLD'].includes(state.timer.mode);
 
