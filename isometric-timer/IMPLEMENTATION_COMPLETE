@@ -1,1 +1,1 @@
-Initial client-only implementation completed on 2026-08-15.
+Hold Timer V2 runtime implemented: modular timer, progression, local voice/gesture adapters, tests, PWA/offline shell.

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hold V2 Tests</title>
+  <style>
+    body { font-family: ui-monospace, monospace; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.5; }
+    .pass { color: green; } .fail { color: red; } pre { white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Hold V2 browser tests</h1>
+  <div id="results">Running…</div>
+  <script type="module">
+    import { runTimerMachineTests } from './timer-machine.test.js';
+    import { runProgressionTests } from './progression.test.js';
+    import { runCommandRouterTests } from './command-router.test.js';
+    import { runPersistenceTests } from './persistence.test.js';
+
+    const suites = [
+      ['timer-machine', runTimerMachineTests],
+      ['progression', runProgressionTests],
+      ['command-router + fake adapter', runCommandRouterTests],
+      ['persistence migration', runPersistenceTests]
+    ];
+    const output = [];
+    let failures = 0;
+    for (const [name, run] of suites) {
+      try {
+        await run();
+        output.push(`<div class="pass">PASS ${name}</div>`);
+      } catch (error) {
+        failures += 1;
+        output.push(`<div class="fail">FAIL ${name}<pre>${String(error?.stack || error)}</pre></div>`);
+      }
+    }
+    document.getElementById('results').innerHTML = `${output.join('')}<p><strong>${failures ? `${failures} suite(s) failed` : 'All suites passed'}</strong></p>`;
+    document.title = failures ? 'FAIL — Hold V2 Tests' : 'PASS — Hold V2 Tests';
+  </script>
+</body>
+</html>

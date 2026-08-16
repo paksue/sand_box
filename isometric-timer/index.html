@@ -6,500 +6,28 @@
   <meta name="theme-color" content="#07090d">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Hold 30">
-  <meta name="description" content="A focused, resilient timer for isometric holds.">
+  <meta name="apple-mobile-web-app-title" content="Hold">
+  <meta name="description" content="A focused, resilient, hands-free timer for isometric holds.">
   <link rel="manifest" href="./manifest.webmanifest">
-  <title>Isometric Hold Timer</title>
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #07090d;
-      --surface: #10141b;
-      --surface-strong: #151b24;
-      --line: rgba(255,255,255,.11);
-      --line-strong: rgba(255,255,255,.18);
-      --text: #f7fafc;
-      --muted: #9aa6b5;
-      --muted-2: #6f7b8a;
-      --accent: #6ee7b7;
-      --accent-strong: #34d399;
-      --warning: #f7c66a;
-      --danger: #f18c8c;
-      --shadow: 0 20px 70px rgba(0,0,0,.38);
-      --radius-xl: 34px;
-      --radius-lg: 24px;
-      --radius-md: 16px;
-      --ease: cubic-bezier(.2,.75,.25,1);
-    }
-
-    * { box-sizing: border-box; }
-
-    html, body { min-height: 100%; }
-
-    body {
-      margin: 0;
-      background:
-        radial-gradient(circle at 50% 22%, rgba(110,231,183,.065), transparent 32rem),
-        var(--bg);
-      color: var(--text);
-      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: geometricPrecision;
-      overscroll-behavior: none;
-    }
-
-    button, input { font: inherit; }
-    button { color: inherit; }
-
-    .app {
-      min-height: 100svh;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      width: min(100%, 760px);
-      margin: 0 auto;
-      padding:
-        max(18px, env(safe-area-inset-top))
-        clamp(18px, 5vw, 34px)
-        max(18px, env(safe-area-inset-bottom));
-    }
-
-    .topbar {
-      min-height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: .17em;
-      text-transform: uppercase;
-      user-select: none;
-    }
-
-    .brand-mark {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 22px rgba(110,231,183,.42);
-    }
-
-    .icon-button,
-    .utility-button,
-    .text-button {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.035);
-      min-height: 48px;
-      border-radius: 16px;
-      cursor: pointer;
-      transition: background 160ms var(--ease), border-color 160ms var(--ease), transform 160ms var(--ease);
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .icon-button:hover,
-    .utility-button:hover,
-    .text-button:hover { background: rgba(255,255,255,.065); border-color: var(--line-strong); }
-
-    .icon-button:active,
-    .utility-button:active,
-    .text-button:active,
-    .primary-action:active { transform: scale(.985); }
-
-    .icon-button:focus-visible,
-    .utility-button:focus-visible,
-    .text-button:focus-visible,
-    .primary-action:focus-visible,
-    .preset:focus-visible,
-    .custom-input:focus-visible {
-      outline: 3px solid rgba(110,231,183,.48);
-      outline-offset: 3px;
-    }
-
-    .icon-button {
-      display: inline-grid;
-      place-items: center;
-      width: 48px;
-      padding: 0;
-      color: var(--muted);
-      font-size: 20px;
-    }
-
-    .main {
-      min-height: 0;
-      display: grid;
-      place-items: center;
-      padding: clamp(16px, 3vh, 28px) 0;
-    }
-
-    .timer-panel {
-      width: 100%;
-      display: grid;
-      justify-items: center;
-      align-content: center;
-      gap: clamp(18px, 3.4vh, 30px);
-    }
-
-    .phase-block {
-      text-align: center;
-      min-height: 72px;
-      display: grid;
-      align-content: center;
-      gap: 7px;
-    }
-
-    .phase-label {
-      margin: 0;
-      font-size: clamp(15px, 3.4vw, 19px);
-      font-weight: 850;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-    }
-
-    .phase-caption {
-      margin: 0;
-      color: var(--muted);
-      font-size: clamp(14px, 3.1vw, 17px);
-      min-height: 1.45em;
-    }
-
-    .timer-dial {
-      --dial-size: min(72vw, 410px);
-      width: var(--dial-size);
-      aspect-ratio: 1;
-      position: relative;
-      display: grid;
-      place-items: center;
-      filter: drop-shadow(0 22px 55px rgba(0,0,0,.26));
-    }
-
-    .dial-svg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      transform: rotate(-90deg);
-      overflow: visible;
-    }
-
-    .dial-track,
-    .dial-progress {
-      fill: none;
-      stroke-width: 9;
-    }
-
-    .dial-track { stroke: rgba(255,255,255,.075); }
-
-    .dial-progress {
-      stroke: var(--accent);
-      stroke-linecap: round;
-      transition: stroke 180ms var(--ease);
-      filter: drop-shadow(0 0 11px rgba(110,231,183,.18));
-    }
-
-    .timer-panel[data-mode="DONE"] .dial-progress { stroke: var(--accent-strong); }
-    .timer-panel[data-mode="PAUSED"] .dial-progress { stroke: var(--warning); }
-
-    .dial-center {
-      display: grid;
-      justify-items: center;
-      align-content: center;
-      transform: translateY(-1px);
-      user-select: none;
-    }
-
-    .timer-number {
-      font-variant-numeric: tabular-nums lining-nums;
-      font-size: clamp(96px, 28vw, 180px);
-      line-height: .83;
-      font-weight: 820;
-      letter-spacing: -.055em;
-      min-width: 2.15ch;
-      text-align: center;
-    }
-
-    .timer-unit {
-      margin-top: 18px;
-      color: var(--muted-2);
-      font-size: 13px;
-      font-weight: 750;
-      letter-spacing: .16em;
-      text-transform: uppercase;
-    }
-
-    .status-line {
-      min-height: 28px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 680;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: currentColor;
-      opacity: .9;
-    }
-
-    .status-line[data-state="active"] { color: var(--accent); }
-    .status-line[data-state="warning"] { color: var(--warning); }
-    .status-line[data-state="idle"] { visibility: hidden; }
-
-    .actions {
-      width: min(100%, 420px);
-      display: grid;
-      gap: 12px;
-    }
-
-    .primary-action {
-      border: 0;
-      min-height: 68px;
-      border-radius: 20px;
-      background: var(--accent);
-      color: #062019;
-      font-size: 18px;
-      font-weight: 900;
-      letter-spacing: .075em;
-      text-transform: uppercase;
-      cursor: pointer;
-      box-shadow: 0 18px 45px rgba(52,211,153,.16);
-      transition: transform 160ms var(--ease), filter 160ms var(--ease), background 160ms var(--ease);
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .primary-action:hover { filter: brightness(1.04); }
-    .primary-action[data-kind="pause"] { background: #f3f5f7; color: #121720; box-shadow: none; }
-    .primary-action[data-kind="resume"] { background: var(--warning); color: #241904; box-shadow: none; }
-
-    .secondary-row {
-      min-height: 48px;
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .text-button {
-      min-width: 104px;
-      padding: 0 18px;
-      background: transparent;
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 750;
-    }
-
-    .text-button[hidden] { display: none; }
-
-    .utilities {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      padding-top: 8px;
-    }
-
-    .utility-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
-      min-height: 54px;
-      padding: 0 16px;
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 760;
-    }
-
-    .utility-button[disabled] {
-      cursor: default;
-      opacity: .38;
-    }
-
-    .utility-icon { font-size: 17px; line-height: 1; }
-    .utility-note { color: var(--muted-2); font-weight: 650; }
-
-    dialog {
-      width: min(calc(100vw - 28px), 520px);
-      border: 1px solid var(--line-strong);
-      border-radius: 28px;
-      background: #0d1117;
-      color: var(--text);
-      padding: 0;
-      box-shadow: var(--shadow);
-    }
-
-    dialog::backdrop {
-      background: rgba(0,0,0,.68);
-      backdrop-filter: blur(7px);
-    }
-
-    .sheet {
-      padding: 26px;
-      display: grid;
-      gap: 22px;
-    }
-
-    .sheet-header {
-      display: flex;
-      align-items: start;
-      justify-content: space-between;
-      gap: 20px;
-    }
-
-    .sheet-title { margin: 0; font-size: 22px; letter-spacing: -.02em; }
-    .sheet-copy { margin: 6px 0 0; color: var(--muted); line-height: 1.45; font-size: 14px; }
-
-    .preset-grid {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 8px;
-    }
-
-    .preset {
-      min-height: 54px;
-      border: 1px solid var(--line);
-      border-radius: 15px;
-      background: rgba(255,255,255,.035);
-      color: var(--text);
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .preset[aria-pressed="true"] {
-      border-color: rgba(110,231,183,.55);
-      background: rgba(110,231,183,.12);
-      color: var(--accent);
-    }
-
-    .custom-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
-      align-items: end;
-    }
-
-    .field-label {
-      display: grid;
-      gap: 8px;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 720;
-    }
-
-    .custom-input {
-      width: 100%;
-      min-height: 52px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: #090c11;
-      color: var(--text);
-      padding: 0 14px;
-      font-size: 17px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .apply-button {
-      min-height: 52px;
-      border: 0;
-      border-radius: 14px;
-      padding: 0 20px;
-      background: var(--accent);
-      color: #062019;
-      font-weight: 880;
-      cursor: pointer;
-    }
-
-    .sheet-footer {
-      border-top: 1px solid var(--line);
-      padding-top: 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .sr-only {
-      position: absolute !important;
-      width: 1px !important;
-      height: 1px !important;
-      padding: 0 !important;
-      margin: -1px !important;
-      overflow: hidden !important;
-      clip: rect(0,0,0,0) !important;
-      white-space: nowrap !important;
-      border: 0 !important;
-    }
-
-    @media (orientation: landscape) and (max-height: 560px) {
-      .app {
-        width: min(100%, 1000px);
-        grid-template-rows: auto 1fr;
-        padding-top: max(10px, env(safe-area-inset-top));
-        padding-bottom: max(10px, env(safe-area-inset-bottom));
-      }
-
-      .topbar { min-height: 40px; }
-      .main { padding: 2px 0 4px; }
-      .timer-panel {
-        grid-template-columns: minmax(250px, .9fr) minmax(270px, 1.1fr);
-        grid-template-rows: auto auto auto;
-        column-gap: clamp(24px, 6vw, 72px);
-        row-gap: 12px;
-        align-items: center;
-      }
-      .phase-block { grid-column: 1; grid-row: 1; min-height: 52px; align-self: end; }
-      .timer-dial { grid-column: 1; grid-row: 2 / span 2; --dial-size: min(58vh, 320px); }
-      .actions { grid-column: 2; grid-row: 2; align-self: end; }
-      .status-line { grid-column: 2; grid-row: 1; align-self: end; justify-self: start; }
-      .utilities { grid-column: 2; grid-row: 3; width: min(100%, 420px); align-self: start; padding-top: 0; }
-      .timer-number { font-size: min(25vh, 126px); }
-      .timer-unit { margin-top: 11px; }
-    }
-
-    @media (min-width: 700px) and (min-height: 760px) {
-      .timer-dial { --dial-size: min(50vh, 420px); }
-      .utilities { width: 420px; margin: 0 auto; }
-    }
-
-    @media (max-width: 480px) {
-      .preset-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
-      .sheet { padding: 22px 18px; }
-      .timer-dial { --dial-size: min(78vw, 370px); }
-      .timer-number { font-size: clamp(90px, 30vw, 150px); }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        scroll-behavior: auto !important;
-        transition-duration: 0.001ms !important;
-        animation-duration: 0.001ms !important;
-        animation-iteration-count: 1 !important;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="./styles/app.css">
+  <title>Hold — Isometric Timer</title>
 </head>
 <body>
   <div class="app" id="app">
     <header class="topbar">
-      <div class="brand" aria-label="Isometric hold timer">
+      <div class="brand" aria-label="Hold isometric timer">
         <span class="brand-mark" aria-hidden="true"></span>
-        Hold Timer
+        Hold
       </div>
       <button class="icon-button" id="settingsButton" type="button" aria-label="Timer settings" title="Timer settings">⋯</button>
     </header>
 
     <main class="main">
       <section class="timer-panel" id="timerPanel" data-mode="READY" aria-labelledby="phaseLabel">
+        <button class="exercise-button" id="exerciseButton" type="button" aria-label="Choose exercise">
+          <span id="exerciseName">Quick Hold</span><span aria-hidden="true">⌄</span>
+        </button>
+
         <div class="phase-block">
           <h1 class="phase-label" id="phaseLabel">Isometric Hold</h1>
           <p class="phase-caption" id="phaseCaption">Ready when you are</p>
@@ -516,9 +44,15 @@
           </div>
         </div>
 
-        <div class="status-line" id="wakeStatus" data-state="idle" aria-live="polite">
-          <span class="status-dot" aria-hidden="true"></span>
-          <span id="wakeStatusText">Screen awake</span>
+        <div class="status-stack" aria-label="Timer status">
+          <div class="status-line" id="wakeStatus" data-state="idle" aria-live="polite">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span id="wakeStatusText">Screen awake</span>
+          </div>
+          <div class="status-line" id="capabilityStatus" data-state="idle" aria-live="polite">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span id="capabilityStatusText">Hands-free off</span>
+          </div>
         </div>
 
         <div class="actions">
@@ -527,6 +61,18 @@
             <button class="text-button" id="resetButton" type="button" hidden>Reset</button>
           </div>
         </div>
+
+        <section class="feedback-panel" id="feedbackPanel" aria-labelledby="nextTarget" hidden>
+          <div>
+            <h2 id="nextTarget">How was that?</h2>
+            <p id="feedbackSummary">Choose one after the hold</p>
+          </div>
+          <div class="feedback-actions" aria-label="Rate the hold difficulty">
+            <button type="button" data-feedback="hard" aria-pressed="false">Too hard</button>
+            <button type="button" data-feedback="good" aria-pressed="false">Good</button>
+            <button type="button" data-feedback="easy" aria-pressed="false">Easy</button>
+          </div>
+        </section>
       </section>
     </main>
 
@@ -537,9 +83,15 @@
       </button>
       <button class="utility-button" id="durationButton" type="button">
         <span class="utility-icon" aria-hidden="true">◷</span>
-        <span><span id="durationLabel">30 sec</span> <span class="utility-note">hold</span></span>
+        <span id="durationLabel">30 sec</span>
+      </button>
+      <button class="utility-button" id="handsFreeButton" type="button" aria-pressed="false">
+        <span class="utility-icon" aria-hidden="true">◉</span>
+        <span>Hands-free</span>
       </button>
     </footer>
+
+    <div class="notice" id="notice" role="status" hidden></div>
   </div>
 
   <div class="sr-only" id="phaseAnnouncer" aria-live="assertive" aria-atomic="true"></div>
@@ -571,678 +123,62 @@
       </div>
 
       <div class="sheet-footer">
-        <span>Keyboard: Space = start/pause · R = reset</span>
-        <span id="installNote">Works offline after first load</span>
+        <span>Space = start/pause · R = reset</span>
+        <span>Works offline after first load</span>
       </div>
     </div>
   </dialog>
 
-  <script>
-  (() => {
-    'use strict';
-
-    const PREP_MS = 3000;
-    const STORAGE_KEY = 'isometric-hold-timer-v1';
-    const VALID_MODES = new Set(['READY', 'PREPARE', 'HOLD', 'PAUSED', 'DONE']);
-    const ACTIVE_MODES = new Set(['PREPARE', 'HOLD']);
-    const RING_RADIUS = 134;
-    const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
-
-    const defaults = {
-      version: 1,
-      mode: 'READY',
-      durationMs: 30000,
-      phaseEndAt: null,
-      pendingHoldMs: 0,
-      pausedHoldMs: 0,
-      soundEnabled: true,
-      resumePreparation: false
-    };
-
-    const els = {
-      timerPanel: document.getElementById('timerPanel'),
-      phaseLabel: document.getElementById('phaseLabel'),
-      phaseCaption: document.getElementById('phaseCaption'),
-      timerNumber: document.getElementById('timerNumber'),
-      timerUnit: document.getElementById('timerUnit'),
-      progressCircle: document.getElementById('progressCircle'),
-      mainAction: document.getElementById('mainAction'),
-      resetButton: document.getElementById('resetButton'),
-      soundButton: document.getElementById('soundButton'),
-      soundIcon: document.getElementById('soundIcon'),
-      soundLabel: document.getElementById('soundLabel'),
-      durationButton: document.getElementById('durationButton'),
-      durationLabel: document.getElementById('durationLabel'),
-      wakeStatus: document.getElementById('wakeStatus'),
-      wakeStatusText: document.getElementById('wakeStatusText'),
-      phaseAnnouncer: document.getElementById('phaseAnnouncer'),
-      settingsButton: document.getElementById('settingsButton'),
-      settingsDialog: document.getElementById('settingsDialog'),
-      closeSettingsButton: document.getElementById('closeSettingsButton'),
-      presetGrid: document.getElementById('presetGrid'),
-      customSeconds: document.getElementById('customSeconds'),
-      applyCustomButton: document.getElementById('applyCustomButton')
-    };
-
-    let state = loadState();
-    let perfDeadline = null;
-    let wakeLock = null;
-    let wakeState = 'idle';
-    let audioContext = null;
-    let scheduledAudio = [];
-    let audioGenerationGain = null;
-    let lastModeRendered = null;
-    let rafId = null;
-
-    els.progressCircle.style.strokeDasharray = `${RING_CIRCUMFERENCE} ${RING_CIRCUMFERENCE}`;
-    els.progressCircle.style.strokeDashoffset = String(RING_CIRCUMFERENCE);
-
-    function clamp(value, min, max) {
-      return Math.min(max, Math.max(min, value));
-    }
-
-    function normalizeState(raw) {
-      if (!raw || typeof raw !== 'object') return { ...defaults };
-      const next = { ...defaults, ...raw };
-      if (!VALID_MODES.has(next.mode)) next.mode = 'READY';
-      next.durationMs = clamp(Number(next.durationMs) || defaults.durationMs, 5000, 300000);
-      next.soundEnabled = next.soundEnabled !== false;
-      next.phaseEndAt = Number.isFinite(Number(next.phaseEndAt)) ? Number(next.phaseEndAt) : null;
-      next.pendingHoldMs = clamp(Number(next.pendingHoldMs) || 0, 0, 300000);
-      next.pausedHoldMs = clamp(Number(next.pausedHoldMs) || 0, 0, 300000);
-      next.resumePreparation = Boolean(next.resumePreparation);
-      return next;
-    }
-
-    function loadState() {
-      try {
-        return normalizeState(JSON.parse(localStorage.getItem(STORAGE_KEY)));
-      } catch {
-        return { ...defaults };
-      }
-    }
-
-    function persist() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      } catch {
-        // The timer still works if storage is unavailable.
-      }
-    }
-
-    function setPerfDeadlineFromWallClock() {
-      if (ACTIVE_MODES.has(state.mode) && Number.isFinite(state.phaseEndAt)) {
-        perfDeadline = performance.now() + Math.max(0, state.phaseEndAt - Date.now());
-      } else {
-        perfDeadline = null;
-      }
-    }
-
-    function activeRemainingMs() {
-      if (!ACTIVE_MODES.has(state.mode) || !Number.isFinite(state.phaseEndAt)) return 0;
-      if (document.visibilityState === 'visible' && Number.isFinite(perfDeadline)) {
-        return Math.max(0, perfDeadline - performance.now());
-      }
-      return Math.max(0, state.phaseEndAt - Date.now());
-    }
-
-    function transitionToDone({ recovered = false } = {}) {
-      const previous = state.mode;
-      state.mode = 'DONE';
-      state.phaseEndAt = null;
-      state.pendingHoldMs = 0;
-      state.pausedHoldMs = 0;
-      state.resumePreparation = false;
-      perfDeadline = null;
-      persist();
-      releaseWakeLock();
-      if (!recovered && previous !== 'DONE') {
-        fireCompletionFeedback();
-      }
-    }
-
-    function reconcileWithWallClock({ recovered = false } = {}) {
-      const now = Date.now();
-      let changed = false;
-
-      if (state.mode === 'PREPARE' && Number.isFinite(state.phaseEndAt)) {
-        if (now >= state.phaseEndAt) {
-          const holdEndAt = state.phaseEndAt + state.pendingHoldMs;
-          if (now >= holdEndAt) {
-            transitionToDone({ recovered });
-            changed = true;
-          } else {
-            state.mode = 'HOLD';
-            state.phaseEndAt = holdEndAt;
-            state.pendingHoldMs = 0;
-            state.resumePreparation = false;
-            persist();
-            changed = true;
-          }
-        }
-      } else if (state.mode === 'HOLD' && Number.isFinite(state.phaseEndAt) && now >= state.phaseEndAt) {
-        transitionToDone({ recovered });
-        changed = true;
-      }
-
-      if (changed || ACTIVE_MODES.has(state.mode)) setPerfDeadlineFromWallClock();
-      return changed;
-    }
-
-    function startPreparation(holdMs, isResume = false) {
-      const now = Date.now();
-      state.mode = 'PREPARE';
-      state.phaseEndAt = now + PREP_MS;
-      state.pendingHoldMs = clamp(holdMs, 0, 300000);
-      state.pausedHoldMs = 0;
-      state.resumePreparation = isResume;
-      persist();
-      setPerfDeadlineFromWallClock();
-      requestWakeLock();
-      scheduleAudioForCurrentState({ freshPreparation: true });
-      render(true);
-    }
-
-    async function startHold() {
-      await armAudioFromGesture();
-      startPreparation(state.durationMs, false);
-    }
-
-    function pauseHold() {
-      reconcileWithWallClock();
-      if (state.mode !== 'HOLD') return;
-      const remaining = Math.max(0, activeRemainingMs());
-      if (remaining <= 0) {
-        transitionToDone();
-        render(true);
-        return;
-      }
-
-      state.mode = 'PAUSED';
-      state.pausedHoldMs = remaining;
-      state.phaseEndAt = null;
-      state.pendingHoldMs = 0;
-      state.resumePreparation = false;
-      perfDeadline = null;
-      persist();
-      cancelScheduledAudio();
-      releaseWakeLock();
-      render(true);
-    }
-
-    async function resumeHold() {
-      if (state.mode !== 'PAUSED' || state.pausedHoldMs <= 0) return;
-      const remaining = state.pausedHoldMs;
-      await armAudioFromGesture();
-      startPreparation(remaining, true);
-    }
-
-    function resetTimer() {
-      state.mode = 'READY';
-      state.phaseEndAt = null;
-      state.pendingHoldMs = 0;
-      state.pausedHoldMs = 0;
-      state.resumePreparation = false;
-      perfDeadline = null;
-      persist();
-      cancelScheduledAudio();
-      releaseWakeLock();
-      render(true);
-    }
-
-    async function repeatHold() {
-      await armAudioFromGesture();
-      startPreparation(state.durationMs, false);
-    }
-
-    function setDurationSeconds(seconds) {
-      const safeSeconds = clamp(Math.round(Number(seconds) || 30), 5, 300);
-      state.durationMs = safeSeconds * 1000;
-      persist();
-      els.customSeconds.value = String(safeSeconds);
-      render(true);
-      updatePresetSelection();
-    }
-
-    async function requestWakeLock() {
-      if (!ACTIVE_MODES.has(state.mode)) return;
-      if (document.visibilityState !== 'visible') return;
-
-      if (!('wakeLock' in navigator)) {
-        wakeState = 'unsupported';
-        renderWakeStatus();
-        return;
-      }
-
-      if (wakeLock && !wakeLock.released) {
-        wakeState = 'active';
-        renderWakeStatus();
-        return;
-      }
-
-      try {
-        wakeLock = await navigator.wakeLock.request('screen');
-        wakeState = 'active';
-        wakeLock.addEventListener('release', () => {
-          wakeLock = null;
-          if (ACTIVE_MODES.has(state.mode)) {
-            wakeState = 'released';
-            renderWakeStatus();
-          } else {
-            wakeState = 'idle';
-            renderWakeStatus();
-          }
-        }, { once: true });
-      } catch {
-        wakeLock = null;
-        wakeState = 'failed';
-      }
-      renderWakeStatus();
-    }
-
-    async function releaseWakeLock() {
-      const lock = wakeLock;
-      wakeLock = null;
-      wakeState = 'idle';
-      renderWakeStatus();
-      if (lock && !lock.released) {
-        try { await lock.release(); } catch { /* no-op */ }
-      }
-    }
-
-    function renderWakeStatus() {
-      const active = ACTIVE_MODES.has(state.mode);
-      if (!active) {
-        els.wakeStatus.dataset.state = 'idle';
-        els.wakeStatusText.textContent = 'Screen awake';
-        return;
-      }
-
-      if (wakeState === 'active') {
-        els.wakeStatus.dataset.state = 'active';
-        els.wakeStatusText.textContent = 'Screen awake';
-      } else {
-        els.wakeStatus.dataset.state = 'warning';
-        els.wakeStatusText.textContent = 'Keep screen on';
-      }
-    }
-
-    function createAudioContext() {
-      if (!audioContext) {
-        const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContextCtor) return null;
-        audioContext = new AudioContextCtor();
-      }
-      return audioContext;
-    }
-
-    async function armAudioFromGesture() {
-      if (!state.soundEnabled) return false;
-      const context = createAudioContext();
-      if (!context) return false;
-      try {
-        if (context.state === 'suspended') await context.resume();
-      } catch {
-        return false;
-      }
-      return context.state === 'running';
-    }
-
-    function cancelScheduledAudio() {
-      if (audioGenerationGain && audioContext) {
-        try {
-          const now = audioContext.currentTime;
-          audioGenerationGain.gain.cancelScheduledValues(now);
-          audioGenerationGain.gain.setValueAtTime(0, now);
-        } catch { /* no-op */ }
-      }
-      for (const node of scheduledAudio) {
-        try { node.stop(); } catch { /* already ended */ }
-        try { node.disconnect(); } catch { /* no-op */ }
-      }
-      scheduledAudio = [];
-      audioGenerationGain = null;
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-    }
-
-    function scheduleTone(offsetSeconds, frequency, durationSeconds = 0.08, volume = 0.17) {
-      if (!audioContext || audioContext.state !== 'running' || !audioGenerationGain) return;
-      const startAt = audioContext.currentTime + Math.max(0.015, offsetSeconds);
-      const oscillator = audioContext.createOscillator();
-      const gain = audioContext.createGain();
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(frequency, startAt);
-      gain.gain.setValueAtTime(0.0001, startAt);
-      gain.gain.exponentialRampToValueAtTime(Math.max(0.001, volume), startAt + 0.012);
-      gain.gain.exponentialRampToValueAtTime(0.0001, startAt + durationSeconds);
-      oscillator.connect(gain);
-      gain.connect(audioGenerationGain);
-      oscillator.start(startAt);
-      oscillator.stop(startAt + durationSeconds + 0.02);
-      scheduledAudio.push(oscillator);
-      oscillator.addEventListener('ended', () => {
-        scheduledAudio = scheduledAudio.filter(node => node !== oscillator);
-        try { oscillator.disconnect(); } catch { /* no-op */ }
-        try { gain.disconnect(); } catch { /* no-op */ }
-      }, { once: true });
-    }
-
-    function scheduleHoldCountdown(holdRemainingMs, offsetSeconds = 0) {
-      const totalSeconds = Math.max(0, holdRemainingMs / 1000);
-      for (let remaining = 5; remaining >= 1; remaining -= 1) {
-        const at = totalSeconds - remaining;
-        if (at >= 0.04) scheduleTone(offsetSeconds + at, 760, 0.065, 0.13);
-      }
-      scheduleTone(offsetSeconds + totalSeconds, 1050, 0.34, 0.22);
-      scheduleTone(offsetSeconds + totalSeconds + 0.18, 1320, 0.24, 0.13);
-    }
-
-    function scheduleAudioForCurrentState({ freshPreparation = false } = {}) {
-      cancelScheduledAudio();
-      if (!state.soundEnabled || !audioContext || audioContext.state !== 'running') return;
-
-      audioGenerationGain = audioContext.createGain();
-      audioGenerationGain.gain.setValueAtTime(1, audioContext.currentTime);
-      audioGenerationGain.connect(audioContext.destination);
-
-      if (state.mode === 'PREPARE') {
-        const prepRemainingMs = Math.max(0, state.phaseEndAt - Date.now());
-        const prepOffset = prepRemainingMs / 1000;
-
-        if (freshPreparation && prepRemainingMs > 2500) {
-          scheduleTone(0, 520, 0.075, 0.12);
-          scheduleTone(1, 580, 0.075, 0.12);
-          scheduleTone(2, 650, 0.075, 0.13);
-        }
-
-        scheduleTone(prepOffset, 920, 0.18, 0.19);
-        scheduleHoldCountdown(state.pendingHoldMs, prepOffset);
-      } else if (state.mode === 'HOLD') {
-        scheduleHoldCountdown(Math.max(0, state.phaseEndAt - Date.now()), 0);
-      }
-    }
-
-    function fireCompletionFeedback() {
-      if ('vibrate' in navigator) {
-        try { navigator.vibrate([70, 50, 140]); } catch { /* optional */ }
-      }
-    }
-
-    async function handleSoundButton() {
-      if (!state.soundEnabled) {
-        state.soundEnabled = true;
-        persist();
-        await armAudioFromGesture();
-        scheduleAudioForCurrentState();
-      } else if (!audioContext || audioContext.state !== 'running') {
-        await armAudioFromGesture();
-        scheduleAudioForCurrentState();
-      } else {
-        state.soundEnabled = false;
-        persist();
-        cancelScheduledAudio();
-      }
-      renderSoundControl();
-    }
-
-    function renderSoundControl() {
-      const armed = Boolean(audioContext && audioContext.state === 'running');
-      els.soundButton.setAttribute('aria-pressed', String(state.soundEnabled));
-
-      if (!state.soundEnabled) {
-        els.soundIcon.textContent = '×';
-        els.soundLabel.textContent = 'Sound off';
-      } else if (ACTIVE_MODES.has(state.mode) && !armed) {
-        els.soundIcon.textContent = '♪';
-        els.soundLabel.textContent = 'Tap for sound';
-      } else {
-        els.soundIcon.textContent = '♪';
-        els.soundLabel.textContent = 'Sound on';
-      }
-    }
-
-    function currentDisplayData() {
-      const durationSeconds = Math.round(state.durationMs / 1000);
-
-      if (state.mode === 'PREPARE') {
-        const remaining = activeRemainingMs();
-        return {
-          label: state.resumePreparation ? 'Resume in' : 'Get Ready',
-          caption: 'Get in position',
-          number: Math.max(1, Math.ceil(remaining / 1000)),
-          unit: '',
-          progress: clamp(1 - remaining / PREP_MS, 0, 1)
-        };
-      }
-
-      if (state.mode === 'HOLD') {
-        const remaining = activeRemainingMs();
-        return {
-          label: 'Hold',
-          caption: 'Keep breathing',
-          number: Math.max(0, Math.ceil(remaining / 1000)),
-          unit: 'seconds',
-          progress: clamp(1 - remaining / state.durationMs, 0, 1)
-        };
-      }
-
-      if (state.mode === 'PAUSED') {
-        const remaining = state.pausedHoldMs;
-        return {
-          label: 'Paused',
-          caption: `Paused with ${Math.max(1, Math.ceil(remaining / 1000))} seconds left`,
-          number: Math.max(1, Math.ceil(remaining / 1000)),
-          unit: 'seconds',
-          progress: clamp(1 - remaining / state.durationMs, 0, 1)
-        };
-      }
-
-      if (state.mode === 'DONE') {
-        return {
-          label: 'Done',
-          caption: `${durationSeconds} second hold complete`,
-          number: '✓',
-          unit: 'complete',
-          progress: 1
-        };
-      }
-
-      return {
-        label: 'Isometric Hold',
-        caption: 'Ready when you are',
-        number: durationSeconds,
-        unit: 'seconds',
-        progress: 0
-      };
-    }
-
-    function renderMainAction() {
-      if (state.mode === 'READY') {
-        els.mainAction.textContent = 'Start';
-        els.mainAction.dataset.kind = 'start';
-        els.resetButton.hidden = true;
-      } else if (state.mode === 'PREPARE') {
-        els.mainAction.textContent = 'Cancel';
-        els.mainAction.dataset.kind = 'pause';
-        els.resetButton.hidden = true;
-      } else if (state.mode === 'HOLD') {
-        els.mainAction.textContent = 'Pause';
-        els.mainAction.dataset.kind = 'pause';
-        els.resetButton.hidden = false;
-        els.resetButton.textContent = 'Reset';
-      } else if (state.mode === 'PAUSED') {
-        els.mainAction.textContent = 'Resume';
-        els.mainAction.dataset.kind = 'resume';
-        els.resetButton.hidden = false;
-        els.resetButton.textContent = 'Reset';
-      } else {
-        els.mainAction.textContent = 'Do Again';
-        els.mainAction.dataset.kind = 'start';
-        els.resetButton.hidden = false;
-        els.resetButton.textContent = 'Reset';
-      }
-    }
-
-    function renderWakeAndUtilities() {
-      renderWakeStatus();
-      renderSoundControl();
-      els.durationLabel.textContent = `${Math.round(state.durationMs / 1000)} sec`;
-      const locked = ACTIVE_MODES.has(state.mode) || state.mode === 'PAUSED';
-      els.durationButton.disabled = locked;
-      els.settingsButton.disabled = locked;
-      els.settingsButton.style.opacity = locked ? '.38' : '1';
-    }
-
-    function render(force = false) {
-      reconcileWithWallClock({ recovered: false });
-      const display = currentDisplayData();
-      const modeChanged = state.mode !== lastModeRendered;
-
-      els.timerPanel.dataset.mode = state.mode;
-      els.phaseLabel.textContent = display.label;
-      els.phaseCaption.textContent = display.caption;
-      els.timerNumber.textContent = String(display.number);
-      els.timerUnit.textContent = display.unit;
-      els.progressCircle.style.strokeDashoffset = String(RING_CIRCUMFERENCE * (1 - display.progress));
-
-      if (force || modeChanged) {
-        renderMainAction();
-        renderWakeAndUtilities();
-      }
-
-      if (modeChanged) {
-        els.phaseAnnouncer.textContent = display.label;
-        lastModeRendered = state.mode;
-      }
-    }
-
-    function animationLoop() {
-      render(false);
-      rafId = requestAnimationFrame(animationLoop);
-    }
-
-    function updatePresetSelection() {
-      const seconds = Math.round(state.durationMs / 1000);
-      els.presetGrid.querySelectorAll('[data-seconds]').forEach(button => {
-        button.setAttribute('aria-pressed', String(Number(button.dataset.seconds) === seconds));
-      });
-    }
-
-    function openSettings() {
-      if (ACTIVE_MODES.has(state.mode) || state.mode === 'PAUSED') return;
-      updatePresetSelection();
-      els.customSeconds.value = String(Math.round(state.durationMs / 1000));
-      if (typeof els.settingsDialog.showModal === 'function') {
-        els.settingsDialog.showModal();
-      } else {
-        els.settingsDialog.setAttribute('open', '');
-      }
-    }
-
-    function closeSettings() {
-      if (typeof els.settingsDialog.close === 'function') els.settingsDialog.close();
-      else els.settingsDialog.removeAttribute('open');
-    }
-
-    async function handleMainAction() {
-      if (state.mode === 'READY') return startHold();
-      if (state.mode === 'PREPARE') return resetTimer();
-      if (state.mode === 'HOLD') return pauseHold();
-      if (state.mode === 'PAUSED') return resumeHold();
-      if (state.mode === 'DONE') return repeatHold();
-    }
-
-    els.mainAction.addEventListener('click', handleMainAction);
-    els.resetButton.addEventListener('click', resetTimer);
-    els.soundButton.addEventListener('click', handleSoundButton);
-    els.durationButton.addEventListener('click', openSettings);
-    els.settingsButton.addEventListener('click', openSettings);
-    els.closeSettingsButton.addEventListener('click', closeSettings);
-
-    els.settingsDialog.addEventListener('click', event => {
-      if (event.target === els.settingsDialog) closeSettings();
-    });
-
-    els.presetGrid.addEventListener('click', event => {
-      const button = event.target.closest('[data-seconds]');
-      if (!button) return;
-      setDurationSeconds(Number(button.dataset.seconds));
-      closeSettings();
-    });
-
-    els.applyCustomButton.addEventListener('click', () => {
-      setDurationSeconds(els.customSeconds.value);
-      closeSettings();
-    });
-
-    els.customSeconds.addEventListener('keydown', event => {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        setDurationSeconds(els.customSeconds.value);
-        closeSettings();
-      }
-    });
-
-    document.addEventListener('keydown', event => {
-      if (event.repeat) return;
-      if (els.settingsDialog.open) return;
-      if (event.target instanceof HTMLInputElement) return;
-
-      if (event.code === 'Space') {
-        event.preventDefault();
-        handleMainAction();
-      } else if (event.key.toLowerCase() === 'r' && state.mode !== 'READY') {
-        event.preventDefault();
-        resetTimer();
-      }
-    });
-
-    document.addEventListener('visibilitychange', async () => {
-      if (document.visibilityState === 'hidden') {
-        perfDeadline = null;
-        persist();
-        return;
-      }
-
-      const oldMode = state.mode;
-      reconcileWithWallClock({ recovered: true });
-      setPerfDeadlineFromWallClock();
-
-      if (ACTIVE_MODES.has(state.mode)) {
-        await requestWakeLock();
-        if (state.soundEnabled && audioContext && audioContext.state === 'running') {
-          scheduleAudioForCurrentState();
-        }
-      }
-
-      if (oldMode !== state.mode) render(true);
-      else render(false);
-    });
-
-    window.addEventListener('pageshow', async () => {
-      reconcileWithWallClock({ recovered: true });
-      setPerfDeadlineFromWallClock();
-      if (ACTIVE_MODES.has(state.mode)) await requestWakeLock();
-      render(true);
-    });
-
-    window.addEventListener('beforeunload', persist);
-
-    reconcileWithWallClock({ recovered: true });
-    setPerfDeadlineFromWallClock();
-    updatePresetSelection();
-    render(true);
-    if (ACTIVE_MODES.has(state.mode)) requestWakeLock();
-    animationLoop();
-
-    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {
-          // Offline support is optional; core timer remains fully functional.
-        });
-      }, { once: true });
-    }
-  })();
-  </script>
+  <dialog id="exerciseDialog" aria-labelledby="exerciseTitle">
+    <div class="sheet">
+      <div class="sheet-header">
+        <div>
+          <h2 class="sheet-title" id="exerciseTitle">Choose a hold</h2>
+          <p class="sheet-copy">Quick Hold stays simple. Named exercises remember their target and best time.</p>
+        </div>
+        <button class="icon-button" id="closeExerciseButton" type="button" aria-label="Close exercises">×</button>
+      </div>
+      <div class="exercise-list" id="exerciseList"></div>
+    </div>
+  </dialog>
+
+  <dialog id="handsFreeDialog" aria-labelledby="handsFreeTitle">
+    <div class="sheet">
+      <div class="sheet-header">
+        <div>
+          <h2 class="sheet-title" id="handsFreeTitle">Hands-free controls</h2>
+          <p class="sheet-copy">Optional controls load only when you turn them on. Touch controls always keep working.</p>
+        </div>
+        <button class="icon-button" id="closeHandsFreeButton" type="button" aria-label="Close hands-free controls">×</button>
+      </div>
+
+      <div class="capability-list">
+        <label class="capability-row">
+          <span class="capability-copy">
+            <strong>Voice</strong>
+            <small>Say “Start”, “Pause”, “Resume”, or “Again”. Local Whisper model.</small>
+            <span class="capability-state" id="voiceStatus" data-state="off">Off</span>
+          </span>
+          <span class="switch"><input id="voiceToggle" type="checkbox"><span aria-hidden="true"></span></span>
+        </label>
+
+        <label class="capability-row">
+          <span class="capability-copy">
+            <strong>Hand gestures</strong>
+            <small>Hold 👍 to start/resume. Hold ✋ to pause.</small>
+            <span class="capability-state" id="gestureStatus" data-state="off">Off</span>
+          </span>
+          <span class="switch"><input id="gestureToggle" type="checkbox"><span aria-hidden="true"></span></span>
+        </label>
+      </div>
+
+      <div class="privacy-note">
+        <strong>Designed for local processing.</strong>
+        <p>Hold does not store or upload microphone audio, camera frames, transcripts, or hand landmarks. Optional model files are downloaded only when enabled. MediaPipe processes image input on-device; its package may send library performance/usage metrics to Google as described in MediaPipe's privacy notice.</p>
+      </div>
+    </div>
+  </dialog>
+
+  <script type="module" src="./js/main.js"></script>
 </body>
 </html>

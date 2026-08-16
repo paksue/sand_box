@@ -1,12 +1,11 @@
 {
-  "name": "Isometric Hold Timer",
-  "short_name": "Hold 30",
-  "description": "A focused, resilient timer for isometric holds.",
+  "name": "Hold — Isometric Timer",
+  "short_name": "Hold",
+  "description": "A focused, resilient, hands-free timer for isometric holds.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#07090d",
   "theme_color": "#07090d",
-  "orientation": "any",
-  "categories": ["fitness", "health", "utilities"]
+  "orientation": "any"
 }
