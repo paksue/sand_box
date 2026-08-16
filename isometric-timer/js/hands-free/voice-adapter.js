@@ -85,19 +85,25 @@ export class VoiceAdapter {
       throw error;
     }
 
-    const AudioContextCtor = globalThis.AudioContext || globalThis.webkitAudioContext;
-    if (!AudioContextCtor) throw new Error('Web Audio is unavailable.');
-    this.context = new AudioContextCtor();
-    if (this.context.state === 'suspended') await this.context.resume();
-    this.source = this.context.createMediaStreamSource(this.stream);
-    this.processor = this.context.createScriptProcessor(4096, 1, 1);
-    this.silenceGain = this.context.createGain();
-    this.silenceGain.gain.value = 0;
-    this.processor.onaudioprocess = (event) => this.capture(event.inputBuffer.getChannelData(0));
-    this.source.connect(this.processor);
-    this.processor.connect(this.silenceGain);
-    this.silenceGain.connect(this.context.destination);
-    this.running = true;
+    try {
+      const AudioContextCtor = globalThis.AudioContext || globalThis.webkitAudioContext;
+      if (!AudioContextCtor) throw new Error('Web Audio is unavailable.');
+      this.context = new AudioContextCtor();
+      if (this.context.state === 'suspended') await this.context.resume();
+      this.source = this.context.createMediaStreamSource(this.stream);
+      this.processor = this.context.createScriptProcessor(4096, 1, 1);
+      this.silenceGain = this.context.createGain();
+      this.silenceGain.gain.value = 0;
+      this.processor.onaudioprocess = (event) => this.capture(event.inputBuffer.getChannelData(0));
+      this.source.connect(this.processor);
+      this.processor.connect(this.silenceGain);
+      this.silenceGain.connect(this.context.destination);
+      this.running = true;
+    } catch (error) {
+      await this.stop(true);
+      this.onStatus('ERROR', 'Voice capture could not start.');
+      throw error;
+    }
   }
 
   capture(frame) {
