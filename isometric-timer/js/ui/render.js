@@ -19,6 +19,8 @@ export function collectElements() {
     wakeStatusText: q('wakeStatusText'),
     capabilityStatus: q('capabilityStatus'),
     capabilityStatusText: q('capabilityStatusText'),
+    gestureDebug: q('gestureDebug'),
+    gestureDebugText: q('gestureDebugText'),
     soundButton: q('soundButton'),
     soundIcon: q('soundIcon'),
     soundLabel: q('soundLabel'),
@@ -92,15 +94,26 @@ function renderWake(elements, state) {
 }
 
 function renderCapabilities(elements, state) {
+  const voiceActive = state.handsFree.voice.status === 'ACTIVE';
+  const gestureActive = state.handsFree.gesture.status === 'ACTIVE';
   const active = [];
-  if (state.handsFree.voice.status === 'ACTIVE') active.push('Voice');
-  if (state.handsFree.gesture.status === 'ACTIVE') active.push('Gestures');
+  if (voiceActive) active.push('Voice');
+  if (gestureActive) active.push('Gestures');
+
   if (!active.length) {
     elements.capabilityStatus.dataset.state = 'idle';
     elements.capabilityStatusText.textContent = 'Hands-free off';
   } else {
     elements.capabilityStatus.dataset.state = 'active';
     elements.capabilityStatusText.textContent = `${active.join(' + ')} ready`;
+  }
+
+  if (elements.gestureDebug && elements.gestureDebugText) {
+    elements.gestureDebug.hidden = !gestureActive;
+    elements.gestureDebug.dataset.state = gestureActive ? 'active' : 'idle';
+    elements.gestureDebugText.textContent = gestureActive
+      ? (state.handsFree.gesture.message || 'No gesture')
+      : '';
   }
 }
 
