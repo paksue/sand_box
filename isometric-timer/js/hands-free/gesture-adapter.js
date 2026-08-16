@@ -35,7 +35,10 @@ export class GestureAdapter {
         minHandPresenceConfidence: 0.55,
         minTrackingConfidence: 0.5,
         cannedGesturesClassifierOptions: {
-          scoreThreshold: 0.65,
+          // Let the app-level IntentGate apply the stricter action thresholds.
+          // Keeping this classifier floor modest prevents Open_Palm from disappearing
+          // before the temporal gate can tolerate a brief confidence dip.
+          scoreThreshold: 0.55,
           categoryAllowlist: ['Thumb_Up', 'Open_Palm']
         }
       });
