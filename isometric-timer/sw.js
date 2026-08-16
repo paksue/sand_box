@@ -1,4 +1,4 @@
-const CACHE = 'hold-core-v2.0.0';
+const CACHE = 'hold-core-v2.0.1';
 const CORE = [
   './',
   './index.html',
