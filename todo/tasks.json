@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-08-17T16:43:21.880Z",
+  "updatedAt": "2026-08-17T18:17:53.111Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -60,11 +60,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 6,
+      "order": 5,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "orderUpdatedAt": "2026-08-03T15:28:50.898Z",
+      "orderUpdatedAt": "2026-08-17T18:17:28.246Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
@@ -86,11 +86,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 8,
+      "order": 9,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "orderUpdatedAt": "2026-08-14T17:43:51.015Z",
+      "orderUpdatedAt": "2026-08-17T18:17:45.645Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
@@ -112,11 +112,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 9,
+      "order": 10,
       "createdAt": "2026-08-02T20:30:27.237Z",
       "contentUpdatedAt": "2026-08-02T20:30:27.237Z",
       "doneUpdatedAt": "2026-08-02T20:30:27.237Z",
-      "orderUpdatedAt": "2026-08-14T17:43:51.015Z",
+      "orderUpdatedAt": "2026-08-17T18:17:45.645Z",
       "deletedUpdatedAt": "2026-08-02T21:10:00.000Z"
     },
     {
@@ -164,11 +164,11 @@
       "details": "Science benefits teen edition would listen",
       "done": false,
       "deleted": false,
-      "order": 5,
+      "order": 6,
       "createdAt": "2026-08-03T11:29:50.565Z",
       "contentUpdatedAt": "2026-08-15T12:04:35.884Z",
       "doneUpdatedAt": "2026-08-03T11:29:50.565Z",
-      "orderUpdatedAt": "2026-08-03T21:37:33.783Z",
+      "orderUpdatedAt": "2026-08-17T18:17:28.246Z",
       "deletedUpdatedAt": ""
     },
     {
@@ -177,11 +177,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 10,
+      "order": 11,
       "createdAt": "2026-08-03T11:30:28.242Z",
       "contentUpdatedAt": "2026-08-03T11:30:28.242Z",
       "doneUpdatedAt": "2026-08-03T11:30:28.242Z",
-      "orderUpdatedAt": "2026-08-14T17:43:51.015Z",
+      "orderUpdatedAt": "2026-08-17T18:17:45.645Z",
       "deletedUpdatedAt": ""
     },
     {
@@ -190,11 +190,11 @@
       "details": "Also cardio and full back stretch together",
       "done": false,
       "deleted": false,
-      "order": 11,
+      "order": 12,
       "createdAt": "2026-08-03T11:33:57.434Z",
       "contentUpdatedAt": "2026-08-03T11:47:12.739Z",
       "doneUpdatedAt": "2026-08-03T11:33:57.434Z",
-      "orderUpdatedAt": "2026-08-14T17:43:51.015Z",
+      "orderUpdatedAt": "2026-08-17T18:17:45.645Z",
       "deletedUpdatedAt": ""
     },
     {
@@ -214,12 +214,12 @@
       "id": "26ca34d0-7851-4781-8983-5fa168ef1068",
       "title": "Tax free Weekend - buy mower engine oil for changing",
       "details": "",
-      "done": false,
+      "done": true,
       "deleted": false,
       "order": 7,
       "createdAt": "2026-08-03T15:28:41.329Z",
       "contentUpdatedAt": "2026-08-03T15:28:41.329Z",
-      "doneUpdatedAt": "2026-08-03T15:28:41.329Z",
+      "doneUpdatedAt": "2026-08-17T18:17:31.950Z",
       "orderUpdatedAt": "2026-08-03T15:28:50.898Z",
       "deletedUpdatedAt": ""
     },
@@ -255,11 +255,11 @@
       "details": "",
       "done": false,
       "deleted": false,
-      "order": 12,
+      "order": 8,
       "createdAt": "2026-08-14T20:19:21.066Z",
       "contentUpdatedAt": "2026-08-14T20:19:21.066Z",
       "doneUpdatedAt": "2026-08-14T20:19:21.066Z",
-      "orderUpdatedAt": "2026-08-15T12:03:54.919Z",
+      "orderUpdatedAt": "2026-08-17T18:17:45.645Z",
       "deletedUpdatedAt": ""
     },
     {
