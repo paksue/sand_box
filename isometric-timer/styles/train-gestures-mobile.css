@@ -1,0 +1,233 @@
+@media (max-width: 520px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .trainer {
+    width: 100%;
+    padding: max(6px, env(safe-area-inset-top)) 10px max(18px, env(safe-area-inset-bottom));
+  }
+
+  .topbar {
+    min-height: 34px;
+    gap: 10px;
+  }
+
+  .brand,
+  .eyebrow {
+    font-size: 10px;
+    letter-spacing: .14em;
+  }
+
+  .brand-mark {
+    width: 7px;
+    height: 7px;
+  }
+
+  main {
+    gap: 8px;
+    padding-top: 4px;
+  }
+
+  /* On phones the job is capture, not onboarding. Keep the working area in view. */
+  .intro {
+    display: none;
+  }
+
+  .camera-card,
+  .label-card {
+    border-radius: 18px;
+    padding: 8px;
+  }
+
+  .camera-shell {
+    height: clamp(170px, 27svh, 230px);
+    aspect-ratio: auto;
+    border-radius: 14px;
+  }
+
+  .guide {
+    inset: 8%;
+  }
+
+  .guide-corner {
+    width: 26px;
+    height: 26px;
+  }
+
+  .camera-actions {
+    flex-direction: row;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .camera-actions .primary,
+  .camera-actions .secondary {
+    min-height: 42px;
+    padding: 0 10px;
+    border-radius: 13px;
+    font-size: 13px;
+  }
+
+  .camera-actions .primary {
+    flex: 1.25;
+  }
+
+  .camera-actions .secondary {
+    flex: .75;
+    width: auto;
+  }
+
+  .privacy {
+    display: none;
+  }
+
+  .label-head {
+    align-items: center;
+    gap: 8px;
+  }
+
+  .label-head .kicker {
+    display: none;
+  }
+
+  .label-head h2 {
+    margin-bottom: 3px;
+    font-size: 17px;
+    line-height: 1.05;
+  }
+
+  .label-head p:last-child {
+    max-height: 2.55em;
+    overflow: hidden;
+    font-size: 11px;
+    line-height: 1.25;
+  }
+
+  .count-badge {
+    min-width: 68px;
+    padding: 6px 8px;
+    border-radius: 13px;
+  }
+
+  .count-badge strong {
+    font-size: 22px;
+  }
+
+  .count-badge span {
+    font-size: 10px;
+  }
+
+  .progress-track {
+    height: 5px;
+    margin: 8px 0;
+  }
+
+  .label-tabs {
+    gap: 6px;
+  }
+
+  .label-tab {
+    min-height: 58px;
+    gap: 1px;
+    border-radius: 13px;
+  }
+
+  .label-tab > span {
+    font-size: 19px;
+  }
+
+  .label-tab strong {
+    font-size: 11px;
+  }
+
+  .label-tab small {
+    font-size: 9px;
+  }
+
+  .capture-controls {
+    flex-direction: row;
+    gap: 7px;
+    margin-top: 8px;
+  }
+
+  .capture-button {
+    min-height: 48px;
+    border-radius: 14px;
+    font-size: 13px;
+  }
+
+  .capture-controls .secondary {
+    flex: 0 0 34%;
+    width: auto;
+    min-height: 48px;
+    padding: 0 10px;
+    border-radius: 14px;
+    font-size: 12px;
+  }
+
+  .capture-stats {
+    justify-content: space-between;
+    gap: 4px 8px;
+    margin-top: 6px;
+    font-size: 9.5px;
+    line-height: 1.2;
+  }
+
+  /* Everything below here is intentionally post-capture content. */
+  .tips-card,
+  .export-card,
+  .next-card {
+    border-radius: 18px;
+  }
+}
+
+/* Extra squeeze for Safari/Brave when browser chrome leaves a short visual viewport. */
+@media (max-width: 520px) and (max-height: 760px) {
+  .trainer {
+    padding-top: max(4px, env(safe-area-inset-top));
+  }
+
+  .topbar {
+    min-height: 30px;
+  }
+
+  .camera-shell {
+    height: 150px;
+  }
+
+  .camera-actions {
+    margin-top: 6px;
+  }
+
+  .camera-actions .primary,
+  .camera-actions .secondary {
+    min-height: 38px;
+  }
+
+  .camera-card,
+  .label-card {
+    padding: 7px;
+  }
+
+  .label-head p:last-child {
+    display: none;
+  }
+
+  .progress-track {
+    margin: 6px 0;
+  }
+
+  .label-tab {
+    min-height: 50px;
+  }
+
+  .capture-button,
+  .capture-controls .secondary {
+    min-height: 44px;
+  }
+
+  #captureRate {
+    display: none;
+  }
+}
