@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-08-15T20:51:22.395Z",
+  "updatedAt": "2026-08-17T16:43:21.880Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -325,6 +325,19 @@
       "contentUpdatedAt": "2026-08-15T20:25:06.118Z",
       "doneUpdatedAt": "2026-08-15T20:25:06.118Z",
       "orderUpdatedAt": "2026-08-15T20:25:06.118Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "c0d1d400-e081-4d81-b177-9f0fc33e2b73",
+      "title": "Screen fasting",
+      "details": "",
+      "done": false,
+      "deleted": false,
+      "order": 20,
+      "createdAt": "2026-08-17T16:43:20.028Z",
+      "contentUpdatedAt": "2026-08-17T16:43:20.028Z",
+      "doneUpdatedAt": "2026-08-17T16:43:20.028Z",
+      "orderUpdatedAt": "2026-08-17T16:43:20.028Z",
       "deletedUpdatedAt": ""
     }
   ]
