@@ -30,3 +30,29 @@ jobs:
           grep -q "mirroredFrontCameraBeforeSave: false" isometric-timer/js/training-capture.js
           grep -q 'gesture_recognizer.Dataset.from_folder' isometric-timer/training/hold_gesture_model_maker.ipynb
           grep -q 'model.export_model' isometric-timer/training/hold_gesture_model_maker.ipynb
+
+      - name: Exercise the committed ZIP writer
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const source = fs.readFileSync('isometric-timer/js/training-capture.js', 'utf8');
+          const start = source.indexOf('const CRC_TABLE');
+          const end = source.indexOf('function manifest()');
+          if (start < 0 || end <= start) throw new Error('Could not locate ZIP implementation');
+          eval(`${source.slice(start, end)}\nglobalThis.__zipBlob = zipBlob;`);
+          const encoder = new TextEncoder();
+          const zip = await globalThis.__zipBlob([
+            { name: 'hold-gesture-dataset/start/0001.jpg', bytes: encoder.encode('start-image') },
+            { name: 'hold-gesture-dataset/pause/0001.jpg', bytes: encoder.encode('pause-image') },
+            { name: 'hold-gesture-dataset/none/0001.jpg', bytes: encoder.encode('none-image') },
+            { name: 'hold-gesture-dataset/manifest.json', bytes: encoder.encode('{"ok":true}') }
+          ]);
+          fs.writeFileSync('/tmp/hold-training-test.zip', Buffer.from(await zip.arrayBuffer()));
+          NODE
+          unzip -t /tmp/hold-training-test.zip
+          rm -rf /tmp/hold-training-unzip
+          unzip -q /tmp/hold-training-test.zip -d /tmp/hold-training-unzip
+          test "$(cat /tmp/hold-training-unzip/hold-gesture-dataset/start/0001.jpg)" = 'start-image'
+          test "$(cat /tmp/hold-training-unzip/hold-gesture-dataset/none/0001.jpg)" = 'none-image'
