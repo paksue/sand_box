@@ -1,0 +1,32 @@
+name: Gesture training capture check
+
+on:
+  push:
+    branches: [gesture-training-capture]
+    paths:
+      - 'isometric-timer/train-gestures.html'
+      - 'isometric-timer/styles/train-gestures.css'
+      - 'isometric-timer/js/training-capture.js'
+      - 'isometric-timer/training/**'
+      - '.github/workflows/gesture-training-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify capture tool and notebook
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check isometric-timer/js/training-capture.js
+          python -m json.tool isometric-timer/training/hold_gesture_model_maker.ipynb >/dev/null
+          grep -q 'data-label="start"' isometric-timer/train-gestures.html
+          grep -q 'data-label="pause"' isometric-timer/train-gestures.html
+          grep -q 'data-label="none"' isometric-timer/train-gestures.html
+          grep -q "mirroredFrontCameraBeforeSave: false" isometric-timer/js/training-capture.js
+          grep -q 'gesture_recognizer.Dataset.from_folder' isometric-timer/training/hold_gesture_model_maker.ipynb
+          grep -q 'model.export_model' isometric-timer/training/hold_gesture_model_maker.ipynb
