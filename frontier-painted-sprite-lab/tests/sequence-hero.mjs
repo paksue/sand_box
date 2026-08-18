@@ -24,11 +24,11 @@ for (const name of ['front_near_leg_ik', 'front_far_leg_ik', 'hind_near_leg_ik',
   if (!initial.ikNames.includes(name)) throw new Error(`Missing IK constraint ${name}`);
 }
 
-// Prove the walk clip is not just a root bob: all four IK targets participate in the gait.
+// Prove walk now changes the visible painted horse pose while all four IK targets participate underneath.
 await page.evaluate(() => { window.sequenceHeroPOC.setSpeed(1); window.sequenceHeroPOC.play('walk'); });
-await page.waitForTimeout(80);
+await page.waitForTimeout(70);
 const walkA = await page.evaluate(() => window.sequenceHeroPOC.snapshot());
-await page.waitForTimeout(300);
+await page.waitForTimeout(310);
 const walkB = await page.evaluate(() => window.sequenceHeroPOC.snapshot());
 const targetNames = ['front_near_ik', 'front_far_ik', 'hind_near_ik', 'hind_far_ik'];
 const gaitDelta = targetNames.reduce((sum, name) => {
@@ -39,7 +39,10 @@ const gaitDelta = targetNames.reduce((sum, name) => {
 }, 0);
 if (gaitDelta < 10) throw new Error(`Four-hoof gait targets barely moved: ${gaitDelta.toFixed(2)}`);
 if (!walkB.gaitPhase || walkB.gaitPhase === '—') throw new Error(`Walk gait phase events did not fire: ${JSON.stringify(walkB)}`);
-await page.screenshot({ path: 'frontier-painted-sprite-lab/test-results-sequence/sequence-walk-ik.png', fullPage: true });
+if (!walkA.attachment?.startsWith('gait_')) throw new Error(`Walk A is not a painted gait attachment: ${walkA.attachment}`);
+if (!walkB.attachment?.startsWith('gait_')) throw new Error(`Walk B is not a painted gait attachment: ${walkB.attachment}`);
+if (walkA.attachment === walkB.attachment) throw new Error(`Visible horse pose did not change across gait: ${walkA.attachment}`);
+await page.screenshot({ path: 'frontier-painted-sprite-lab/test-results-sequence/sequence-walk-gait.png', fullPage: true });
 
 // Preserve the painted corrective-pose landing benchmark and inspect it in slow motion.
 await page.evaluate(() => { window.sequenceHeroPOC.setSpeed(.25); window.sequenceHeroPOC.play('land_step'); });
