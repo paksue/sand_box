@@ -1,0 +1,13 @@
+{
+  "name": "Glow — Private Gut Journal",
+  "short_name": "Glow",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F7F6F2",
+  "theme_color": "#267C74",
+  "description": "A private, local-first gut and symptom journal.",
+  "icons": [
+    {"src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+  ]
+}
