@@ -20,25 +20,22 @@ function mimeFor(name) {
 }
 
 async function decodeImage(blob) {
-  if (typeof createImageBitmap === 'function') {
-    try {
-      const bitmap = await createImageBitmap(blob);
-      return { source: bitmap, close: () => bitmap.close?.() };
-    } catch {
-      // Safari fallback below.
-    }
-  }
-
   const url = URL.createObjectURL(blob);
   const image = new Image();
   image.decoding = 'async';
+  image.alt = '';
   const loaded = new Promise((resolve, reject) => {
     image.onload = resolve;
     image.onerror = () => reject(new Error('Could not decode a training image.'));
   });
   image.src = url;
-  await loaded;
-  return { source: image, close: () => URL.revokeObjectURL(url) };
+  try {
+    await loaded;
+    return { source: image, close: () => URL.revokeObjectURL(url) };
+  } catch (error) {
+    URL.revokeObjectURL(url);
+    throw error;
+  }
 }
 
 function handednessFrom(result) {
