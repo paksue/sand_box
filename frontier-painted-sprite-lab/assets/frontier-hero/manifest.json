@@ -9,11 +9,12 @@
     "renderer": "WebGL",
     "rendererBackend": "phaser/Mesh2D",
     "files": [
-      "runtime/frontier-hero.skel",
+      "runtime/frontier-hero.json",
       "runtime/frontier-hero.atlas",
       "runtime/frontier-hero.png"
     ],
     "loader": ["spineSkeleton", "spineAtlas"],
+    "authoringFormat": "Spine 4.3 JSON; import/refine in Spine Editor, then optionally re-export binary .skel for shipping",
     "productionReady": false
   },
   "art": {
