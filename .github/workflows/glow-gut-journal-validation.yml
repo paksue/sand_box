@@ -1,0 +1,29 @@
+name: Glow Gut Journal validation
+
+on:
+  push:
+    paths:
+      - 'glow-gut-journal/**'
+      - '.github/workflows/glow-gut-journal-validation.yml'
+  pull_request:
+    paths:
+      - 'glow-gut-journal/**'
+      - '.github/workflows/glow-gut-journal-validation.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: |
+          node --check glow-gut-journal/app.js
+          node --check glow-gut-journal/patch.js
+          node --check glow-gut-journal/coverage.js
+          node --check glow-gut-journal/db.js
+          node --check glow-gut-journal/sw.js
+      - name: Source coverage contract
+        run: node glow-gut-journal/tests/validate.mjs
