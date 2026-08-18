@@ -55,6 +55,10 @@ jobs:
         env:
           PAINTED_SPRITE_URL: http://127.0.0.1:4175/
         run: node frontier-painted-sprite-lab/tests/production-hero-contract.mjs
+      - name: Run painted sequence benchmark regression
+        env:
+          PAINTED_SPRITE_URL: http://127.0.0.1:4175/
+        run: node frontier-painted-sprite-lab/tests/sequence-hero.mjs
       - name: Upload visual screenshots
         if: always()
         uses: actions/upload-artifact@v4
@@ -67,4 +71,5 @@ jobs:
             frontier-painted-sprite-lab/test-results-cinematic/
             frontier-painted-sprite-lab/test-results-painting-world/
             frontier-painted-sprite-lab/test-results-hero-motion/
+            frontier-painted-sprite-lab/test-results-sequence/
           if-no-files-found: ignore
