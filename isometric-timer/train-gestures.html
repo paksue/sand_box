@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#07090d">
-  <meta name="description" content="Capture and install a local custom hand-gesture profile for Hold.">
+  <meta name="description" content="Capture a private custom hand-gesture dataset for future Hold model improvements.">
   <link rel="stylesheet" href="./styles/train-gestures.css">
   <link rel="stylesheet" href="./styles/train-gestures-mobile.css">
   <title>Hold — Train Gestures</title>
@@ -23,7 +23,7 @@
       <section class="intro" aria-labelledby="pageTitle">
         <p class="kicker">Private training capture</p>
         <h1 id="pageTitle">Teach Hold your gestures.</h1>
-        <p>Capture examples on the phone and in the lighting you actually use. Images stay in this browser until you export or install a local profile.</p>
+        <p>Capture examples on the phone and in the lighting you actually use. Images stay in this browser until you export the dataset ZIP.</p>
       </section>
 
       <section class="camera-card" aria-label="Camera training capture">
@@ -78,26 +78,12 @@
         </div>
       </section>
 
-      <section class="export-card" id="personalize" aria-labelledby="personalizedTitle">
-        <div>
-          <p class="kicker">First-pass personalized model</p>
-          <h2 id="personalizedTitle">Use your ZIP in the timer.</h2>
-          <p>Choose the Hold ZIP already saved on your phone. Hold extracts hand-shape landmarks on this device, combines your START/PAUSE examples with 300 HaGRID <code>no_gesture</code> examples, and stores only normalized feature numbers locally. Your photos are not uploaded or saved by the model.</p>
-        </div>
-        <input id="personalizedZipInput" type="file" accept=".zip,application/zip" hidden>
-        <div class="export-actions">
-          <button class="primary" id="installPersonalizedButton" type="button">Choose ZIP &amp; install</button>
-          <button class="secondary" id="useGoogleGestureButton" type="button">Use Google default</button>
-        </div>
-        <p class="export-status" id="personalizedStatus" role="status">No personalized model installed yet.</p>
-      </section>
-
       <section class="tips-card">
-        <h2>Make the model useful, not just accurate.</h2>
+        <h2>Make future models useful, not just accurate.</h2>
         <div class="tip-grid">
           <article><strong>Move naturally</strong><p>Near, far, left, right, higher, lower, and slightly rotated.</p></article>
           <article><strong>Train real conditions</strong><p>Use the lighting and phone distance you use during a hold.</p></article>
-          <article><strong>NONE is supplemental</strong><p>The first personalized pass already adds public HaGRID no-gesture examples. Your own NONE samples can be added later.</p></article>
+          <article><strong>NONE is supplemental</strong><p>Hold v1 already learned from 300 public HaGRID no-gesture examples. Your own NONE samples are useful for later refinements.</p></article>
           <article><strong>Avoid clones</strong><p>Move continuously. The capture tool automatically rejects very similar consecutive frames.</p></article>
         </div>
       </section>
@@ -105,7 +91,7 @@
       <section class="export-card" aria-labelledby="exportTitle">
         <div>
           <p class="kicker">Dataset</p>
-          <h2 id="exportTitle">Export for Google Model Maker</h2>
+          <h2 id="exportTitle">Export training ZIP</h2>
           <p>The ZIP uses <code>start/</code>, <code>pause/</code>, and <code>none/</code> folders. A manifest records counts and capture settings.</p>
         </div>
         <div class="dataset-summary">
@@ -121,9 +107,9 @@
       </section>
 
       <section class="next-card">
-        <p class="kicker">Experimental path</p>
-        <h2>Google Model Maker remains available.</h2>
-        <p>The repository notebook at <code>training/hold_gesture_model_maker.ipynb</code> can still build a Google <code>.task</code> model. Personalized v1 uses the lighter local landmark classifier first so your captured photos never need to leave the phone.</p>
+        <p class="kicker">Already built in</p>
+        <h2>Normal use requires no installation.</h2>
+        <p>The timer automatically uses the distilled Hold v1 model when hand gestures are enabled. This page is only for collecting future training data.</p>
       </section>
     </main>
   </div>
@@ -131,6 +117,5 @@
   <canvas id="captureCanvas" width="320" height="320" hidden></canvas>
   <canvas id="fingerprintCanvas" width="8" height="8" hidden></canvas>
   <script type="module" src="./js/training-capture.js"></script>
-  <script type="module" src="./js/training/personalized-trainer-ui.js"></script>
 </body>
 </html>
