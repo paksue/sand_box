@@ -4,6 +4,8 @@ The V1 app must capture or faithfully derive every information field used by the
 
 | Source item | App representation | Status |
 |---|---|---|
+| Name | Journal profile / optional onboarding field | ✅ |
+| Start date | Journal profile / onboarding default | ✅ |
 | Date | entry/day date | ✅ |
 | Day type: home/camp/outing/travel | Day details | ✅ |
 | Wake time | Day details | ✅ |
@@ -78,7 +80,7 @@ The V1 app must capture or faithfully derive every information field used by the
 | Positive pregnancy test with pain/bleeding | Safety note | ✅ |
 | No period about 90 days | Safety note | ✅ |
 | Weekly total poops | Calculated | ✅ |
-| Weekly days with no poop | Calculated as no logged poop | ✅ |
+| Weekly days with no poop | Calculated as no logged poop; in-progress week counts only elapsed days | ✅ |
 | Days with Type 1 | Calculated | ✅ |
 | Best stool type | Weekly user review | ✅ |
 | Highest poop pain | Calculated | ✅ |
@@ -95,7 +97,7 @@ The V1 app must capture or faithfully derive every information field used by the
 | Dairy/cheese-heavy days | Calculated from explicit heavy meal tag | ✅ |
 | White-carb-heavy days | Calculated from explicit heavy meal tag | ✅ |
 | Prune days | Calculated | ✅ |
-| Last period start | Calculated from check-ins | ✅ |
+| Last period start | Calculated from all check-ins | ✅ |
 | Days late by end of week | Latest check-in | ✅ |
 | Weekly cramps/pelvic pain | Calculated maximum | ✅ |
 | Held poop frequency | Weekly user review + logged day count | ✅ |
