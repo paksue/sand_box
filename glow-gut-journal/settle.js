@@ -41,14 +41,25 @@ function updateRow(container, labels, value, replacementLabel) {
   }
 }
 
+function renderBowelFoot(metric, result) {
+  const legacy = metric.querySelector('.metric-foot');
+  if (!legacy) return;
+  legacy.hidden = true;
+  let settled = metric.querySelector('.settled-metric-foot');
+  if (!settled) {
+    settled = document.createElement('div');
+    settled.className = 'settled-metric-foot';
+    legacy.after(settled);
+  }
+  setTextQuietly(settled, `${result.confirmed} confirmed no-poop · ${result.unconfirmed} unconfirmed`);
+}
+
 async function apply() {
   scheduled = false;
   const result = await summary();
   if (app.querySelector('.hero h1')?.textContent.trim() === 'Insights') {
     for (const metric of app.querySelectorAll('.metric')) {
-      if (metric.querySelector('.metric-label')?.textContent.trim() === 'Bowel movements') {
-        setTextQuietly(metric.querySelector('.metric-foot'), `${result.confirmed} confirmed no-poop · ${result.unconfirmed} unconfirmed`);
-      }
+      if (metric.querySelector('.metric-label')?.textContent.trim() === 'Bowel movements') renderBowelFoot(metric, result);
     }
     const legacyWeekNote = app.querySelector('#week-progress-note');
     if (legacyWeekNote) legacyWeekNote.hidden = true;
@@ -75,7 +86,7 @@ const observer = new MutationObserver(schedule);
 observer.observe(document.body, { childList: true, subtree: true });
 document.addEventListener('click', event => {
   if (event.target.closest('[data-tab="insights"], [data-action="doctor-report"], [data-action="weekly-review"], [data-sheet-action="weekly-review"]')) {
-    setTimeout(schedule, 140);
+    for (const delay of [0, 80, 180, 360]) setTimeout(schedule, delay);
   }
 }, true);
 schedule();
