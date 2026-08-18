@@ -27,7 +27,15 @@ if (loaderProto?.addFile && !loaderProto.addFile.__frontierHeroWrapped) {
     if (Array.isArray(file)) {
       file.forEach(redirectHeroFile);
     } else if (file?.key === 'hero-source' && file?.type === 'image' && HERO_MASTER_DATA_URI) {
+      // The ImageFile instance was originally created for an ordinary URL, so
+      // switch this one file onto Phaser's HTMLImageElement/base64 load path.
+      // Leaving it on the default XHR path would try URL.createObjectURL() on a
+      // data URI response instead of decoding the embedded WebP directly.
       file.url = HERO_MASTER_DATA_URI;
+      file.base64 = true;
+      file.useImageElementLoad = true;
+      if (typeof file.loadImage === 'function') file.load = file.loadImage;
+      if (typeof file.onProcessImage === 'function') file.onProcess = file.onProcessImage;
     }
   };
   const wrappedAddFile = function frontierAddFile(file, ...rest) {
