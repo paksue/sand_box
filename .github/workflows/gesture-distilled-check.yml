@@ -1,0 +1,53 @@
+name: Distilled Hold gesture check
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax check
+        run: |
+          set -euo pipefail
+          node --check isometric-timer/js/hands-free/gesture-adapter.js
+          node --check isometric-timer/js/hands-free/intent-gate.js
+          node --check isometric-timer/js/hands-free/landmark-features.js
+          node --check isometric-timer/js/hands-free/distilled-classifier.js
+          node --check isometric-timer/tests/distilled-gesture.test.js
+      - name: Run distilled pure tests
+        run: |
+          set -euo pipefail
+          node --experimental-default-type=module -e "import('./isometric-timer/tests/distilled-gesture.test.js').then(m => m.runDistilledGestureTests())"
+      - name: Validate compact model asset
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = 'isometric-timer/assets/models/hold-gestures-v1-q8.json';
+          const raw = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const check = (v, msg) => { if (!v) throw new Error(msg); };
+          check(raw.format === 'hold-distilled-mlp-q8', 'format');
+          check(raw.featureSize === 63, 'feature size');
+          check(raw.hiddenSize === 32, 'hidden size');
+          check(Buffer.from(raw.w0.q8, 'base64').length === 63 * 32, 'w0 size');
+          check(Buffer.from(raw.w1.q8, 'base64').length === 32 * 3, 'w1 size');
+          check(raw.training.rawPhotosShipped === false, 'photos must not ship');
+          check(raw.training.rawPositiveLandmarksShipped === false, 'positive landmark samples must not ship');
+          check(raw.commandThreshold >= 0.8, 'command threshold');
+          check(fs.statSync(path).size < 10_000, 'model should remain compact');
+          console.log('Hold v1 model:', fs.statSync(path).size, 'bytes');
+          NODE
+      - name: Validate no-install UX and PWA cache
+        run: |
+          set -euo pipefail
+          grep -q "built in—nothing to install" isometric-timer/index.html
+          grep -q "automatically uses the distilled Hold v1 model" isometric-timer/train-gestures.html
+          ! grep -q "personalizedZipInput" isometric-timer/train-gestures.html
+          ! grep -q "Choose ZIP &amp; install" isometric-timer/train-gestures.html
+          grep -q "hold-core-v2.2.0" isometric-timer/sw.js
+          grep -q "hold-gestures-v1-q8.json" isometric-timer/sw.js
