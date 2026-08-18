@@ -15,29 +15,25 @@ const boneNames = new Set((rig.bones || []).map((b) => b.name));
 for (const name of manifest.rig.requiredBones) {
   if (!boneNames.has(name)) throw new Error(`Rig template missing required bone: ${name}`);
 }
-
 const ikNames = new Set((rig.ik || []).map((ik) => ik.name));
 for (const name of manifest.rig.requiredIK) {
   if (!ikNames.has(name)) throw new Error(`Rig template missing required IK constraint: ${name}`);
 }
-
 const clips = new Set(Object.keys(rig.animations || {}));
 for (const name of manifest.animations.required) {
   if (!clips.has(name)) throw new Error(`Rig template missing required animation: ${name}`);
 }
-
 const eventNames = new Set(Object.keys(rig.events || {}));
 for (const name of manifest.animations.events) {
   if (!eventNames.has(name)) throw new Error(`Rig template missing required event: ${name}`);
 }
 
 const runtimeDir = path.join(root, 'assets/frontier-hero/runtime');
-const runtimeFiles = ['frontier-hero.skel', 'frontier-hero.atlas', 'frontier-hero.png'];
+const runtimeFiles = ['frontier-hero.json', 'frontier-hero.atlas', 'frontier-hero.png'];
 const runtimePresent = (await Promise.all(runtimeFiles.map(async (name) => {
   try { await fs.access(path.join(runtimeDir, name)); return true; }
   catch { return false; }
 }))).every(Boolean);
-
 if (Boolean(manifest.runtime.productionReady) !== runtimePresent) {
   throw new Error(`productionReady=${manifest.runtime.productionReady} does not match actual runtime package presence=${runtimePresent}.`);
 }
@@ -48,7 +44,6 @@ const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
 const errors = [];
 page.on('pageerror', (error) => errors.push(error.message));
 page.on('console', (msg) => { if (msg.type() === 'error') errors.push(msg.text()); });
-
 await page.goto(new URL('production-hero.html', base).toString(), { waitUntil: 'networkidle', timeout: 60_000 });
 
 let state;
@@ -59,11 +54,8 @@ if (!runtimePresent) {
     label: document.querySelector('#productionState')?.textContent,
     message: document.querySelector('#productionMessage')?.textContent,
   }));
-  if (!state.label?.includes('production export required')) throw new Error(`Unexpected production state: ${state.label}`);
-  if (!state.message?.includes('Missing real Spine export')) throw new Error(`Missing export diagnostic not shown: ${state.message}`);
-
-  // HEAD probes for the deliberately absent .skel/.atlas/.png emit browser 404 console messages.
-  // They are expected only while the production gate is blocked; all other errors still fail.
+  if (!state.label?.includes('production Spine package required')) throw new Error(`Unexpected production state: ${state.label}`);
+  if (!state.message?.includes('Missing Spine runtime package')) throw new Error(`Missing package diagnostic not shown: ${state.message}`);
   const unexpected = errors.filter((message) => !message.includes('Failed to load resource: the server responded with a status of 404'));
   if (unexpected.length) throw new Error(`Unexpected browser errors:\n${unexpected.join('\n')}`);
 } else {
@@ -73,13 +65,13 @@ if (!runtimePresent) {
   if (state.renderer !== 'phaser/Mesh2D') throw new Error(`Unexpected renderer: ${state.renderer}`);
   if (state.ikCount < manifest.rig.requiredIK.length) throw new Error(`Expected >=${manifest.rig.requiredIK.length} IK constraints, got ${state.ikCount}`);
   for (const name of manifest.rig.requiredBones) {
-    if (!state.boneNames.includes(name)) throw new Error(`Exported skeleton missing bone: ${name}`);
+    if (!state.boneNames.includes(name)) throw new Error(`Runtime skeleton missing bone: ${name}`);
   }
   for (const name of manifest.rig.requiredIK) {
-    if (!state.ikNames.includes(name)) throw new Error(`Exported skeleton missing IK: ${name}`);
+    if (!state.ikNames.includes(name)) throw new Error(`Runtime skeleton missing IK: ${name}`);
   }
   for (const name of manifest.animations.required) {
-    if (!state.animations.includes(name)) throw new Error(`Exported skeleton missing animation: ${name}`);
+    if (!state.animations.includes(name)) throw new Error(`Runtime skeleton missing animation: ${name}`);
   }
 
   await page.evaluate(() => window.productionHeroPOC.play('walk'));
@@ -91,7 +83,6 @@ if (!runtimePresent) {
   await page.waitForTimeout(800);
   const slow = await page.evaluate(() => window.productionHeroPOC.snapshot());
   if (slow.speed !== 0.25 || slow.clip !== 'land_step') throw new Error(`Slow-motion QA path failed: ${JSON.stringify(slow)}`);
-
   if (errors.length) throw new Error(`Browser errors:\n${errors.join('\n')}`);
 }
 
