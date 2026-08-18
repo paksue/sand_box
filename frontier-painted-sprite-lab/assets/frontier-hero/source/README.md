@@ -22,10 +22,22 @@ Horse neck, chest, barrel, pelvis and rider torso are intended to become **weigh
 
 ## Spine import target
 
-Import these layers into **Spine Editor 4.3**. Build the hierarchy and constraints from `frontier-hero-rig-template.json` / `../manifest.json`, then perform the final mesh topology, weights, IK tuning and animation authoring in Spine.
+Import these layers into **Spine Editor 4.3**. Build the hierarchy, gait and constraints from:
+
+- `frontier-hero-rig-template-v3.json` — current Spine 4.3 schema (`constraints` array with `type: "ik"`).
+- `GAIT.md` — eight-phase horse gait and QA rules.
+- `../manifest.json` — production files, layer names and quality gates.
+
+`frontier-hero-rig-template.json` is retained only as an earlier experiment and must not be used as the production schema.
 
 The final Editor project should be saved as:
 
 `frontier-hero.spine`
 
-Do not ship this source folder to the browser. Phaser consumes only the files under `../runtime/` after Spine export.
+Then export the browser package as:
+
+- `../runtime/frontier-hero.skel`
+- `../runtime/frontier-hero.atlas`
+- `../runtime/frontier-hero.png` (plus additional atlas pages if Spine packing requires them)
+
+Do not ship this source folder to the browser. Phaser consumes only the files under `../runtime/` after the Spine Editor export.
