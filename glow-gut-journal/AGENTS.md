@@ -13,12 +13,14 @@ Preserve every data point in the source Glow Up Gut Journal while making logging
 7. Doctor-facing summaries use neutral wording and identify calculated values as summaries of user-entered data.
 8. Preserve backup compatibility. Schema changes require an IndexedDB version migration and backup schema migration plan.
 9. Minimum interactive target: 44px. Do not rely on color alone.
-10. Before calling a change complete, run `node --check app.js`, `node --check db.js`, and `node tests/validate.mjs`.
+10. Before calling a change complete, run syntax checks for `app.js`, `patch.js`, `coverage.js`, `db.js`, and `sw.js`, then run `node tests/validate.mjs`.
 
 ## Architecture
 - `index.html`: static entry point
 - `styles.css`: design system and layouts
-- `app.js`: UI, flows, calculations, reporting
+- `app.js`: primary UI, flows, calculations, reporting
+- `patch.js`: source-profile, exact Bristol wording, partial-week/report safeguards
+- `coverage.js`: source-paper drink photo/note and custom meal-liquid capture
 - `db.js`: IndexedDB storage and backup/restore
 - `sw.js`: offline shell cache
 - `docs/`: product and coverage contracts
