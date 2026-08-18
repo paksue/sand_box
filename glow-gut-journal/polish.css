@@ -20,6 +20,12 @@
 .sheet {
   background: #f7f6f2 !important;
   isolation: isolate;
+  animation: polish-sheet-in .18s ease-out !important;
+}
+
+@keyframes polish-sheet-in {
+  from { transform: translateY(24px); opacity: 1; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 .bristol,
