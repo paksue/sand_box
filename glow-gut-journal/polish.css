@@ -44,6 +44,12 @@
   min-height: 44px !important;
 }
 
+.settled-metric-foot {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
 .polish-report-controls {
   margin: 0 0 18px;
   box-shadow: none;
