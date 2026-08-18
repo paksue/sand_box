@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
 const required = [
-  'index.html','styles.css','print.css','app.js','patch.js','db.js','sw.js',
+  'index.html','styles.css','print.css','app.js','patch.js','coverage.js','db.js','sw.js',
   'manifest.webmanifest','assets/icon.svg','docs/PDF_COVERAGE.md','docs/PRD.md','AGENTS.md'
 ];
 for (const file of required) {
@@ -14,17 +14,18 @@ for (const file of required) {
 
 const coverage = fs.readFileSync(path.join(root, 'docs/PDF_COVERAGE.md'), 'utf8');
 if (coverage.includes('❌') || coverage.includes('⬜')) throw new Error('PDF coverage contract contains incomplete rows.');
-for (const sourceField of ['| Name |', '| Start date |', '| Appetite normal/low |', '| Last period start |']) {
+for (const sourceField of ['| Name |', '| Start date |', '| Appetite normal/low |', '| Last period start |', '| Meal/drink photo |']) {
   if (!coverage.includes(sourceField)) throw new Error(`Coverage contract missing source field: ${sourceField}`);
 }
 
 const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const patch = fs.readFileSync(path.join(root, 'patch.js'), 'utf8');
-const implementation = `${app}\n${patch}`;
+const sourceExtras = fs.readFileSync(path.join(root, 'coverage.js'), 'utf8');
+const implementation = `${app}\n${patch}\n${sourceExtras}`;
 for (const token of [
   'periodStartedToday','daysLate','spotting','crampsPain','heldPoop','satAfterMeal',
   'feetSupported','urineColor','appetite','waterRating','fiberRating','prunesSummary',
-  'worseAfterMeals','betterAfterPoopGas','startDate','Journal profile'
+  'worseAfterMeals','betterAfterPoopGas','startDate','Journal profile','drinkPhoto','mealCustomOz'
 ]) {
   if (!implementation.includes(token)) throw new Error(`Required source field missing from implementation: ${token}`);
 }
@@ -34,12 +35,12 @@ for (const forbidden of ['XMLHttpRequest', 'navigator.sendBeacon']) {
 }
 
 const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-for (const asset of ['styles.css','print.css','app.js','patch.js','manifest.webmanifest']) {
+for (const asset of ['styles.css','print.css','app.js','patch.js','coverage.js','manifest.webmanifest']) {
   if (!index.includes(asset)) throw new Error(`index.html does not reference required asset: ${asset}`);
 }
 
 const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
-for (const asset of ['styles.css','print.css','app.js','patch.js','db.js']) {
+for (const asset of ['styles.css','print.css','app.js','patch.js','coverage.js','db.js']) {
   if (!sw.includes(asset)) throw new Error(`Offline cache missing asset: ${asset}`);
 }
 
