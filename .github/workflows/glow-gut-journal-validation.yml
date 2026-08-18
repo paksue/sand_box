@@ -22,6 +22,7 @@ jobs:
         run: |
           node --check glow-gut-journal/app.js
           node --check glow-gut-journal/patch.js
+          node --check glow-gut-journal/coverage.js
           node --check glow-gut-journal/db.js
           node --check glow-gut-journal/sw.js
       - name: Source coverage contract
