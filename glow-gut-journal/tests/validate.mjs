@@ -6,7 +6,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
 const required = [
   'index.html','styles.css','qa-fixes.css','polish.css','print.css','app.js','patch.js','qa-fixes.js','qa-data-integrity.js','coverage.js','qa-summary-stable.js','polish.js','db.js','sw.js',
-  'manifest.webmanifest','assets/icon.svg','docs/PDF_COVERAGE.md','docs/PRD.md','AGENTS.md','playwright.config.mjs','tests/playtest.spec.mjs','tests/round2.spec.mjs','tests/live-smoke.mjs'
+  'manifest.webmanifest','assets/icon.svg','docs/PDF_COVERAGE.md','docs/PRD.md','AGENTS.md','playwright.config.mjs','tests/playtest.spec.mjs','tests/round2.spec.mjs','tests/visual.spec.mjs','tests/live-smoke.mjs'
 ];
 for (const file of required) {
   if (!fs.existsSync(path.join(root, file))) throw new Error(`Missing required file: ${file}`);
@@ -71,10 +71,14 @@ const round2 = fs.readFileSync(path.join(root, 'tests/round2.spec.mjs'), 'utf8')
 for (const assertion of ['data-polish-undo','periodStartedToday','glow-backup.json','data-report-toggle="period"','serviceWorker.controller','doctor-report-mobile']) {
   if (!round2.includes(assertion)) throw new Error(`Round-two browser playtest missing scenario: ${assertion}`);
 }
+const visual = fs.readFileSync(path.join(root, 'tests/visual.spec.mjs'), 'utf8');
+for (const screenshot of ['today-mobile.png','bristol-mobile.png','insights-mobile.png','doctor-report-mobile.png']) {
+  if (!visual.includes(screenshot)) throw new Error(`Visual review test missing screenshot: ${screenshot}`);
+}
 const liveSmoke = fs.readFileSync(path.join(root, 'tests/live-smoke.mjs'), 'utf8');
 if (!liveSmoke.includes('https://paksue.github.io/sand_box/glow-gut-journal/')) throw new Error('Live Pages smoke target is missing');
 
-console.log('Glow validation passed: source coverage, playtest fixes, round-two privacy/accessibility, browser scenarios, offline assets, and live smoke are present.');
+console.log('Glow validation passed: source coverage, playtest fixes, round-two privacy/accessibility, browser scenarios, persisted visual review, offline assets, and live smoke are present.');
 
 function indexSafe(rootDir) {
   const p = path.join(rootDir, 'index.html');
