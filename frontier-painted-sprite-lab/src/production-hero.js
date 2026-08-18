@@ -62,14 +62,12 @@ function bootProductionHero() {
 
     create() {
       this.add.ellipse(480, 520, 440, 62, 0x120f0c, .24).setDepth(1);
-      const selection = this.add.ellipse(480, 505, 365, 58, 0x31dff2, .06)
+      this.add.ellipse(480, 505, 365, 58, 0x31dff2, .06)
         .setStrokeStyle(3, 0x5fefff, .72).setDepth(2);
 
+      // Default Phaser backend renders Spine attachments through Mesh2D in WebGL.
       this.hero = this.add.spine(480, 500, 'frontier-hero-data', 'frontier-hero-atlas', {
-        renderer: 'phaser',
-        boundsProvider: new spineRuntime.SkinsAndAnimationBoundsProvider([
-          'idle_alive', 'walk', 'land_step', 'rear_action'
-        ])
+        renderer: 'phaser'
       });
       this.hero.setDepth(10);
 
@@ -96,7 +94,7 @@ function bootProductionHero() {
       stateEl.textContent = 'real Spine export loaded';
       messageEl.textContent = 'Production package loaded through spineSkeleton + spineAtlas; motion is driven by Spine AnimationState.';
       stage.dataset.ready = 'true';
-      this.bindControls(selection);
+      this.bindControls();
 
       window.productionHeroPOC = {
         play: (name) => this.play(name),
@@ -119,7 +117,7 @@ function bootProductionHero() {
       if (this.hero) this.hero.animationState.timeScale = speed;
     }
 
-    bindControls(selection) {
+    bindControls() {
       document.querySelectorAll('[data-clip]').forEach((button) => {
         button.addEventListener('click', () => this.play(button.dataset.clip));
       });
@@ -134,7 +132,6 @@ function bootProductionHero() {
         this.hero.animationState.timeScale = this.paused ? 0 : this.speed;
         event.currentTarget.textContent = this.paused ? 'Resume' : 'Pause';
       });
-      selection.setInteractive(new Phaser.Geom.Ellipse(0, 0, 365, 58), Phaser.Geom.Ellipse.Contains);
     }
 
     snapshot() {
