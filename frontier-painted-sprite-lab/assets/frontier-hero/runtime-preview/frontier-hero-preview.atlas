@@ -1,22 +1,62 @@
-frontier-hero-preview.png
-size: 1024, 768
+idle_alive.png
+size: 192, 144
 filter: Linear, Linear
 pma: false
 idle_alive
-bounds: 0, 0, 256, 192
+bounds: 0, 0, 192, 144
+
+walk.png
+size: 192, 144
+filter: Linear, Linear
+pma: false
 walk
-bounds: 256, 0, 256, 192
+bounds: 0, 0, 192, 144
+
+rear_action.png
+size: 192, 144
+filter: Linear, Linear
+pma: false
 rear_action
-bounds: 512, 0, 256, 192
+bounds: 0, 0, 192, 144
+
+land_01.png
+size: 192, 144
+filter: Linear, Linear
+pma: false
 land_01
-bounds: 768, 0, 256, 192
+bounds: 0, 0, 192, 144
+
+land_02.png
+size: 192, 144
+filter: Linear, Linear
+pma: false
 land_02
-bounds: 0, 192, 256, 192
+bounds: 0, 0, 192, 144
+
+land_03.png
+size: 192, 144
+filter: Linear, Linear
+pma: false
 land_03
-bounds: 256, 192, 256, 192
+bounds: 0, 0, 192, 144
+
+land_04.png
+size: 192, 144
+filter: Linear, Linear
+pma: false
 land_04
-bounds: 512, 192, 256, 192
+bounds: 0, 0, 192, 144
+
+land_05.png
+size: 192, 144
+filter: Linear, Linear
+pma: false
 land_05
-bounds: 768, 192, 256, 192
+bounds: 0, 0, 192, 144
+
+land_06.png
+size: 192, 144
+filter: Linear, Linear
+pma: false
 land_06
-bounds: 0, 384, 256, 192
+bounds: 0, 0, 192, 144
