@@ -1,0 +1,22 @@
+frontier-hero-preview.png
+size: 1024, 768
+filter: Linear, Linear
+pma: false
+idle_alive
+bounds: 0, 0, 256, 192
+walk
+bounds: 256, 0, 256, 192
+rear_action
+bounds: 512, 0, 256, 192
+land_01
+bounds: 768, 0, 256, 192
+land_02
+bounds: 0, 192, 256, 192
+land_03
+bounds: 256, 192, 256, 192
+land_04
+bounds: 512, 192, 256, 192
+land_05
+bounds: 768, 192, 256, 192
+land_06
+bounds: 0, 384, 256, 192
