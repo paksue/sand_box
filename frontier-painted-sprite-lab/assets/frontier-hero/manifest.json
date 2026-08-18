@@ -1,6 +1,6 @@
 {
   "name": "frontier-hero",
-  "version": 2,
+  "version": 3,
   "purpose": "Production painterly horse+rider actor for Phaser 4.2.1 + spine-phaser-v4 4.3.11+.",
   "runtime": {
     "phaser": "4.2.1",
@@ -9,12 +9,12 @@
     "renderer": "WebGL",
     "rendererBackend": "phaser/Mesh2D",
     "files": [
-      "runtime/frontier-hero.json",
+      "runtime/frontier-hero.skel",
       "runtime/frontier-hero.atlas",
       "runtime/frontier-hero.png"
     ],
     "loader": ["spineSkeleton", "spineAtlas"],
-    "authoringFormat": "Spine 4.3 JSON; import/refine in Spine Editor, then optionally re-export binary .skel for shipping",
+    "authoringFormat": "Layered master -> Spine Editor 4.3 project -> binary .skel + .atlas + packed PNG texture page(s)",
     "productionReady": false
   },
   "art": {
@@ -125,6 +125,7 @@
   "animations": {
     "required": ["idle_alive", "walk", "land_step", "rear_action"],
     "events": ["hoof_front_contact", "hoof_rear_contact", "impact"],
+    "walkPhases": ["contact_near", "load_near", "passing_near", "push_near", "contact_far", "load_far", "passing_far", "push_far"],
     "qualityReference": "Phaser 4.2 Spine demo: weighted deformation, clean silhouettes, natural contact and zero visible paper-cut seams."
   },
   "qualityGates": {
