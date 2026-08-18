@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-08-18T11:21:10.248Z",
+  "updatedAt": "2026-08-18T11:23:41.428Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -403,6 +403,19 @@
       "contentUpdatedAt": "2026-08-18T11:21:07.523Z",
       "doneUpdatedAt": "2026-08-18T11:19:25.927Z",
       "orderUpdatedAt": "2026-08-18T11:19:25.927Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "b81a4d5f-6b13-400a-87ea-2ffe9e00b561",
+      "title": "Follow up todo list app",
+      "details": "The 3 bucket life goal app.  Things to do first like schedule doctor appointment, regular things like cleanup and important things like sat and college prep",
+      "done": false,
+      "deleted": false,
+      "order": 25,
+      "createdAt": "2026-08-18T11:22:23.408Z",
+      "contentUpdatedAt": "2026-08-18T11:23:35.618Z",
+      "doneUpdatedAt": "2026-08-18T11:22:23.408Z",
+      "orderUpdatedAt": "2026-08-18T11:22:23.408Z",
       "deletedUpdatedAt": ""
     }
   ]
