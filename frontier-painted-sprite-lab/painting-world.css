@@ -9,8 +9,17 @@
   min-height: 560px;
   border-radius: 16px;
   border: 1px solid rgba(231, 197, 139, .22);
-  background: #36291f;
+  background-color: #36291f;
+  background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Albert_Bierstadt_-_The_Last_of_the_Buffalo.jpg/1280px-Albert_Bierstadt_-_The_Last_of_the_Buffalo.jpg');
+  background-size: cover;
+  background-position: center;
   box-shadow: 0 24px 70px rgba(0, 0, 0, .34);
+}
+
+.phaser-mount {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
 }
 
 .phaser-mount,
