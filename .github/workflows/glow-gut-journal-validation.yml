@@ -26,10 +26,13 @@ jobs:
           node --check glow-gut-journal/qa-data-integrity.js
           node --check glow-gut-journal/coverage.js
           node --check glow-gut-journal/qa-summary-stable.js
+          node --check glow-gut-journal/polish.js
           node --check glow-gut-journal/db.js
           node --check glow-gut-journal/sw.js
           node --check glow-gut-journal/tests/playtest.spec.mjs
-      - name: Source coverage and playtest contracts
+          node --check glow-gut-journal/tests/round2.spec.mjs
+          node --check glow-gut-journal/tests/live-smoke.mjs
+      - name: Source coverage and UX contracts
         run: node glow-gut-journal/tests/validate.mjs
       - name: Install Playwright
         working-directory: glow-gut-journal
@@ -39,3 +42,14 @@ jobs:
       - name: Mobile browser playtest
         working-directory: glow-gut-journal
         run: npx playwright test
+      - name: Upload mobile visual review artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: glow-mobile-review-${{ github.run_number }}
+          path: glow-gut-journal/test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Verify deployed GitHub Pages build
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: node glow-gut-journal/tests/live-smoke.mjs
