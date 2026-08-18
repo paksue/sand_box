@@ -62,22 +62,22 @@ land_06
 bounds: 0, 0, 192, 144
 
 gait_walk.png
-size: 384, 144
+size: 256, 96
 filter: Linear, Linear
 pma: false
 gait_01
-bounds: 0, 0, 96, 72
+bounds: 0, 0, 64, 48
 gait_02
-bounds: 96, 0, 96, 72
+bounds: 64, 0, 64, 48
 gait_03
-bounds: 192, 0, 96, 72
+bounds: 128, 0, 64, 48
 gait_04
-bounds: 288, 0, 96, 72
+bounds: 192, 0, 64, 48
 gait_05
-bounds: 0, 72, 96, 72
+bounds: 0, 48, 64, 48
 gait_06
-bounds: 96, 72, 96, 72
+bounds: 64, 48, 64, 48
 gait_07
-bounds: 192, 72, 96, 72
+bounds: 128, 48, 64, 48
 gait_08
-bounds: 288, 72, 96, 72
+bounds: 192, 48, 64, 48
