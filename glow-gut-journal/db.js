@@ -39,6 +39,38 @@ function req(request) {
   });
 }
 
+function blobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
+}
+
+function dataUrlToBlob(dataUrl) {
+  const [header, body] = dataUrl.split(',');
+  const mime = /data:([^;]+)/.exec(header)?.[1] || 'application/octet-stream';
+  const binary = atob(body || '');
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+  return new Blob([bytes], { type: mime });
+}
+
+async function serializeEntry(entry) {
+  if (!(entry.photo instanceof Blob)) return entry;
+  return { ...entry, photo: await blobToDataUrl(entry.photo), photoEncoding: 'data-url' };
+}
+
+function hydrateEntry(entry) {
+  if (entry?.photoEncoding === 'data-url' && typeof entry.photo === 'string' && entry.photo.startsWith('data:')) {
+    const hydrated = { ...entry, photo: dataUrlToBlob(entry.photo) };
+    delete hydrated.photoEncoding;
+    return hydrated;
+  }
+  return entry;
+}
+
 export async function putEntry(entry) {
   const db = await openDb();
   const tx = db.transaction('entries', 'readwrite');
@@ -123,7 +155,8 @@ export async function getAllWeekly() {
 }
 
 export async function exportAll() {
-  const [entries, days, weekly] = await Promise.all([getAllEntries(), getAllDays(), getAllWeekly()]);
+  const [rawEntries, days, weekly] = await Promise.all([getAllEntries(), getAllDays(), getAllWeekly()]);
+  const entries = await Promise.all(rawEntries.map(serializeEntry));
   const db = await openDb();
   const tx = db.transaction('settings', 'readonly');
   const settings = await req(tx.objectStore('settings').getAll());
@@ -148,7 +181,7 @@ export async function importAll(payload) {
   const settings = tx.objectStore('settings');
   const weekly = tx.objectStore('weekly');
   entries.clear(); days.clear(); settings.clear(); weekly.clear();
-  payload.entries.forEach(item => entries.put(item));
+  payload.entries.map(hydrateEntry).forEach(item => entries.put(item));
   payload.days.forEach(item => days.put(item));
   (payload.settings || []).forEach(item => settings.put(item));
   (payload.weekly || []).forEach(item => weekly.put(item));
