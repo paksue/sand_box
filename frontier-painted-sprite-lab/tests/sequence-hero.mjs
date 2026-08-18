@@ -18,7 +18,30 @@ if (!initial.spineObject) throw new Error('Painted sequence did not create a rea
 for (const name of ['idle_alive', 'walk', 'land_step', 'rear_action']) {
   if (!initial.animations.includes(name)) throw new Error(`Missing animation ${name}`);
 }
+if (initial.boneCount !== 34) throw new Error(`Expected 34-bone production topology, got ${initial.boneCount}`);
+if (initial.ikCount !== 4) throw new Error(`Expected four hoof IK constraints, got ${initial.ikCount}`);
+for (const name of ['front_near_leg_ik', 'front_far_leg_ik', 'hind_near_leg_ik', 'hind_far_leg_ik']) {
+  if (!initial.ikNames.includes(name)) throw new Error(`Missing IK constraint ${name}`);
+}
 
+// Prove the walk clip is not just a root bob: all four IK targets participate in the gait.
+await page.evaluate(() => { window.sequenceHeroPOC.setSpeed(1); window.sequenceHeroPOC.play('walk'); });
+await page.waitForTimeout(80);
+const walkA = await page.evaluate(() => window.sequenceHeroPOC.snapshot());
+await page.waitForTimeout(300);
+const walkB = await page.evaluate(() => window.sequenceHeroPOC.snapshot());
+const targetNames = ['front_near_ik', 'front_far_ik', 'hind_near_ik', 'hind_far_ik'];
+const gaitDelta = targetNames.reduce((sum, name) => {
+  const a = walkA.ikTargets[name];
+  const b = walkB.ikTargets[name];
+  if (!a || !b) throw new Error(`Missing IK target telemetry for ${name}`);
+  return sum + Math.hypot(b.x - a.x, b.y - a.y);
+}, 0);
+if (gaitDelta < 10) throw new Error(`Four-hoof gait targets barely moved: ${gaitDelta.toFixed(2)}`);
+if (!walkB.gaitPhase || walkB.gaitPhase === '—') throw new Error(`Walk gait phase events did not fire: ${JSON.stringify(walkB)}`);
+await page.screenshot({ path: 'frontier-painted-sprite-lab/test-results-sequence/sequence-walk-ik.png', fullPage: true });
+
+// Preserve the painted corrective-pose landing benchmark and inspect it in slow motion.
 await page.evaluate(() => { window.sequenceHeroPOC.setSpeed(.25); window.sequenceHeroPOC.play('land_step'); });
 await page.waitForTimeout(1000);
 const contact = await page.evaluate(() => window.sequenceHeroPOC.snapshot());
@@ -32,5 +55,5 @@ if (later.trackTime <= contact.trackTime) throw new Error('Land-step timeline di
 if (!later.attachment?.startsWith('land_')) throw new Error(`Expected painted land attachment, got ${later.attachment}`);
 if (errors.length) throw new Error(`Browser errors:\n${errors.join('\n')}`);
 
-console.log(JSON.stringify({ status: 'ok', initial, contact, later }, null, 2));
+console.log(JSON.stringify({ status: 'ok', initial, gaitDelta: Number(gaitDelta.toFixed(2)), walkA, walkB, contact, later }, null, 2));
 await browser.close();
