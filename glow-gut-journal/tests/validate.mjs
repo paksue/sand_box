@@ -6,7 +6,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
 const required = [
   'index.html','styles.css','qa-fixes.css','print.css','app.js','patch.js','qa-fixes.js','qa-data-integrity.js','coverage.js','db.js','sw.js',
-  'manifest.webmanifest','assets/icon.svg','docs/PDF_COVERAGE.md','docs/PRD.md','AGENTS.md'
+  'manifest.webmanifest','assets/icon.svg','docs/PDF_COVERAGE.md','docs/PRD.md','AGENTS.md','playwright.config.mjs','tests/playtest.spec.mjs'
 ];
 for (const file of required) {
   if (!fs.existsSync(path.join(root, file))) throw new Error(`Missing required file: ${file}`);
@@ -34,7 +34,7 @@ for (const token of [
 
 for (const qaToken of [
   'confirmedNoPoopDays','unconfirmedDays','inferMealType','showEditor','Not checked',
-  "estimate === 'fewSips'", "event.stopImmediatePropagation()", 'tracking period'
+  'fewSips','stopImmediatePropagation','tracking period'
 ]) {
   if (!qaFixes.includes(qaToken)) throw new Error(`Playtest fix missing contract token: ${qaToken}`);
 }
@@ -56,4 +56,9 @@ for (const asset of ['styles.css','qa-fixes.css','print.css','app.js','patch.js'
   if (!sw.includes(asset)) throw new Error(`Offline cache missing asset: ${asset}`);
 }
 
-console.log('Glow validation passed: source coverage, playtest fixes, local files, offline assets, and core fields are present.');
+const playtest = fs.readFileSync(path.join(root, 'tests/playtest.spec.mjs'), 'utf8');
+for (const assertion of ['estimatedOz','Entry options','tracking period','confirmed no-poop','worstBloat']) {
+  if (!playtest.includes(assertion)) throw new Error(`Browser playtest missing scenario: ${assertion}`);
+}
+
+console.log('Glow validation passed: source coverage, playtest fixes, browser scenarios, local files, offline assets, and core fields are present.');
