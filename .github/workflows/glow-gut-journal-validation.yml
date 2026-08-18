@@ -53,5 +53,5 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
       - name: Verify deployed GitHub Pages build
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'pull_request'
         run: node glow-gut-journal/tests/live-smoke.mjs
