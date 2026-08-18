@@ -1,0 +1,25 @@
+name: Fetch gesture base model
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/fetch-gesture-base-model.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Google Gesture Recognizer model
+        run: |
+          set -euo pipefail
+          curl -fL --retry 4 -o /tmp/gesture_recognizer.task \
+            https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gesture-base-model
+          path: /tmp/gesture_recognizer.task
+          retention-days: 1
