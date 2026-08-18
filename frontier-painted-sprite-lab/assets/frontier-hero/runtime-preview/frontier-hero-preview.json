@@ -1,0 +1,77 @@
+{
+  "skeleton": {
+    "hash": "frontier-hero-ai-painted-sequence-v2",
+    "spine": "4.3.0",
+    "x": -128,
+    "y": -96,
+    "width": 256,
+    "height": 192,
+    "images": "./"
+  },
+  "bones": [
+    {"name":"root"},
+    {"name":"hero","parent":"root"}
+  ],
+  "slots": [
+    {"name":"hero","bone":"hero","attachment":"idle_alive"}
+  ],
+  "skins": [
+    {"name":"default","attachments":{"hero":{
+      "idle_alive":{"width":256,"height":192},
+      "walk":{"width":256,"height":192},
+      "rear_action":{"width":256,"height":192},
+      "land_01":{"width":256,"height":192},
+      "land_02":{"width":256,"height":192},
+      "land_03":{"width":256,"height":192},
+      "land_04":{"width":256,"height":192},
+      "land_05":{"width":256,"height":192},
+      "land_06":{"width":256,"height":192}
+    }}}
+  ],
+  "events": {
+    "hoof_front_contact":{},
+    "hoof_rear_contact":{},
+    "impact":{},
+    "step":{}
+  },
+  "animations": {
+    "idle_alive": {
+      "slots":{"hero":{"attachment":[{"name":"idle_alive"},{"time":2.4,"name":"idle_alive"}]}},
+      "bones":{"hero":{"translate":[{}, {"time":0.6,"y":1.5}, {"time":1.2}, {"time":1.8,"y":-1.0}, {"time":2.4}]}}
+    },
+    "walk": {
+      "slots":{"hero":{"attachment":[{"name":"walk"},{"time":0.9,"name":"walk"}]}},
+      "bones":{"hero":{"translate":[{}, {"time":0.225,"y":1.8}, {"time":0.45}, {"time":0.675,"y":-1.2}, {"time":0.9}]}}
+    },
+    "land_step": {
+      "slots":{"hero":{"attachment":[
+        {"name":"land_01"},
+        {"time":0.16,"name":"land_02"},
+        {"time":0.32,"name":"land_03"},
+        {"time":0.5,"name":"land_04"},
+        {"time":0.72,"name":"land_05"},
+        {"time":1.02,"name":"land_06"},
+        {"time":1.25,"name":"land_06"}
+      ]}},
+      "bones":{"hero":{"translate":[
+        {"y":16},
+        {"time":0.16,"y":7},
+        {"time":0.32,"x":2,"y":-4},
+        {"time":0.5,"x":11,"y":-2},
+        {"time":0.72,"x":28,"y":1},
+        {"time":1.02,"x":48},
+        {"time":1.25,"x":52}
+      ]}},
+      "events":[
+        {"time":0.16,"name":"hoof_front_contact"},
+        {"time":0.32,"name":"impact"},
+        {"time":0.72,"name":"step"},
+        {"time":0.93,"name":"hoof_rear_contact"}
+      ]
+    },
+    "rear_action": {
+      "slots":{"hero":{"attachment":[{"name":"rear_action"},{"time":1.0,"name":"rear_action"}]}},
+      "bones":{"hero":{"translate":[{}, {"time":0.3,"x":-2,"y":5}, {"time":0.6,"y":10}, {"time":1.0}]}}
+    }
+  }
+}
