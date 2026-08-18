@@ -43,6 +43,10 @@ jobs:
         env:
           PAINTED_SPRITE_URL: http://127.0.0.1:4175/
         run: node frontier-painted-sprite-lab/tests/cinematic.mjs
+      - name: Run living painting world regression
+        env:
+          PAINTED_SPRITE_URL: http://127.0.0.1:4175/
+        run: node frontier-painted-sprite-lab/tests/painting-world.mjs
       - name: Upload visual screenshots
         if: always()
         uses: actions/upload-artifact@v4
@@ -53,4 +57,5 @@ jobs:
             frontier-painted-sprite-lab/test-results-rig/
             frontier-painted-sprite-lab/test-results-child-light/
             frontier-painted-sprite-lab/test-results-cinematic/
+            frontier-painted-sprite-lab/test-results-painting-world/
           if-no-files-found: ignore
