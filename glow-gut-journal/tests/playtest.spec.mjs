@@ -25,7 +25,7 @@ test('teen core logging keeps unknown values unknown and supports correction', a
 
   await page.locator('[data-log="meal"]').click();
   const meal = page.locator('form[data-form="meal"]');
-  await expect(meal.locator('.qa-choice-grid')).toBeVisible();
+  await expect(meal.locator('.qa-choice-grid').first()).toBeVisible();
   await meal.locator('input[name="time"]').fill('19:00');
   await meal.locator('input[name="time"]').press('Tab');
   await expect(meal.locator('.qa-choice[data-value="dinner"]')).toHaveClass(/selected/);
@@ -82,7 +82,8 @@ test('7-day summary follows tracking start and distinguishes missing from confir
   expect(Object.hasOwn(wrapEntry, 'worstBloat')).toBeFalsy();
 
   await page.locator('[data-tab="insights"]').click();
-  await expect(page.getByText(/confirmed no-poop/i)).toContainText('1 confirmed no-poop');
+  const bowelMetric = page.locator('.metric').filter({ hasText: 'Bowel movements' });
+  await expect(bowelMetric.locator('.metric-foot')).toContainText('1 confirmed no-poop');
   await expect(page.locator('#qa-tracking-note')).toContainText('Missing entries are not treated as “no poop.”');
 
   await page.evaluate(() => new Promise((resolve, reject) => {
