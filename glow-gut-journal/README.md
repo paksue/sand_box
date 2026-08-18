@@ -24,14 +24,15 @@ No build step or server is required.
 
 - No account.
 - No automatic network upload of journal data.
-- Journal data and optional meal photos are stored in browser IndexedDB.
+- Journal data and optional meal/drink photos are stored in browser IndexedDB.
 - The user explicitly chooses when to export JSON/CSV or print/save a doctor report.
 - Clearing site data removes local records.
 
 ## Core flows
 
-- Meal + optional photo, food tags, prunes/kiwi/pear, attached drink estimate
-- Drink amount quick estimates
+- Journal profile: name + tracking start date
+- Meal + optional photo, food tags, prunes/kiwi/pear, attached drink estimate/custom amount
+- Drink amount, short note, and optional photo
 - Bristol Type 1–7 stool logging
 - Stool amount, pain and blood
 - Bloating, belly/pelvic pain, gas and hard/swollen abdomen
@@ -49,7 +50,10 @@ No build step or server is required.
 
 ```bash
 node --check app.js
+node --check patch.js
+node --check coverage.js
 node --check db.js
+node --check sw.js
 node tests/validate.mjs
 ```
 
