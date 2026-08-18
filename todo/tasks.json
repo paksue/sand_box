@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-08-18T11:06:53.810Z",
+  "updatedAt": "2026-08-18T11:21:10.248Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -390,6 +390,19 @@
       "contentUpdatedAt": "2026-08-18T11:06:51.574Z",
       "doneUpdatedAt": "2026-08-18T11:06:51.574Z",
       "orderUpdatedAt": "2026-08-18T11:06:51.574Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "a818eaf3-e7a8-4bdb-817f-c0cd04c14aab",
+      "title": "Update work table",
+      "details": "So elbow on desk to prevent right side neck shoulder blade arm and knee and ankle thigh tightness.   Sue problem similar chain problem",
+      "done": false,
+      "deleted": false,
+      "order": 24,
+      "createdAt": "2026-08-18T11:19:25.927Z",
+      "contentUpdatedAt": "2026-08-18T11:21:07.523Z",
+      "doneUpdatedAt": "2026-08-18T11:19:25.927Z",
+      "orderUpdatedAt": "2026-08-18T11:19:25.927Z",
       "deletedUpdatedAt": ""
     }
   ]
