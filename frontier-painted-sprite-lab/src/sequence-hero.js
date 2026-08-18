@@ -70,7 +70,7 @@ class PaintedSequenceScene extends Phaser.Scene {
     runtimeEl.textContent = `Phaser ${Phaser.VERSION} + Spine 4.3`;
     attachmentsEl.textContent = '9';
     if (bonesEl) bonesEl.textContent = String(this.hero.skeleton?.bones?.length || 0);
-    if (ikEl) ikEl.textContent = String(this.hero.skeleton?.data?.ikConstraints?.length || 0);
+    if (ikEl) ikEl.textContent = String(this.ikConstraintData().length);
 
     this.bindControls();
 
@@ -122,6 +122,12 @@ class PaintedSequenceScene extends Phaser.Scene {
     return this.hero?.animationState?.tracks?.[0] || null;
   }
 
+  // Spine 4.3 stores all constraint data in SkeletonData.constraints.
+  ikConstraintData() {
+    const constraints = this.hero?.skeleton?.data?.constraints || [];
+    return constraints.filter((constraint) => constraint?.name?.endsWith('_ik'));
+  }
+
   ikTargetSnapshot() {
     const skeleton = this.hero?.skeleton;
     if (!skeleton) return {};
@@ -140,6 +146,7 @@ class PaintedSequenceScene extends Phaser.Scene {
     const slot = this.hero?.skeleton?.findSlot('hero');
     const attachment = slot?.attachment || slot?.pose?.attachment || null;
     const data = this.hero?.skeleton?.data;
+    const ik = this.ikConstraintData();
     return {
       ready: stageEl.dataset.ready === 'true',
       engine: Phaser.VERSION,
@@ -155,8 +162,8 @@ class PaintedSequenceScene extends Phaser.Scene {
       animations: (data?.animations || []).map((a) => a.name),
       boneCount: this.hero?.skeleton?.bones?.length || 0,
       slotCount: this.hero?.skeleton?.slots?.length || 0,
-      ikCount: data?.ikConstraints?.length || 0,
-      ikNames: (data?.ikConstraints || []).map((ik) => ik.name),
+      ikCount: ik.length,
+      ikNames: ik.map((constraint) => constraint.name),
       ikTargets: this.ikTargetSnapshot(),
     };
   }
