@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Frontier Painted Sprite Lab · Living Painting World</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./painting-world.css" />
+</head>
+<body>
+  <main class="lab-shell painting-world-shell">
+    <header class="lab-header">
+      <div>
+        <p class="eyebrow">FRONTIER VISUAL R&D · LIVING PAINTING WORLD</p>
+        <h1>The painting stays. Its subjects become actors.</h1>
+        <p class="lede">Phaser 4 owns the world: movement, depth, selection, paths and camera space. A thin PaintingWorld layer maps screen-Y to perspective scale and render depth. Spine 4.3 is loaded as the production actor runtime; this POC uses lightweight stand-in painted silhouettes until we author the real horse and buffalo rigs.</p>
+      </div>
+      <div class="header-actions">
+        <a class="repo-link" href="./cinematic.html">Cinematic stage</a>
+        <a class="repo-link" href="./">Baseline lab</a>
+      </div>
+    </header>
+
+    <section class="benchmark-banner painting-world-banner">
+      <strong>POC question: can independently movable sprites feel embedded in a fixed historical painting?</strong>
+      <span>Select an actor, click the ground, or use the director presets. The hero should shrink as it moves deeper into the painting, grow as it approaches, sort behind/in front of other actors by ground position, and keep its game-selection highlight independent from the artwork.</span>
+    </section>
+
+    <section class="lab-grid painting-world-grid">
+      <div class="viewer-column">
+        <div id="paintingWorldStage" class="painting-world-stage" data-ready="false">
+          <div id="phaserMount" class="phaser-mount" aria-label="Interactive living painting POC"></div>
+          <div class="painting-world-grade" aria-hidden="true"></div>
+          <div class="painting-world-vignette" aria-hidden="true"></div>
+          <div class="world-caption">
+            <span id="worldStatus">Loading Phaser world…</span>
+            <span id="worldMetric">Phaser 4.2.1 + Spine 4.3</span>
+          </div>
+        </div>
+
+        <div class="world-transport" aria-label="Actor movement presets">
+          <button id="sendFar" type="button">Send hero far</button>
+          <button id="crossBehind" type="button">Cross behind buffalo</button>
+          <button id="comeNear" type="button">Come near</button>
+          <button id="resetWorld" type="button">Reset</button>
+        </div>
+      </div>
+
+      <aside class="controls-panel painting-world-controls">
+        <section>
+          <h2>How to play with the POC</h2>
+          <p class="hint"><strong>Click an actor</strong> to select it. The selected actor glows cyan; other actionable animals remain gold. Then <strong>click anywhere on the ground</strong> to move the selected actor there.</p>
+          <div class="selected-card">
+            <span>Selected actor</span>
+            <strong id="selectedActor">Hero rider</strong>
+          </div>
+        </section>
+
+        <section>
+          <h2>PaintingWorld systems</h2>
+          <label class="toggle"><input id="perspectiveScale" type="checkbox" checked /> <span>Perspective scale from ground depth</span></label>
+          <label class="toggle"><input id="depthSort" type="checkbox" checked /> <span>Y-depth actor sorting</span></label>
+          <label class="toggle"><input id="showGuide" type="checkbox" /> <span>Show invisible perspective guide</span></label>
+          <label class="toggle"><input id="showPaths" type="checkbox" checked /> <span>Show commanded movement path</span></label>
+        </section>
+
+        <section>
+          <h2>Runtime architecture</h2>
+          <ol class="architecture-list">
+            <li><strong>Phaser 4.2.1</strong><span>world, input, paths, tweens, depth</span></li>
+            <li><strong>PaintingWorld</strong><span>our thin perspective / occlusion mapping</span></li>
+            <li><strong>Spine 4.3</strong><span id="spineStatus">runtime loading…</span></li>
+            <li><strong>Actor package</strong><span>sprite today → Spine horse/buffalo next</span></li>
+          </ol>
+        </section>
+
+        <section class="quality-gate">
+          <h2>What must be true</h2>
+          <p><strong>Independent:</strong> buffalo and hero are real scene objects, not baked into the camera move.</p>
+          <p><strong>Perspective:</strong> movement toward the horizon automatically reduces scale.</p>
+          <p><strong>Depth:</strong> a farther actor can pass behind a nearer buffalo without special-case choreography.</p>
+          <p><strong>Replaceable art:</strong> the movement/world code does not care whether the actor is an SVG stand-in, image sequence, or Spine rig.</p>
+        </section>
+
+        <section class="metrics">
+          <h2>Live actor state</h2>
+          <dl>
+            <div><dt>Hero ground Y</dt><dd id="heroY">—</dd></div>
+            <div><dt>Hero scale</dt><dd id="heroScale">—</dd></div>
+            <div><dt>Hero depth</dt><dd id="heroDepth">—</dd></div>
+            <div><dt>FPS</dt><dd id="worldFps">—</dd></div>
+          </dl>
+        </section>
+      </aside>
+    </section>
+
+    <footer class="research-note painting-world-note">
+      <strong>Deliberate limitation:</strong> the background still contains Bierstadt's original painted animals, and the moving actors are temporary vector stand-ins. This POC is proving the <em>world behavior</em>. Production step two is a clean background plate plus purpose-authored transparent horse/buffalo Spine assets.
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/phaser@4.2.1/dist/phaser.min.js"></script>
+  <script src="https://unpkg.com/@esotericsoftware/spine-phaser-v4@4.3.*/dist/iife/spine-phaser-v4.min.js"></script>
+  <script type="module" src="./src/painting-world.js"></script>
+</body>
+</html>
