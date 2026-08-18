@@ -9,7 +9,7 @@ const timeEl = document.querySelector('#productionTime');
 
 const BASE = './assets/frontier-hero/runtime/';
 const FILES = {
-  skeleton: `${BASE}frontier-hero.skel`,
+  skeleton: `${BASE}frontier-hero.json`,
   atlas: `${BASE}frontier-hero.atlas`,
   texture: `${BASE}frontier-hero.png`,
 };
@@ -23,15 +23,15 @@ async function fileExists(url) {
   }
 }
 
-async function verifyProductionExport() {
+async function verifyProductionPackage() {
   const entries = await Promise.all(Object.entries(FILES).map(async ([name, url]) => [name, await fileExists(url)]));
   return Object.fromEntries(entries);
 }
 
 function renderBlocked(missing) {
-  stateEl.textContent = 'production export required';
+  stateEl.textContent = 'production Spine package required';
   stage.dataset.ready = 'blocked';
-  messageEl.innerHTML = `Missing real Spine export: <strong>${missing.join(', ')}</strong>. The V1 runtime-generated skeleton is intentionally not used here.`;
+  messageEl.innerHTML = `Missing Spine runtime package: <strong>${missing.join(', ')}</strong>. The V1 runtime-generated puppet is intentionally not used here.`;
   clipEl.textContent = 'BLOCKED';
   timeEl.textContent = 'asset authoring';
 }
@@ -55,7 +55,7 @@ function bootProductionHero() {
     }
 
     preload() {
-      // Official spine-phaser-v4 4.3.11+ loader contract.
+      // Official spine-phaser-v4 loader: extension determines JSON vs binary.
       this.load.spineSkeleton('frontier-hero-data', FILES.skeleton);
       this.load.spineAtlas('frontier-hero-atlas', FILES.atlas);
     }
@@ -65,13 +65,14 @@ function bootProductionHero() {
       this.add.ellipse(480, 505, 365, 58, 0x31dff2, .06)
         .setStrokeStyle(3, 0x5fefff, .72).setDepth(2);
 
-      // Default Phaser backend renders Spine attachments through Mesh2D in WebGL.
+      // Default Phaser backend renders weighted Spine attachments through Mesh2D.
       this.hero = this.add.spine(480, 500, 'frontier-hero-data', 'frontier-hero-atlas', {
         renderer: 'phaser'
       });
       this.hero.setDepth(10);
+      this.hero.setScale(.92);
 
-      // AnimationState owns the performance. Phaser does not puppet bones here.
+      // AnimationState owns the performance. Phaser does not puppet production bones.
       this.hero.animationStateData.defaultMix = 0.16;
       this.hero.animationStateData.setMix('idle_alive', 'walk', 0.18);
       this.hero.animationStateData.setMix('walk', 'idle_alive', 0.18);
@@ -91,8 +92,8 @@ function bootProductionHero() {
       });
 
       this.play('idle_alive');
-      stateEl.textContent = 'real Spine export loaded';
-      messageEl.textContent = 'Production package loaded through spineSkeleton + spineAtlas; motion is driven by Spine AnimationState.';
+      stateEl.textContent = 'Spine 4.3 runtime package loaded';
+      messageEl.textContent = 'Documented Spine JSON + atlas + painterly texture loaded through spineSkeleton + spineAtlas; motion is driven by Spine AnimationState.';
       stage.dataset.ready = 'true';
       this.bindControls();
 
@@ -177,7 +178,7 @@ function bootProductionHero() {
   });
 }
 
-const exportStatus = await verifyProductionExport();
-const missing = Object.entries(exportStatus).filter(([, ok]) => !ok).map(([name]) => name);
+const packageStatus = await verifyProductionPackage();
+const missing = Object.entries(packageStatus).filter(([, ok]) => !ok).map(([name]) => name);
 if (missing.length) renderBlocked(missing);
 else bootProductionHero();
