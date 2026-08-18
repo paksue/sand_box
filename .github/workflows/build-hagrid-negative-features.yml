@@ -1,5 +1,6 @@
 name: Build HaGRID negative landmark features
 
+# Temporary CI: produces the derived public NONE feature asset; removed before main.
 on:
   push:
     branches: [gesture-personalized-v1]
