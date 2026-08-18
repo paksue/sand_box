@@ -22,8 +22,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install MediaPipe
-        run: pip install --disable-pip-version-check mediapipe==0.10.35
+      - name: Install MediaPipe runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgles2 libegl1 libgl1 libglib2.0-0
+          pip install --disable-pip-version-check mediapipe==0.10.35
       - name: Download official HaGRIDv2 no_gesture archive and Google gesture model
         shell: bash
         run: |
