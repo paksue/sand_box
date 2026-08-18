@@ -2,9 +2,17 @@ export class IntentGate {
   constructor({
     voiceThreshold = 0.55,
     gestureThreshold = 0.72,
-    gestureThresholdByLabel = { Open_Palm: 0.60 },
+    gestureThresholdByLabel = {
+      Open_Palm: 0.60,
+      Personalized_Start: 0.60,
+      Personalized_Pause: 0.56
+    },
     gestureDwellMs = 600,
-    gestureDwellByLabel = { Open_Palm: 420 },
+    gestureDwellByLabel = {
+      Open_Palm: 420,
+      Personalized_Start: 500,
+      Personalized_Pause: 400
+    },
     gestureDropoutGraceMs = 300,
     cooldownMs = 1100,
     onAccepted = () => {},

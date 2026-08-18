@@ -1,4 +1,4 @@
-const CACHE = 'hold-core-v2.0.2';
+const CACHE = 'hold-core-v2.1.0';
 const CORE = [
   './',
   './index.html',
@@ -52,11 +52,10 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE).then((cache) => cache.put('./index.html', copy));
+          if (response.ok) caches.open(CACHE).then((cache) => cache.put(request, response.clone()));
           return response;
         })
-        .catch(() => caches.match('./index.html'))
+        .catch(() => caches.match(request).then((cached) => cached || caches.match('./index.html')))
     );
     return;
   }

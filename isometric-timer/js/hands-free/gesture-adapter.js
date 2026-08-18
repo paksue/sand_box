@@ -1,4 +1,11 @@
 import { contextualGestureIntent } from '../domain/commands.js';
+import { normalizeHandLandmarks } from './landmark-features.js';
+import { classifyPersonalizedGesture } from './personalized-classifier.js';
+import {
+  getGestureModelPreference,
+  loadPersonalizedProfile,
+  loadPublicNegativeFeatures
+} from './personalized-profile.js';
 
 const MEDIAPIPE_VERSION = '1.0.1';
 const MEDIAPIPE_MODULE = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MEDIAPIPE_VERSION}`;
@@ -11,9 +18,16 @@ const NO_GESTURE_DELAY_MS = 420;
 
 function gestureDiagnostic(label, score) {
   const percent = Math.max(0, Math.min(100, Math.round((Number(score) || 0) * 100)));
+  if (label === 'Personalized_Start') return { key: `PStart:${Math.round(percent / 5) * 5}`, text: `P1 · 👍 Start · ${percent}%` };
+  if (label === 'Personalized_Pause') return { key: `PPause:${Math.round(percent / 5) * 5}`, text: `P1 · ✋ Pause · ${percent}%` };
+  if (label === 'Personalized_None') return { key: 'PNone', text: 'P1 · No command' };
   if (label === 'Open_Palm') return { key: `Open_Palm:${Math.round(percent / 5) * 5}`, text: `✋ Open Palm · ${percent}%` };
   if (label === 'Thumb_Up') return { key: `Thumb_Up:${Math.round(percent / 5) * 5}`, text: `👍 Thumbs up · ${percent}%` };
   return { key: 'none', text: 'No gesture' };
+}
+
+function resultHandedness(result) {
+  return result?.handedness?.[0]?.[0]?.categoryName || result?.handednesses?.[0]?.[0]?.categoryName || '';
 }
 
 export class GestureAdapter {
@@ -26,14 +40,38 @@ export class GestureAdapter {
     this.recognizer = null;
     this.frameTimer = null;
     this.running = false;
+    this.personalized = null;
     this.lastDiagnosticAt = 0;
     this.lastDiagnosticKey = '';
     this.lastGestureSeenAt = 0;
   }
 
+  async loadPersonalized() {
+    if (getGestureModelPreference() !== 'personalized') return null;
+    const profile = loadPersonalizedProfile();
+    if (!profile) return null;
+    try {
+      const publicNone = await loadPublicNegativeFeatures();
+      return {
+        references: {
+          start: profile.start,
+          pause: profile.pause,
+          none: [...profile.none, ...publicNone.features]
+        },
+        counts: {
+          start: profile.start.length,
+          pause: profile.pause.length,
+          none: profile.none.length + publicNone.features.length
+        }
+      };
+    } catch {
+      return null;
+    }
+  }
+
   reportDiagnostic(label, score, { force = false } = {}) {
     const now = performance.now();
-    if (label) this.lastGestureSeenAt = now;
+    if (label && label !== 'Personalized_None') this.lastGestureSeenAt = now;
     if (!label && !force && this.lastGestureSeenAt && now - this.lastGestureSeenAt < NO_GESTURE_DELAY_MS) return;
 
     const diagnostic = gestureDiagnostic(label, score);
@@ -46,10 +84,63 @@ export class GestureAdapter {
     this.onStatus('ACTIVE', diagnostic.text);
   }
 
+  emitNoGesture(rawLabel = 'None') {
+    this.onCandidate({ intent: null, source: 'gesture', confidence: 0, timestamp: Date.now(), rawLabel });
+  }
+
+  emitPersonalized(result) {
+    const landmarks = result?.landmarks?.[0];
+    const feature = normalizeHandLandmarks(landmarks, resultHandedness(result));
+    if (!feature) {
+      this.reportDiagnostic('Personalized_None', 0);
+      this.emitNoGesture('Personalized_None');
+      return;
+    }
+
+    const classification = classifyPersonalizedGesture(feature, this.personalized.references);
+    if (!classification || classification.label === 'none') {
+      this.reportDiagnostic('Personalized_None', classification?.confidence || 0);
+      this.emitNoGesture('Personalized_None');
+      return;
+    }
+
+    const isStart = classification.label === 'start';
+    const cannedEquivalent = isStart ? 'Thumb_Up' : 'Open_Palm';
+    const rawLabel = isStart ? 'Personalized_Start' : 'Personalized_Pause';
+    this.reportDiagnostic(rawLabel, classification.confidence);
+    this.onCandidate({
+      intent: contextualGestureIntent(this.getMode(), cannedEquivalent),
+      source: 'gesture',
+      confidence: classification.confidence,
+      timestamp: Date.now(),
+      rawLabel
+    });
+  }
+
+  emitGoogle(result) {
+    const category = result?.gestures?.[0]?.[0];
+    if (category?.categoryName) {
+      const confidence = Number(category.score) || 0;
+      this.reportDiagnostic(category.categoryName, confidence);
+      this.onCandidate({
+        intent: contextualGestureIntent(this.getMode(), category.categoryName),
+        source: 'gesture',
+        confidence,
+        timestamp: Date.now(),
+        rawLabel: category.categoryName
+      });
+    } else {
+      this.reportDiagnostic(null, 0);
+      this.emitNoGesture();
+    }
+  }
+
   async start() {
     if (this.running) return;
     if (!navigator.mediaDevices?.getUserMedia) throw new Error('Camera access is unavailable in this browser.');
     this.onStatus('LOADING', 'Loading gesture controls…');
+
+    this.personalized = await this.loadPersonalized();
 
     let module;
     try {
@@ -63,9 +154,6 @@ export class GestureAdapter {
         minHandPresenceConfidence: 0.55,
         minTrackingConfidence: 0.5,
         cannedGesturesClassifierOptions: {
-          // Let the app-level IntentGate apply the stricter action thresholds.
-          // Keeping this classifier floor modest prevents Open_Palm from disappearing
-          // before the temporal gate can tolerate a brief confidence dip.
           scoreThreshold: 0.55,
           categoryAllowlist: ['Thumb_Up', 'Open_Palm']
         }
@@ -105,7 +193,7 @@ export class GestureAdapter {
     document.body.appendChild(this.video);
     await this.video.play();
     this.running = true;
-    this.reportDiagnostic(null, 0, { force: true });
+    this.reportDiagnostic(this.personalized ? 'Personalized_None' : null, 0, { force: true });
     this.loop();
   }
 
@@ -114,22 +202,8 @@ export class GestureAdapter {
     if (this.video.readyState >= 2) {
       try {
         const result = this.recognizer.recognizeForVideo(this.video, performance.now());
-        const category = result?.gestures?.[0]?.[0];
-        if (category?.categoryName) {
-          const confidence = Number(category.score) || 0;
-          this.reportDiagnostic(category.categoryName, confidence);
-          const intent = contextualGestureIntent(this.getMode(), category.categoryName);
-          this.onCandidate({
-            intent,
-            source: 'gesture',
-            confidence,
-            timestamp: Date.now(),
-            rawLabel: category.categoryName
-          });
-        } else {
-          this.reportDiagnostic(null, 0);
-          this.onCandidate({ intent: null, source: 'gesture', confidence: 0, timestamp: Date.now(), rawLabel: 'None' });
-        }
+        if (this.personalized) this.emitPersonalized(result);
+        else this.emitGoogle(result);
       } catch {
         // One bad frame should never kill the timer or the gesture loop.
       }
@@ -150,6 +224,7 @@ export class GestureAdapter {
     this.video = null;
     try { this.recognizer?.close?.(); } catch { /* no-op */ }
     this.recognizer = null;
+    this.personalized = null;
     this.lastDiagnosticAt = 0;
     this.lastDiagnosticKey = '';
     this.lastGestureSeenAt = 0;
