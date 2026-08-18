@@ -14,7 +14,7 @@ const phaseEl = document.querySelector('#sequencePhase');
 
 const BASE = './assets/frontier-hero/runtime-preview/';
 const FILES = {
-  skeleton: `${BASE}frontier-hero-preview.json`,
+  skeleton: `${BASE}frontier-hero-preview-v4.json`,
   atlas: `${BASE}frontier-hero-preview.atlas`,
 };
 
@@ -66,7 +66,7 @@ class PaintedSequenceScene extends Phaser.Scene {
 
     this.play('land_step');
     stageEl.dataset.ready = 'true';
-    stateEl.textContent = 'painted corrective poses · 34-bone / 4-IK gait rig';
+    stateEl.textContent = 'painted corrective poses · current Spine 4.3 constraints · 34 bones / 4 hoof IK';
     runtimeEl.textContent = `Phaser ${Phaser.VERSION} + Spine 4.3`;
     attachmentsEl.textContent = '9';
     if (bonesEl) bonesEl.textContent = String(this.hero.skeleton?.bones?.length || 0);
@@ -122,7 +122,6 @@ class PaintedSequenceScene extends Phaser.Scene {
     return this.hero?.animationState?.tracks?.[0] || null;
   }
 
-  // Spine 4.3 stores all constraint data in SkeletonData.constraints.
   ikConstraintData() {
     const constraints = this.hero?.skeleton?.data?.constraints || [];
     return constraints.filter((constraint) => constraint?.name?.endsWith('_ik'));
