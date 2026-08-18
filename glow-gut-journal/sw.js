@@ -1,5 +1,5 @@
-const CACHE = 'glow-v1.1';
-const ASSETS = ['./','index.html','styles.css','print.css','app.js','patch.js','db.js','manifest.webmanifest','assets/icon.svg'];
+const CACHE = 'glow-v1.2';
+const ASSETS = ['./','index.html','styles.css','print.css','app.js','patch.js','coverage.js','db.js','manifest.webmanifest','assets/icon.svg'];
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS))));
 self.addEventListener('activate', event => event.waitUntil(Promise.all([
   self.clients.claim(),
