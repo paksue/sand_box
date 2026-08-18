@@ -13,7 +13,18 @@ page.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text());
 page.on('pageerror', error => errors.push(error.message));
 
 await page.goto(new URL('hero-motion.html', base).toString(), { waitUntil: 'networkidle', timeout: 60_000 });
-await page.waitForFunction(() => document.querySelector('#heroMotionStage')?.dataset.ready === 'true', null, { timeout: 30_000 });
+try {
+  await page.waitForFunction(() => document.querySelector('#heroMotionStage')?.dataset.ready === 'true', null, { timeout: 12_000 });
+} catch (error) {
+  await page.screenshot({ path: path.join(outDir, 'hero-boot-failure.png'), fullPage: true });
+  const state = await page.evaluate(() => ({
+    ready: document.querySelector('#heroMotionStage')?.dataset.ready,
+    phaser: !!window.Phaser,
+    spine: !!window.spine,
+    api: !!window.heroMotionPOC,
+  }));
+  throw new Error(`Hero motion boot failed: ${JSON.stringify(state)}\nBrowser errors:\n${errors.join('\n') || '(none)'}\n${error.message}`);
+}
 
 const initial = await page.evaluate(() => window.heroMotionPOC.snapshot());
 if (!initial.ready) throw new Error('Hero motion POC not ready.');
