@@ -1,4 +1,4 @@
-const CACHE = 'hold-core-v2.1.0';
+const CACHE = 'hold-core-v2.2.0';
 const CORE = [
   './',
   './index.html',
@@ -27,7 +27,11 @@ const CORE = [
   './js/ui/hands-free-sheet.js',
   './js/ui/accessibility.js',
   './js/hands-free/manager.js',
-  './js/hands-free/intent-gate.js'
+  './js/hands-free/intent-gate.js',
+  './js/hands-free/gesture-adapter.js',
+  './js/hands-free/landmark-features.js',
+  './js/hands-free/distilled-classifier.js',
+  './assets/models/hold-gestures-v1-q8.json'
 ];
 
 self.addEventListener('install', (event) => {

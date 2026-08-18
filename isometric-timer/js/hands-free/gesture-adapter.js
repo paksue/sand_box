@@ -1,11 +1,6 @@
 import { contextualGestureIntent } from '../domain/commands.js';
 import { normalizeHandLandmarks } from './landmark-features.js';
-import { classifyPersonalizedGesture } from './personalized-classifier.js';
-import {
-  getGestureModelPreference,
-  loadPersonalizedProfile,
-  loadPublicNegativeFeatures
-} from './personalized-profile.js';
+import { classifyDistilledGesture, loadDistilledGestureModel } from './distilled-classifier.js';
 
 const MEDIAPIPE_VERSION = '1.0.1';
 const MEDIAPIPE_MODULE = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MEDIAPIPE_VERSION}`;
@@ -18,11 +13,11 @@ const NO_GESTURE_DELAY_MS = 420;
 
 function gestureDiagnostic(label, score) {
   const percent = Math.max(0, Math.min(100, Math.round((Number(score) || 0) * 100)));
-  if (label === 'Personalized_Start') return { key: `PStart:${Math.round(percent / 5) * 5}`, text: `P1 · 👍 Start · ${percent}%` };
-  if (label === 'Personalized_Pause') return { key: `PPause:${Math.round(percent / 5) * 5}`, text: `P1 · ✋ Pause · ${percent}%` };
-  if (label === 'Personalized_None') return { key: 'PNone', text: 'P1 · No command' };
-  if (label === 'Open_Palm') return { key: `Open_Palm:${Math.round(percent / 5) * 5}`, text: `✋ Open Palm · ${percent}%` };
-  if (label === 'Thumb_Up') return { key: `Thumb_Up:${Math.round(percent / 5) * 5}`, text: `👍 Thumbs up · ${percent}%` };
+  if (label === 'Hold_Start') return { key: `HoldStart:${Math.round(percent / 5) * 5}`, text: `Hold v1 · 👍 Start · ${percent}%` };
+  if (label === 'Hold_Pause') return { key: `HoldPause:${Math.round(percent / 5) * 5}`, text: `Hold v1 · ✋ Pause · ${percent}%` };
+  if (label === 'Hold_None') return { key: 'HoldNone', text: 'Hold v1 · No command' };
+  if (label === 'Open_Palm') return { key: `Open_Palm:${Math.round(percent / 5) * 5}`, text: `Google · ✋ Open Palm · ${percent}%` };
+  if (label === 'Thumb_Up') return { key: `Thumb_Up:${Math.round(percent / 5) * 5}`, text: `Google · 👍 Thumbs up · ${percent}%` };
   return { key: 'none', text: 'No gesture' };
 }
 
@@ -40,38 +35,15 @@ export class GestureAdapter {
     this.recognizer = null;
     this.frameTimer = null;
     this.running = false;
-    this.personalized = null;
+    this.holdModel = null;
     this.lastDiagnosticAt = 0;
     this.lastDiagnosticKey = '';
     this.lastGestureSeenAt = 0;
   }
 
-  async loadPersonalized() {
-    if (getGestureModelPreference() !== 'personalized') return null;
-    const profile = loadPersonalizedProfile();
-    if (!profile) return null;
-    try {
-      const publicNone = await loadPublicNegativeFeatures();
-      return {
-        references: {
-          start: profile.start,
-          pause: profile.pause,
-          none: [...profile.none, ...publicNone.features]
-        },
-        counts: {
-          start: profile.start.length,
-          pause: profile.pause.length,
-          none: profile.none.length + publicNone.features.length
-        }
-      };
-    } catch {
-      return null;
-    }
-  }
-
   reportDiagnostic(label, score, { force = false } = {}) {
     const now = performance.now();
-    if (label && label !== 'Personalized_None') this.lastGestureSeenAt = now;
+    if (label && label !== 'Hold_None') this.lastGestureSeenAt = now;
     if (!label && !force && this.lastGestureSeenAt && now - this.lastGestureSeenAt < NO_GESTURE_DELAY_MS) return;
 
     const diagnostic = gestureDiagnostic(label, score);
@@ -88,25 +60,25 @@ export class GestureAdapter {
     this.onCandidate({ intent: null, source: 'gesture', confidence: 0, timestamp: Date.now(), rawLabel });
   }
 
-  emitPersonalized(result) {
+  emitHold(result) {
     const landmarks = result?.landmarks?.[0];
     const feature = normalizeHandLandmarks(landmarks, resultHandedness(result));
     if (!feature) {
-      this.reportDiagnostic('Personalized_None', 0);
-      this.emitNoGesture('Personalized_None');
+      this.reportDiagnostic('Hold_None', 0);
+      this.emitNoGesture('Hold_None');
       return;
     }
 
-    const classification = classifyPersonalizedGesture(feature, this.personalized.references);
+    const classification = classifyDistilledGesture(feature, this.holdModel);
     if (!classification || classification.label === 'none') {
-      this.reportDiagnostic('Personalized_None', classification?.confidence || 0);
-      this.emitNoGesture('Personalized_None');
+      this.reportDiagnostic('Hold_None', classification?.confidence || 0);
+      this.emitNoGesture('Hold_None');
       return;
     }
 
     const isStart = classification.label === 'start';
     const cannedEquivalent = isStart ? 'Thumb_Up' : 'Open_Palm';
-    const rawLabel = isStart ? 'Personalized_Start' : 'Personalized_Pause';
+    const rawLabel = isStart ? 'Hold_Start' : 'Hold_Pause';
     this.reportDiagnostic(rawLabel, classification.confidence);
     this.onCandidate({
       intent: contextualGestureIntent(this.getMode(), cannedEquivalent),
@@ -140,7 +112,13 @@ export class GestureAdapter {
     if (!navigator.mediaDevices?.getUserMedia) throw new Error('Camera access is unavailable in this browser.');
     this.onStatus('LOADING', 'Loading gesture controls…');
 
-    this.personalized = await this.loadPersonalized();
+    // Hold v1 is built into the app. No per-browser training install is required.
+    // If the compact model asset cannot load, the existing Google classifier remains a safe fallback.
+    try {
+      this.holdModel = await loadDistilledGestureModel();
+    } catch {
+      this.holdModel = null;
+    }
 
     let module;
     try {
@@ -193,7 +171,7 @@ export class GestureAdapter {
     document.body.appendChild(this.video);
     await this.video.play();
     this.running = true;
-    this.reportDiagnostic(this.personalized ? 'Personalized_None' : null, 0, { force: true });
+    this.reportDiagnostic(this.holdModel ? 'Hold_None' : null, 0, { force: true });
     this.loop();
   }
 
@@ -202,7 +180,7 @@ export class GestureAdapter {
     if (this.video.readyState >= 2) {
       try {
         const result = this.recognizer.recognizeForVideo(this.video, performance.now());
-        if (this.personalized) this.emitPersonalized(result);
+        if (this.holdModel) this.emitHold(result);
         else this.emitGoogle(result);
       } catch {
         // One bad frame should never kill the timer or the gesture loop.
@@ -224,7 +202,7 @@ export class GestureAdapter {
     this.video = null;
     try { this.recognizer?.close?.(); } catch { /* no-op */ }
     this.recognizer = null;
-    this.personalized = null;
+    this.holdModel = null;
     this.lastDiagnosticAt = 0;
     this.lastDiagnosticKey = '';
     this.lastGestureSeenAt = 0;

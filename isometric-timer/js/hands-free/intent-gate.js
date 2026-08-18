@@ -4,14 +4,14 @@ export class IntentGate {
     gestureThreshold = 0.72,
     gestureThresholdByLabel = {
       Open_Palm: 0.60,
-      Personalized_Start: 0.60,
-      Personalized_Pause: 0.56
+      Hold_Start: 0.75,
+      Hold_Pause: 0.75
     },
     gestureDwellMs = 600,
     gestureDwellByLabel = {
       Open_Palm: 420,
-      Personalized_Start: 500,
-      Personalized_Pause: 400
+      Hold_Start: 500,
+      Hold_Pause: 400
     },
     gestureDropoutGraceMs = 300,
     cooldownMs = 1100,
