@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const root = path.resolve('frontier-painted-sprite-lab');
 const manifest = JSON.parse(await fs.readFile(path.join(root, 'assets/frontier-hero/manifest.json'), 'utf8'));
-const rig = JSON.parse(await fs.readFile(path.join(root, 'assets/frontier-hero/source/frontier-hero-rig-template.json'), 'utf8'));
+const rig = JSON.parse(await fs.readFile(path.join(root, 'assets/frontier-hero/source/frontier-hero-rig-template-v3.json'), 'utf8'));
 
 if (manifest.runtime.phaser !== '4.2.1') throw new Error(`Unexpected Phaser contract: ${manifest.runtime.phaser}`);
 if (!manifest.runtime.spineRuntime.includes('4.3.11')) throw new Error(`Unexpected Spine runtime contract: ${manifest.runtime.spineRuntime}`);
@@ -16,9 +16,9 @@ const boneNames = new Set((rig.bones || []).map((b) => b.name));
 for (const name of manifest.rig.requiredBones) {
   if (!boneNames.has(name)) throw new Error(`Rig template missing required bone: ${name}`);
 }
-const ikNames = new Set((rig.ik || []).map((ik) => ik.name));
+const ikNames = new Set((rig.constraints || []).filter((constraint) => constraint.type === 'ik').map((constraint) => constraint.name));
 for (const name of manifest.rig.requiredIK) {
-  if (!ikNames.has(name)) throw new Error(`Rig template missing required IK constraint: ${name}`);
+  if (!ikNames.has(name)) throw new Error(`Rig template missing required current-schema IK constraint: ${name}`);
 }
 const clips = new Set(Object.keys(rig.animations || {}));
 for (const name of manifest.animations.required) {
