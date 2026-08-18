@@ -1,6 +1,6 @@
 {
   "skeleton": {
-    "hash": "frontier-hero-painted-sequence-v4-current-spine43",
+    "hash": "frontier-hero-ai-painted-sequence-v4-eight-painted-gait-phases",
     "spine": "4.3.0",
     "x": -96,
     "y": -72,
@@ -44,14 +44,14 @@
     {"name":"feathers_1","parent":"rider_head","x":6,"y":9,"length":31,"rotation":130},
     {"name":"feathers_2","parent":"feathers_1","x":31,"y":0,"length":29,"rotation":-6}
   ],
-  "slots": [
-    {"name":"hero","bone":"root","attachment":"idle_alive"}
-  ],
   "constraints": [
     {"type":"ik","name":"front_near_leg_ik","bones":["front_near_upper","front_near_lower"],"target":"front_near_ik","mix":1,"bendPositive":true,"softness":4},
     {"type":"ik","name":"front_far_leg_ik","bones":["front_far_upper","front_far_lower"],"target":"front_far_ik","mix":1,"bendPositive":true,"softness":4},
     {"type":"ik","name":"hind_near_leg_ik","bones":["hind_near_upper","hind_near_lower"],"target":"hind_near_ik","mix":1,"bendPositive":false,"softness":5},
     {"type":"ik","name":"hind_far_leg_ik","bones":["hind_far_upper","hind_far_lower"],"target":"hind_far_ik","mix":1,"bendPositive":false,"softness":5}
+  ],
+  "slots": [
+    {"name":"hero","bone":"root","attachment":"idle_alive"}
   ],
   "skins": [
     {"name":"default","attachments":{"hero":{
@@ -63,7 +63,15 @@
       "land_03":{"width":192,"height":144},
       "land_04":{"width":192,"height":144},
       "land_05":{"width":192,"height":144},
-      "land_06":{"width":192,"height":144}
+      "land_06":{"width":192,"height":144},
+      "gait_01":{"width":192,"height":144},
+      "gait_02":{"width":192,"height":144},
+      "gait_03":{"width":192,"height":144},
+      "gait_04":{"width":192,"height":144},
+      "gait_05":{"width":192,"height":144},
+      "gait_06":{"width":192,"height":144},
+      "gait_07":{"width":192,"height":144},
+      "gait_08":{"width":192,"height":144}
     }}}
   ],
   "events": {
@@ -87,26 +95,31 @@
         "root":{"translate":[{}, {"time":0.8,"y":1.2}, {"time":1.6}, {"time":2.4,"y":-0.8}, {"time":3.2}]},
         "horse_body":{"rotate":[{"angle":0},{"time":1.6,"angle":0.7},{"time":3.2,"angle":0}]},
         "neck":{"rotate":[{"angle":0},{"time":0.9,"angle":1.7},{"time":2.1,"angle":-1.1},{"time":3.2,"angle":0}]},
-        "rider_torso":{"rotate":[{"angle":0},{"time":1.0,"angle":-0.8},{"time":2.0,"angle":0.7},{"time":3.2,"angle":0}]},
+        "rider_torso":{"rotate":[{"angle":0},{"time":1,"angle":-0.8},{"time":2,"angle":0.7},{"time":3.2,"angle":0}]},
         "tail_1":{"rotate":[{"angle":-2},{"time":0.8,"angle":4},{"time":1.8,"angle":-3},{"time":2.7,"angle":3},{"time":3.2,"angle":-2}]}
       }
     },
     "walk": {
-      "slots":{"hero":{"attachment":[{"name":"walk"},{"time":1.0,"name":"walk"}]}},
+      "slots":{"hero":{"attachment":[
+        {"name":"gait_01"},
+        {"time":0.125,"name":"gait_02"},
+        {"time":0.25,"name":"gait_03"},
+        {"time":0.375,"name":"gait_04"},
+        {"time":0.5,"name":"gait_05"},
+        {"time":0.625,"name":"gait_06"},
+        {"time":0.75,"name":"gait_07"},
+        {"time":0.875,"name":"gait_08"},
+        {"time":1,"name":"gait_01"}
+      ]}},
       "bones":{
-        "root":{"translate":[{}, {"time":0.125,"y":1.2}, {"time":0.25,"y":2.0}, {"time":0.375,"y":0.8}, {"time":0.5}, {"time":0.625,"y":1.2}, {"time":0.75,"y":2.0}, {"time":0.875,"y":0.8}, {"time":1.0}]},
-        "horse_body":{"rotate":[{"angle":0},{"time":0.25,"angle":1.1},{"time":0.5,"angle":0},{"time":0.75,"angle":-1.0},{"time":1.0,"angle":0}]},
-        "front_near_ik":{"translate":[{"x":0,"y":0},{"time":0.125,"x":-2,"y":0},{"time":0.25,"x":8,"y":12},{"time":0.375,"x":20,"y":8},{"time":0.5,"x":30,"y":0},{"time":0.625,"x":24,"y":0},{"time":0.75,"x":16,"y":0},{"time":0.875,"x":8,"y":0},{"time":1.0,"x":0,"y":0}]},
-        "front_far_ik":{"translate":[{"x":30,"y":0},{"time":0.125,"x":24,"y":0},{"time":0.25,"x":16,"y":0},{"time":0.375,"x":8,"y":0},{"time":0.5,"x":0,"y":0},{"time":0.625,"x":-2,"y":0},{"time":0.75,"x":8,"y":12},{"time":0.875,"x":20,"y":8},{"time":1.0,"x":30,"y":0}]},
-        "hind_near_ik":{"translate":[{"x":28,"y":0},{"time":0.125,"x":22,"y":0},{"time":0.25,"x":14,"y":0},{"time":0.375,"x":6,"y":0},{"time":0.5,"x":0,"y":0},{"time":0.625,"x":-2,"y":0},{"time":0.75,"x":7,"y":10},{"time":0.875,"x":18,"y":7},{"time":1.0,"x":28,"y":0}]},
-        "hind_far_ik":{"translate":[{"x":0,"y":0},{"time":0.125,"x":-2,"y":0},{"time":0.25,"x":7,"y":10},{"time":0.375,"x":18,"y":7},{"time":0.5,"x":28,"y":0},{"time":0.625,"x":22,"y":0},{"time":0.75,"x":14,"y":0},{"time":0.875,"x":6,"y":0},{"time":1.0,"x":0,"y":0}]},
-        "neck":{"rotate":[{"angle":0},{"time":0.25,"angle":-2.2},{"time":0.5,"angle":0},{"time":0.75,"angle":2.0},{"time":1.0,"angle":0}]},
-        "rider_torso":{"rotate":[{"angle":0},{"time":0.31,"angle":-1.8},{"time":0.56,"angle":1.4},{"time":0.82,"angle":-1.0},{"time":1.0,"angle":0}]},
-        "spear":{"rotate":[{"angle":0},{"time":0.36,"angle":-2.8},{"time":0.66,"angle":2.1},{"time":1.0,"angle":0}]},
-        "tail_1":{"rotate":[{"angle":-4},{"time":0.25,"angle":8},{"time":0.5,"angle":-6},{"time":0.75,"angle":7},{"time":1.0,"angle":-4}]}
+        "root":{"translate":[{}, {"time":0.125,"y":1.2}, {"time":0.25,"y":2}, {"time":0.375,"y":0.8}, {"time":0.5}, {"time":0.625,"y":1.2}, {"time":0.75,"y":2}, {"time":0.875,"y":0.8}, {"time":1}]},
+        "front_near_ik":{"translate":[{"x":0,"y":0},{"time":0.125,"x":-2,"y":0},{"time":0.25,"x":8,"y":12},{"time":0.375,"x":20,"y":8},{"time":0.5,"x":30,"y":0},{"time":0.625,"x":24,"y":0},{"time":0.75,"x":16,"y":0},{"time":0.875,"x":8,"y":0},{"time":1,"x":0,"y":0}]},
+        "front_far_ik":{"translate":[{"x":30,"y":0},{"time":0.125,"x":24,"y":0},{"time":0.25,"x":16,"y":0},{"time":0.375,"x":8,"y":0},{"time":0.5,"x":0,"y":0},{"time":0.625,"x":-2,"y":0},{"time":0.75,"x":8,"y":12},{"time":0.875,"x":20,"y":8},{"time":1,"x":30,"y":0}]},
+        "hind_near_ik":{"translate":[{"x":28,"y":0},{"time":0.125,"x":22,"y":0},{"time":0.25,"x":14,"y":0},{"time":0.375,"x":6,"y":0},{"time":0.5,"x":0,"y":0},{"time":0.625,"x":-2,"y":0},{"time":0.75,"x":7,"y":10},{"time":0.875,"x":18,"y":7},{"time":1,"x":28,"y":0}]},
+        "hind_far_ik":{"translate":[{"x":0,"y":0},{"time":0.125,"x":-2,"y":0},{"time":0.25,"x":7,"y":10},{"time":0.375,"x":18,"y":7},{"time":0.5,"x":28,"y":0},{"time":0.625,"x":22,"y":0},{"time":0.75,"x":14,"y":0},{"time":0.875,"x":6,"y":0},{"time":1,"x":0,"y":0}]}
       },
       "events":[
-        {"time":0.0,"name":"walk_contact_near"},
+        {"time":0,"name":"walk_contact_near"},
         {"time":0.125,"name":"walk_load_near"},
         {"time":0.25,"name":"walk_passing_near"},
         {"time":0.375,"name":"walk_push_near"},
@@ -121,42 +134,24 @@
         {"name":"land_01"},
         {"time":0.16,"name":"land_02"},
         {"time":0.32,"name":"land_03"},
-        {"time":0.50,"name":"land_04"},
+        {"time":0.5,"name":"land_04"},
         {"time":0.72,"name":"land_05"},
         {"time":1.02,"name":"land_06"},
         {"time":1.25,"name":"land_06"}
       ]}},
       "bones":{
-        "root":{"translate":[{"y":16},{"time":0.16,"y":7},{"time":0.32,"x":2,"y":-4},{"time":0.50,"x":11,"y":-2},{"time":0.72,"x":28,"y":1},{"time":1.02,"x":48},{"time":1.25,"x":52}]},
-        "horse_body":{"rotate":[{"angle":-4},{"time":0.32,"angle":2},{"time":0.50,"angle":6.5},{"time":0.72,"angle":1.5},{"time":1.25,"angle":0}]},
+        "root":{"translate":[{"y":16},{"time":0.16,"y":7},{"time":0.32,"x":2,"y":-4},{"time":0.5,"x":11,"y":-2},{"time":0.72,"x":28,"y":1},{"time":1.02,"x":48},{"time":1.25,"x":52}]},
         "front_near_ik":{"translate":[{"x":-4,"y":20},{"time":0.16,"x":0,"y":8},{"time":0.32,"x":0,"y":0},{"time":0.72,"x":0,"y":0},{"time":1.25,"x":26,"y":0}]},
-        "front_far_ik":{"translate":[{"x":12,"y":22},{"time":0.32,"x":8,"y":4},{"time":0.50,"x":7,"y":0},{"time":0.72,"x":24,"y":12},{"time":1.25,"x":36,"y":0}]},
-        "hind_near_ik":{"translate":[{"x":-6,"y":24},{"time":0.40,"x":-2,"y":9},{"time":0.58,"x":0,"y":0},{"time":0.82,"x":26,"y":0},{"time":1.25,"x":40,"y":0}]},
-        "hind_far_ik":{"translate":[{"x":10,"y":26},{"time":0.42,"x":7,"y":11},{"time":0.62,"x":5,"y":0},{"time":0.88,"x":20,"y":10},{"time":1.25,"x":34,"y":0}]},
-        "neck":{"rotate":[{"angle":-5},{"time":0.32,"angle":5},{"time":0.50,"angle":10},{"time":0.72,"angle":-2},{"time":1.25,"angle":0}]},
-        "rider_torso":{"rotate":[{"angle":-2},{"time":0.40,"angle":-4},{"time":0.60,"angle":8},{"time":0.86,"angle":3},{"time":1.25,"angle":0}]},
-        "spear":{"rotate":[{"angle":0},{"time":0.50,"angle":-5},{"time":0.72,"angle":-10},{"time":0.94,"angle":6},{"time":1.25,"angle":0}]},
-        "tail_1":{"rotate":[{"angle":-6},{"time":0.40,"angle":-8},{"time":0.70,"angle":12},{"time":0.94,"angle":4},{"time":1.25,"angle":0}]},
-        "hair_1":{"rotate":[{"angle":0},{"time":0.50,"angle":-5},{"time":0.78,"angle":8},{"time":1.25,"angle":0}]},
-        "feathers_1":{"rotate":[{"angle":0},{"time":0.58,"angle":-6},{"time":0.84,"angle":9},{"time":1.25,"angle":0}]}
+        "hind_near_ik":{"translate":[{"x":-6,"y":24},{"time":0.4,"x":-2,"y":9},{"time":0.58,"x":0,"y":0},{"time":0.82,"x":26,"y":0},{"time":1.25,"x":40,"y":0}]}
       },
-      "events":[
-        {"time":0.16,"name":"hoof_front_contact"},
-        {"time":0.32,"name":"impact"},
-        {"time":0.72,"name":"step"},
-        {"time":0.93,"name":"hoof_rear_contact"}
-      ]
+      "events":[{"time":0.32,"name":"hoof_front_contact"},{"time":0.33,"name":"impact"},{"time":0.58,"name":"hoof_rear_contact"},{"time":0.72,"name":"step"}]
     },
     "rear_action": {
       "slots":{"hero":{"attachment":[{"name":"rear_action"},{"time":1.35,"name":"rear_action"}]}},
       "bones":{
-        "root":{"translate":[{}, {"time":0.34,"y":12}, {"time":0.72,"y":22}, {"time":1.10,"y":8}, {"time":1.35}]},
-        "horse_body":{"rotate":[{"angle":0},{"time":0.50,"angle":18},{"time":0.80,"angle":22},{"time":1.35,"angle":0}]},
-        "front_near_ik":{"translate":[{}, {"time":0.40,"x":10,"y":36},{"time":0.80,"x":5,"y":46},{"time":1.35}]},
-        "front_far_ik":{"translate":[{}, {"time":0.42,"x":-2,"y":33},{"time":0.82,"x":11,"y":41},{"time":1.35}]},
-        "neck":{"rotate":[{"angle":0},{"time":0.55,"angle":-12},{"time":0.90,"angle":-8},{"time":1.35,"angle":0}]},
-        "rider_torso":{"rotate":[{"angle":0},{"time":0.62,"angle":-9},{"time":0.94,"angle":4},{"time":1.35,"angle":0}]},
-        "spear":{"rotate":[{"angle":0},{"time":0.70,"angle":-12},{"time":1.02,"angle":6},{"time":1.35,"angle":0}]}
+        "root":{"translate":[{}, {"time":0.45,"y":14},{"time":0.8,"y":22},{"time":1.35}],"rotate":[{}, {"time":0.55,"angle":7},{"time":0.9,"angle":9},{"time":1.35}]},
+        "front_near_ik":{"translate":[{}, {"time":0.4,"x":10,"y":36},{"time":0.8,"x":5,"y":46},{"time":1.35}]},
+        "front_far_ik":{"translate":[{}, {"time":0.42,"x":-2,"y":33},{"time":0.82,"x":11,"y":41},{"time":1.35}]}
       }
     }
   }
