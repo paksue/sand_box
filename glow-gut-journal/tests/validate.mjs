@@ -5,8 +5,8 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
 const required = [
-  'index.html','styles.css','print.css','app.js','patch.js','coverage.js','db.js','sw.js',
-  'manifest.webmanifest','assets/icon.svg','docs/PDF_COVERAGE.md','docs/PRD.md','AGENTS.md'
+  'index.html','styles.css','qa-fixes.css','print.css','app.js','patch.js','qa-fixes.js','qa-data-integrity.js','coverage.js','qa-summary-stable.js','db.js','sw.js',
+  'manifest.webmanifest','assets/icon.svg','docs/PDF_COVERAGE.md','docs/PRD.md','AGENTS.md','playwright.config.mjs','tests/playtest.spec.mjs'
 ];
 for (const file of required) {
   if (!fs.existsSync(path.join(root, file))) throw new Error(`Missing required file: ${file}`);
@@ -20,8 +20,11 @@ for (const sourceField of ['| Name |', '| Start date |', '| Appetite normal/low 
 
 const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const patch = fs.readFileSync(path.join(root, 'patch.js'), 'utf8');
+const qaFixes = fs.readFileSync(path.join(root, 'qa-fixes.js'), 'utf8');
+const qaIntegrity = fs.readFileSync(path.join(root, 'qa-data-integrity.js'), 'utf8');
+const qaSummary = fs.readFileSync(path.join(root, 'qa-summary-stable.js'), 'utf8');
 const sourceExtras = fs.readFileSync(path.join(root, 'coverage.js'), 'utf8');
-const implementation = `${app}\n${patch}\n${sourceExtras}`;
+const implementation = `${app}\n${patch}\n${qaFixes}\n${qaIntegrity}\n${qaSummary}\n${sourceExtras}`;
 for (const token of [
   'periodStartedToday','daysLate','spotting','crampsPain','heldPoop','satAfterMeal',
   'feetSupported','urineColor','appetite','waterRating','fiberRating','prunesSummary',
@@ -30,18 +33,39 @@ for (const token of [
   if (!implementation.includes(token)) throw new Error(`Required source field missing from implementation: ${token}`);
 }
 
+for (const qaToken of ['confirmedNoPoopDays','unconfirmedDays','inferMealType','showEditor','Not checked','fewSips','stopImmediatePropagation','tracking period']) {
+  if (!qaFixes.includes(qaToken)) throw new Error(`Playtest fix missing contract token: ${qaToken}`);
+}
+for (const integrityToken of ['data-form="wrap"','Not checked','repairTimelineText','worstBloat']) {
+  if (!qaIntegrity.includes(integrityToken)) throw new Error(`Data-integrity fix missing contract token: ${integrityToken}`);
+}
+for (const summaryToken of ['confirmedNoPoopDays','Missing entries are not treated as','Best stool type (user review)','qa-summary-stable']) {
+  const haystack = `${qaSummary}\n${indexSafe(root)}`;
+  if (!haystack.includes(summaryToken)) throw new Error(`Stable summary fix missing contract token: ${summaryToken}`);
+}
+
 for (const forbidden of ['XMLHttpRequest', 'navigator.sendBeacon']) {
   if (implementation.includes(forbidden)) throw new Error(`Unexpected network-capable code in journal modules: ${forbidden}`);
 }
 
 const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-for (const asset of ['styles.css','print.css','app.js','patch.js','coverage.js','manifest.webmanifest']) {
+for (const asset of ['styles.css','qa-fixes.css','print.css','app.js','patch.js','qa-fixes.js','qa-data-integrity.js','coverage.js','qa-summary-stable.js','manifest.webmanifest']) {
   if (!index.includes(asset)) throw new Error(`index.html does not reference required asset: ${asset}`);
 }
 
 const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
-for (const asset of ['styles.css','print.css','app.js','patch.js','coverage.js','db.js']) {
+for (const asset of ['styles.css','qa-fixes.css','print.css','app.js','patch.js','qa-fixes.js','qa-data-integrity.js','coverage.js','qa-summary-stable.js','db.js']) {
   if (!sw.includes(asset)) throw new Error(`Offline cache missing asset: ${asset}`);
 }
 
-console.log('Glow validation passed: source coverage, required local files, offline assets, and core fields are present.');
+const playtest = fs.readFileSync(path.join(root, 'tests/playtest.spec.mjs'), 'utf8');
+for (const assertion of ['estimatedOz','Entry options','tracking period','confirmed no-poop','worstBloat']) {
+  if (!playtest.includes(assertion)) throw new Error(`Browser playtest missing scenario: ${assertion}`);
+}
+
+console.log('Glow validation passed: source coverage, playtest fixes, browser scenarios, local files, offline assets, and core fields are present.');
+
+function indexSafe(rootDir) {
+  const p = path.join(rootDir, 'index.html');
+  return fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '';
+}
