@@ -27,6 +27,7 @@ jobs:
           node --check glow-gut-journal/coverage.js
           node --check glow-gut-journal/qa-summary-stable.js
           node --check glow-gut-journal/polish.js
+          node --check glow-gut-journal/settle.js
           node --check glow-gut-journal/db.js
           node --check glow-gut-journal/sw.js
           node --check glow-gut-journal/tests/playtest.spec.mjs
