@@ -8,11 +8,11 @@ Expected production files:
 - `frontier-hero.atlas` — Spine texture-atlas metadata.
 - `frontier-hero.png` — packed painterly texture page. Additional numbered PNG pages are allowed if packing requires them.
 
-Phaser 4.2.1 loads the package with the official Spine plugin using:
+Phaser 4.2.1 + spine-phaser-v4 4.3.11+ loads the package with the official Spine scene plugin using:
 
-- `this.load.spineBinary('frontier-hero', './assets/frontier-hero/runtime/frontier-hero.skel')`
+- `this.load.spineSkeleton('frontier-hero-data', './assets/frontier-hero/runtime/frontier-hero.skel')`
 - `this.load.spineAtlas('frontier-hero-atlas', './assets/frontier-hero/runtime/frontier-hero.atlas')`
 
-The actor is then created as a real `SpineGameObject` and animations are played through its Spine `AnimationState`.
+The actor is then created as a real `SpineGameObject` and animations are played through its Spine `AnimationState`. The WebGL `phaser` renderer backend is used so weighted meshes render through Phaser's Mesh2D system.
 
 Do not hand-author a fake `.skel` file and do not substitute a sprite sheet here. The purpose of this folder is to make the production boundary explicit and auditable.
