@@ -5,6 +5,10 @@ on:
     branches: [gesture-personalized-v1]
     paths:
       - '.github/workflows/build-hagrid-negative-features.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-hagrid-negative-features.yml'
 
 permissions:
   contents: read
@@ -51,11 +55,9 @@ jobs:
               pts = [[float(p.x), float(p.y), float(p.z)] for p in landmarks]
               wx, wy, wz = pts[0]
               rel = [[x-wx, y-wy, z-wz] for x,y,z in pts]
-              # Mirror left hands into a right-hand canonical coordinate system.
               if str(handedness).lower().startswith('left'):
                   for p in rel:
                       p[0] *= -1.0
-              # Canonicalize in-plane wrist orientation using middle-finger MCP (#9).
               vx, vy = rel[9][0], rel[9][1]
               angle = math.atan2(vy, vx)
               delta = -math.pi/2 - angle
