@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Frontier Hero · Painted Sequence Benchmark</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./sequence-hero.css" />
+</head>
+<body>
+  <main class="lab-shell sequence-shell">
+    <header class="lab-header">
+      <div>
+        <p class="eyebrow">FRONTIER VISUAL R&D · PAINTED MOTION BENCHMARK</p>
+        <h1>Paint every important pose. Let Spine perform it.</h1>
+        <p class="lede">This benchmark uses purpose-created horse/rider artwork rather than slicing the historical painting. Spine AnimationState swaps authored painted key poses; Phaser only hosts the actor.</p>
+      </div>
+      <div class="header-actions">
+        <a class="repo-link" href="./production-hero.html">Production rig contract</a>
+        <a class="repo-link" href="./hero-motion.html">Old crop-rig POC</a>
+      </div>
+    </header>
+
+    <section class="sequence-grid">
+      <section class="sequence-stage-card">
+        <div class="card-label"><span>LIVE SPINE ACTOR</span><strong id="sequenceState">loading…</strong></div>
+        <div id="sequenceHeroStage" class="sequence-stage" data-ready="false">
+          <div id="sequenceHeroMount"></div>
+          <div class="sequence-ground"></div>
+          <div class="sequence-caption">
+            <strong id="sequenceClip">idle_alive</strong>
+            <span id="sequenceTime">0.00 s</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="controls-panel sequence-controls">
+        <h2>Painted motion test</h2>
+        <p class="hint">The key quality experiment is <strong>Land + step</strong>: six independently painted poses authored as a real Spine attachment timeline instead of deforming the old crop.</p>
+        <div class="button-stack">
+          <button data-sequence-clip="idle_alive" type="button">Alive idle</button>
+          <button data-sequence-clip="walk" type="button">Walk pose / body rhythm</button>
+          <button data-sequence-clip="land_step" class="active" type="button">Land + step</button>
+          <button data-sequence-clip="rear_action" type="button">Rear action</button>
+        </div>
+        <h3>Inspection speed</h3>
+        <div class="speed-row">
+          <button class="sequence-speed" data-speed="0.25">0.25×</button>
+          <button class="sequence-speed" data-speed="0.5">0.5×</button>
+          <button class="sequence-speed active" data-speed="1">1×</button>
+        </div>
+        <button id="sequenceReplay" type="button">Replay current</button>
+        <button id="sequencePause" type="button">Pause</button>
+
+        <dl class="sequence-metrics">
+          <div><dt>Runtime</dt><dd id="sequenceRuntime">—</dd></div>
+          <div><dt>Painted attachments</dt><dd id="sequenceAttachments">—</dd></div>
+          <div><dt>Impact events</dt><dd id="sequenceImpacts">0</dd></div>
+          <div><dt>Renderer</dt><dd>Phaser Mesh2D</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="benchmark-banner sequence-note">
+      <strong>Why this exists</strong>
+      <span>A full-frame painted pose can preserve anatomy and brushwork that a weak cut-up rig destroys. If this looks materially better, the final production actor can combine this attachment-swap technique for extreme poses with weighted meshes + IK for reusable locomotion.</span>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/phaser@4.2.1/dist/phaser.min.js"></script>
+  <script src="https://unpkg.com/@esotericsoftware/spine-phaser-v4@4.3.*/dist/iife/spine-phaser-v4.min.js"></script>
+  <script type="module" src="./src/sequence-hero.js"></script>
+</body>
+</html>
