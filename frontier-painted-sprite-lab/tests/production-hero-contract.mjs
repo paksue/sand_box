@@ -61,6 +61,11 @@ if (!runtimePresent) {
   }));
   if (!state.label?.includes('production export required')) throw new Error(`Unexpected production state: ${state.label}`);
   if (!state.message?.includes('Missing real Spine export')) throw new Error(`Missing export diagnostic not shown: ${state.message}`);
+
+  // HEAD probes for the deliberately absent .skel/.atlas/.png emit browser 404 console messages.
+  // They are expected only while the production gate is blocked; all other errors still fail.
+  const unexpected = errors.filter((message) => !message.includes('Failed to load resource: the server responded with a status of 404'));
+  if (unexpected.length) throw new Error(`Unexpected browser errors:\n${unexpected.join('\n')}`);
 } else {
   await page.waitForFunction(() => document.querySelector('#productionHeroStage')?.dataset.ready === 'true' && window.productionHeroPOC, null, { timeout: 15_000 });
   state = await page.evaluate(() => window.productionHeroPOC.snapshot());
@@ -86,9 +91,9 @@ if (!runtimePresent) {
   await page.waitForTimeout(800);
   const slow = await page.evaluate(() => window.productionHeroPOC.snapshot());
   if (slow.speed !== 0.25 || slow.clip !== 'land_step') throw new Error(`Slow-motion QA path failed: ${JSON.stringify(slow)}`);
-}
 
-if (errors.length) throw new Error(`Browser errors:\n${errors.join('\n')}`);
+  if (errors.length) throw new Error(`Browser errors:\n${errors.join('\n')}`);
+}
 
 console.log(JSON.stringify({
   status: 'ok',
