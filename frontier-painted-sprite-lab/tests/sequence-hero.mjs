@@ -1,4 +1,5 @@
 import { chromium } from 'playwright';
+import { PNG } from 'pngjs';
 import fs from 'node:fs/promises';
 
 const base = process.env.PAINTED_SPRITE_URL || 'http://127.0.0.1:4175/';
@@ -42,6 +43,27 @@ if (!walkB.gaitPhase || walkB.gaitPhase === '—') throw new Error(`Walk gait ph
 if (!walkA.attachment?.startsWith('gait_')) throw new Error(`Walk A is not a painted gait attachment: ${walkA.attachment}`);
 if (!walkB.attachment?.startsWith('gait_')) throw new Error(`Walk B is not a painted gait attachment: ${walkB.attachment}`);
 if (walkA.attachment === walkB.attachment) throw new Error(`Visible horse pose did not change across gait: ${walkA.attachment}`);
+
+// Render QA: state/attachment tests alone once allowed a broken atlas to pass while the actor rendered as an opaque black quad.
+const canvasDataUrl = await page.evaluate(() => document.querySelector('#sequenceHeroMount canvas')?.toDataURL('image/png') || null);
+if (!canvasDataUrl) throw new Error('Unable to capture Spine canvas for pixel QA.');
+const canvasPng = PNG.sync.read(Buffer.from(canvasDataUrl.split(',')[1], 'base64'));
+let opaque = 0;
+let luminance = 0;
+for (let i = 0; i < canvasPng.data.length; i += 4) {
+  const a = canvasPng.data[i + 3];
+  if (a > 24) {
+    opaque += 1;
+    luminance += 0.2126 * canvasPng.data[i] + 0.7152 * canvasPng.data[i + 1] + 0.0722 * canvasPng.data[i + 2];
+  }
+}
+const totalPixels = canvasPng.width * canvasPng.height;
+const opaqueRatio = opaque / totalPixels;
+const meanOpaqueLuminance = opaque ? luminance / opaque : 0;
+if (opaqueRatio < 0.01) throw new Error(`Gait actor is effectively blank: opaqueRatio=${opaqueRatio.toFixed(4)}`);
+if (opaqueRatio > 0.28) throw new Error(`Gait actor rendered as an oversized opaque quad: opaqueRatio=${opaqueRatio.toFixed(4)}`);
+if (meanOpaqueLuminance < 18) throw new Error(`Gait actor pixels are effectively black: luminance=${meanOpaqueLuminance.toFixed(2)}`);
+
 await page.screenshot({ path: 'frontier-painted-sprite-lab/test-results-sequence/sequence-walk-gait.png', fullPage: true });
 
 // Preserve the painted corrective-pose landing benchmark and inspect it in slow motion.
@@ -58,5 +80,15 @@ if (later.trackTime <= contact.trackTime) throw new Error('Land-step timeline di
 if (!later.attachment?.startsWith('land_')) throw new Error(`Expected painted land attachment, got ${later.attachment}`);
 if (errors.length) throw new Error(`Browser errors:\n${errors.join('\n')}`);
 
-console.log(JSON.stringify({ status: 'ok', initial, gaitDelta: Number(gaitDelta.toFixed(2)), walkA, walkB, contact, later }, null, 2));
+console.log(JSON.stringify({
+  status: 'ok',
+  initial,
+  gaitDelta: Number(gaitDelta.toFixed(2)),
+  opaqueRatio: Number(opaqueRatio.toFixed(4)),
+  meanOpaqueLuminance: Number(meanOpaqueLuminance.toFixed(2)),
+  walkA,
+  walkB,
+  contact,
+  later
+}, null, 2));
 await browser.close();
