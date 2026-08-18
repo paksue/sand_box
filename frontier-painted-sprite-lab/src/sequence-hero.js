@@ -179,7 +179,7 @@ new Phaser.Game({
   height: 600,
   parent: 'sequenceHeroMount',
   transparent: true,
-  render: { antialias: true, roundPixels: false },
+  render: { antialias: true, roundPixels: false, preserveDrawingBuffer: true },
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   plugins: { scene: [{ key: 'spine.SpinePlugin', plugin: spineRuntime.SpinePlugin, mapping: 'spine' }] },
   scene: [PaintedSequenceScene],
