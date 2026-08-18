@@ -17,18 +17,22 @@ async function addMeal(page) {
 test('persist iPhone-size UI review screenshots', async ({ page }, testInfo) => {
   await onboard(page);
   await addMeal(page);
-  await page.screenshot({ path: testInfo.outputPath('today-mobile.png'), fullPage: true });
+  await page.waitForTimeout(2400);
+  await page.screenshot({ path: testInfo.outputPath('today-mobile.png') });
 
   await page.locator('[data-log="poop"]').click();
-  await page.screenshot({ path: testInfo.outputPath('bristol-mobile.png'), fullPage: true });
+  await page.screenshot({ path: testInfo.outputPath('bristol-mobile.png') });
   await page.locator('[data-bristol="4"]').click();
   await page.locator('form[data-form="poop"]').getByRole('button', { name: 'Save poop' }).click();
+  await page.waitForTimeout(2400);
 
   await page.locator('[data-tab="insights"]').click();
-  await page.screenshot({ path: testInfo.outputPath('insights-mobile.png'), fullPage: true });
+  await page.waitForTimeout(180);
+  await page.screenshot({ path: testInfo.outputPath('insights-mobile.png') });
 
   await page.locator('[data-tab="more"]').click();
   await page.locator('[data-action="doctor-report"]').click();
   await expect(page.locator('#polish-report-controls')).toBeVisible();
-  await page.screenshot({ path: testInfo.outputPath('doctor-report-mobile.png'), fullPage: true });
+  await page.waitForTimeout(180);
+  await page.screenshot({ path: testInfo.outputPath('doctor-report-mobile.png') });
 });
