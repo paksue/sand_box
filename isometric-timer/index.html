@@ -169,7 +169,7 @@
         <label class="capability-row">
           <span class="capability-copy">
             <strong>Hand gestures</strong>
-            <small>Hold 👍 to start/resume. Hold ✋ to pause.</small>
+            <small>Hold 👍 to start/resume. Hold ✋ to pause. Uses Personalized v1 when installed; otherwise Google default.</small>
             <span class="capability-state" id="gestureStatus" data-state="off">Off</span>
           </span>
           <span class="switch"><input id="gestureToggle" type="checkbox"><span aria-hidden="true"></span></span>
@@ -178,7 +178,7 @@
 
       <div class="privacy-note">
         <strong>Designed for local processing.</strong>
-        <p>Hold does not store or upload microphone audio, camera frames, transcripts, or hand landmarks. Optional model files are downloaded only when enabled. MediaPipe processes image input on-device; its package may send library performance/usage metrics to Google as described in MediaPipe's privacy notice.</p>
+        <p>Hold does not upload microphone audio, camera frames, transcripts, or personalized hand data. Personalized v1 stores normalized hand-shape feature numbers locally in this browser; it does not store training photos or live camera frames. Optional model files are downloaded only when enabled. MediaPipe processes image input on-device; its package may send library performance/usage metrics to Google as described in MediaPipe's privacy notice.</p>
       </div>
     </div>
   </dialog>
