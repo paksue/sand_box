@@ -7,12 +7,13 @@
     "spineRuntime": ">=4.3.11 <4.4",
     "spineEditor": "4.3",
     "renderer": "WebGL",
+    "rendererBackend": "phaser/Mesh2D",
     "files": [
       "runtime/frontier-hero.skel",
       "runtime/frontier-hero.atlas",
       "runtime/frontier-hero.png"
     ],
-    "loader": ["spineBinary", "spineAtlas"],
+    "loader": ["spineSkeleton", "spineAtlas"],
     "productionReady": false
   },
   "art": {
