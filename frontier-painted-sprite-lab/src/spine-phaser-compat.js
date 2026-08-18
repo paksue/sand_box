@@ -15,19 +15,19 @@ if (Phaser?.GameObjects?.GameObject && !Phaser.GameObjects.GameObject.prototype.
   };
 }
 
-// The first POC URL referenced a different photographic reproduction whose crop
-// coordinates do not match the approved NGA reproduction. ImageFile objects are
-// created before LoaderPlugin.addFile(), but Phaser resolves file.url only when
-// loading starts, so redirect the single hero-source file at that boundary.
-const CORRECT_HERO_SOURCE = 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Albert_Bierstadt%2C_The_Last_of_the_Buffalo%2C_1888%2C_NGA_124525.jpg/1280px-Albert_Bierstadt%2C_The_Last_of_the_Buffalo%2C_1888%2C_NGA_124525.jpg';
+// Use the exact user-approved 316×264 painterly horse/rider crop as the rig's
+// source of truth. It is embedded as text chunks so the static GitHub Pages POC
+// does not depend on a remote museum reproduction having identical dimensions.
+const HERO_MASTER_B64 = window.__HERO_MASTER_B64 || '';
+const HERO_MASTER_DATA_URI = HERO_MASTER_B64 ? `data:image/webp;base64,${HERO_MASTER_B64}` : '';
 const loaderProto = Phaser?.Loader?.LoaderPlugin?.prototype;
 if (loaderProto?.addFile && !loaderProto.addFile.__frontierHeroWrapped) {
   const originalAddFile = loaderProto.addFile;
   const redirectHeroFile = (file) => {
     if (Array.isArray(file)) {
       file.forEach(redirectHeroFile);
-    } else if (file?.key === 'hero-source' && file?.type === 'image') {
-      file.url = CORRECT_HERO_SOURCE;
+    } else if (file?.key === 'hero-source' && file?.type === 'image' && HERO_MASTER_DATA_URI) {
+      file.url = HERO_MASTER_DATA_URI;
     }
   };
   const wrappedAddFile = function frontierAddFile(file, ...rest) {
@@ -36,6 +36,28 @@ if (loaderProto?.addFile && !loaderProto.addFile.__frontierHeroWrapped) {
   };
   wrappedAddFile.__frontierHeroWrapped = true;
   loaderProto.addFile = wrappedAddFile;
+}
+
+// hero-motion.js was initially calibrated against a larger museum reproduction
+// and crops (467,240,421,352) down to 316×264. When the exact approved 316×264
+// master is loaded, reinterpret only that one crop operation as a full-image
+// draw. Other canvas draws, including part extraction, remain untouched.
+const canvasProto = window.CanvasRenderingContext2D?.prototype;
+if (canvasProto?.drawImage && !canvasProto.drawImage.__frontierHeroCropWrapped) {
+  const originalDrawImage = canvasProto.drawImage;
+  const wrappedDrawImage = function frontierHeroDrawImage(image, ...args) {
+    if (
+      image?.width === 316 && image?.height === 264 &&
+      args.length === 8 &&
+      args[0] === 467 && args[1] === 240 && args[2] === 421 && args[3] === 352 &&
+      args[6] === 316 && args[7] === 264
+    ) {
+      return originalDrawImage.call(this, image, 0, 0, 316, 264, args[4], args[5], args[6], args[7]);
+    }
+    return originalDrawImage.call(this, image, ...args);
+  };
+  wrappedDrawImage.__frontierHeroCropWrapped = true;
+  canvasProto.drawImage = wrappedDrawImage;
 }
 
 // Spine 4.3's official control-bones example writes bone.pose.x/y. The initial
