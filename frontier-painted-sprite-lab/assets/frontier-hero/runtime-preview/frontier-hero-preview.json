@@ -2,10 +2,10 @@
   "skeleton": {
     "hash": "frontier-hero-ai-painted-sequence-v2",
     "spine": "4.3.0",
-    "x": -128,
-    "y": -96,
-    "width": 256,
-    "height": 192,
+    "x": -96,
+    "y": -72,
+    "width": 192,
+    "height": 144,
     "images": "./"
   },
   "bones": [
@@ -17,15 +17,15 @@
   ],
   "skins": [
     {"name":"default","attachments":{"hero":{
-      "idle_alive":{"width":256,"height":192},
-      "walk":{"width":256,"height":192},
-      "rear_action":{"width":256,"height":192},
-      "land_01":{"width":256,"height":192},
-      "land_02":{"width":256,"height":192},
-      "land_03":{"width":256,"height":192},
-      "land_04":{"width":256,"height":192},
-      "land_05":{"width":256,"height":192},
-      "land_06":{"width":256,"height":192}
+      "idle_alive":{"width":192,"height":144},
+      "walk":{"width":192,"height":144},
+      "rear_action":{"width":192,"height":144},
+      "land_01":{"width":192,"height":144},
+      "land_02":{"width":192,"height":144},
+      "land_03":{"width":192,"height":144},
+      "land_04":{"width":192,"height":144},
+      "land_05":{"width":192,"height":144},
+      "land_06":{"width":192,"height":144}
     }}}
   ],
   "events": {
