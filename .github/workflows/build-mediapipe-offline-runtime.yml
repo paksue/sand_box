@@ -1,0 +1,41 @@
+name: Build MediaPipe offline runtime
+
+on:
+  push:
+    branches: [gesture-distill-v1]
+    paths:
+      - '.github/workflows/build-mediapipe-offline-runtime.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Build self-contained Python package directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libgles2
+          mkdir -p /tmp/mp-runtime/vendor /tmp/mp-runtime/lib
+          python -m pip install --disable-pip-version-check --target /tmp/mp-runtime/vendor mediapipe==0.10.35
+          cp -L /usr/lib/x86_64-linux-gnu/libGLESv2.so.2 /tmp/mp-runtime/lib/
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, '/tmp/mp-runtime/vendor')
+          import mediapipe as mp
+          print('mediapipe', mp.__version__)
+          PY
+          tar -C /tmp -czf /tmp/mediapipe-offline-runtime.tgz mp-runtime
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mediapipe-offline-runtime
+          path: /tmp/mediapipe-offline-runtime.tgz
+          retention-days: 1
