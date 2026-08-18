@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-08-17T19:54:02.276Z",
+  "updatedAt": "2026-08-18T01:39:15.118Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -351,6 +351,19 @@
       "contentUpdatedAt": "2026-08-17T19:54:00.678Z",
       "doneUpdatedAt": "2026-08-17T19:51:48.851Z",
       "orderUpdatedAt": "2026-08-17T19:52:13.478Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "1adc28ce-b4f2-4867-88c9-0317ce3f7920",
+      "title": "Screen fasting before school",
+      "details": "",
+      "done": false,
+      "deleted": false,
+      "order": 22,
+      "createdAt": "2026-08-18T01:39:12.774Z",
+      "contentUpdatedAt": "2026-08-18T01:39:12.774Z",
+      "doneUpdatedAt": "2026-08-18T01:39:12.774Z",
+      "orderUpdatedAt": "2026-08-18T01:39:12.774Z",
       "deletedUpdatedAt": ""
     }
   ]
