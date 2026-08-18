@@ -26,20 +26,6 @@ try {
   throw new Error(`Hero motion boot failed: ${JSON.stringify(state)}\nBrowser errors:\n${errors.join('\n') || '(none)'}\n${error.message}`);
 }
 
-// Preserve the exact reproduction loaded by Phaser. This is a visual QA aid so
-// crop errors cannot masquerade as animation errors.
-await page.addScriptTag({ url: new URL('src/hero-source-debug.js', base).toString() });
-await page.waitForFunction(() => Boolean(window.__heroFullSourceDataURL || window.__heroFullSourceError), null, { timeout: 5_000 });
-const sourceDiagnostic = await page.evaluate(() => ({
-  data: window.__heroFullSourceDataURL || null,
-  size: window.__heroFullSourceSize || null,
-  error: window.__heroFullSourceError || null,
-}));
-if (sourceDiagnostic.data) {
-  const base64 = sourceDiagnostic.data.split(',')[1];
-  await fs.writeFile(path.join(outDir, 'hero-debug-full-source.jpg'), Buffer.from(base64, 'base64'));
-}
-
 const initial = await page.evaluate(() => window.heroMotionPOC.snapshot());
 if (!initial.ready) throw new Error('Hero motion POC not ready.');
 if (initial.engine !== '4.2.1') throw new Error(`Expected Phaser 4.2.1, got ${initial.engine}`);
@@ -99,7 +85,6 @@ console.log(JSON.stringify({
   engine: initial.engine,
   actualSpineObject: initial.actualSpineObject,
   paintedParts: initial.paintedParts,
-  sourceSize: sourceDiagnostic.size,
   contactY: contact.heroY,
   compressionY: compression.heroY,
   oneStepTravelPx: Number((settled.heroX - initial.heroX).toFixed(2)),
