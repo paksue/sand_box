@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
 const required = [
-  'index.html','styles.css','qa-fixes.css','print.css','app.js','patch.js','qa-fixes.js','coverage.js','db.js','sw.js',
+  'index.html','styles.css','qa-fixes.css','print.css','app.js','patch.js','qa-fixes.js','qa-data-integrity.js','coverage.js','db.js','sw.js',
   'manifest.webmanifest','assets/icon.svg','docs/PDF_COVERAGE.md','docs/PRD.md','AGENTS.md'
 ];
 for (const file of required) {
@@ -21,8 +21,9 @@ for (const sourceField of ['| Name |', '| Start date |', '| Appetite normal/low 
 const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const patch = fs.readFileSync(path.join(root, 'patch.js'), 'utf8');
 const qaFixes = fs.readFileSync(path.join(root, 'qa-fixes.js'), 'utf8');
+const qaIntegrity = fs.readFileSync(path.join(root, 'qa-data-integrity.js'), 'utf8');
 const sourceExtras = fs.readFileSync(path.join(root, 'coverage.js'), 'utf8');
-const implementation = `${app}\n${patch}\n${qaFixes}\n${sourceExtras}`;
+const implementation = `${app}\n${patch}\n${qaFixes}\n${qaIntegrity}\n${sourceExtras}`;
 for (const token of [
   'periodStartedToday','daysLate','spotting','crampsPain','heldPoop','satAfterMeal',
   'feetSupported','urineColor','appetite','waterRating','fiberRating','prunesSummary',
@@ -37,18 +38,21 @@ for (const qaToken of [
 ]) {
   if (!qaFixes.includes(qaToken)) throw new Error(`Playtest fix missing contract token: ${qaToken}`);
 }
+for (const integrityToken of ['data-form="wrap"','Not checked','repairTimelineText','worstBloat']) {
+  if (!qaIntegrity.includes(integrityToken)) throw new Error(`Data-integrity fix missing contract token: ${integrityToken}`);
+}
 
 for (const forbidden of ['XMLHttpRequest', 'navigator.sendBeacon']) {
   if (implementation.includes(forbidden)) throw new Error(`Unexpected network-capable code in journal modules: ${forbidden}`);
 }
 
 const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-for (const asset of ['styles.css','qa-fixes.css','print.css','app.js','patch.js','qa-fixes.js','coverage.js','manifest.webmanifest']) {
+for (const asset of ['styles.css','qa-fixes.css','print.css','app.js','patch.js','qa-fixes.js','qa-data-integrity.js','coverage.js','manifest.webmanifest']) {
   if (!index.includes(asset)) throw new Error(`index.html does not reference required asset: ${asset}`);
 }
 
 const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
-for (const asset of ['styles.css','qa-fixes.css','print.css','app.js','patch.js','qa-fixes.js','coverage.js','db.js']) {
+for (const asset of ['styles.css','qa-fixes.css','print.css','app.js','patch.js','qa-fixes.js','qa-data-integrity.js','coverage.js','db.js']) {
   if (!sw.includes(asset)) throw new Error(`Offline cache missing asset: ${asset}`);
 }
 
