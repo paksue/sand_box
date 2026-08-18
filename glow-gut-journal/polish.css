@@ -11,6 +11,33 @@
   width: 100%;
 }
 
+.sheet-backdrop {
+  background: rgba(18, 26, 27, .42) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.sheet {
+  background: #f7f6f2 !important;
+  isolation: isolate;
+}
+
+.bristol,
+.log-choice,
+.card,
+.entry {
+  background-color: #fff;
+}
+
+.bristol-num {
+  color: var(--teal-dark) !important;
+}
+
+.entry .icon-btn {
+  min-width: 44px !important;
+  min-height: 44px !important;
+}
+
 .polish-report-controls {
   margin: 0 0 18px;
   box-shadow: none;
