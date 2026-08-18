@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-08-18T11:23:41.428Z",
+  "updatedAt": "2026-08-18T13:26:30.779Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -416,6 +416,19 @@
       "contentUpdatedAt": "2026-08-18T11:23:35.618Z",
       "doneUpdatedAt": "2026-08-18T11:22:23.408Z",
       "orderUpdatedAt": "2026-08-18T11:22:23.408Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "b1d31abe-ec15-4bd6-a185-3707cc241cd1",
+      "title": "Eyeball exercise",
+      "details": "Add to daily regular exercises",
+      "done": false,
+      "deleted": false,
+      "order": 26,
+      "createdAt": "2026-08-18T13:26:08.692Z",
+      "contentUpdatedAt": "2026-08-18T13:26:28.704Z",
+      "doneUpdatedAt": "2026-08-18T13:26:08.692Z",
+      "orderUpdatedAt": "2026-08-18T13:26:08.692Z",
       "deletedUpdatedAt": ""
     }
   ]
