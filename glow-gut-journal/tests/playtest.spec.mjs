@@ -83,7 +83,7 @@ test('7-day summary follows tracking start and distinguishes missing from confir
 
   await page.locator('[data-tab="insights"]').click();
   const bowelMetric = page.locator('.metric').filter({ hasText: 'Bowel movements' });
-  await expect(bowelMetric.locator('.metric-foot')).toContainText('1 confirmed no-poop');
+  await expect(bowelMetric.locator('.settled-metric-foot')).toContainText('1 confirmed no-poop');
   await expect(page.locator('#qa-tracking-note')).toContainText('Missing entries are not treated as “no poop.”');
 
   await page.evaluate(() => new Promise((resolve, reject) => {
