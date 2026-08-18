@@ -40,7 +40,7 @@ jobs:
         working-directory: glow-gut-journal
         run: |
           npm install --no-save @playwright/test
-          npx playwright install --with-deps chromium
+          npx playwright install chromium
       - name: Mobile browser playtest
         working-directory: glow-gut-journal
         run: npx playwright test
