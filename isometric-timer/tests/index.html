@@ -17,12 +17,14 @@
     import { runProgressionTests } from './progression.test.js';
     import { runCommandRouterTests } from './command-router.test.js';
     import { runPersistenceTests } from './persistence.test.js';
+    import { runPersonalizedGestureTests } from './personalized-gesture.test.js';
 
     const suites = [
       ['timer-machine', runTimerMachineTests],
       ['progression', runProgressionTests],
       ['command-router + fake adapter', runCommandRouterTests],
-      ['persistence migration', runPersistenceTests]
+      ['persistence migration', runPersistenceTests],
+      ['personalized gesture', runPersonalizedGestureTests]
     ];
     const output = [];
     let failures = 0;
