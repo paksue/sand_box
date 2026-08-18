@@ -66,7 +66,18 @@ function markDirty(event) {
 
 function focusables(sheet) {
   return [...sheet.querySelectorAll('button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])')]
-    .filter(node => !node.hidden && node.offsetParent !== null && getComputedStyle(node).visibility !== 'hidden');
+    .filter(node => !node.hidden && !node.classList.contains('qa-hidden-control') && node.offsetParent !== null && getComputedStyle(node).visibility !== 'hidden');
+}
+
+function associateFieldLabels(sheet) {
+  let index = 0;
+  for (const field of sheet.querySelectorAll('.field')) {
+    const label = field.querySelector(':scope > label');
+    const control = field.querySelector(':scope > input:not([type="hidden"]), :scope > select, :scope > textarea');
+    if (!label || !control || control.classList.contains('qa-hidden-control')) continue;
+    if (!control.id) control.id = `dialog-field-${Date.now()}-${index++}`;
+    label.htmlFor = control.id;
+  }
 }
 
 function prepareDialog(sheet) {
@@ -81,6 +92,7 @@ function prepareDialog(sheet) {
     requestAnimationFrame(() => title.focus({ preventScroll: true }));
   }
 
+  associateFieldLabels(sheet);
   for (const group of sheet.querySelectorAll('.qa-choice-grid, .qa-score-grid')) {
     const label = group.closest('.field')?.querySelector('label, .label')?.textContent?.trim();
     if (label) group.setAttribute('aria-label', label);
@@ -133,8 +145,10 @@ function previewFileInput(input) {
 }
 
 async function enhanceEntryMenu() {
-  const title = sheetRoot.querySelector('.sheet-title');
-  if (title?.textContent.trim() !== 'Entry options' || sheetRoot.querySelector('[data-polish-remove-photo]')) return;
+  const sheet = sheetRoot.querySelector('.sheet');
+  const title = sheet?.querySelector('.sheet-title');
+  if (title?.textContent.trim() !== 'Entry options' || sheet.dataset.polishPhotoChecked) return;
+  sheet.dataset.polishPhotoChecked = 'true';
   const id = sheetRoot.querySelector('[data-sheet-action="delete-entry"]')?.dataset.id;
   if (!id) return;
   const entry = (await getAllEntries()).find(item => item.id === id);
@@ -249,6 +263,12 @@ function enhance() {
 
 window.addEventListener('input', markDirty, true);
 window.addEventListener('change', markDirty, true);
+window.addEventListener('click', event => {
+  if (!event.isTrusted) return;
+  const interactive = event.target.closest('.qa-choice, .qa-score, .qa-score-clear, .chip');
+  const sheet = interactive?.closest('.sheet');
+  if (sheet) sheet.dataset.polishDirty = 'true';
+}, true);
 
 window.addEventListener('click', event => {
   const sheet = sheetRoot.querySelector('.sheet');
