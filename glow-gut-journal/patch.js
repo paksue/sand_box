@@ -14,6 +14,7 @@ function dateObj(date) { return new Date(`${date}T12:00:00`); }
 function addDays(date, days) { const d = dateObj(date); d.setDate(d.getDate() + days); return localDate(d); }
 function formatDate(date, opts = { month: 'short', day: 'numeric' }) { return new Intl.DateTimeFormat(undefined, opts).format(dateObj(date)); }
 function esc(value = '') { return String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+function setText(node, value) { const next = String(value); if (node && node.textContent !== next) node.textContent = next; }
 
 async function preferences() {
   const prefs = await getSetting('preferences', {});
@@ -119,10 +120,8 @@ function enhanceBristolGuide() {
   sheetRoot.querySelectorAll('.bristol').forEach(row => {
     const type = Number(row.querySelector('.bristol-num')?.textContent.match(/\d+/)?.[0]);
     if (!exact[type]) return;
-    const strong = row.querySelector('strong');
-    const small = row.querySelector('small');
-    if (strong) strong.textContent = exact[type][0];
-    if (small) small.textContent = exact[type][1];
+    setText(row.querySelector('strong'), exact[type][0]);
+    setText(row.querySelector('small'), exact[type][1]);
   });
 }
 
@@ -137,8 +136,7 @@ async function weeklyCorrections() {
   if (insightsHeading?.textContent.trim() === 'Insights') {
     for (const metric of app.querySelectorAll('.metric')) {
       if (metric.querySelector('.metric-label')?.textContent.trim() === 'Bowel movements') {
-        const foot = metric.querySelector('.metric-foot');
-        if (foot) foot.textContent = `${noLoggedPoop} elapsed day${noLoggedPoop === 1 ? '' : 's'} with no logged poop`;
+        setText(metric.querySelector('.metric-foot'), `${noLoggedPoop} elapsed day${noLoggedPoop === 1 ? '' : 's'} with no logged poop`);
       }
     }
     const note = app.querySelector('.note.info');
@@ -157,8 +155,8 @@ async function weeklyCorrections() {
   if (report) {
     for (const row of report.querySelectorAll('.summary-row')) {
       const label = row.querySelector('span')?.textContent.trim();
-      if (label === 'Days with no logged poop') row.querySelector('strong').textContent = String(noLoggedPoop);
-      if (label === 'Blood recorded' && poops.length === 0) row.querySelector('strong').textContent = '—';
+      if (label === 'Days with no logged poop') setText(row.querySelector('strong'), noLoggedPoop);
+      if (label === 'Blood recorded' && poops.length === 0) setText(row.querySelector('strong'), '—');
     }
     if (elapsed.length < 7 && !report.querySelector('#report-week-progress')) {
       const note = document.createElement('div');
@@ -176,7 +174,7 @@ async function weeklyCorrections() {
     if (latestPeriod) {
       for (const row of report.querySelectorAll('.summary-row')) {
         if (row.querySelector('span')?.textContent.trim() === 'Last logged period start') {
-          row.querySelector('strong').textContent = formatDate(latestPeriod.date);
+          setText(row.querySelector('strong'), formatDate(latestPeriod.date));
         }
       }
     }
@@ -185,7 +183,7 @@ async function weeklyCorrections() {
   const weeklyTitle = sheetRoot.querySelector('.sheet-title');
   if (weeklyTitle?.textContent.trim() === 'Weekly pattern review') {
     for (const row of sheetRoot.querySelectorAll('.summary-row')) {
-      if (row.querySelector('span')?.textContent.trim() === 'Days with no logged poop') row.querySelector('strong').textContent = String(noLoggedPoop);
+      if (row.querySelector('span')?.textContent.trim() === 'Days with no logged poop') setText(row.querySelector('strong'), noLoggedPoop);
     }
   }
 }
