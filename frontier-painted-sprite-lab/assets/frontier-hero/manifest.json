@@ -1,0 +1,138 @@
+{
+  "name": "frontier-hero",
+  "version": 2,
+  "purpose": "Production painterly horse+rider actor for Phaser 4.2.1 + spine-phaser-v4 4.3.11+.",
+  "runtime": {
+    "phaser": "4.2.1",
+    "spineRuntime": ">=4.3.11 <4.4",
+    "spineEditor": "4.3",
+    "renderer": "WebGL",
+    "files": [
+      "runtime/frontier-hero.skel",
+      "runtime/frontier-hero.atlas",
+      "runtime/frontier-hero.png"
+    ],
+    "loader": ["spineBinary", "spineAtlas"],
+    "productionReady": false
+  },
+  "art": {
+    "sourceMaster": "source/frontier-hero-master.psd",
+    "minimumMasterHeightPx": 2048,
+    "preferredMasterHeightPx": 4096,
+    "transparentLayers": true,
+    "rules": [
+      "All independently moving parts are painted as separate source layers.",
+      "Every joint overlap contains hidden painted anatomy beneath the visible overlap.",
+      "No layer may rely on pixels from the historical buffalo or background painting.",
+      "Edges stay painterly; do not vectorize or hard-cut the silhouette.",
+      "Horse, rider, tack, mane, tail, hair, feathers and spear remain visually coherent with the approved Bierstadt-like master."
+    ]
+  },
+  "requiredLayers": [
+    "horse/head",
+    "horse/neck",
+    "horse/chest",
+    "horse/barrel",
+    "horse/pelvis",
+    "horse/front_near/upper",
+    "horse/front_near/lower",
+    "horse/front_near/hoof",
+    "horse/front_far/upper",
+    "horse/front_far/lower",
+    "horse/front_far/hoof",
+    "horse/hind_near/upper",
+    "horse/hind_near/lower",
+    "horse/hind_near/hoof",
+    "horse/hind_far/upper",
+    "horse/hind_far/lower",
+    "horse/hind_far/hoof",
+    "horse/mane_front",
+    "horse/mane_back",
+    "horse/tail_base",
+    "horse/tail_tip",
+    "rider/pelvis",
+    "rider/torso",
+    "rider/head",
+    "rider/upper_arm",
+    "rider/lower_arm",
+    "rider/hair",
+    "rider/feathers",
+    "rider/spear",
+    "rider/reins"
+  ],
+  "rig": {
+    "requiredBones": [
+      "root",
+      "horse_body",
+      "chest",
+      "pelvis",
+      "neck",
+      "head",
+      "front_near_upper",
+      "front_near_lower",
+      "front_near_hoof",
+      "front_far_upper",
+      "front_far_lower",
+      "front_far_hoof",
+      "hind_near_upper",
+      "hind_near_lower",
+      "hind_near_hoof",
+      "hind_far_upper",
+      "hind_far_lower",
+      "hind_far_hoof",
+      "front_near_ik",
+      "front_far_ik",
+      "hind_near_ik",
+      "hind_far_ik",
+      "tail_1",
+      "tail_2",
+      "rider_pelvis",
+      "rider_torso",
+      "rider_head",
+      "rider_upper_arm",
+      "rider_lower_arm",
+      "spear",
+      "hair_1",
+      "hair_2",
+      "feathers_1",
+      "feathers_2"
+    ],
+    "requiredIK": [
+      "front_near_leg_ik",
+      "front_far_leg_ik",
+      "hind_near_leg_ik",
+      "hind_far_leg_ik"
+    ],
+    "weightedMeshes": [
+      "horse/neck",
+      "horse/chest",
+      "horse/barrel",
+      "horse/pelvis",
+      "rider/torso"
+    ],
+    "secondaryMotion": [
+      "horse/mane_front",
+      "horse/mane_back",
+      "horse/tail_base",
+      "horse/tail_tip",
+      "rider/hair",
+      "rider/feathers",
+      "rider/spear"
+    ]
+  },
+  "animations": {
+    "required": ["idle_alive", "walk", "land_step", "rear_action"],
+    "events": ["hoof_front_contact", "hoof_rear_contact", "impact"],
+    "qualityReference": "Phaser 4.2 Spine demo: weighted deformation, clean silhouettes, natural contact and zero visible paper-cut seams."
+  },
+  "qualityGates": {
+    "noVisibleSeams": true,
+    "noHoofSliding": true,
+    "fourLegIK": true,
+    "weightCompression": true,
+    "riderPhaseLag": true,
+    "secondaryFollowThrough": true,
+    "freezeFrameReadable": true,
+    "testSpeeds": [1, 0.5, 0.25]
+  }
+}
