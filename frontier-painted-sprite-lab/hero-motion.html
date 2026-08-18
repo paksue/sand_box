@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Frontier Master Animator · Hero Motion POC</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./hero-motion.css" />
+</head>
+<body>
+  <main class="lab-shell hero-motion-shell">
+    <header class="lab-header">
+      <div>
+        <p class="eyebrow">FRONTIER VISUAL R&D · MASTER ANIMATOR POC</p>
+        <h1>Keep the painting. Make the rider move.</h1>
+        <p class="lede">The visible hero is rebuilt from the actual painted horse/rider pixels, layered into an 8-part Spine skeleton, then driven by an authored motion director inside Phaser. This page tests animation quality—not world navigation.</p>
+      </div>
+      <div class="header-actions">
+        <a class="repo-link" href="./painting-world.html">Living painting world</a>
+        <a class="repo-link" href="./">Baseline lab</a>
+      </div>
+    </header>
+
+    <section class="benchmark-banner hero-banner">
+      <strong>Quality question: can the real painted hero survive rigging and still feel alive?</strong>
+      <span>Compare the master crop with the live rig. Slow it to 0.25× or freeze at impact. If a paused frame looks like a paper puppet, the motion fails.</span>
+    </section>
+
+    <section class="hero-layout">
+      <div class="hero-main">
+        <div class="compare-grid">
+          <figure class="reference-card">
+            <div class="card-label"><span>MASTER SOURCE</span><strong>visual truth</strong></div>
+            <div class="reference-frame">
+              <img id="sourceReference" alt="Painted horse and rider master reference" />
+            </div>
+            <figcaption>Every visible moving layer comes from this painting crop. No stick-figure replacement art.</figcaption>
+          </figure>
+
+          <figure class="live-card">
+            <div class="card-label"><span>LIVE RIG</span><strong id="liveState">loading Spine…</strong></div>
+            <div id="heroMotionStage" class="hero-motion-stage" data-ready="false">
+              <div id="heroPhaserMount" class="hero-phaser-mount" aria-label="Spine animated painted rider"></div>
+              <div class="stage-ground" aria-hidden="true"></div>
+              <div class="stage-vignette" aria-hidden="true"></div>
+              <div class="motion-caption">
+                <span id="clipCaption">Preparing painted rig…</span>
+                <span id="timeCaption">0.00 s</span>
+              </div>
+            </div>
+            <figcaption>Phaser positions the actor; Spine owns the hierarchy. The motion director applies key poses, impact compression, and delayed rider/spear follow-through.</figcaption>
+          </figure>
+        </div>
+
+        <div class="transport hero-transport">
+          <button id="playAlive" type="button" class="active">Alive idle</button>
+          <button id="playLanding" type="button">Land + one step</button>
+          <button id="replay" type="button">Replay</button>
+          <button id="playPause" type="button">Pause</button>
+          <button class="speed-button" data-speed="0.25" type="button">0.25×</button>
+          <button class="speed-button" data-speed="0.5" type="button">0.5×</button>
+          <button class="speed-button active" data-speed="1" type="button">1×</button>
+        </div>
+
+        <label class="scrub-row">
+          <span>Inspect exact pose</span>
+          <input id="motionScrub" type="range" min="0" max="1000" value="0" />
+          <output id="scrubOutput">0%</output>
+        </label>
+      </div>
+
+      <aside class="controls-panel hero-controls">
+        <section>
+          <h2>Animation direction</h2>
+          <p class="hint">The landing clip is built as <strong>airborne → hoof contact → compression → one step → rider catch-up → spear/feather settle</strong>. The actor advances only during the action phrase.</p>
+          <div class="selected-card">
+            <span>Current clip</span>
+            <strong id="currentClip">alive</strong>
+          </div>
+        </section>
+
+        <section>
+          <h2>Realism layers</h2>
+          <label class="toggle"><input id="secondaryMotion" type="checkbox" checked /> <span>Rider + spear follow-through</span></label>
+          <label class="toggle"><input id="impactFx" type="checkbox" checked /> <span>Hoof impact dust + micro-shake</span></label>
+          <label class="toggle"><input id="selectionGlow" type="checkbox" checked /> <span>Game-selection cyan emphasis</span></label>
+          <label class="range-row">
+            <span>Motion strength</span>
+            <output id="strengthOutput">100%</output>
+            <input id="motionStrength" type="range" min="60" max="125" value="100" />
+          </label>
+        </section>
+
+        <section class="quality-gate">
+          <h2>Master Animator gates</h2>
+          <p><strong>Art:</strong> moving pixels must remain the painted source, not geometric redraws.</p>
+          <p><strong>Weight:</strong> the body must visibly drop into contact before it travels forward.</p>
+          <p><strong>Lag:</strong> rider torso and spear should settle after the horse, not exactly with it.</p>
+          <p><strong>Freeze:</strong> 0.25× and random paused frames must remain plausible.</p>
+        </section>
+
+        <section class="metrics">
+          <h2>Live rig</h2>
+          <dl>
+            <div><dt>Engine</dt><dd id="engineMetric">—</dd></div>
+            <div><dt>Rig</dt><dd id="rigMetric">—</dd></div>
+            <div><dt>Painted layers</dt><dd id="partsMetric">—</dd></div>
+            <div><dt>Body drop</dt><dd id="dropMetric">—</dd></div>
+            <div><dt>Hero travel</dt><dd id="travelMetric">—</dd></div>
+            <div><dt>FPS</dt><dd id="fpsMetric">—</dd></div>
+          </dl>
+        </section>
+      </aside>
+    </section>
+
+    <footer class="research-note hero-note">
+      <strong>POC limitation:</strong> this is deliberately using a single flattened historical crop, so hidden anatomy does not exist. The AI animator skill can prove hierarchy, timing, weight transfer, follow-through, slow-motion QA, and source-pixel fidelity here; production quality still requires purpose-painted hidden shoulder/leg material and better separation masks before a full walk cycle.
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/phaser@4.2.1/dist/phaser.min.js"></script>
+  <script src="https://unpkg.com/@esotericsoftware/spine-phaser-v4@4.3.*/dist/iife/spine-phaser-v4.min.js"></script>
+  <script type="module" src="./src/hero-motion.js"></script>
+</body>
+</html>
