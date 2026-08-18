@@ -61,23 +61,58 @@ pma: false
 land_06
 bounds: 0, 0, 192, 144
 
-gait_walk.png
-size: 256, 96
+gait_01.png
+size: 64, 48
 filter: Linear, Linear
 pma: false
 gait_01
 bounds: 0, 0, 64, 48
+
+gait_02.png
+size: 64, 48
+filter: Linear, Linear
+pma: false
 gait_02
-bounds: 64, 0, 64, 48
+bounds: 0, 0, 64, 48
+
+gait_03.png
+size: 64, 48
+filter: Linear, Linear
+pma: false
 gait_03
-bounds: 128, 0, 64, 48
+bounds: 0, 0, 64, 48
+
+gait_04.png
+size: 64, 48
+filter: Linear, Linear
+pma: false
 gait_04
-bounds: 192, 0, 64, 48
+bounds: 0, 0, 64, 48
+
+gait_05.png
+size: 64, 48
+filter: Linear, Linear
+pma: false
 gait_05
-bounds: 0, 48, 64, 48
+bounds: 0, 0, 64, 48
+
+gait_06.png
+size: 64, 48
+filter: Linear, Linear
+pma: false
 gait_06
-bounds: 64, 48, 64, 48
+bounds: 0, 0, 64, 48
+
+gait_07.png
+size: 64, 48
+filter: Linear, Linear
+pma: false
 gait_07
-bounds: 128, 48, 64, 48
+bounds: 0, 0, 64, 48
+
+gait_08.png
+size: 64, 48
+filter: Linear, Linear
+pma: false
 gait_08
-bounds: 192, 48, 64, 48
+bounds: 0, 0, 64, 48
