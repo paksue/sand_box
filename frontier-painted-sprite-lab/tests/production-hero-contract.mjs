@@ -10,6 +10,7 @@ if (manifest.runtime.phaser !== '4.2.1') throw new Error(`Unexpected Phaser cont
 if (!manifest.runtime.spineRuntime.includes('4.3.11')) throw new Error(`Unexpected Spine runtime contract: ${manifest.runtime.spineRuntime}`);
 if (manifest.runtime.rendererBackend !== 'phaser/Mesh2D') throw new Error('Production renderer must be Phaser Mesh2D backend.');
 if (manifest.runtime.loader.join(',') !== 'spineSkeleton,spineAtlas') throw new Error(`Unexpected loader contract: ${manifest.runtime.loader}`);
+if (!manifest.runtime.files.includes('runtime/frontier-hero.skel')) throw new Error('Production skeleton contract must ship binary frontier-hero.skel.');
 
 const boneNames = new Set((rig.bones || []).map((b) => b.name));
 for (const name of manifest.rig.requiredBones) {
@@ -29,7 +30,7 @@ for (const name of manifest.animations.events) {
 }
 
 const runtimeDir = path.join(root, 'assets/frontier-hero/runtime');
-const runtimeFiles = ['frontier-hero.json', 'frontier-hero.atlas', 'frontier-hero.png'];
+const runtimeFiles = ['frontier-hero.skel', 'frontier-hero.atlas', 'frontier-hero.png'];
 const runtimePresent = (await Promise.all(runtimeFiles.map(async (name) => {
   try { await fs.access(path.join(runtimeDir, name)); return true; }
   catch { return false; }
@@ -90,6 +91,7 @@ console.log(JSON.stringify({
   status: 'ok',
   productionReady: manifest.runtime.productionReady,
   runtimePresent,
+  runtimeFiles,
   requiredLayers: manifest.requiredLayers.length,
   requiredBones: manifest.rig.requiredBones.length,
   requiredIK: manifest.rig.requiredIK.length,
