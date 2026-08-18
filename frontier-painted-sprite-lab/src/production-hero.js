@@ -136,6 +136,7 @@ function bootProductionHero() {
 
     snapshot() {
       const entry = this.hero?.animationState?.getCurrent(0);
+      const data = this.hero?.skeleton?.data;
       return {
         ready: stage.dataset.ready === 'true',
         engine: Phaser.VERSION,
@@ -147,7 +148,11 @@ function bootProductionHero() {
         trackTime: Number((entry?.trackTime || 0).toFixed(3)),
         impactEvents: this.impactCount,
         boneCount: this.hero?.skeleton?.bones?.length || 0,
-        ikCount: this.hero?.skeleton?.data?.ikConstraints?.length || 0,
+        slotCount: this.hero?.skeleton?.slots?.length || 0,
+        ikCount: data?.ikConstraints?.length || 0,
+        boneNames: (data?.bones || []).map((bone) => bone.name),
+        ikNames: (data?.ikConstraints || []).map((ik) => ik.name),
+        animations: (data?.animations || []).map((animation) => animation.name),
       };
     }
 
