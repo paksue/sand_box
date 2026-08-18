@@ -1,0 +1,8 @@
+@media print {
+  #app, #toast-root { display: none !important; }
+  #sheet-root { display: block !important; }
+  .sheet-backdrop { position: static !important; inset: auto !important; display: block !important; background: white !important; backdrop-filter: none !important; }
+  .sheet { width: 100% !important; max-width: none !important; max-height: none !important; overflow: visible !important; padding: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: white !important; }
+  .grabber, .sheet-head, .no-print { display: none !important; }
+  .report { display: block !important; border: 0 !important; border-radius: 0 !important; padding: 0 !important; }
+}
