@@ -9,6 +9,7 @@ function localDate(d = new Date()) {
 }
 function dateObj(date) { return new Date(`${date}T12:00:00`); }
 function addDays(date, days) { const d = dateObj(date); d.setDate(d.getDate() + days); return localDate(d); }
+function fmt(date) { return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' }).format(dateObj(date)); }
 function setTextQuietly(node, value) {
   if (!node) return;
   const next = String(value);
@@ -28,7 +29,7 @@ async function summary() {
   const poopDays = new Set(entries.filter(entry => entry.type === 'poop').map(entry => entry.date));
   const confirmed = new Set(entries.filter(entry => entry.type === 'wrap' && entry.poopSummary === 'none' && !poopDays.has(entry.date)).map(entry => entry.date));
   const unconfirmed = elapsed.filter(date => !poopDays.has(date) && !confirmed.has(date));
-  return { confirmed: confirmed.size, unconfirmed: unconfirmed.length };
+  return { start, confirmed: confirmed.size, unconfirmed: unconfirmed.length };
 }
 
 function updateRow(container, labels, value, replacementLabel) {
@@ -48,6 +49,13 @@ async function apply() {
       if (metric.querySelector('.metric-label')?.textContent.trim() === 'Bowel movements') {
         setTextQuietly(metric.querySelector('.metric-foot'), `${result.confirmed} confirmed no-poop · ${result.unconfirmed} unconfirmed`);
       }
+    }
+    const legacyWeekNote = app.querySelector('#week-progress-note');
+    if (legacyWeekNote) legacyWeekNote.hidden = true;
+    const trackingNote = app.querySelector('#qa-tracking-note');
+    if (trackingNote) {
+      trackingNote.hidden = false;
+      setTextQuietly(trackingNote, `Uses the journal start date (${fmt(result.start)}), not Monday–Sunday. Missing entries are not treated as “no poop.”`);
     }
   }
   const report = sheetRoot.querySelector('#doctor-report');
