@@ -32,7 +32,7 @@ class PaintedSequenceScene extends Phaser.Scene {
 
   create() {
     this.hero = this.add.spine(470, 420, 'frontier-sequence-data', 'frontier-sequence-atlas', { renderer: 'phaser' });
-    this.hero.setScale(2.25);
+    this.hero.setScale(2.8);
     this.hero.setDepth(10);
 
     this.hero.animationStateData.defaultMix = 0.08;
@@ -99,9 +99,14 @@ class PaintedSequenceScene extends Phaser.Scene {
     });
   }
 
+  currentEntry() {
+    return this.hero?.animationState?.tracks?.[0] || null;
+  }
+
   snapshot() {
-    const entry = this.hero?.animationState?.getCurrent(0);
+    const entry = this.currentEntry();
     const slot = this.hero?.skeleton?.findSlot('hero');
+    const attachment = slot?.attachment || slot?.pose?.attachment || null;
     return {
       ready: stageEl.dataset.ready === 'true',
       engine: Phaser.VERSION,
@@ -111,7 +116,7 @@ class PaintedSequenceScene extends Phaser.Scene {
       speed: this.speed,
       trackTime: Number((entry?.trackTime || 0).toFixed(3)),
       impactEvents: this.impactCount,
-      attachment: slot?.getAttachment?.()?.name || slot?.attachment?.name || null,
+      attachment: attachment?.name || null,
       animations: (this.hero?.skeleton?.data?.animations || []).map((a) => a.name),
       boneCount: this.hero?.skeleton?.bones?.length || 0,
       slotCount: this.hero?.skeleton?.slots?.length || 0,
@@ -119,7 +124,7 @@ class PaintedSequenceScene extends Phaser.Scene {
   }
 
   update() {
-    const entry = this.hero?.animationState?.getCurrent(0);
+    const entry = this.currentEntry();
     timeEl.textContent = entry ? `${entry.trackTime.toFixed(2)} s` : '—';
   }
 }
