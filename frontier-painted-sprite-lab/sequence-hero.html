@@ -13,7 +13,7 @@
       <div>
         <p class="eyebrow">FRONTIER VISUAL R&D · HYBRID SPINE BENCHMARK</p>
         <h1>Paint the silhouette. Rig the biomechanics.</h1>
-        <p class="lede">Purpose-created horse/rider artwork supplies the visible poses. Under it, the preview now uses the planned 34-bone horse+rider hierarchy, four independent hoof IK constraints, an eight-phase gait timing model, and Spine AnimationState.</p>
+        <p class="lede">Purpose-created horse/rider artwork supplies the visible gait poses. Under it, the preview uses the planned 34-bone horse+rider hierarchy, four independent hoof IK constraints, an eight-phase gait timing model, and Spine AnimationState.</p>
       </div>
       <div class="header-actions">
         <a class="repo-link" href="./production-hero.html">Production rig contract</a>
@@ -36,10 +36,10 @@
 
       <aside class="controls-panel sequence-controls">
         <h2>Hybrid motion test</h2>
-        <p class="hint"><strong>Land + step</strong> still uses six complete painted corrective poses. <strong>Walk</strong> now drives a real four-hoof IK timing rig underneath the painted benchmark so we can validate gait mechanics before binding the final 30 painted layers.</p>
+        <p class="hint"><strong>Walk</strong> now cycles eight distinct painted horse/rider gait poses while four hoof IK targets run the same contact/load/passing/push timing underneath. <strong>Land + step</strong> keeps six complete corrective paintings for its extreme silhouettes.</p>
         <div class="button-stack">
           <button data-sequence-clip="idle_alive" type="button">Alive idle</button>
-          <button data-sequence-clip="walk" type="button">Walk · 8 gait phases</button>
+          <button data-sequence-clip="walk" type="button">Walk · 8 painted phases</button>
           <button data-sequence-clip="land_step" class="active" type="button">Land + step</button>
           <button data-sequence-clip="rear_action" type="button">Rear action</button>
         </div>
@@ -66,7 +66,7 @@
 
     <section class="benchmark-banner sequence-note">
       <strong>Production direction</strong>
-      <span>Final locomotion binds the 30 purpose-painted layers to weighted meshes + this four-hoof IK topology. Extreme silhouettes remain complete corrective paintings. The final gate is visual: no hoof skating, correct weight transfer, rider lag, and painterly freeze frames at 0.25×.</span>
+      <span>This painted-pose walk is a motion benchmark, not the final master. Final locomotion binds the 30 purpose-painted 2K–4K layers to weighted meshes + this four-hoof IK topology. Extreme silhouettes remain complete corrective paintings. The final gate is visual: no hoof skating, correct weight transfer, rider lag, and painterly freeze frames at 0.25×.</span>
     </section>
   </main>
 
