@@ -9,7 +9,7 @@ const timeEl = document.querySelector('#productionTime');
 
 const BASE = './assets/frontier-hero/runtime/';
 const FILES = {
-  skeleton: `${BASE}frontier-hero.json`,
+  skeleton: `${BASE}frontier-hero.skel`,
   atlas: `${BASE}frontier-hero.atlas`,
   texture: `${BASE}frontier-hero.png`,
 };
@@ -55,8 +55,9 @@ function bootProductionHero() {
     }
 
     preload() {
-      // Official spine-phaser-v4 loader: extension determines JSON vs binary.
+      // spine-phaser-v4 selects binary parsing from the .skel extension.
       this.load.spineSkeleton('frontier-hero-data', FILES.skeleton);
+      // The atlas loader resolves its PNG texture page(s).
       this.load.spineAtlas('frontier-hero-atlas', FILES.atlas);
     }
 
@@ -65,14 +66,13 @@ function bootProductionHero() {
       this.add.ellipse(480, 505, 365, 58, 0x31dff2, .06)
         .setStrokeStyle(3, 0x5fefff, .72).setDepth(2);
 
-      // Default Phaser backend renders weighted Spine attachments through Mesh2D.
+      // Phaser 4 WebGL's default Spine backend renders the skeleton through Mesh2D.
       this.hero = this.add.spine(480, 500, 'frontier-hero-data', 'frontier-hero-atlas', {
         renderer: 'phaser'
       });
       this.hero.setDepth(10);
       this.hero.setScale(.92);
 
-      // AnimationState owns the performance. Phaser does not puppet production bones.
       this.hero.animationStateData.defaultMix = 0.16;
       this.hero.animationStateData.setMix('idle_alive', 'walk', 0.18);
       this.hero.animationStateData.setMix('walk', 'idle_alive', 0.18);
@@ -92,8 +92,8 @@ function bootProductionHero() {
       });
 
       this.play('idle_alive');
-      stateEl.textContent = 'Spine 4.3 runtime package loaded';
-      messageEl.textContent = 'Documented Spine JSON + atlas + painterly texture loaded through spineSkeleton + spineAtlas; motion is driven by Spine AnimationState.';
+      stateEl.textContent = 'Spine 4.3 binary runtime package loaded';
+      messageEl.textContent = 'Spine .skel + atlas + painterly texture loaded through spineSkeleton + spineAtlas; internal performance is owned by Spine AnimationState.';
       stage.dataset.ready = 'true';
       this.bindControls();
 
@@ -109,13 +109,25 @@ function bootProductionHero() {
       const loop = name === 'idle_alive' || name === 'walk';
       this.currentClip = name;
       this.hero.animationState.setAnimation(0, name, loop);
+      this.hero.animationState.timeScale = this.speed;
       clipEl.textContent = name;
       this.paused = false;
     }
 
     setSpeed(speed) {
       this.speed = speed;
-      if (this.hero) this.hero.animationState.timeScale = speed;
+      if (this.hero && !this.paused) this.hero.animationState.timeScale = speed;
+    }
+
+    currentEntry() {
+      // Spine 4.3 exposes current entries via AnimationState.tracks.
+      return this.hero?.animationState?.tracks?.[0] || null;
+    }
+
+    ikConstraintData() {
+      // Spine 4.3 unifies constraint data under SkeletonData.constraints.
+      const constraints = this.hero?.skeleton?.data?.constraints || [];
+      return constraints.filter((constraint) => constraint?.name?.endsWith('_ik'));
     }
 
     bindControls() {
@@ -136,8 +148,9 @@ function bootProductionHero() {
     }
 
     snapshot() {
-      const entry = this.hero?.animationState?.getCurrent(0);
+      const entry = this.currentEntry();
       const data = this.hero?.skeleton?.data;
+      const ik = this.ikConstraintData();
       return {
         ready: stage.dataset.ready === 'true',
         engine: Phaser.VERSION,
@@ -150,15 +163,15 @@ function bootProductionHero() {
         impactEvents: this.impactCount,
         boneCount: this.hero?.skeleton?.bones?.length || 0,
         slotCount: this.hero?.skeleton?.slots?.length || 0,
-        ikCount: data?.ikConstraints?.length || 0,
+        ikCount: ik.length,
         boneNames: (data?.bones || []).map((bone) => bone.name),
-        ikNames: (data?.ikConstraints || []).map((ik) => ik.name),
+        ikNames: ik.map((constraint) => constraint.name),
         animations: (data?.animations || []).map((animation) => animation.name),
       };
     }
 
     update() {
-      const entry = this.hero?.animationState?.getCurrent(0);
+      const entry = this.currentEntry();
       timeEl.textContent = entry ? `${entry.trackTime.toFixed(2)} s` : '—';
     }
   }
