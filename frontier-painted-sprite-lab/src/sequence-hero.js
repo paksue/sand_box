@@ -66,9 +66,9 @@ class PaintedSequenceScene extends Phaser.Scene {
 
     this.play('land_step');
     stageEl.dataset.ready = 'true';
-    stateEl.textContent = 'painted corrective poses · current Spine 4.3 constraints · 34 bones / 4 hoof IK';
+    stateEl.textContent = '8 painted gait phases · current Spine 4.3 constraints · 34 bones / 4 hoof IK';
     runtimeEl.textContent = `Phaser ${Phaser.VERSION} + Spine 4.3`;
-    attachmentsEl.textContent = '9';
+    attachmentsEl.textContent = '17';
     if (bonesEl) bonesEl.textContent = String(this.hero.skeleton?.bones?.length || 0);
     if (ikEl) ikEl.textContent = String(this.ikConstraintData().length);
 
