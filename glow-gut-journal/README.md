@@ -57,4 +57,6 @@ node --check sw.js
 node tests/validate.mjs
 ```
 
+The repository workflow runs the same checks automatically for Glow changes.
+
 See `docs/PDF_COVERAGE.md` for the source-journal requirement matrix.
