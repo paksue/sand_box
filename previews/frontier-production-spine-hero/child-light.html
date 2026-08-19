@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Frontier Painted Sprite Lab · Living Illustration</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./child-light.css" />
+</head>
+<body>
+  <main class="lab-shell">
+    <header class="lab-header">
+      <div>
+        <p class="eyebrow">FRONTIER VISUAL R&D · LIVING ILLUSTRATION</p>
+        <h1>Child-of-Light-style actor test</h1>
+        <p class="lede">A painterly raster actor is no longer warped as one flattened image. The visible ox pair is reconstructed as an overlapping painted torso plus complete painted limb sprites, then composited inside the Bierstadt-like scene. Default mode walks in place so translation cannot fake animation quality.</p>
+      </div>
+      <div class="header-actions">
+        <a class="repo-link" href="./rig-test.html">Previous mesh test</a>
+        <a class="repo-link" href="./">Baseline lab</a>
+      </div>
+    </header>
+
+    <section class="benchmark-banner">
+      <strong>Quality target: living illustration, not moving photograph.</strong>
+      <span>The active actor may read a little more clearly than the environment, but its brushwork, edge character and palette must still belong to the same painted world. Limbs are separate reusable raster parts with generous torso overlap; background depth stays behind while foreground grass can cross in front.</span>
+    </section>
+
+    <section class="lab-grid child-grid">
+      <div class="viewer-column">
+        <div id="stage" class="painting-stage child-stage" data-view="scene">
+          <div id="paintingBackdrop" class="painting-backdrop child-backdrop" aria-hidden="true"></div>
+          <div class="neutral-backdrop" aria-hidden="true"></div>
+          <div id="pixiMount" class="pixi-mount" aria-label="Articulated painterly ox-pair canvas"></div>
+          <div id="canvasGrain" class="canvas-grain" aria-hidden="true"></div>
+          <div class="vignette" aria-hidden="true"></div>
+          <div class="stage-caption">
+            <span id="modeCaption">Walk in place · articulated painted parts</span>
+            <span id="rendererCaption">Preparing PixiJS actor…</span>
+          </div>
+        </div>
+
+        <div class="transport">
+          <button id="playPause" type="button">Pause</button>
+          <button class="speed-button" data-speed="0.25" type="button">0.25×</button>
+          <button class="speed-button" data-speed="0.5" type="button">0.5×</button>
+          <button class="speed-button active" data-speed="1" type="button">1×</button>
+          <button id="resetPose" type="button">Reset</button>
+        </div>
+      </div>
+
+      <aside class="controls-panel">
+        <section>
+          <h2>Locomotion test</h2>
+          <div class="segmented">
+            <button class="travel-button active" data-travel="in-place" type="button">Walk in place</button>
+            <button class="travel-button" data-travel="scene" type="button">Through scene</button>
+          </div>
+          <p class="hint"><strong>Walk in place</strong> is the honest animation test: the root stays fixed while the painted legs, body weight and hooves must visibly move.</p>
+        </section>
+
+        <section>
+          <h2>Inspection</h2>
+          <div class="segmented three-way">
+            <button class="view-button active" data-view="scene" type="button">Scene</button>
+            <button class="view-button" data-view="neutral" type="button">Neutral</button>
+            <button class="view-button" data-view="rig" type="button">Rig</button>
+          </div>
+          <p class="hint">Neutral removes environmental camouflage. Rig shows the invisible limb pivots and hoof endpoints while preserving the painted pixels.</p>
+        </section>
+
+        <section>
+          <h2>Actor behavior</h2>
+          <label class="range-row">
+            <span>Gait strength</span>
+            <output id="motionOutput">72%</output>
+            <input id="motionStrength" type="range" min="30" max="100" value="72" />
+          </label>
+          <label class="range-row">
+            <span>Actor scale</span>
+            <output id="scaleOutput">110%</output>
+            <input id="actorScale" type="range" min="70" max="145" value="110" />
+          </label>
+        </section>
+
+        <section>
+          <h2>Living-painting integration</h2>
+          <label class="toggle"><input id="foreground" type="checkbox" checked /> <span>Foreground grass occlusion</span></label>
+          <label class="toggle"><input id="dust" type="checkbox" checked /> <span>Hoof dust behind/in front</span></label>
+          <label class="toggle"><input id="grain" type="checkbox" checked /> <span>Shared canvas grain</span></label>
+          <label class="toggle"><input id="focus" type="checkbox" checked /> <span>Subtle hero contrast</span></label>
+        </section>
+
+        <section class="quality-gate">
+          <h2>Pass / fail</h2>
+          <p><strong>1.</strong> With Walk in place selected, do the feet clearly move while the actor stays planted?</p>
+          <p><strong>2.</strong> At Pause, does every visible part still look like oil-painted art rather than a puppet cutout?</p>
+          <p><strong>3.</strong> In Scene view, does the actor read as interactive without looking pasted on?</p>
+        </section>
+
+        <section class="metrics">
+          <h2>Runtime</h2>
+          <dl>
+            <div><dt>Renderer</dt><dd id="rendererMetric">—</dd></div>
+            <div><dt>Actor</dt><dd>1 painted pair · 4 complete limb sprites</dd></div>
+            <div><dt>Rig</dt><dd>torso overlap + limb pivots</dd></div>
+            <div><dt>Animation</dt><dd>60 fps interpolation</dd></div>
+            <div><dt>FPS</dt><dd id="fpsMetric">—</dd></div>
+          </dl>
+        </section>
+      </aside>
+    </section>
+
+    <footer class="research-note">
+      <strong>Production path if this works:</strong> repaint the actor specifically for animation, with complete hidden anatomy, then author it in LoongBones/DragonBones or Spine using weighted torso meshes, two-bone IK hoof targets and corrective deforms. This page intentionally avoids forcing missing historical pixels through extreme joint bends.
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/pixi.js@8.19.0/dist/pixi.min.js"></script>
+  <script type="module" src="./src/child-light-test.js"></script>
+</body>
+</html>

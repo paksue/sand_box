@@ -1,0 +1,45 @@
+.header-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.experiment-banner {
+  display: grid;
+  gap: 5px;
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(211,166,93,.34);
+  border-radius: 11px;
+  background: linear-gradient(120deg, rgba(103,70,35,.25), rgba(33,25,18,.88));
+  color: var(--muted);
+  font-size: .79rem;
+  line-height: 1.5;
+}
+
+.experiment-banner strong {
+  color: var(--ink);
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: .95rem;
+}
+
+.painting-stage[data-view='neutral'] .painting-backdrop {
+  opacity: 0;
+}
+
+.painting-stage[data-view='neutral'] .neutral-backdrop {
+  opacity: 1;
+}
+
+.mode-button.active,
+.view-button.active {
+  background: #73502d;
+  border-color: #c99d59;
+}
+
+@media (max-width: 760px) {
+  .header-actions {
+    justify-content: flex-start;
+  }
+}
