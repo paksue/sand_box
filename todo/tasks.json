@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-08-18T13:26:30.779Z",
+  "updatedAt": "2026-08-19T11:44:35.078Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -429,6 +429,32 @@
       "contentUpdatedAt": "2026-08-18T13:26:28.704Z",
       "doneUpdatedAt": "2026-08-18T13:26:08.692Z",
       "orderUpdatedAt": "2026-08-18T13:26:08.692Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "9dde23a3-21ad-45cd-8159-230ff564f9a8",
+      "title": "Buy phone chargers deck",
+      "details": "",
+      "done": false,
+      "deleted": false,
+      "order": 27,
+      "createdAt": "2026-08-19T11:44:09.034Z",
+      "contentUpdatedAt": "2026-08-19T11:44:09.034Z",
+      "doneUpdatedAt": "2026-08-19T11:44:09.034Z",
+      "orderUpdatedAt": "2026-08-19T11:44:09.034Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "4f8118cd-2018-4e65-aa36-7696b805c88e",
+      "title": "More portable batteries or bigger one",
+      "details": "",
+      "done": false,
+      "deleted": false,
+      "order": 28,
+      "createdAt": "2026-08-19T11:44:33.489Z",
+      "contentUpdatedAt": "2026-08-19T11:44:33.489Z",
+      "doneUpdatedAt": "2026-08-19T11:44:33.489Z",
+      "orderUpdatedAt": "2026-08-19T11:44:33.489Z",
       "deletedUpdatedAt": ""
     }
   ]
