@@ -60,6 +60,21 @@ test('body collision prevents fighters from occupying the same space', () => {
   assert.ok(game.getEvents().some((event) => event.type === 'body-collision'));
 });
 
+test('body collision preserves full separation when one fighter is pinned at a rope', () => {
+  const game = createGame(111);
+  game.loadScenario('edge-collision');
+  game.step(1);
+
+  const { p1, p2 } = game.getState().fighters;
+  const distance = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+  assert.equal(p1.x, FIGHTER_RADIUS);
+  assert.ok(distance >= FIGHTER_RADIUS * 2 - 1e-9);
+
+  const collision = game.getEvents().find((event) => event.type === 'body-collision');
+  assert.ok(collision);
+  assert.ok(collision.distanceAfter >= FIGHTER_RADIUS * 2 - 1e-9);
+});
+
 test('a facing attack deals damage and creates knockback plus hitstun', () => {
   const game = createGame(12);
   game.loadScenario('attack');
