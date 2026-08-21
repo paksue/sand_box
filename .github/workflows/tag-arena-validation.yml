@@ -1,4 +1,4 @@
-name: Tag Arena AI Harness
+name: Tag Arena Production Validation
 
 on:
   push:
@@ -19,7 +19,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
@@ -30,36 +30,47 @@ jobs:
         with:
           node-version: 22
 
-      - name: Run deterministic and architecture tests
+      - name: Install pinned production dependencies
         working-directory: tag-arena
-        run: npm test
+        run: npm install --no-audit --no-fund
+
+      - name: Typecheck, unit/equivalence tests, and production build
+        working-directory: tag-arena
+        run: npm run check
 
       - name: Install Playwright Chromium
         working-directory: tag-arena
-        run: |
-          npm install --no-save playwright
-          npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium
 
-      - name: Start Tag Arena server
+      - name: Start Vite production dev server
+        working-directory: tag-arena
         run: |
-          python3 -m http.server 4178 --directory tag-arena >/tmp/tag-arena-http.log 2>&1 &
-          echo $! >/tmp/tag-arena-http.pid
-          sleep 2
+          npm run dev >/tmp/tag-arena-vite.log 2>&1 &
+          echo $! >/tmp/tag-arena-vite.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4178/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/tag-arena-vite.log
+          exit 1
 
-      - name: Drive harness in Chromium
+      - name: Drive Pixi production runtime in Chromium
         working-directory: tag-arena
         env:
-          TAG_ARENA_URL: http://127.0.0.1:4178/
+          TAG_ARENA_URL: http://127.0.0.1:4178
         run: npm run test:browser
 
-      - name: Upload AI playtest evidence
+      - name: Upload production-stack evidence and generated lockfile
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: tag-arena-ai-harness
-          path: tag-arena/test-results/
+          name: tag-arena-production-stack
+          path: |
+            tag-arena/test-results/
+            tag-arena/package-lock.json
+            tag-arena/dist/
           if-no-files-found: warn
 
-      - name: Show static-server log on failure
+      - name: Show Vite log on failure
         if: failure()
-        run: cat /tmp/tag-arena-http.log || true
+        run: cat /tmp/tag-arena-vite.log || true
