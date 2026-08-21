@@ -59,8 +59,5 @@ export interface GameApi {
   setInput(playerId: PlayerId, input: Partial<InputState>): void;
   loadScenario(name: ScenarioName): GameState;
   step(ticks?: number): GameState;
-  reset(seed?: number): Game;
+  reset(seed?: number): GameApi;
 }
-
-// Type-only forward declaration for the public reset() contract.
-export interface Game extends GameApi {}
