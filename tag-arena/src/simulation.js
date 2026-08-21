@@ -194,33 +194,57 @@ export function createGame(seed = 1) {
     }
   }
 
+  function moveWithinArena(fighter, directionX, directionY, distance) {
+    if (distance <= 0) return 0;
+    const oldX = fighter.x;
+    const oldY = fighter.y;
+    fighter.x = clamp(
+      oldX + directionX * distance,
+      FIGHTER_RADIUS,
+      ARENA.width - FIGHTER_RADIUS,
+    );
+    fighter.y = clamp(
+      oldY + directionY * distance,
+      FIGHTER_RADIUS,
+      ARENA.height - FIGHTER_RADIUS,
+    );
+    return (fighter.x - oldX) * directionX + (fighter.y - oldY) * directionY;
+  }
+
   function resolveBodyCollision() {
     const a = state.fighters.p1;
     const b = state.fighters.p2;
-    const dx = b.x - a.x;
-    const dy = b.y - a.y;
     const minimum = FIGHTER_RADIUS * 2;
-    const distance = Math.hypot(dx, dy);
+    const initialDistance = Math.hypot(b.x - a.x, b.y - a.y);
+    if (initialDistance >= minimum) return;
 
-    if (distance >= minimum) return;
+    for (let pass = 0; pass < 4; pass += 1) {
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const distance = Math.hypot(dx, dy);
+      if (distance >= minimum - 1e-9) break;
 
-    const normal = distance === 0 ? { x: 1, y: 0 } : { x: dx / distance, y: dy / distance };
-    const overlap = minimum - distance;
-    a.x -= normal.x * overlap * 0.5;
-    a.y -= normal.y * overlap * 0.5;
-    b.x += normal.x * overlap * 0.5;
-    b.y += normal.y * overlap * 0.5;
+      const normal = distance === 0 ? { x: 1, y: 0 } : { x: dx / distance, y: dy / distance };
+      const overlap = minimum - distance;
+      const half = overlap * 0.5;
+      const movedA = moveWithinArena(a, -normal.x, -normal.y, half);
+      const movedB = moveWithinArena(b, normal.x, normal.y, half);
+      let remaining = Math.max(0, overlap - movedA - movedB);
 
-    a.x = clamp(a.x, FIGHTER_RADIUS, ARENA.width - FIGHTER_RADIUS);
-    a.y = clamp(a.y, FIGHTER_RADIUS, ARENA.height - FIGHTER_RADIUS);
-    b.x = clamp(b.x, FIGHTER_RADIUS, ARENA.width - FIGHTER_RADIUS);
-    b.y = clamp(b.y, FIGHTER_RADIUS, ARENA.height - FIGHTER_RADIUS);
+      if (remaining > 1e-9) {
+        remaining -= moveWithinArena(b, normal.x, normal.y, remaining);
+      }
+      if (remaining > 1e-9) {
+        moveWithinArena(a, -normal.x, -normal.y, remaining);
+      }
+    }
 
+    const finalDistance = Math.hypot(b.x - a.x, b.y - a.y);
     pushEvent('body-collision', {
       fighterA: a.id,
       fighterB: b.id,
-      distanceBefore: distance,
-      overlap,
+      distanceBefore: initialDistance,
+      distanceAfter: finalDistance,
     });
   }
 
@@ -310,6 +334,10 @@ export function createGame(seed = 1) {
       case 'collision':
         state.fighters.p1 = createFighter('p1', 340, 225, 1);
         state.fighters.p2 = createFighter('p2', 460, 225, -1);
+        break;
+      case 'edge-collision':
+        state.fighters.p1 = createFighter('p1', 20, 225, 1);
+        state.fighters.p2 = createFighter('p2', 48, 225, -1);
         break;
       case 'attack':
         state.fighters.p1 = createFighter('p1', 350, 225, 1);
