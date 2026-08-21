@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   validate:
@@ -44,6 +44,20 @@ jobs:
             exit 1
           fi
 
+      - name: Commit generated lockfile on migration branch
+        if: github.event_name == 'push' && github.ref_name == 'agent/tag-arena-production-stack'
+        run: |
+          if git ls-files --error-unmatch tag-arena/package-lock.json >/dev/null 2>&1 && \
+             [ -z "$(git status --porcelain -- tag-arena/package-lock.json)" ]; then
+            echo 'package-lock.json already tracked and unchanged'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add tag-arena/package-lock.json
+          git commit -m 'build(tag-arena): lock production dependencies'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
       - name: Typecheck, unit/equivalence tests, and production build
         working-directory: tag-arena
         run: npm run check
@@ -70,7 +84,7 @@ jobs:
           TAG_ARENA_URL: http://127.0.0.1:4178
         run: npm run test:browser
 
-      - name: Upload production-stack evidence and generated lockfile
+      - name: Upload production-stack evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
