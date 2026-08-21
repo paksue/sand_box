@@ -1,0 +1,65 @@
+name: Tag Arena AI Harness
+
+on:
+  push:
+    branches:
+      - 'agent/tag-arena-*'
+    paths:
+      - 'tag-arena/**'
+      - '.github/workflows/tag-arena-validation.yml'
+  pull_request:
+    paths:
+      - 'tag-arena/**'
+      - '.github/workflows/tag-arena-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run deterministic and architecture tests
+        working-directory: tag-arena
+        run: npm test
+
+      - name: Install Playwright Chromium
+        working-directory: tag-arena
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Start Tag Arena server
+        run: |
+          python3 -m http.server 4178 --directory tag-arena >/tmp/tag-arena-http.log 2>&1 &
+          echo $! >/tmp/tag-arena-http.pid
+          sleep 2
+
+      - name: Drive harness in Chromium
+        working-directory: tag-arena
+        env:
+          TAG_ARENA_URL: http://127.0.0.1:4178/
+        run: npm run test:browser
+
+      - name: Upload AI playtest evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tag-arena-ai-harness
+          path: tag-arena/test-results/
+          if-no-files-found: warn
+
+      - name: Show static-server log on failure
+        if: failure()
+        run: cat /tmp/tag-arena-http.log || true
