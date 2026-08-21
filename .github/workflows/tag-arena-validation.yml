@@ -39,7 +39,7 @@ jobs:
         working-directory: tag-arena
         run: npm ci --no-audit --no-fund
 
-      - name: Typecheck, unit/equivalence tests, and production build
+      - name: Typecheck, unit/architecture tests, and production build
         working-directory: tag-arena
         run: npm run check
 
