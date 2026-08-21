@@ -1,53 +1,52 @@
 # Tag Arena — Current State
 
 ## Phase
-Phase 0: deterministic combat slice — verified.
+Phase 1: deterministic impact feel — verified.
 
 ## Active branch
-`agent/tag-arena-phase0-combat`
+`agent/tag-arena-phase1-feel`
 
 ## Verified foundation
-Phase -1 was merged to `main` after passing deterministic tests and a real Chromium control test with uploaded JSON + screenshot evidence.
+- Phase -1 AI harness is merged to `main`.
+- Phase 0 movement, collision, one attack, hitstun/knockback, and rope rebound are merged to `main`.
 
-## Phase 0 scope
-Exactly five gameplay capabilities were added:
-1. two-fighter movement;
-2. body collision;
-3. one facing attack;
-4. attack knockback / hitstun;
-5. rope rebound that preserves part of incoming momentum.
+## Phase 1 goal
+Improve contact feel without increasing control complexity or adding new gameplay systems.
 
 ## Implemented and verified
-- explicit fighter states: `idle`, `move`, `attack`, `hitstun`, `rebound`
-- separate player movement from physical knockback/rebound momentum
-- deterministic circle-vs-circle body collision and boundary-aware separation
-- single press-triggered facing attack with cooldown
-- health damage, knockback, and short hitstun
-- rope rebound with retained velocity
-- deterministic debug scenarios: `baseline`, `collision`, `edge-collision`, `attack`, `rope`, `rope-hit`
-- P1 local controls: arrow keys + Space
-- P2 local controls: WASD + F
-- visible health, facing direction, and simulation state labels
-- Node tests for all mechanics, attack latching, compound rope interaction, and collision at an arena edge
-- Chromium acceptance test for movement, collision, attack, rope rebound, and attack -> knockback -> rope rebound
+- attack press now has exactly 2 startup ticks before becoming active
+- successful hit begins exactly 3 global hit-stop ticks
+- hit-stop freezes victim position, hitstun countdown, attacker recovery, and attacker cooldown
+- knockback resumes immediately after hit-stop
+- attack has 4 deterministic recovery ticks
+- debug bridge version `3`
+- deterministic impact state exposed to renderer rather than invented by rendering code
+- windup indication, impact burst, `HITSTOP` status, and deterministic micro-shake
+- previous movement, collision, edge-collision, attack latching, knockback, and rope behaviors remain covered
+- punch -> hit-stop -> knockback -> rope rebound remains valid
 
 ## Verification evidence
-GitHub Actions run #21 completed successfully on 2026-08-21 after the boundary-collision hardening.
+GitHub Actions run #29 completed successfully on 2026-08-21.
 
-Inspected Chromium artifact:
-- debug bridge version: `2`
+The uploaded Chromium artifact was downloaded and inspected. Exact results:
 - browser console errors: `0`
-- baseline movement: P1 `180 -> 228`, exact delta `48 px` over 12 ticks
-- body collision final center distance: `40 px`
-- attack: P2 health `100 -> 90`, P1 state `attack`, P2 state `hitstun`
-- run-to-rope rebound: P1 X velocity `-4 -> +3 px/tick`
-- attack-to-rope chain: P2 reached right rope at `x=780` and returned at `vx=-3.3909132`
-- uploaded artifacts: `phase0-combat.png`, `playtest-report.json`
+- debug bridge version: `3`
+- movement delta: `48 px`
+- collision distance: `40 px`
+- attack press: tick `1`, target health `100`, startup remaining `2`
+- pre-impact: tick `2`, target health still `100`
+- impact: tick `3`, target health `90`, hit-stop `3`
+- target X at impact: `400`
+- after three frozen ticks: tick `6`, target X still `400`, victim hitstun unchanged
+- first resumed simulation tick: tick `7`, target X `410`
+- punch -> rope chain still returns P2 with X velocity `-3.3909132`
+- uploaded artifacts: `phase1-impact.png`, `playtest-report.json`
 
-The screenshot and JSON were inspected from the uploaded CI artifact rather than inferred from job status alone.
+The screenshot was visually inspected at the frozen tick-3 impact frame. It shows P1 in attack, P2 in hitstun, the impact burst, reduced P2 health, and `HITSTOP 3` telemetry.
 
-## Explicitly not part of Phase 0
-- grapples
+## Explicitly not part of Phase 1
+- new buttons
+- grapples or throws
 - jumping
 - tagging
 - specials / Power Core
@@ -56,15 +55,15 @@ The screenshot and JSON were inspected from the uploaded CI artifact rather than
 - networking
 - progression/economy
 
-## Phase 0 exit criteria
+## Phase 1 exit criteria
 Completed:
-1. deterministic replay remains stable;
-2. fighters retain full collision separation, including beside a rope;
-3. a facing attack removes exactly 10 health and creates hitstun/knockback;
-4. holding the attack button does not retrigger attacks;
-5. running into a rope reverses velocity;
-6. attack knockback can carry the opponent into a rope and rebound them;
-7. Chromium reports zero console errors and uploads screenshot + JSON evidence.
+1. attack does not damage immediately on button press;
+2. hit occurs on deterministic tick 3;
+3. successful hit creates exactly three frozen simulation ticks;
+4. knockback/recovery/hitstun remain frozen during hit-stop;
+5. physics resumes on the first tick after hit-stop;
+6. Phase 0 mechanics remain green in Node and Chromium;
+7. browser artifact contains inspectable visual + machine-readable proof.
 
 ## Next phase
-Phase 1 should focus on **feel rather than feature count**: tune impact timing, hit pause, movement response, collision response, and rope behavior until the two-circle prototype is genuinely satisfying before adding grapples or tags.
+Phase 2: introduce the first wrestling interaction without adding a new button. At close body contact, the existing Attack action should become a contextual grapple/throw interaction; at normal striking distance it remains the current strike. Keep it deterministic and simple before adding tagging.

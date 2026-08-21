@@ -52,8 +52,19 @@ try {
     api.setInput('p1', { attack: true });
     api.step(1);
     api.setInput('p1', {});
-    const attackState = api.getState();
+    const attackPressed = api.getState();
+    api.step(1);
+    const attackPreImpact = api.getState();
+    api.step(1);
+    const attackImpact = api.getState();
     const attackEvents = api.getEvents();
+    const impactTargetX = attackImpact.fighters.p2.x;
+    const impactRecovery = attackImpact.fighters.p1.attackRecoveryTicks;
+    const impactHitstun = attackImpact.fighters.p2.hitstunTicks;
+    api.step(3);
+    const attackFrozen = api.getState();
+    api.step(1);
+    const attackResumed = api.getState();
 
     api.loadScenario('rope');
     api.setInput('p1', { left: true });
@@ -65,15 +76,18 @@ try {
     api.setInput('p1', { attack: true });
     api.step(1);
     api.setInput('p1', {});
+    api.step(2);
+    api.step(3);
     api.step(4);
     const ropeHitState = api.getState();
     const ropeHitEvents = api.getEvents();
 
-    // Leave Chromium on the most legible combat frame for the uploaded screenshot.
+    // Finish on the actual frozen impact frame for visual evidence.
     api.loadScenario('attack');
     api.setInput('p1', { attack: true });
     api.step(1);
     api.setInput('p1', {});
+    api.step(2);
 
     return {
       bridgeVersion: api.version,
@@ -88,9 +102,16 @@ try {
         eventSeen: collisionEvents.some((event) => event.type === 'body-collision'),
       },
       attack: {
-        state: attackState,
+        pressed: attackPressed,
+        preImpact: attackPreImpact,
+        impact: attackImpact,
+        frozen: attackFrozen,
+        resumed: attackResumed,
+        impactTargetX,
+        impactRecovery,
+        impactHitstun,
         hitSeen: attackEvents.some((event) => event.type === 'attack-hit'),
-        knockbackSeen: attackEvents.some((event) => event.type === 'knockback'),
+        hitstopSeen: attackEvents.some((event) => event.type === 'hitstop-start'),
       },
       rope: {
         state: ropeState,
@@ -99,24 +120,41 @@ try {
       ropeHit: {
         state: ropeHitState,
         attackSeen: ropeHitEvents.some((event) => event.type === 'attack-hit'),
+        hitstopSeen: ropeHitEvents.some((event) => event.type === 'hitstop-start'),
         reboundSeen: ropeHitEvents.some((event) => event.type === 'rope-rebound' && event.fighterId === 'p2'),
       },
     };
   });
 
-  assert.equal(result.bridgeVersion, 2);
+  assert.equal(result.bridgeVersion, 3);
   assert.equal(result.movement.deltaX, 48);
   assert.equal(result.movement.end.tick, 12);
 
   assert.ok(result.collision.distance >= 40 - 1e-9);
   assert.equal(result.collision.eventSeen, true);
 
-  assert.equal(result.attack.state.fighters.p2.health, 90);
-  assert.equal(result.attack.state.fighters.p1.state, 'attack');
-  assert.equal(result.attack.state.fighters.p2.state, 'hitstun');
-  assert.ok(result.attack.state.fighters.p2.vx > 0);
+  assert.equal(result.attack.pressed.tick, 1);
+  assert.equal(result.attack.pressed.fighters.p2.health, 100);
+  assert.equal(result.attack.pressed.fighters.p1.attackStartupTicks, 2);
+  assert.equal(result.attack.preImpact.tick, 2);
+  assert.equal(result.attack.preImpact.fighters.p2.health, 100);
+  assert.equal(result.attack.impact.tick, 3);
+  assert.equal(result.attack.impact.fighters.p2.health, 90);
+  assert.equal(result.attack.impact.hitstopTicks, 3);
+  assert.ok(result.attack.impact.impact);
   assert.equal(result.attack.hitSeen, true);
-  assert.equal(result.attack.knockbackSeen, true);
+  assert.equal(result.attack.hitstopSeen, true);
+
+  assert.equal(result.attack.frozen.tick, 6);
+  assert.equal(result.attack.frozen.hitstopTicks, 0);
+  assert.equal(result.attack.frozen.fighters.p2.x, result.attack.impactTargetX);
+  assert.equal(result.attack.frozen.fighters.p2.hitstunTicks, result.attack.impactHitstun);
+  assert.equal(result.attack.frozen.fighters.p1.attackRecoveryTicks, result.attack.impactRecovery);
+
+  assert.equal(result.attack.resumed.tick, 7);
+  assert.equal(result.attack.resumed.fighters.p2.x, result.attack.impactTargetX + 10);
+  assert.equal(result.attack.resumed.fighters.p2.hitstunTicks, result.attack.impactHitstun - 1);
+  assert.equal(result.attack.resumed.fighters.p1.attackRecoveryTicks, result.attack.impactRecovery - 1);
 
   assert.equal(result.rope.state.fighters.p1.x, 20);
   assert.equal(result.rope.state.fighters.p1.state, 'rebound');
@@ -126,6 +164,7 @@ try {
   assert.equal(result.ropeHit.state.fighters.p2.x, 780);
   assert.ok(result.ropeHit.state.fighters.p2.vx < 0);
   assert.equal(result.ropeHit.attackSeen, true);
+  assert.equal(result.ropeHit.hitstopSeen, true);
   assert.equal(result.ropeHit.reboundSeen, true);
 
   assert.equal(report.consoleErrors.length, 0, `browser console errors: ${report.consoleErrors.join('; ')}`);
@@ -137,7 +176,7 @@ try {
 } finally {
   if (page) {
     try {
-      await page.screenshot({ path: fileURLToPath(new URL('phase0-combat.png', outDir)), fullPage: true });
+      await page.screenshot({ path: fileURLToPath(new URL('phase1-impact.png', outDir)), fullPage: true });
     } catch (error) {
       report.screenshotError = error?.message || String(error);
     }
@@ -151,8 +190,10 @@ console.log(JSON.stringify({
   pass: report.pass,
   movementDeltaX: report.movement?.deltaX,
   collisionDistance: report.collision?.distance,
-  attackHealth: report.attack?.state?.fighters?.p2?.health,
-  ropeVelocityX: report.rope?.state?.fighters?.p1?.vx,
+  attackImpactTick: report.attack?.impact?.tick,
+  hitstopTicks: report.attack?.impact?.hitstopTicks,
+  frozenTargetX: report.attack?.frozen?.fighters?.p2?.x,
+  resumedTargetX: report.attack?.resumed?.fighters?.p2?.x,
   ropeHitVelocityX: report.ropeHit?.state?.fighters?.p2?.vx,
   error: report.error || null,
 }, null, 2));

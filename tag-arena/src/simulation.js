@@ -7,6 +7,9 @@ export const MOVE_PER_TICK = 4;
 export const ATTACK_RANGE = 56;
 export const ATTACK_DAMAGE = 10;
 export const ATTACK_COOLDOWN_TICKS = 14;
+export const ATTACK_STARTUP_TICKS = 2;
+export const ATTACK_RECOVERY_TICKS = 4;
+export const HITSTOP_TICKS = 3;
 export const KNOCKBACK_SPEED = 10;
 export const KNOCKBACK_DECAY = 0.82;
 export const HITSTUN_TICKS = 10;
@@ -43,7 +46,9 @@ function createFighter(id, x, y, facingX) {
     state: 'idle',
     health: 100,
     attackCooldown: 0,
-    attackTicks: 0,
+    attackStartupTicks: 0,
+    attackRecoveryTicks: 0,
+    attackActive: false,
     hitstunTicks: 0,
     reboundTicks: 0,
   };
@@ -70,9 +75,11 @@ export function createGame(seed = 1) {
   const attackLatch = { p1: false, p2: false };
 
   let state = {
-    version: 2,
+    version: 3,
     seed: normalizedSeed,
     tick: 0,
+    hitstopTicks: 0,
+    impact: null,
     arena: { ...ARENA },
     marker: {
       x: 240 + Math.floor(rng.next() * 320),
@@ -86,7 +93,12 @@ export function createGame(seed = 1) {
 
   function pushEvent(type, payload = {}) {
     events.push({ tick: state.tick, type, ...payload });
-    if (events.length > 200) events.shift();
+    if (events.length > 240) events.shift();
+  }
+
+  function syncAttackLatches() {
+    attackLatch.p1 = inputs.p1.attack;
+    attackLatch.p2 = inputs.p2.attack;
   }
 
   function resolveRopes(fighter) {
@@ -158,11 +170,17 @@ export function createGame(seed = 1) {
       fighter.vx *= 0.9;
       fighter.vy *= 0.9;
       fighter.reboundTicks -= 1;
-    } else if (fighter.attackTicks > 0) {
+    } else if (fighter.attackStartupTicks > 0) {
       fighter.state = 'attack';
       fighter.vx = 0;
       fighter.vy = 0;
-      fighter.attackTicks -= 1;
+      fighter.attackStartupTicks -= 1;
+      if (fighter.attackStartupTicks === 0) fighter.attackActive = true;
+    } else if (fighter.attackRecoveryTicks > 0) {
+      fighter.state = 'attack';
+      fighter.vx = 0;
+      fighter.vy = 0;
+      fighter.attackRecoveryTicks -= 1;
     } else {
       const rawX = Number(input.right) - Number(input.left);
       const rawY = Number(input.down) - Number(input.up);
@@ -248,17 +266,21 @@ export function createGame(seed = 1) {
     });
   }
 
+  function hasAttackPhase(fighter) {
+    return fighter.attackStartupTicks > 0
+      || fighter.attackRecoveryTicks > 0
+      || fighter.attackActive;
+  }
+
   function canAttack(fighter) {
     return fighter.health > 0
       && fighter.attackCooldown === 0
-      && fighter.attackTicks === 0
+      && !hasAttackPhase(fighter)
       && fighter.hitstunTicks === 0
       && fighter.reboundTicks === 0;
   }
 
-  function processAttacks() {
-    const attempts = [];
-
+  function processAttackStarts() {
     for (const playerId of ['p1', 'p2']) {
       const fighter = state.fighters[playerId];
       const input = inputs[playerId];
@@ -266,52 +288,96 @@ export function createGame(seed = 1) {
 
       if (pressed && canAttack(fighter)) {
         fighter.attackCooldown = ATTACK_COOLDOWN_TICKS;
-        fighter.attackTicks = 4;
+        fighter.attackStartupTicks = ATTACK_STARTUP_TICKS;
+        fighter.attackRecoveryTicks = 0;
+        fighter.attackActive = false;
         fighter.state = 'attack';
         fighter.vx = 0;
         fighter.vy = 0;
-        attempts.push(playerId);
-        pushEvent('attack-start', { fighterId: playerId });
+        pushEvent('attack-start', {
+          fighterId: playerId,
+          startupTicks: ATTACK_STARTUP_TICKS,
+        });
       }
 
       attackLatch[playerId] = input.attack;
     }
+  }
 
-    for (const attackerId of attempts) {
-      const targetId = attackerId === 'p1' ? 'p2' : 'p1';
-      const attacker = state.fighters[attackerId];
-      const target = state.fighters[targetId];
-      const toTargetX = target.x - attacker.x;
-      const toTargetY = target.y - attacker.y;
-      const distance = Math.hypot(toTargetX, toTargetY);
-      const toTarget = normalizedVector(toTargetX, toTargetY);
-      const facingDot = attacker.facingX * toTarget.x + attacker.facingY * toTarget.y;
+  function applyHit(attackerId, targetId) {
+    const attacker = state.fighters[attackerId];
+    const target = state.fighters[targetId];
+    const toTargetX = target.x - attacker.x;
+    const toTargetY = target.y - attacker.y;
+    const distance = Math.hypot(toTargetX, toTargetY);
+    const toTarget = normalizedVector(toTargetX, toTargetY);
+    const facingDot = attacker.facingX * toTarget.x + attacker.facingY * toTarget.y;
 
-      if (distance <= ATTACK_RANGE && facingDot >= 0.35) {
-        target.health = Math.max(0, target.health - ATTACK_DAMAGE);
-        target.vx = attacker.facingX * KNOCKBACK_SPEED;
-        target.vy = attacker.facingY * KNOCKBACK_SPEED;
-        target.hitstunTicks = HITSTUN_TICKS;
-        target.reboundTicks = 0;
-        target.attackTicks = 0;
-        target.state = 'hitstun';
+    if (distance <= ATTACK_RANGE && facingDot >= 0.35) {
+      target.health = Math.max(0, target.health - ATTACK_DAMAGE);
+      target.vx = attacker.facingX * KNOCKBACK_SPEED;
+      target.vy = attacker.facingY * KNOCKBACK_SPEED;
+      target.hitstunTicks = HITSTUN_TICKS;
+      target.reboundTicks = 0;
+      target.attackStartupTicks = 0;
+      target.attackRecoveryTicks = 0;
+      target.attackActive = false;
+      target.state = 'hitstun';
 
-        pushEvent('attack-hit', {
-          attackerId,
-          targetId,
-          damage: ATTACK_DAMAGE,
-          targetHealth: target.health,
-        });
-        pushEvent('knockback', {
-          attackerId,
-          targetId,
-          vx: target.vx,
-          vy: target.vy,
-        });
-      } else {
-        pushEvent('attack-miss', { attackerId, targetId, distance, facingDot });
-      }
+      state.hitstopTicks = HITSTOP_TICKS;
+      state.impact = {
+        attackerId,
+        targetId,
+        x: (attacker.x + target.x) * 0.5,
+        y: (attacker.y + target.y) * 0.5,
+        ticksRemaining: HITSTOP_TICKS,
+      };
+
+      pushEvent('attack-hit', {
+        attackerId,
+        targetId,
+        damage: ATTACK_DAMAGE,
+        targetHealth: target.health,
+      });
+      pushEvent('knockback', {
+        attackerId,
+        targetId,
+        vx: target.vx,
+        vy: target.vy,
+      });
+      pushEvent('hitstop-start', {
+        attackerId,
+        targetId,
+        ticks: HITSTOP_TICKS,
+      });
+      return true;
     }
+
+    pushEvent('attack-miss', { attackerId, targetId, distance, facingDot });
+    return false;
+  }
+
+  function processActiveAttacks() {
+    const attackers = ['p1', 'p2'].filter((playerId) => state.fighters[playerId].attackActive);
+
+    for (const attackerId of attackers) {
+      const fighter = state.fighters[attackerId];
+      fighter.attackActive = false;
+      fighter.attackRecoveryTicks = ATTACK_RECOVERY_TICKS;
+    }
+
+    for (const attackerId of attackers) {
+      const targetId = attackerId === 'p1' ? 'p2' : 'p1';
+      applyHit(attackerId, targetId);
+    }
+  }
+
+  function advanceHitstop() {
+    state.hitstopTicks -= 1;
+    if (state.impact) state.impact.ticksRemaining = state.hitstopTicks;
+    pushEvent('hitstop-tick', { remaining: state.hitstopTicks });
+    syncAttackLatches();
+    if (state.hitstopTicks === 0) state.impact = null;
   }
 
   function resetInputs() {
@@ -325,6 +391,8 @@ export function createGame(seed = 1) {
     resetInputs();
     events.length = 0;
     state.tick = 0;
+    state.hitstopTicks = 0;
+    state.impact = null;
     state.fighters.p1 = createFighter('p1', 180, 225, 1);
     state.fighters.p2 = createFighter('p2', 620, 225, -1);
 
@@ -378,10 +446,17 @@ export function createGame(seed = 1) {
       const count = Math.max(0, Math.floor(Number(ticks)));
       for (let i = 0; i < count; i += 1) {
         state.tick += 1;
+
+        if (state.hitstopTicks > 0) {
+          advanceHitstop();
+          continue;
+        }
+
         updateFighter(state.fighters.p1, inputs.p1);
         updateFighter(state.fighters.p2, inputs.p2);
         resolveBodyCollision();
-        processAttacks();
+        processAttackStarts();
+        processActiveAttacks();
       }
       return clone(state);
     },
