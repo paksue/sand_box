@@ -3,23 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tag Arena — Phase 0 Combat</title>
+  <title>Tag Arena — Phase 1 Impact Feel</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
   <main>
     <header>
-      <p class="eyebrow">PHASE 0 · COMBAT SLICE</p>
+      <p class="eyebrow">PHASE 1 · IMPACT FEEL</p>
       <h1>Tag Arena</h1>
-      <p>Two placeholder fighters, real collision, one attack, knockback, and rope rebound. Player 1: arrows + Space. Player 2: WASD + F.</p>
+      <p>Same tiny controls, heavier contact: attacks now wind up, freeze briefly on impact, then release knockback into the arena and ropes. Player 1: arrows + Space. Player 2: WASD + F.</p>
     </header>
 
-    <canvas id="arena" width="800" height="450" aria-label="Tag Arena Phase 0 combat arena"></canvas>
+    <canvas id="arena" width="800" height="450" aria-label="Tag Arena Phase 1 impact-feel arena"></canvas>
     <output id="status" aria-live="polite"></output>
 
     <section>
       <strong>AI verification contract</strong>
-      <span>Use <code>?debug=1&amp;manual=1</code> to expose deterministic scenarios through <code>window.__TAG_ARENA__</code>.</span>
+      <span>Use <code>?debug=1&amp;manual=1</code> to expose deterministic timing and scenarios through <code>window.__TAG_ARENA__</code>.</span>
     </section>
   </main>
   <script type="module" src="./src/app.js"></script>
