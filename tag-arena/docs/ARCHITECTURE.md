@@ -40,6 +40,17 @@ Player intent and physical momentum are distinct concepts.
 
 The renderer may visualize fighter state, facing, velocity-derived outcomes, and health, but may not recreate any of those rules.
 
+## Phase 1 timing rules
+Combat feel is also simulation truth, not renderer truth.
+- Attack startup, active timing, recovery, and hit-stop are integer simulation ticks.
+- A successful strike may create global hit-stop by setting deterministic simulation state.
+- During hit-stop, position integration, knockback decay, hitstun countdown, attack recovery, and cooldown progression are frozen.
+- Input latches continue to synchronize during hit-stop so a held button cannot become a false fresh press when simulation resumes.
+- Impact metadata is emitted by simulation and may be visualized by the renderer.
+- Camera shake, impact bursts, labels, and other visual treatment may derive from deterministic impact state, but must not change gameplay outcomes.
+
+This keeps impact timing identical in Node tests, Chromium tests, and the interactive browser game.
+
 ## Browser automation contract
 `window.__TAG_ARENA__` must provide at minimum:
 - `getState()` — serializable snapshot
@@ -49,7 +60,7 @@ The renderer may visualize fighter state, facing, velocity-derived outcomes, and
 - `getEvents()` — recent simulation events
 - `version` — debug-contract version
 
-Phase 0 also exposes:
+The bridge also exposes:
 - `loadScenario(name)` — loads a named deterministic acceptance scenario through the public simulation API.
 
 Named scenarios are preferred over arbitrary state mutation because they are reviewable, reproducible, and safe for regression tests.
