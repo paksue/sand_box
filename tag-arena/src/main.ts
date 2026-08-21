@@ -1,4 +1,4 @@
-import './styles.css';
+import '../styles.css';
 import { installDebugBridge } from './debug/DebugBridge';
 import { KeyboardInput } from './input/KeyboardInput';
 import { PixiGameRenderer } from './render/PixiGameRenderer';
