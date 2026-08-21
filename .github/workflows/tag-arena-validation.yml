@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   validate:
@@ -30,33 +30,14 @@ jobs:
         with:
           node-version: 22
 
-      - name: Bootstrap current npm
+      - name: Use current npm CLI
         run: |
           npm install --global npm@12.0.2
           npm --version
 
-      - name: Install pinned production dependencies
+      - name: Install locked production dependencies
         working-directory: tag-arena
-        run: |
-          if ! npm install --no-audit --no-fund; then
-            echo '--- npm debug log ---'
-            cat ~/.npm/_logs/*-debug-0.log || true
-            exit 1
-          fi
-
-      - name: Commit generated lockfile on migration branch
-        if: github.event_name == 'push' && github.ref_name == 'agent/tag-arena-production-stack'
-        run: |
-          if git ls-files --error-unmatch tag-arena/package-lock.json >/dev/null 2>&1 && \
-             [ -z "$(git status --porcelain -- tag-arena/package-lock.json)" ]; then
-            echo 'package-lock.json already tracked and unchanged'
-            exit 0
-          fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add tag-arena/package-lock.json
-          git commit -m 'build(tag-arena): lock production dependencies'
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+        run: npm ci --no-audit --no-fund
 
       - name: Typecheck, unit/equivalence tests, and production build
         working-directory: tag-arena
