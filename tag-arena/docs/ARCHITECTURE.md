@@ -3,88 +3,97 @@
 ## Purpose
 The architecture is optimized for AI-assisted development from ChatGPT web. The project must be easy for an agent to inspect, modify, test, and verify without relying on hidden local state.
 
-## Core boundaries
+## Production stack
+- strict TypeScript for gameplay/runtime contracts
+- PixiJS 8 as rendering only
+- Vite for dev/build
+- Vitest for simulation, equivalence, and architecture tests
+- Playwright for real Chromium verification
+- GitHub Actions as the remote execution/evidence loop
 
-### Simulation
+No general-purpose physics engine or ECS is used at this scale. The deterministic simulation owns the small number of fighters and interactions directly.
+
+## One-way production boundaries
+
+### `src/sim/`
 Owns deterministic gameplay state transitions.
 - No DOM access.
-- No canvas access.
+- No canvas/Pixi access.
 - No wall-clock time.
 - No gameplay use of `Math.random()`.
-- All randomness comes from an injected seeded RNG.
+- All randomness comes from the project seeded RNG.
+- Fixed integer simulation ticks are gameplay time.
 
-### Rendering
-Reads state and draws it.
-- May not calculate damage, collision outcomes, scoring, tagging rules, or other gameplay truth.
-- Must not mutate simulation internals directly.
+### `src/render/`
+Reads serialized `GameState` and draws it with PixiJS.
+- May not calculate damage, collision outcomes, scoring, tagging, attack timing, or other gameplay truth.
+- Must not call simulation mutation APIs.
+- Visual shake, impact bursts, labels, and animations may derive from simulation state/events.
 
-### Input
-Translates keyboard/gamepad/test actions into a small input state consumed by the simulation.
+### `src/input/`
+Translates keyboard/gamepad/test controls into typed `InputState` only.
 
-### Debug bridge
-Development builds expose `window.__TAG_ARENA__` so browser automation can inspect and control the game.
-The bridge may call public simulation APIs but must not duplicate gameplay rules.
+### `src/runtime/`
+The sole production composition layer.
+- feeds current input intent to the simulation;
+- advances the simulation at exactly 60 fixed ticks/sec;
+- renders the latest state independently of display refresh rate.
+
+Pixi's ticker/render frequency is never gameplay time.
+
+### `src/debug/`
+Development builds expose `window.__TAG_ARENA__` so browser automation can inspect and control the public runtime/simulation surface. The bridge must not duplicate gameplay rules.
 
 ## Determinism
-The same initial seed plus the same ordered input sequence and tick count must produce the same serialized state.
+The same initial seed plus the same ordered input sequence and tick count must produce the same serialized state and event sequence.
 
-Simulation advances in fixed ticks. Rendering frequency must not change simulation outcomes.
+Display frequency may be 60/120/144 Hz without changing outcomes. Browser tests can bypass wall time with `step(ticks)`.
 
-## Phase 0 simulation rules
+## Current combat truth
 Player intent and physical momentum are distinct concepts.
 - Neutral movement derives velocity from normalized directional input.
-- Hitstun and rope rebound advance using stored physical velocity rather than fresh movement input.
+- Hitstun and rope rebound use stored physical velocity.
 - Body collision resolution belongs entirely to simulation code.
-- Attack range, facing checks, damage, cooldown, knockback, and hitstun belong entirely to simulation code.
-- Rope contact clamps fighters inside the arena and reverses the incoming velocity component with deterministic retention.
-
-The renderer may visualize fighter state, facing, velocity-derived outcomes, and health, but may not recreate any of those rules.
-
-## Phase 1 timing rules
-Combat feel is also simulation truth, not renderer truth.
+- Attack range, facing, damage, cooldown, knockback, and hitstun belong entirely to simulation code.
+- Rope contact clamps inside the arena and reverses incoming velocity with deterministic retention.
 - Attack startup, active timing, recovery, and hit-stop are integer simulation ticks.
-- A successful strike may create global hit-stop by setting deterministic simulation state.
-- During hit-stop, position integration, knockback decay, hitstun countdown, attack recovery, and cooldown progression are frozen.
-- Input latches continue to synchronize during hit-stop so a held button cannot become a false fresh press when simulation resumes.
-- Impact metadata is emitted by simulation and may be visualized by the renderer.
-- Camera shake, impact bursts, labels, and other visual treatment may derive from deterministic impact state, but must not change gameplay outcomes.
+- During global hit-stop, position integration, knockback decay, hitstun countdown, attack recovery, and cooldown are frozen.
+- Input latches synchronize during hit-stop so a held button cannot become a false new press.
 
-This keeps impact timing identical in Node tests, Chromium tests, and the interactive browser game.
+## Migration oracle
+During the production-stack migration only, `src/simulation.js` and `src/rng.js` remain untouched as the verified Phase-1 behavior oracle.
+
+Vitest runs identical scripts against legacy JS and `src/sim/Game.ts` and compares full state + event output. Production HTML does not load the legacy controller. Once the migration is merged and a follow-up cleanup is green, the oracle may be removed.
 
 ## Browser automation contract
-`window.__TAG_ARENA__` must provide at minimum:
-- `getState()` — serializable snapshot
+`window.__TAG_ARENA__` provides:
+- `getState()`
 - `reset(seed?)`
 - `setInput(playerId, input)`
-- `step(ticks)` — deterministic manual stepping for tests
-- `getEvents()` — recent simulation events
-- `version` — debug-contract version
+- `step(ticks)`
+- `getEvents()`
+- `loadScenario(name)`
+- `version`
+- renderer identity for migration verification
 
-The bridge also exposes:
-- `loadScenario(name)` — loads a named deterministic acceptance scenario through the public simulation API.
-
-Named scenarios are preferred over arbitrary state mutation because they are reviewable, reproducible, and safe for regression tests.
+Named deterministic scenarios are preferred over arbitrary state mutation.
 
 ## CI contract
 A relevant push or pull request runs:
-1. architecture/unit tests
-2. static browser server
-3. Chromium smoke/combat acceptance test
-4. artifact upload even when the browser test fails
+1. dependency installation from committed lockfile once migration bootstrap is complete;
+2. strict TypeScript typecheck;
+3. Vitest native simulation + legacy equivalence + architecture tests;
+4. Vite production build;
+5. Chromium production-stack acceptance test;
+6. artifact upload even when browser verification fails.
 
-Artifacts should include machine-readable JSON and screenshots so ChatGPT can review evidence rather than only a green/red status.
+Artifacts include machine-readable JSON and screenshots, and during the bootstrap run also the generated `package-lock.json`.
 
 ## Dependency policy
-The current project uses browser-native ES modules and Node's built-in test runner. Playwright is installed by CI only. Add runtime frameworks only after they materially improve the game.
+Runtime dependencies are intentionally minimal. PixiJS is the rendering dependency. Add another runtime framework only when it provides a measured capability that cannot remain simple inside these boundaries, and update this document plus architecture tests in the same change.
 
-## Growth path
-As the project grows, likely production structure becomes:
-- `src/sim/` deterministic simulation
-- `src/render/` rendering adapter (likely PixiJS if useful)
-- `src/input/`
-- `src/debug/`
-- `src/content/` data-driven fighters and moves
-- `tests/scenarios/`
-- `tests/replays/`
-
-If TypeScript is introduced, simulation and public debug contracts should become strongly typed first.
+## Intended growth path
+- `src/sim/` may later split `Game.ts` into Combat/Collision/Ropes/Tagging once tests make extraction mechanical.
+- `src/content/` will hold data-driven fighters and moves.
+- `src/render/` may add Spine/particle/audio adapters without moving gameplay truth out of simulation.
+- `tests/scenarios/` and `tests/replays/` will grow as mechanics are added.

@@ -1,9 +1,23 @@
 {
-  "name": "tag-arena-ai-harness",
+  "name": "tag-arena",
   "private": true,
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/*.test.mjs",
-    "test:browser": "node tests/browser.mjs"
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:browser": "playwright test",
+    "check": "npm run typecheck && npm test && npm run build"
+  },
+  "dependencies": {
+    "pixi.js": "8.20.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1",
+    "typescript": "7.0.2",
+    "vite": "8.2.2",
+    "vitest": "4.1.10"
   }
 }
