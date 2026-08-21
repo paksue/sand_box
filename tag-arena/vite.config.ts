@@ -1,0 +1,18 @@
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  server: {
+    host: '0.0.0.0',
+    port: 4178,
+    strictPort: true,
+  },
+  preview: {
+    host: '0.0.0.0',
+    port: 4178,
+    strictPort: true,
+  },
+  build: {
+    sourcemap: true,
+    target: 'es2022',
+  },
+});
