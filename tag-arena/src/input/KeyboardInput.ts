@@ -6,15 +6,17 @@ const KEY_MAP: Readonly<Record<string, readonly [PlayerId, keyof InputState]>> =
   ArrowUp: ['p1', 'up'],
   ArrowDown: ['p1', 'down'],
   Space: ['p1', 'attack'],
+  Enter: ['p1', 'tag'],
   KeyA: ['p2', 'left'],
   KeyD: ['p2', 'right'],
   KeyW: ['p2', 'up'],
   KeyS: ['p2', 'down'],
   KeyF: ['p2', 'attack'],
+  KeyG: ['p2', 'tag'],
 };
 
 function blank(): InputState {
-  return { left: false, right: false, up: false, down: false, attack: false };
+  return { left: false, right: false, up: false, down: false, attack: false, tag: false };
 }
 
 export class KeyboardInput {
