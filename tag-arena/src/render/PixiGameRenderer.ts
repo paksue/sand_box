@@ -1,5 +1,5 @@
 import { Application, Container, Graphics, Text } from 'pixi.js';
-import { FIGHTER_RADIUS } from '../sim/constants';
+import { FIGHTER_RADIUS, TAG_ZONE_RADIUS } from '../sim/constants';
 import type { FighterState, GameState } from '../sim/types';
 
 export class PixiGameRenderer {
@@ -9,7 +9,7 @@ export class PixiGameRenderer {
   readonly #labels = new Container();
   readonly #status = new Text({
     text: '',
-    style: { fill: 0x202020, fontFamily: 'monospace', fontSize: 13 },
+    style: { fill: 0x202020, fontFamily: 'monospace', fontSize: 12 },
   });
 
   async init(host: HTMLElement): Promise<void> {
@@ -40,11 +40,17 @@ export class PixiGameRenderer {
     g.rect(14, 14, state.arena.width - 28, state.arena.height - 28)
       .stroke({ color: 0xb8aa96, width: 2, alpha: 0.85 });
 
+    // Tag zones are presentation of serialized partner anchors; eligibility remains simulation truth.
+    this.#drawTagZone(g, state.partners.p1, 0x1769aa);
+    this.#drawTagZone(g, state.partners.p2, 0xb3261e);
+
     // Deterministic marker retained from the harness so seeded state remains visible.
     g.circle(state.marker.x, state.marker.y, 5).fill(0x222222);
 
     this.#drawHealth(g, 20, 18, 260, state.fighters.p1, false);
     this.#drawHealth(g, 520, 18, 260, state.fighters.p2, true);
+    this.#drawPartner(g, state.partners.p1, 0x1769aa);
+    this.#drawPartner(g, state.partners.p2, 0xb3261e);
     this.#drawFighter(g, state.fighters.p1, 0x1769aa);
     this.#drawFighter(g, state.fighters.p2, 0xb3261e);
 
@@ -97,11 +103,32 @@ export class PixiGameRenderer {
 
     this.#status.text = [
       `tick ${state.tick}`,
-      `P1 ${state.fighters.p1.health}hp ${state.fighters.p1.state}`,
-      `P2 ${state.fighters.p2.health}hp ${state.fighters.p2.state}`,
+      `P1 ${state.fighters.p1.rosterId} ${state.fighters.p1.health}hp`,
+      `↔ ${state.partners.p1.rosterId} ${state.partners.p1.health}hp cd${state.teams.p1.tagCooldownTicks}`,
+      `P2 ${state.fighters.p2.rosterId} ${state.fighters.p2.health}hp`,
+      `↔ ${state.partners.p2.rosterId} ${state.partners.p2.health}hp cd${state.teams.p2.tagCooldownTicks}`,
       grappleStatus,
       pauseStatus,
     ].filter(Boolean).join('  ·  ');
+  }
+
+  #drawTagZone(g: Graphics, partner: FighterState, color: number): void {
+    g.circle(partner.x, partner.y, TAG_ZONE_RADIUS)
+      .stroke({ color, width: 2, alpha: 0.22 });
+  }
+
+  #drawPartner(g: Graphics, partner: FighterState, color: number): void {
+    const radius = FIGHTER_RADIUS * 0.72;
+    g.circle(partner.x, partner.y, radius)
+      .fill({ color, alpha: 0.34 })
+      .stroke({ color, width: 3, alpha: 0.85 });
+
+    const barWidth = 36;
+    const barX = partner.x - barWidth * 0.5;
+    const barY = partner.y + radius + 7;
+    g.rect(barX, barY, barWidth, 5).fill(0xd8d2c8);
+    g.rect(barX, barY, barWidth * (partner.health / 100), 5).fill(color);
+    g.rect(barX, barY, barWidth, 5).stroke({ color: 0x111111, width: 1 });
   }
 
   #drawHealth(g: Graphics, x: number, y: number, width: number, fighter: FighterState, alignRight: boolean): void {
