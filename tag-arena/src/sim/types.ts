@@ -1,6 +1,14 @@
 export type PlayerId = 'p1' | 'p2';
-export type FighterMode = 'idle' | 'move' | 'attack' | 'hitstun' | 'rebound';
-export type ScenarioName = 'baseline' | 'collision' | 'edge-collision' | 'attack' | 'rope' | 'rope-hit';
+export type FighterMode = 'idle' | 'move' | 'attack' | 'grapple' | 'throw' | 'hitstun' | 'rebound';
+export type ScenarioName =
+  | 'baseline'
+  | 'collision'
+  | 'edge-collision'
+  | 'attack'
+  | 'grapple'
+  | 'grapple-rope'
+  | 'rope'
+  | 'rope-hit';
 
 export interface InputState {
   left: boolean;
@@ -24,11 +32,13 @@ export interface FighterState {
   attackStartupTicks: number;
   attackRecoveryTicks: number;
   attackActive: boolean;
+  grappleRecoveryTicks: number;
   hitstunTicks: number;
   reboundTicks: number;
 }
 
 export interface ImpactState {
+  kind: 'strike' | 'throw';
   attackerId: PlayerId;
   targetId: PlayerId;
   x: number;
@@ -36,12 +46,21 @@ export interface ImpactState {
   ticksRemaining: number;
 }
 
+export interface GrappleState {
+  attackerId: PlayerId;
+  targetId: PlayerId;
+  ticksRemaining: number;
+  throwX: number;
+  throwY: number;
+}
+
 export interface GameState {
-  version: 3;
+  version: 4;
   seed: number;
   tick: number;
   hitstopTicks: number;
   impact: ImpactState | null;
+  grapple: GrappleState | null;
   arena: { width: number; height: number };
   marker: { x: number; y: number };
   fighters: Record<PlayerId, FighterState>;

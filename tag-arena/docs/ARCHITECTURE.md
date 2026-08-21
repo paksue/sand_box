@@ -26,9 +26,9 @@ The single source of gameplay truth.
 
 ### `src/render/`
 Reads serialized `GameState` and draws it with PixiJS.
-- May not calculate damage, collision outcomes, scoring, tagging, action timing, or other gameplay truth.
+- May not calculate damage, collision outcomes, scoring, tagging, action timing, grapple selection, throw direction, or other gameplay truth.
 - Must not call simulation mutation APIs.
-- Visual shake, impact bursts, labels, and animations may derive from simulation state/events.
+- Visual shake, impact bursts, labels, clinch links, throw arrows, and animations may derive from simulation state/events.
 
 ### `src/input/`
 Translates keyboard/gamepad/test controls into typed `InputState` only.
@@ -44,6 +44,8 @@ Pixi's ticker/render frequency is never gameplay time.
 ### `src/debug/`
 Development builds expose `window.__TAG_ARENA__` so browser automation can inspect and control the public runtime/simulation surface. The bridge must not duplicate gameplay rules.
 
+Current debug contract version: `5`.
+
 ## Determinism
 The same initial seed plus the same ordered input sequence and tick count must produce the same serialized state and event sequence.
 
@@ -52,13 +54,37 @@ Display frequency may be 60/120/144 Hz without changing outcomes. Browser tests 
 ## Current gameplay timing truth
 Player intent and physical momentum are distinct concepts.
 - Neutral movement derives velocity from normalized directional input.
-- Hitstun and rope rebound use stored physical velocity.
+- Hitstun and arena-edge rebound use stored physical velocity.
 - Body collision resolution belongs entirely to simulation code.
 - Range, facing, damage, cooldown, knockback, and hitstun belong entirely to simulation code.
 - Arena-edge contact clamps inside the arena and reverses incoming velocity with deterministic retention.
 - Startup, active timing, recovery, and global pause are integer simulation ticks.
 - During global pause, position integration, momentum decay, state countdowns, recovery, and cooldown are frozen.
 - Input latches synchronize during global pause so a held button cannot become a false fresh press.
+
+## Contextual Action / grapple state machine
+There is still one combat Action input. Context is resolved inside simulation:
+- normal range -> strike path;
+- one fresh Action press at body contact within `44 px`, with eligibility/facing satisfied -> grapple path;
+- simultaneous eligible close-range fresh presses -> both take the strike path, preventing player-order advantage.
+
+Active grapple is explicit serialized state:
+- attacker id;
+- target id;
+- hold ticks remaining;
+- selected throw direction.
+
+While grapple state exists, simulation advances it before ordinary movement/collision/actions:
+1. both fighters are held in `grapple` mode with zero physical velocity;
+2. attacker directional input updates the serialized normalized throw direction but does not move either fighter;
+3. after exactly 6 hold ticks, simulation resolves the throw;
+4. grapple state clears;
+5. target receives deterministic damage, momentum, and hitstun;
+6. attacker enters deterministic `throw` recovery;
+7. a 4-tick global throw-impact pause begins;
+8. after pause, target momentum enters the same generic hitstun and arena-edge rebound path used by other physical impulses.
+
+Pixi does not infer any of these rules. It only renders `state.grapple`, fighter modes, and `state.impact.kind`.
 
 ## Browser automation contract
 `window.__TAG_ARENA__` provides:
@@ -71,7 +97,7 @@ Player intent and physical momentum are distinct concepts.
 - `version`
 - renderer identity
 
-Named deterministic scenarios are preferred over arbitrary state mutation.
+Named deterministic scenarios are preferred over arbitrary state mutation. Current grapple scenarios are `grapple` and `grapple-rope`.
 
 ## CI contract
 A relevant push or pull request runs:

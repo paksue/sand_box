@@ -2,7 +2,7 @@ import type { GameRuntime } from '../runtime/GameRuntime';
 import type { GameEvent, GameState, InputState, PlayerId, ScenarioName } from '../sim/types';
 
 export interface TagArenaDebugApi {
-  readonly version: 4;
+  readonly version: 5;
   readonly renderer: 'pixi-v8-webgl';
   getState(): GameState;
   getEvents(): GameEvent[];
@@ -20,7 +20,7 @@ declare global {
 
 export function installDebugBridge(runtime: GameRuntime): TagArenaDebugApi {
   const api: TagArenaDebugApi = Object.freeze({
-    version: 4,
+    version: 5,
     renderer: 'pixi-v8-webgl',
     getState: (): GameState => runtime.game.getState(),
     getEvents: (): GameEvent[] => runtime.game.getEvents(),

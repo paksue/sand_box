@@ -5,7 +5,12 @@ import {
   ATTACK_RANGE,
   ATTACK_RECOVERY_TICKS,
   ATTACK_STARTUP_TICKS,
+  FACING_THRESHOLD,
   FIGHTER_RADIUS,
+  GRAPPLE_COOLDOWN_TICKS,
+  GRAPPLE_HOLD_TICKS,
+  GRAPPLE_RANGE,
+  GRAPPLE_RECOVERY_TICKS,
   HITSTOP_TICKS,
   HITSTUN_TICKS,
   KNOCKBACK_DECAY,
@@ -13,6 +18,10 @@ import {
   MOVE_PER_TICK,
   REBOUND_LOCK_TICKS,
   ROPE_RETENTION,
+  THROW_DAMAGE,
+  THROW_HITSTOP_TICKS,
+  THROW_HITSTUN_TICKS,
+  THROW_SPEED,
 } from './constants';
 import { createRng } from './rng';
 import type {
@@ -62,6 +71,7 @@ function createFighter(id: PlayerId, x: number, y: number, facingX: number): Fig
     attackStartupTicks: 0,
     attackRecoveryTicks: 0,
     attackActive: false,
+    grappleRecoveryTicks: 0,
     hitstunTicks: 0,
     reboundTicks: 0,
   };
@@ -91,11 +101,12 @@ export class Game implements GameApi {
     this.#normalizedSeed = (Number(seed) >>> 0) || 1;
     const rng = createRng(this.#normalizedSeed);
     this.#state = {
-      version: 3,
+      version: 4,
       seed: this.#normalizedSeed,
       tick: 0,
       hitstopTicks: 0,
       impact: null,
+      grapple: null,
       arena: { ...ARENA },
       marker: {
         x: 240 + Math.floor(rng.next() * 320),
@@ -126,6 +137,7 @@ export class Game implements GameApi {
     this.#state.tick = 0;
     this.#state.hitstopTicks = 0;
     this.#state.impact = null;
+    this.#state.grapple = null;
     this.#state.fighters.p1 = createFighter('p1', 180, 225, 1);
     this.#state.fighters.p2 = createFighter('p2', 620, 225, -1);
 
@@ -143,6 +155,14 @@ export class Game implements GameApi {
       case 'attack':
         this.#state.fighters.p1 = createFighter('p1', 350, 225, 1);
         this.#state.fighters.p2 = createFighter('p2', 400, 225, -1);
+        break;
+      case 'grapple':
+        this.#state.fighters.p1 = createFighter('p1', 350, 225, 1);
+        this.#state.fighters.p2 = createFighter('p2', 390, 225, -1);
+        break;
+      case 'grapple-rope':
+        this.#state.fighters.p1 = createFighter('p1', 725, 225, 1);
+        this.#state.fighters.p2 = createFighter('p2', 765, 225, -1);
         break;
       case 'rope':
         this.#state.fighters.p1 = createFighter('p1', 30, 225, -1);
@@ -167,10 +187,15 @@ export class Game implements GameApi {
         continue;
       }
 
+      if (this.#state.grapple) {
+        this.#advanceGrapple();
+        continue;
+      }
+
       this.#updateFighter(this.#state.fighters.p1, this.#inputs.p1);
       this.#updateFighter(this.#state.fighters.p2, this.#inputs.p2);
       this.#resolveBodyCollision();
-      this.#processAttackStarts();
+      this.#processActionStarts();
       this.#processActiveAttacks();
     }
     return clone(this.#state);
@@ -182,7 +207,7 @@ export class Game implements GameApi {
 
   #pushEvent(type: string, payload: EventPayload = {}): void {
     this.#events.push({ tick: this.#state.tick, type, ...payload });
-    if (this.#events.length > 240) this.#events.shift();
+    if (this.#events.length > 260) this.#events.shift();
   }
 
   #syncAttackLatches(): void {
@@ -258,6 +283,11 @@ export class Game implements GameApi {
       fighter.vx *= 0.9;
       fighter.vy *= 0.9;
       fighter.reboundTicks -= 1;
+    } else if (fighter.grappleRecoveryTicks > 0) {
+      fighter.state = 'throw';
+      fighter.vx = 0;
+      fighter.vy = 0;
+      fighter.grappleRecoveryTicks -= 1;
     } else if (fighter.attackStartupTicks > 0) {
       fighter.state = 'attack';
       fighter.vx = 0;
@@ -338,35 +368,222 @@ export class Game implements GameApi {
     });
   }
 
-  #hasAttackPhase(fighter: FighterState): boolean {
-    return fighter.attackStartupTicks > 0 || fighter.attackRecoveryTicks > 0 || fighter.attackActive;
+  #hasActionPhase(fighter: FighterState): boolean {
+    return fighter.attackStartupTicks > 0
+      || fighter.attackRecoveryTicks > 0
+      || fighter.attackActive
+      || fighter.grappleRecoveryTicks > 0;
   }
 
-  #canAttack(fighter: FighterState): boolean {
+  #canStartAction(fighter: FighterState): boolean {
     return fighter.health > 0
       && fighter.attackCooldown === 0
-      && !this.#hasAttackPhase(fighter)
+      && !this.#hasActionPhase(fighter)
       && fighter.hitstunTicks === 0
       && fighter.reboundTicks === 0;
   }
 
-  #processAttackStarts(): void {
+  #canBeGrappled(fighter: FighterState): boolean {
+    return fighter.health > 0
+      && !this.#hasActionPhase(fighter)
+      && fighter.hitstunTicks === 0
+      && fighter.reboundTicks === 0;
+  }
+
+  #isGrappleContact(attackerId: PlayerId, targetId: PlayerId): boolean {
+    const attacker = this.#state.fighters[attackerId];
+    const target = this.#state.fighters[targetId];
+    const toTargetX = target.x - attacker.x;
+    const toTargetY = target.y - attacker.y;
+    const distance = Math.hypot(toTargetX, toTargetY);
+    const toTarget = normalizedVector(toTargetX, toTargetY);
+    const facingDot = attacker.facingX * toTarget.x + attacker.facingY * toTarget.y;
+    return distance <= GRAPPLE_RANGE && facingDot >= FACING_THRESHOLD && this.#canBeGrappled(target);
+  }
+
+  #processActionStarts(): void {
+    const pressed: PlayerId[] = [];
+
     for (const playerId of PLAYER_IDS) {
-      const fighter = this.#state.fighters[playerId];
       const input = this.#inputs[playerId];
-      const pressed = input.attack && !this.#attackLatch[playerId];
-      if (pressed && this.#canAttack(fighter)) {
-        fighter.attackCooldown = ATTACK_COOLDOWN_TICKS;
-        fighter.attackStartupTicks = ATTACK_STARTUP_TICKS;
-        fighter.attackRecoveryTicks = 0;
-        fighter.attackActive = false;
-        fighter.state = 'attack';
-        fighter.vx = 0;
-        fighter.vy = 0;
-        this.#pushEvent('attack-start', { fighterId: playerId, startupTicks: ATTACK_STARTUP_TICKS });
-      }
-      this.#attackLatch[playerId] = input.attack;
+      const freshPress = input.attack && !this.#attackLatch[playerId];
+      if (freshPress && this.#canStartAction(this.#state.fighters[playerId])) pressed.push(playerId);
     }
+
+    this.#syncAttackLatches();
+    if (pressed.length === 0) return;
+
+    // Simultaneous close-range presses stay symmetric: both use the existing strike path.
+    if (pressed.length === 1) {
+      const attackerId = pressed[0];
+      if (!attackerId) return;
+      const targetId: PlayerId = attackerId === 'p1' ? 'p2' : 'p1';
+      if (this.#isGrappleContact(attackerId, targetId)) {
+        this.#startGrapple(attackerId, targetId);
+        return;
+      }
+    }
+
+    for (const playerId of pressed) this.#startStrike(playerId);
+  }
+
+  #startStrike(playerId: PlayerId): void {
+    const fighter = this.#state.fighters[playerId];
+    fighter.attackCooldown = ATTACK_COOLDOWN_TICKS;
+    fighter.attackStartupTicks = ATTACK_STARTUP_TICKS;
+    fighter.attackRecoveryTicks = 0;
+    fighter.attackActive = false;
+    fighter.grappleRecoveryTicks = 0;
+    fighter.state = 'attack';
+    fighter.vx = 0;
+    fighter.vy = 0;
+    this.#pushEvent('attack-start', { fighterId: playerId, startupTicks: ATTACK_STARTUP_TICKS });
+  }
+
+  #startGrapple(attackerId: PlayerId, targetId: PlayerId): void {
+    const attacker = this.#state.fighters[attackerId];
+    const target = this.#state.fighters[targetId];
+    const defaultDirection = normalizedVector(attacker.facingX, attacker.facingY);
+
+    attacker.attackCooldown = GRAPPLE_COOLDOWN_TICKS;
+    attacker.attackStartupTicks = 0;
+    attacker.attackRecoveryTicks = 0;
+    attacker.attackActive = false;
+    attacker.grappleRecoveryTicks = 0;
+    attacker.vx = 0;
+    attacker.vy = 0;
+    attacker.state = 'grapple';
+
+    target.attackStartupTicks = 0;
+    target.attackRecoveryTicks = 0;
+    target.attackActive = false;
+    target.grappleRecoveryTicks = 0;
+    target.vx = 0;
+    target.vy = 0;
+    target.state = 'grapple';
+
+    this.#state.grapple = {
+      attackerId,
+      targetId,
+      ticksRemaining: GRAPPLE_HOLD_TICKS,
+      throwX: defaultDirection.x,
+      throwY: defaultDirection.y,
+    };
+
+    this.#pushEvent('grapple-start', {
+      attackerId,
+      targetId,
+      holdTicks: GRAPPLE_HOLD_TICKS,
+      throwX: defaultDirection.x,
+      throwY: defaultDirection.y,
+    });
+  }
+
+  #advanceGrapple(): void {
+    const grapple = this.#state.grapple;
+    if (!grapple) return;
+
+    const attacker = this.#state.fighters[grapple.attackerId];
+    const target = this.#state.fighters[grapple.targetId];
+    const input = this.#inputs[grapple.attackerId];
+    const direction = normalizedVector(
+      Number(input.right) - Number(input.left),
+      Number(input.down) - Number(input.up),
+    );
+
+    if (direction.x !== 0 || direction.y !== 0) {
+      const changed = direction.x !== grapple.throwX || direction.y !== grapple.throwY;
+      grapple.throwX = direction.x;
+      grapple.throwY = direction.y;
+      attacker.facingX = direction.x;
+      attacker.facingY = direction.y;
+      if (changed) {
+        this.#pushEvent('grapple-direction', {
+          attackerId: grapple.attackerId,
+          throwX: direction.x,
+          throwY: direction.y,
+        });
+      }
+    }
+
+    attacker.state = 'grapple';
+    target.state = 'grapple';
+    attacker.vx = 0;
+    attacker.vy = 0;
+    target.vx = 0;
+    target.vy = 0;
+    if (attacker.attackCooldown > 0) attacker.attackCooldown -= 1;
+
+    grapple.ticksRemaining -= 1;
+    this.#pushEvent('grapple-tick', {
+      attackerId: grapple.attackerId,
+      targetId: grapple.targetId,
+      remaining: grapple.ticksRemaining,
+    });
+    this.#syncAttackLatches();
+
+    if (grapple.ticksRemaining === 0) this.#resolveThrow();
+  }
+
+  #resolveThrow(): void {
+    const grapple = this.#state.grapple;
+    if (!grapple) return;
+
+    const attacker = this.#state.fighters[grapple.attackerId];
+    const target = this.#state.fighters[grapple.targetId];
+    const impactX = (attacker.x + target.x) * 0.5;
+    const impactY = (attacker.y + target.y) * 0.5;
+
+    target.health = Math.max(0, target.health - THROW_DAMAGE);
+    target.vx = grapple.throwX * THROW_SPEED;
+    target.vy = grapple.throwY * THROW_SPEED;
+    target.hitstunTicks = THROW_HITSTUN_TICKS;
+    target.reboundTicks = 0;
+    target.attackStartupTicks = 0;
+    target.attackRecoveryTicks = 0;
+    target.attackActive = false;
+    target.grappleRecoveryTicks = 0;
+    target.state = 'hitstun';
+
+    attacker.vx = 0;
+    attacker.vy = 0;
+    attacker.attackStartupTicks = 0;
+    attacker.attackRecoveryTicks = 0;
+    attacker.attackActive = false;
+    attacker.grappleRecoveryTicks = GRAPPLE_RECOVERY_TICKS;
+    attacker.state = 'throw';
+
+    this.#state.grapple = null;
+    this.#state.hitstopTicks = THROW_HITSTOP_TICKS;
+    this.#state.impact = {
+      kind: 'throw',
+      attackerId: grapple.attackerId,
+      targetId: grapple.targetId,
+      x: impactX,
+      y: impactY,
+      ticksRemaining: THROW_HITSTOP_TICKS,
+    };
+
+    this.#pushEvent('throw-impact', {
+      attackerId: grapple.attackerId,
+      targetId: grapple.targetId,
+      damage: THROW_DAMAGE,
+      targetHealth: target.health,
+      vx: target.vx,
+      vy: target.vy,
+    });
+    this.#pushEvent('knockback', {
+      attackerId: grapple.attackerId,
+      targetId: grapple.targetId,
+      vx: target.vx,
+      vy: target.vy,
+    });
+    this.#pushEvent('hitstop-start', {
+      kind: 'throw',
+      attackerId: grapple.attackerId,
+      targetId: grapple.targetId,
+      ticks: THROW_HITSTOP_TICKS,
+    });
   }
 
   #applyHit(attackerId: PlayerId, targetId: PlayerId): boolean {
@@ -378,7 +595,7 @@ export class Game implements GameApi {
     const toTarget = normalizedVector(toTargetX, toTargetY);
     const facingDot = attacker.facingX * toTarget.x + attacker.facingY * toTarget.y;
 
-    if (distance <= ATTACK_RANGE && facingDot >= 0.35) {
+    if (distance <= ATTACK_RANGE && facingDot >= FACING_THRESHOLD) {
       target.health = Math.max(0, target.health - ATTACK_DAMAGE);
       target.vx = attacker.facingX * KNOCKBACK_SPEED;
       target.vy = attacker.facingY * KNOCKBACK_SPEED;
@@ -387,9 +604,11 @@ export class Game implements GameApi {
       target.attackStartupTicks = 0;
       target.attackRecoveryTicks = 0;
       target.attackActive = false;
+      target.grappleRecoveryTicks = 0;
       target.state = 'hitstun';
       this.#state.hitstopTicks = HITSTOP_TICKS;
       this.#state.impact = {
+        kind: 'strike',
         attackerId,
         targetId,
         x: (attacker.x + target.x) * 0.5,
@@ -398,7 +617,7 @@ export class Game implements GameApi {
       };
       this.#pushEvent('attack-hit', { attackerId, targetId, damage: ATTACK_DAMAGE, targetHealth: target.health });
       this.#pushEvent('knockback', { attackerId, targetId, vx: target.vx, vy: target.vy });
-      this.#pushEvent('hitstop-start', { attackerId, targetId, ticks: HITSTOP_TICKS });
+      this.#pushEvent('hitstop-start', { kind: 'strike', attackerId, targetId, ticks: HITSTOP_TICKS });
       return true;
     }
 
