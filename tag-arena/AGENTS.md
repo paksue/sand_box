@@ -17,7 +17,7 @@ Build a fast, deterministic, AI-legible browser tag-fighting game inspired by th
 - physical input adapters: `src/input/`
 - AI/browser control: `src/debug/`
 
-`src/simulation.js` and `src/rng.js` are temporary migration oracles. Do not add features to them.
+There is one gameplay implementation: `src/sim/`. Do not create a second rules path inside rendering, input, or debug code.
 
 ## Non-negotiable engineering rules
 1. Gameplay simulation must be deterministic for the same seed and input sequence.
