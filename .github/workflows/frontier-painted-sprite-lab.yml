@@ -21,7 +21,7 @@ jobs:
           node-version: 22
       - name: Install Playwright Chromium
         run: |
-          npm install --no-save playwright
+          npm install --no-save playwright pngjs
           npx playwright install --with-deps chromium
       - name: Start static server
         run: |
@@ -51,6 +51,14 @@ jobs:
         env:
           PAINTED_SPRITE_URL: http://127.0.0.1:4175/
         run: node frontier-painted-sprite-lab/tests/hero-motion.mjs
+      - name: Run production hero contract regression
+        env:
+          PAINTED_SPRITE_URL: http://127.0.0.1:4175/
+        run: node frontier-painted-sprite-lab/tests/production-hero-contract.mjs
+      - name: Run painted sequence benchmark regression
+        env:
+          PAINTED_SPRITE_URL: http://127.0.0.1:4175/
+        run: node frontier-painted-sprite-lab/tests/sequence-hero.mjs
       - name: Upload visual screenshots
         if: always()
         uses: actions/upload-artifact@v4
@@ -63,4 +71,5 @@ jobs:
             frontier-painted-sprite-lab/test-results-cinematic/
             frontier-painted-sprite-lab/test-results-painting-world/
             frontier-painted-sprite-lab/test-results-hero-motion/
+            frontier-painted-sprite-lab/test-results-sequence/
           if-no-files-found: ignore
