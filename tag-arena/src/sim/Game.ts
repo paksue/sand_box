@@ -16,8 +16,13 @@ import {
   KNOCKBACK_DECAY,
   KNOCKBACK_SPEED,
   MOVE_PER_TICK,
+  PARTNER_RECOVERY_AMOUNT,
+  PARTNER_RECOVERY_INTERVAL_TICKS,
   REBOUND_LOCK_TICKS,
   ROPE_RETENTION,
+  TAG_COOLDOWN_TICKS,
+  TAG_CORNERS,
+  TAG_ZONE_RADIUS,
   THROW_DAMAGE,
   THROW_HITSTOP_TICKS,
   THROW_HITSTUN_TICKS,
@@ -31,7 +36,9 @@ import type {
   GameState,
   InputState,
   PlayerId,
+  RosterId,
   ScenarioName,
+  TeamState,
 } from './types';
 
 const PLAYER_IDS: readonly PlayerId[] = ['p1', 'p2'];
@@ -43,7 +50,7 @@ function clone<T>(value: T): T {
 }
 
 function blankInput(): InputState {
-  return { left: false, right: false, up: false, down: false, attack: false };
+  return { left: false, right: false, up: false, down: false, attack: false, tag: false };
 }
 
 function normalizeInput(input: Partial<InputState> = {}): InputState {
@@ -53,20 +60,30 @@ function normalizeInput(input: Partial<InputState> = {}): InputState {
     up: Boolean(input.up),
     down: Boolean(input.down),
     attack: Boolean(input.attack),
+    tag: Boolean(input.tag),
   };
 }
 
-function createFighter(id: PlayerId, x: number, y: number, facingX: number): FighterState {
+function createFighter(
+  id: PlayerId,
+  rosterId: RosterId,
+  x: number,
+  y: number,
+  facingX: number,
+  health = 100,
+  state: FighterState['state'] = 'idle',
+): FighterState {
   return {
     id,
+    rosterId,
     x,
     y,
     vx: 0,
     vy: 0,
     facingX,
     facingY: 0,
-    state: 'idle',
-    health: 100,
+    state,
+    health,
     attackCooldown: 0,
     attackStartupTicks: 0,
     attackRecoveryTicks: 0,
@@ -74,6 +91,27 @@ function createFighter(id: PlayerId, x: number, y: number, facingX: number): Fig
     grappleRecoveryTicks: 0,
     hitstunTicks: 0,
     reboundTicks: 0,
+  };
+}
+
+function createDefaultFighters(): Record<PlayerId, FighterState> {
+  return {
+    p1: createFighter('p1', 'p1a', 180, 225, 1),
+    p2: createFighter('p2', 'p2a', 620, 225, -1),
+  };
+}
+
+function createDefaultPartners(): Record<PlayerId, FighterState> {
+  return {
+    p1: createFighter('p1', 'p1b', TAG_CORNERS.p1.x, TAG_CORNERS.p1.y, 1, 100, 'inactive'),
+    p2: createFighter('p2', 'p2b', TAG_CORNERS.p2.x, TAG_CORNERS.p2.y, -1, 100, 'inactive'),
+  };
+}
+
+function createDefaultTeams(): Record<PlayerId, TeamState> {
+  return {
+    p1: { tagCooldownTicks: 0, partnerRecoveryTicks: 0 },
+    p2: { tagCooldownTicks: 0, partnerRecoveryTicks: 0 },
   };
 }
 
@@ -87,6 +125,33 @@ function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
 
+function clearTransientState(
+  fighter: FighterState,
+  state: FighterState['state'],
+  x: number,
+  y: number,
+  facingX: number,
+  facingY: number,
+): FighterState {
+  return {
+    ...fighter,
+    x,
+    y,
+    vx: 0,
+    vy: 0,
+    facingX,
+    facingY,
+    state,
+    attackCooldown: 0,
+    attackStartupTicks: 0,
+    attackRecoveryTicks: 0,
+    attackActive: false,
+    grappleRecoveryTicks: 0,
+    hitstunTicks: 0,
+    reboundTicks: 0,
+  };
+}
+
 export class Game implements GameApi {
   readonly #normalizedSeed: number;
   readonly #events: GameEvent[] = [];
@@ -95,13 +160,14 @@ export class Game implements GameApi {
     p2: blankInput(),
   };
   readonly #attackLatch: Record<PlayerId, boolean> = { p1: false, p2: false };
+  readonly #tagLatch: Record<PlayerId, boolean> = { p1: false, p2: false };
   #state: GameState;
 
   constructor(seed = 1) {
     this.#normalizedSeed = (Number(seed) >>> 0) || 1;
     const rng = createRng(this.#normalizedSeed);
     this.#state = {
-      version: 4,
+      version: 5,
       seed: this.#normalizedSeed,
       tick: 0,
       hitstopTicks: 0,
@@ -112,10 +178,9 @@ export class Game implements GameApi {
         x: 240 + Math.floor(rng.next() * 320),
         y: 120 + Math.floor(rng.next() * 210),
       },
-      fighters: {
-        p1: createFighter('p1', 180, 225, 1),
-        p2: createFighter('p2', 620, 225, -1),
-      },
+      fighters: createDefaultFighters(),
+      partners: createDefaultPartners(),
+      teams: createDefaultTeams(),
     };
   }
 
@@ -138,38 +203,53 @@ export class Game implements GameApi {
     this.#state.hitstopTicks = 0;
     this.#state.impact = null;
     this.#state.grapple = null;
-    this.#state.fighters.p1 = createFighter('p1', 180, 225, 1);
-    this.#state.fighters.p2 = createFighter('p2', 620, 225, -1);
+    this.#state.fighters = createDefaultFighters();
+    this.#state.partners = createDefaultPartners();
+    this.#state.teams = createDefaultTeams();
 
     switch (name) {
       case 'baseline':
         break;
       case 'collision':
-        this.#state.fighters.p1 = createFighter('p1', 340, 225, 1);
-        this.#state.fighters.p2 = createFighter('p2', 460, 225, -1);
+        this.#state.fighters.p1 = createFighter('p1', 'p1a', 340, 225, 1);
+        this.#state.fighters.p2 = createFighter('p2', 'p2a', 460, 225, -1);
         break;
       case 'edge-collision':
-        this.#state.fighters.p1 = createFighter('p1', 20, 225, 1);
-        this.#state.fighters.p2 = createFighter('p2', 48, 225, -1);
+        this.#state.fighters.p1 = createFighter('p1', 'p1a', 20, 225, 1);
+        this.#state.fighters.p2 = createFighter('p2', 'p2a', 48, 225, -1);
         break;
       case 'attack':
-        this.#state.fighters.p1 = createFighter('p1', 350, 225, 1);
-        this.#state.fighters.p2 = createFighter('p2', 400, 225, -1);
+        this.#state.fighters.p1 = createFighter('p1', 'p1a', 350, 225, 1);
+        this.#state.fighters.p2 = createFighter('p2', 'p2a', 400, 225, -1);
         break;
       case 'grapple':
-        this.#state.fighters.p1 = createFighter('p1', 350, 225, 1);
-        this.#state.fighters.p2 = createFighter('p2', 390, 225, -1);
+        this.#state.fighters.p1 = createFighter('p1', 'p1a', 350, 225, 1);
+        this.#state.fighters.p2 = createFighter('p2', 'p2a', 390, 225, -1);
         break;
       case 'grapple-rope':
-        this.#state.fighters.p1 = createFighter('p1', 725, 225, 1);
-        this.#state.fighters.p2 = createFighter('p2', 765, 225, -1);
+        this.#state.fighters.p1 = createFighter('p1', 'p1a', 725, 225, 1);
+        this.#state.fighters.p2 = createFighter('p2', 'p2a', 765, 225, -1);
+        break;
+      case 'tag-ready':
+        this.#state.fighters.p1 = createFighter('p1', 'p1a', TAG_CORNERS.p1.x, TAG_CORNERS.p1.y, 1);
+        this.#state.fighters.p2 = createFighter('p2', 'p2a', 120, 380, -1);
+        this.#state.partners.p1.health = 80;
+        break;
+      case 'tag-ready-p2':
+        this.#state.fighters.p1 = createFighter('p1', 'p1a', 680, 70, 1);
+        this.#state.fighters.p2 = createFighter('p2', 'p2a', TAG_CORNERS.p2.x, TAG_CORNERS.p2.y, -1);
+        this.#state.partners.p2.health = 75;
+        break;
+      case 'tag-recovery':
+        this.#state.fighters.p1 = createFighter('p1', 'p1a', TAG_CORNERS.p1.x, TAG_CORNERS.p1.y, 1, 60);
+        this.#state.partners.p1.health = 100;
         break;
       case 'rope':
-        this.#state.fighters.p1 = createFighter('p1', 30, 225, -1);
+        this.#state.fighters.p1 = createFighter('p1', 'p1a', 30, 225, -1);
         break;
       case 'rope-hit':
-        this.#state.fighters.p1 = createFighter('p1', 700, 225, 1);
-        this.#state.fighters.p2 = createFighter('p2', 755, 225, -1);
+        this.#state.fighters.p1 = createFighter('p1', 'p1a', 700, 225, 1);
+        this.#state.fighters.p2 = createFighter('p2', 'p2a', 755, 225, -1);
         break;
     }
 
@@ -187,6 +267,8 @@ export class Game implements GameApi {
         continue;
       }
 
+      this.#advanceTeamTimers();
+
       if (this.#state.grapple) {
         this.#advanceGrapple();
         continue;
@@ -195,7 +277,8 @@ export class Game implements GameApi {
       this.#updateFighter(this.#state.fighters.p1, this.#inputs.p1);
       this.#updateFighter(this.#state.fighters.p2, this.#inputs.p2);
       this.#resolveBodyCollision();
-      this.#processActionStarts();
+      const tagged = this.#processTagStarts();
+      this.#processActionStarts(tagged);
       this.#processActiveAttacks();
     }
     return clone(this.#state);
@@ -207,12 +290,110 @@ export class Game implements GameApi {
 
   #pushEvent(type: string, payload: EventPayload = {}): void {
     this.#events.push({ tick: this.#state.tick, type, ...payload });
-    if (this.#events.length > 260) this.#events.shift();
+    if (this.#events.length > 320) this.#events.shift();
   }
 
-  #syncAttackLatches(): void {
-    this.#attackLatch.p1 = this.#inputs.p1.attack;
-    this.#attackLatch.p2 = this.#inputs.p2.attack;
+  #syncInputLatches(): void {
+    for (const playerId of PLAYER_IDS) {
+      this.#attackLatch[playerId] = this.#inputs[playerId].attack;
+      this.#tagLatch[playerId] = this.#inputs[playerId].tag;
+    }
+  }
+
+  #advanceTeamTimers(): void {
+    for (const playerId of PLAYER_IDS) {
+      const team = this.#state.teams[playerId];
+      if (team.tagCooldownTicks > 0) team.tagCooldownTicks -= 1;
+
+      team.partnerRecoveryTicks += 1;
+      if (team.partnerRecoveryTicks < PARTNER_RECOVERY_INTERVAL_TICKS) continue;
+      team.partnerRecoveryTicks = 0;
+
+      const partner = this.#state.partners[playerId];
+      if (partner.health <= 0 || partner.health >= 100) continue;
+
+      const oldHealth = partner.health;
+      partner.health = Math.min(100, partner.health + PARTNER_RECOVERY_AMOUNT);
+      this.#pushEvent('partner-recovered', {
+        playerId,
+        rosterId: partner.rosterId,
+        amount: partner.health - oldHealth,
+        health: partner.health,
+      });
+    }
+  }
+
+  #isInsideTagZone(playerId: PlayerId, fighter: FighterState): boolean {
+    const corner = TAG_CORNERS[playerId];
+    return Math.hypot(fighter.x - corner.x, fighter.y - corner.y) <= TAG_ZONE_RADIUS;
+  }
+
+  #canTag(playerId: PlayerId): boolean {
+    const active = this.#state.fighters[playerId];
+    const partner = this.#state.partners[playerId];
+    return this.#state.teams[playerId].tagCooldownTicks === 0
+      && active.health > 0
+      && partner.health > 0
+      && this.#canStartAction(active)
+      && this.#isInsideTagZone(playerId, active);
+  }
+
+  #performTag(playerId: PlayerId): void {
+    const outgoing = this.#state.fighters[playerId];
+    const incoming = this.#state.partners[playerId];
+    const corner = TAG_CORNERS[playerId];
+    const activeX = outgoing.x;
+    const activeY = outgoing.y;
+    const facingX = outgoing.facingX;
+    const facingY = outgoing.facingY;
+    const outgoingRosterId = outgoing.rosterId;
+    const incomingRosterId = incoming.rosterId;
+    const outgoingHealth = outgoing.health;
+    const incomingHealth = incoming.health;
+
+    this.#state.fighters[playerId] = clearTransientState(
+      incoming,
+      'idle',
+      activeX,
+      activeY,
+      facingX,
+      facingY,
+    );
+    this.#state.partners[playerId] = clearTransientState(
+      outgoing,
+      'inactive',
+      corner.x,
+      corner.y,
+      playerId === 'p1' ? 1 : -1,
+      0,
+    );
+    this.#state.teams[playerId].tagCooldownTicks = TAG_COOLDOWN_TICKS;
+    this.#state.teams[playerId].partnerRecoveryTicks = 0;
+
+    this.#pushEvent('tag-completed', {
+      playerId,
+      outgoingRosterId,
+      incomingRosterId,
+      outgoingHealth,
+      incomingHealth,
+      cooldownTicks: TAG_COOLDOWN_TICKS,
+    });
+  }
+
+  #processTagStarts(): Set<PlayerId> {
+    const tagged = new Set<PlayerId>();
+
+    for (const playerId of PLAYER_IDS) {
+      const input = this.#inputs[playerId];
+      const freshPress = input.tag && !this.#tagLatch[playerId];
+      if (freshPress && this.#canTag(playerId)) {
+        this.#performTag(playerId);
+        tagged.add(playerId);
+      }
+      this.#tagLatch[playerId] = input.tag;
+    }
+
+    return tagged;
   }
 
   #resolveRopes(fighter: FighterState): void {
@@ -257,6 +438,7 @@ export class Game implements GameApi {
       }
       this.#pushEvent('rope-rebound', {
         fighterId: fighter.id,
+        rosterId: fighter.rosterId,
         axis,
         vx: fighter.vx,
         vy: fighter.vy,
@@ -321,6 +503,7 @@ export class Game implements GameApi {
     if (fighter.x !== oldX || fighter.y !== oldY) {
       this.#pushEvent('move', {
         fighterId: fighter.id,
+        rosterId: fighter.rosterId,
         x: fighter.x,
         y: fighter.y,
         state: fighter.state,
@@ -401,16 +584,18 @@ export class Game implements GameApi {
     return distance <= GRAPPLE_RANGE && facingDot >= FACING_THRESHOLD && this.#canBeGrappled(target);
   }
 
-  #processActionStarts(): void {
+  #processActionStarts(skipped: ReadonlySet<PlayerId> = new Set()): void {
     const pressed: PlayerId[] = [];
 
     for (const playerId of PLAYER_IDS) {
       const input = this.#inputs[playerId];
       const freshPress = input.attack && !this.#attackLatch[playerId];
-      if (freshPress && this.#canStartAction(this.#state.fighters[playerId])) pressed.push(playerId);
+      if (!skipped.has(playerId) && freshPress && this.#canStartAction(this.#state.fighters[playerId])) {
+        pressed.push(playerId);
+      }
     }
 
-    this.#syncAttackLatches();
+    for (const playerId of PLAYER_IDS) this.#attackLatch[playerId] = this.#inputs[playerId].attack;
     if (pressed.length === 0) return;
 
     // Simultaneous close-range presses stay symmetric: both use the existing strike path.
@@ -437,7 +622,11 @@ export class Game implements GameApi {
     fighter.state = 'attack';
     fighter.vx = 0;
     fighter.vy = 0;
-    this.#pushEvent('attack-start', { fighterId: playerId, startupTicks: ATTACK_STARTUP_TICKS });
+    this.#pushEvent('attack-start', {
+      fighterId: playerId,
+      rosterId: fighter.rosterId,
+      startupTicks: ATTACK_STARTUP_TICKS,
+    });
   }
 
   #startGrapple(attackerId: PlayerId, targetId: PlayerId): void {
@@ -472,7 +661,9 @@ export class Game implements GameApi {
 
     this.#pushEvent('grapple-start', {
       attackerId,
+      attackerRosterId: attacker.rosterId,
       targetId,
+      targetRosterId: target.rosterId,
       holdTicks: GRAPPLE_HOLD_TICKS,
       throwX: defaultDirection.x,
       throwY: defaultDirection.y,
@@ -520,7 +711,7 @@ export class Game implements GameApi {
       targetId: grapple.targetId,
       remaining: grapple.ticksRemaining,
     });
-    this.#syncAttackLatches();
+    this.#syncInputLatches();
 
     if (grapple.ticksRemaining === 0) this.#resolveThrow();
   }
@@ -566,7 +757,9 @@ export class Game implements GameApi {
 
     this.#pushEvent('throw-impact', {
       attackerId: grapple.attackerId,
+      attackerRosterId: attacker.rosterId,
       targetId: grapple.targetId,
+      targetRosterId: target.rosterId,
       damage: THROW_DAMAGE,
       targetHealth: target.health,
       vx: target.vx,
@@ -615,7 +808,14 @@ export class Game implements GameApi {
         y: (attacker.y + target.y) * 0.5,
         ticksRemaining: HITSTOP_TICKS,
       };
-      this.#pushEvent('attack-hit', { attackerId, targetId, damage: ATTACK_DAMAGE, targetHealth: target.health });
+      this.#pushEvent('attack-hit', {
+        attackerId,
+        attackerRosterId: attacker.rosterId,
+        targetId,
+        targetRosterId: target.rosterId,
+        damage: ATTACK_DAMAGE,
+        targetHealth: target.health,
+      });
       this.#pushEvent('knockback', { attackerId, targetId, vx: target.vx, vy: target.vy });
       this.#pushEvent('hitstop-start', { kind: 'strike', attackerId, targetId, ticks: HITSTOP_TICKS });
       return true;
@@ -642,7 +842,7 @@ export class Game implements GameApi {
     this.#state.hitstopTicks -= 1;
     if (this.#state.impact) this.#state.impact.ticksRemaining = this.#state.hitstopTicks;
     this.#pushEvent('hitstop-tick', { remaining: this.#state.hitstopTicks });
-    this.#syncAttackLatches();
+    this.#syncInputLatches();
     if (this.#state.hitstopTicks === 0) this.#state.impact = null;
   }
 
@@ -651,6 +851,8 @@ export class Game implements GameApi {
     this.#inputs.p2 = blankInput();
     this.#attackLatch.p1 = false;
     this.#attackLatch.p2 = false;
+    this.#tagLatch.p1 = false;
+    this.#tagLatch.p2 = false;
   }
 }
 
