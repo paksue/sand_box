@@ -3,25 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tag Arena — Phase 1 Impact Feel</title>
-  <link rel="stylesheet" href="./styles.css">
+  <title>Tag Arena — Production Stack Migration</title>
 </head>
 <body>
   <main>
     <header>
-      <p class="eyebrow">PHASE 1 · IMPACT FEEL</p>
+      <p class="eyebrow">PRODUCTION STACK · TYPESCRIPT + PIXIJS 8</p>
       <h1>Tag Arena</h1>
-      <p>Same tiny controls, heavier contact: attacks now wind up, freeze briefly on impact, then release knockback into the arena and ropes. Player 1: arrows + Space. Player 2: WASD + F.</p>
+      <p>Same verified Phase 1 gameplay, now rendered through PixiJS while the deterministic simulation remains independent. Player 1: arrows + Space. Player 2: WASD + F.</p>
     </header>
 
-    <canvas id="arena" width="800" height="450" aria-label="Tag Arena Phase 1 impact-feel arena"></canvas>
-    <output id="status" aria-live="polite"></output>
+    <div id="game-host" aria-label="Tag Arena game host"></div>
+    <output id="status" aria-live="polite">PixiJS WebGL renderer · deterministic 60 Hz simulation</output>
 
     <section>
       <strong>AI verification contract</strong>
-      <span>Use <code>?debug=1&amp;manual=1</code> to expose deterministic timing and scenarios through <code>window.__TAG_ARENA__</code>.</span>
+      <span>Use <code>?debug=1&amp;manual=1</code> to expose typed deterministic scenarios through <code>window.__TAG_ARENA__</code>.</span>
     </section>
   </main>
-  <script type="module" src="./src/app.js"></script>
+  <script type="module" src="/src/main.ts"></script>
 </body>
 </html>
