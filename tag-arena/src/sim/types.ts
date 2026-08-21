@@ -1,5 +1,6 @@
 export type PlayerId = 'p1' | 'p2';
-export type FighterMode = 'idle' | 'move' | 'attack' | 'grapple' | 'throw' | 'hitstun' | 'rebound';
+export type RosterId = 'p1a' | 'p1b' | 'p2a' | 'p2b';
+export type FighterMode = 'idle' | 'move' | 'attack' | 'grapple' | 'throw' | 'hitstun' | 'rebound' | 'inactive';
 export type ScenarioName =
   | 'baseline'
   | 'collision'
@@ -7,6 +8,9 @@ export type ScenarioName =
   | 'attack'
   | 'grapple'
   | 'grapple-rope'
+  | 'tag-ready'
+  | 'tag-ready-p2'
+  | 'tag-recovery'
   | 'rope'
   | 'rope-hit';
 
@@ -16,10 +20,12 @@ export interface InputState {
   up: boolean;
   down: boolean;
   attack: boolean;
+  tag: boolean;
 }
 
 export interface FighterState {
   id: PlayerId;
+  rosterId: RosterId;
   x: number;
   y: number;
   vx: number;
@@ -35,6 +41,11 @@ export interface FighterState {
   grappleRecoveryTicks: number;
   hitstunTicks: number;
   reboundTicks: number;
+}
+
+export interface TeamState {
+  tagCooldownTicks: number;
+  partnerRecoveryTicks: number;
 }
 
 export interface ImpactState {
@@ -55,7 +66,7 @@ export interface GrappleState {
 }
 
 export interface GameState {
-  version: 4;
+  version: 5;
   seed: number;
   tick: number;
   hitstopTicks: number;
@@ -64,6 +75,8 @@ export interface GameState {
   arena: { width: number; height: number };
   marker: { x: number; y: number };
   fighters: Record<PlayerId, FighterState>;
+  partners: Record<PlayerId, FighterState>;
+  teams: Record<PlayerId, TeamState>;
 }
 
 export interface GameEvent {

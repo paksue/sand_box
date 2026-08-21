@@ -23,5 +23,14 @@ export const THROW_SPEED = 13;
 export const THROW_HITSTUN_TICKS = 14;
 export const THROW_HITSTOP_TICKS = 4;
 
+export const TAG_CORNERS = Object.freeze({
+  p1: Object.freeze({ x: 70, y: 380 }),
+  p2: Object.freeze({ x: 730, y: 70 }),
+});
+export const TAG_ZONE_RADIUS = 64;
+export const TAG_COOLDOWN_TICKS = 120;
+export const PARTNER_RECOVERY_INTERVAL_TICKS = 60;
+export const PARTNER_RECOVERY_AMOUNT = 1;
+
 export const ROPE_RETENTION = 0.75;
 export const REBOUND_LOCK_TICKS = 6;

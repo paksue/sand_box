@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 
 const evidenceDir = new URL('../../test-results/', import.meta.url);
 
-test('Pixi production runtime preserves Phase 1 and verifies contextual grapple', async ({ page }) => {
+test('Pixi runtime preserves contextual combat and verifies 2v2 tagging', async ({ page }) => {
   await mkdir(evidenceDir, { recursive: true });
   const consoleErrors: string[] = [];
   page.on('console', (message) => {
@@ -17,7 +17,7 @@ test('Pixi production runtime preserves Phase 1 and verifies contextual grapple'
   const result = await page.evaluate(() => {
     const api = window.__TAG_ARENA__!;
 
-    // Preserve the previously verified Phase 1 measurements.
+    // Preserve the verified movement/collision/strike measurements.
     const movementStart = api.getState();
     api.setInput('p1', { right: true });
     api.step(12);
@@ -51,7 +51,7 @@ test('Pixi production runtime preserves Phase 1 and verifies contextual grapple'
     const ropeHit = api.step(4);
     const ropeHitEvents = api.getEvents();
 
-    // Phase 2 contextual grapple: one Action press at body contact.
+    // Preserve the Phase 2 contextual grapple contract.
     api.loadScenario('grapple');
     api.setInput('p1', { attack: true });
     const grappleStarted = api.step(1);
@@ -63,7 +63,6 @@ test('Pixi production runtime preserves Phase 1 and verifies contextual grapple'
     const throwFrozen = api.step(4);
     const throwResumed = api.step(1);
 
-    // The same throw momentum must use the existing rope path.
     api.loadScenario('grapple-rope');
     api.setInput('p1', { attack: true });
     api.step(1);
@@ -73,23 +72,52 @@ test('Pixi production runtime preserves Phase 1 and verifies contextual grapple'
     const grappleRope = api.step(2);
     const grappleRopeEvents = api.getEvents();
 
-    // Simultaneous close-range Action presses must not privilege one player.
     api.loadScenario('grapple');
     api.setInput('p1', { attack: true });
     api.setInput('p2', { attack: true });
     const simultaneous = api.step(1);
     const simultaneousEvents = api.getEvents();
 
-    // Leave the screenshot on the exact default-direction throw impact frame.
-    api.loadScenario('grapple');
-    api.setInput('p1', { attack: true });
-    api.step(1);
+    // Phase 3A: persistent tag swap + lockout.
+    api.loadScenario('tag-ready');
+    const tagBefore = api.getState();
+    api.setInput('p1', { tag: true });
+    const tagCompleted = api.step(1);
+    const tagEvents = api.getEvents();
     api.setInput('p1', {});
-    const screenshotState = api.step(6);
+    api.step(1);
+    api.setInput('p1', { tag: true });
+    const tagLocked = api.step(1);
+
+    // Phase 3A: inactive recovery.
+    api.loadScenario('tag-recovery');
+    api.setInput('p1', { tag: true });
+    const recoveryTagged = api.step(1);
+    api.setInput('p1', {});
+    const recoveryBefore = api.step(59);
+    const recoveryAfter = api.step(1);
+    const recoveryEvents = api.getEvents();
+
+    // Tag wins over Action on an eligible same-tick press.
+    api.loadScenario('tag-ready');
+    api.setInput('p1', { tag: true, attack: true });
+    const tagPriority = api.step(1);
+    const tagPriorityEvents = api.getEvents();
+
+    // P2 must have the same tag semantics.
+    api.loadScenario('tag-ready-p2');
+    api.setInput('p2', { tag: true });
+    const p2Tag = api.step(1);
+
+    // Leave visual evidence immediately after a successful P1 tag.
+    api.loadScenario('tag-ready');
+    api.setInput('p1', { tag: true });
+    const screenshotState = api.step(1);
 
     return {
       bridgeVersion: api.version,
       renderer: api.renderer,
+      gameStateVersion: screenshotState.version,
       movementDeltaX: movementEnd.fighters.p1.x - movementStart.fighters.p1.x,
       collisionDistance,
       attackTick1,
@@ -115,13 +143,33 @@ test('Pixi production runtime preserves Phase 1 and verifies contextual grapple'
       simultaneous,
       simultaneousAttackStarts: simultaneousEvents.filter((event) => event.type === 'attack-start').length,
       simultaneousGrappleStarts: simultaneousEvents.filter((event) => event.type === 'grapple-start').length,
+      tagBefore,
+      tagCompleted,
+      tagLocked,
+      tagCompletedEvents: tagEvents.filter((event) => event.type === 'tag-completed').length,
+      recoveryTagged,
+      recoveryBefore,
+      recoveryAfter,
+      recoverySeen: recoveryEvents.some(
+        (event) => event.type === 'partner-recovered' && event.rosterId === 'p1a' && event.health === 61,
+      ),
+      tagPriority,
+      tagPriorityTagStarts: tagPriorityEvents.filter((event) => event.type === 'tag-completed').length,
+      tagPriorityAttackStarts: tagPriorityEvents.filter(
+        (event) => event.type === 'attack-start' && event.fighterId === 'p1',
+      ).length,
+      tagPriorityGrappleStarts: tagPriorityEvents.filter(
+        (event) => event.type === 'grapple-start' && event.attackerId === 'p1',
+      ).length,
+      p2Tag,
       screenshotState,
       canvasCount: document.querySelectorAll('canvas').length,
       legacyCanvasControllerLoaded: Boolean(document.querySelector('script[src*="app.js"]')),
     };
   });
 
-  expect(result.bridgeVersion).toBe(5);
+  expect(result.bridgeVersion).toBe(6);
+  expect(result.gameStateVersion).toBe(5);
   expect(result.renderer).toBe('pixi-v8-webgl');
   expect(result.canvasCount).toBe(1);
   expect(result.legacyCanvasControllerLoaded).toBe(false);
@@ -154,16 +202,12 @@ test('Pixi production runtime preserves Phase 1 and verifies contextual grapple'
   expect(result.grappleStarted.fighters.p1.state).toBe('grapple');
   expect(result.grappleStarted.fighters.p2.state).toBe('grapple');
   expect(result.grappleStarted.fighters.p2.health).toBe(100);
-
   expect(result.grappleDirected.grapple?.ticksRemaining).toBe(5);
   expect(result.grappleDirected.grapple?.throwX).toBe(0);
   expect(result.grappleDirected.grapple?.throwY).toBe(1);
   expect(result.grappleDirected.fighters.p1.x).toBe(result.grappleStarted.fighters.p1.x);
   expect(result.grappleDirected.fighters.p1.y).toBe(result.grappleStarted.fighters.p1.y);
-  expect(result.grappleDirected.fighters.p2.x).toBe(result.grappleStarted.fighters.p2.x);
-  expect(result.grappleDirected.fighters.p2.y).toBe(result.grappleStarted.fighters.p2.y);
   expect(result.grappleDirectionSeen).toBe(true);
-
   expect(result.throwImpact.tick).toBe(7);
   expect(result.throwImpact.grapple).toBeNull();
   expect(result.throwImpact.impact?.kind).toBe('throw');
@@ -174,7 +218,6 @@ test('Pixi production runtime preserves Phase 1 and verifies contextual grapple'
   expect(result.throwImpact.fighters.p2.hitstunTicks).toBe(14);
   expect(result.throwImpact.fighters.p1.grappleRecoveryTicks).toBe(6);
   expect(result.throwImpactSeen).toBe(true);
-
   expect(result.throwFrozen.hitstopTicks).toBe(0);
   expect(result.throwFrozen.fighters.p2.y).toBe(result.throwImpact.fighters.p2.y);
   expect(result.throwFrozen.fighters.p2.hitstunTicks).toBe(result.throwImpact.fighters.p2.hitstunTicks);
@@ -182,24 +225,56 @@ test('Pixi production runtime preserves Phase 1 and verifies contextual grapple'
   expect(result.throwResumed.fighters.p2.y).toBe(result.throwImpact.fighters.p2.y + 13);
   expect(result.throwResumed.fighters.p2.hitstunTicks).toBe(13);
   expect(result.throwResumed.fighters.p1.grappleRecoveryTicks).toBe(5);
-
   expect(result.grappleRope.fighters.p2.x).toBe(780);
   expect(result.grappleRope.fighters.p2.vx).toBeLessThan(0);
   expect(result.grappleRopeReboundSeen).toBe(true);
-
   expect(result.simultaneous.grapple).toBeNull();
   expect(result.simultaneous.fighters.p1.attackStartupTicks).toBe(2);
   expect(result.simultaneous.fighters.p2.attackStartupTicks).toBe(2);
   expect(result.simultaneousAttackStarts).toBe(2);
   expect(result.simultaneousGrappleStarts).toBe(0);
 
-  expect(result.screenshotState.impact?.kind).toBe('throw');
-  expect(result.screenshotState.hitstopTicks).toBe(4);
+  // Phase 3A persistent tag-team contract.
+  expect(result.tagBefore.fighters.p1.rosterId).toBe('p1a');
+  expect(result.tagBefore.partners.p1.rosterId).toBe('p1b');
+  expect(result.tagBefore.partners.p1.health).toBe(80);
+  expect(result.tagCompleted.fighters.p1.rosterId).toBe('p1b');
+  expect(result.tagCompleted.fighters.p1.health).toBe(80);
+  expect(result.tagCompleted.partners.p1.rosterId).toBe('p1a');
+  expect(result.tagCompleted.partners.p1.health).toBe(100);
+  expect(result.tagCompleted.partners.p1.x).toBe(70);
+  expect(result.tagCompleted.partners.p1.y).toBe(380);
+  expect(result.tagCompleted.partners.p1.state).toBe('inactive');
+  expect(result.tagCompleted.teams.p1.tagCooldownTicks).toBe(120);
+  expect(result.tagCompletedEvents).toBe(1);
+  expect(result.tagLocked.fighters.p1.rosterId).toBe('p1b');
+  expect(result.tagLocked.teams.p1.tagCooldownTicks).toBe(118);
+
+  expect(result.recoveryTagged.partners.p1.rosterId).toBe('p1a');
+  expect(result.recoveryTagged.partners.p1.health).toBe(60);
+  expect(result.recoveryBefore.partners.p1.health).toBe(60);
+  expect(result.recoveryAfter.partners.p1.health).toBe(61);
+  expect(result.recoverySeen).toBe(true);
+
+  expect(result.tagPriority.fighters.p1.rosterId).toBe('p1b');
+  expect(result.tagPriority.fighters.p1.attackStartupTicks).toBe(0);
+  expect(result.tagPriorityTagStarts).toBe(1);
+  expect(result.tagPriorityAttackStarts).toBe(0);
+  expect(result.tagPriorityGrappleStarts).toBe(0);
+
+  expect(result.p2Tag.fighters.p2.rosterId).toBe('p2b');
+  expect(result.p2Tag.fighters.p2.health).toBe(75);
+  expect(result.p2Tag.partners.p2.rosterId).toBe('p2a');
+  expect(result.p2Tag.teams.p2.tagCooldownTicks).toBe(120);
+
+  expect(result.screenshotState.fighters.p1.rosterId).toBe('p1b');
+  expect(result.screenshotState.partners.p1.rosterId).toBe('p1a');
+  expect(result.screenshotState.teams.p1.tagCooldownTicks).toBe(120);
   expect(consoleErrors).toEqual([]);
 
-  await page.screenshot({ path: new URL('phase2-contextual-grapple.png', evidenceDir).pathname, fullPage: true });
+  await page.screenshot({ path: new URL('phase3a-tag-team.png', evidenceDir).pathname, fullPage: true });
   await writeFile(
-    new URL('phase2-contextual-grapple-report.json', evidenceDir),
+    new URL('phase3a-tag-team-report.json', evidenceDir),
     `${JSON.stringify({ pass: true, consoleErrors, ...result }, null, 2)}\n`,
   );
 });

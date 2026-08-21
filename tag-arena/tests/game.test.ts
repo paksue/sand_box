@@ -9,7 +9,10 @@ import {
   GRAPPLE_RECOVERY_TICKS,
   HITSTOP_TICKS,
   MOVE_PER_TICK,
+  PARTNER_RECOVERY_INTERVAL_TICKS,
   ROPE_RETENTION,
+  TAG_COOLDOWN_TICKS,
+  TAG_CORNERS,
   THROW_DAMAGE,
   THROW_HITSTOP_TICKS,
   THROW_HITSTUN_TICKS,
@@ -183,6 +186,143 @@ describe('typed simulation', () => {
     expect(state.fighters.p2.attackStartupTicks).toBe(ATTACK_STARTUP_TICKS);
     expect(game.getEvents().filter((event) => event.type === 'attack-start')).toHaveLength(2);
     expect(game.getEvents().filter((event) => event.type === 'grapple-start')).toHaveLength(0);
+  });
+
+  it('ignores Tag outside the home zone', () => {
+    const game = new Game(300);
+    const before = game.getState();
+    game.setInput('p1', { tag: true });
+    const after = game.step(1);
+
+    expect(after.fighters.p1.rosterId).toBe(before.fighters.p1.rosterId);
+    expect(after.partners.p1.rosterId).toBe(before.partners.p1.rosterId);
+    expect(after.teams.p1.tagCooldownTicks).toBe(0);
+    expect(game.getEvents().filter((event) => event.type === 'tag-completed')).toHaveLength(0);
+  });
+
+  it('swaps persistent wrestlers at the home corner and preserves wrestler health', () => {
+    const game = new Game(301);
+    game.loadScenario('tag-ready');
+    const before = game.getState();
+    game.setInput('p1', { tag: true });
+    const tagged = game.step(1);
+
+    expect(before.fighters.p1.rosterId).toBe('p1a');
+    expect(before.fighters.p1.health).toBe(100);
+    expect(before.partners.p1.rosterId).toBe('p1b');
+    expect(before.partners.p1.health).toBe(80);
+
+    expect(tagged.fighters.p1.rosterId).toBe('p1b');
+    expect(tagged.fighters.p1.health).toBe(80);
+    expect(tagged.fighters.p1.x).toBe(before.fighters.p1.x);
+    expect(tagged.fighters.p1.y).toBe(before.fighters.p1.y);
+    expect(tagged.fighters.p1.state).toBe('idle');
+    expect(tagged.fighters.p1.vx).toBe(0);
+    expect(tagged.fighters.p1.vy).toBe(0);
+
+    expect(tagged.partners.p1.rosterId).toBe('p1a');
+    expect(tagged.partners.p1.health).toBe(100);
+    expect(tagged.partners.p1.x).toBe(TAG_CORNERS.p1.x);
+    expect(tagged.partners.p1.y).toBe(TAG_CORNERS.p1.y);
+    expect(tagged.partners.p1.state).toBe('inactive');
+    expect(tagged.teams.p1.tagCooldownTicks).toBe(TAG_COOLDOWN_TICKS);
+
+    const event = game.getEvents().find((entry) => entry.type === 'tag-completed');
+    expect(event?.outgoingRosterId).toBe('p1a');
+    expect(event?.incomingRosterId).toBe('p1b');
+  });
+
+  it('locks immediate tag-back until exactly 120 eligible ticks have elapsed', () => {
+    const game = new Game(302);
+    game.loadScenario('tag-ready');
+    game.setInput('p1', { tag: true });
+    game.step(1);
+    game.setInput('p1', {});
+
+    game.step(1);
+    game.setInput('p1', { tag: true });
+    const locked = game.step(1);
+    expect(locked.fighters.p1.rosterId).toBe('p1b');
+    expect(locked.teams.p1.tagCooldownTicks).toBe(TAG_COOLDOWN_TICKS - 2);
+
+    game.setInput('p1', {});
+    game.step(TAG_COOLDOWN_TICKS - 2);
+    expect(game.getState().teams.p1.tagCooldownTicks).toBe(0);
+
+    game.setInput('p1', { tag: true });
+    const returned = game.step(1);
+    expect(returned.fighters.p1.rosterId).toBe('p1a');
+    expect(returned.partners.p1.rosterId).toBe('p1b');
+    expect(returned.teams.p1.tagCooldownTicks).toBe(TAG_COOLDOWN_TICKS);
+  });
+
+  it('recovers exactly one inactive HP after 60 eligible ticks', () => {
+    const game = new Game(303);
+    game.loadScenario('tag-recovery');
+    game.setInput('p1', { tag: true });
+    const tagged = game.step(1);
+    expect(tagged.partners.p1.rosterId).toBe('p1a');
+    expect(tagged.partners.p1.health).toBe(60);
+
+    game.setInput('p1', {});
+    game.step(PARTNER_RECOVERY_INTERVAL_TICKS - 1);
+    expect(game.getState().partners.p1.health).toBe(60);
+
+    const recovered = game.step(1);
+    expect(recovered.partners.p1.health).toBe(61);
+    expect(game.getEvents().some(
+      (event) => event.type === 'partner-recovered' && event.rosterId === 'p1a' && event.health === 61,
+    )).toBe(true);
+  });
+
+  it('freezes tag cooldown and partner recovery counters during global hit-stop', () => {
+    const game = new Game(304);
+    game.loadScenario('tag-ready');
+    game.setInput('p1', { tag: true });
+    game.step(1);
+    game.setInput('p1', { attack: true });
+    game.step(1);
+    game.setInput('p1', {});
+    game.step(ATTACK_STARTUP_TICKS);
+
+    const impact = game.getState();
+    expect(impact.hitstopTicks).toBe(HITSTOP_TICKS);
+    const cooldown = impact.teams.p1.tagCooldownTicks;
+    const recovery = impact.teams.p1.partnerRecoveryTicks;
+
+    game.step(HITSTOP_TICKS);
+    const afterPause = game.getState();
+    expect(afterPause.teams.p1.tagCooldownTicks).toBe(cooldown);
+    expect(afterPause.teams.p1.partnerRecoveryTicks).toBe(recovery);
+  });
+
+  it('gives Tag priority over Action on the same eligible tick', () => {
+    const game = new Game(305);
+    game.loadScenario('tag-ready');
+    game.setInput('p1', { tag: true, attack: true });
+    const state = game.step(1);
+
+    expect(state.fighters.p1.rosterId).toBe('p1b');
+    expect(state.grapple).toBeNull();
+    expect(state.fighters.p1.attackStartupTicks).toBe(0);
+    expect(game.getEvents().filter((event) => event.type === 'tag-completed')).toHaveLength(1);
+    expect(game.getEvents().filter((event) => event.type === 'attack-start' && event.fighterId === 'p1')).toHaveLength(0);
+    expect(game.getEvents().filter((event) => event.type === 'grapple-start' && event.attackerId === 'p1')).toHaveLength(0);
+  });
+
+  it('provides symmetric P2 tagging', () => {
+    const game = new Game(306);
+    game.loadScenario('tag-ready-p2');
+    game.setInput('p2', { tag: true });
+    const state = game.step(1);
+
+    expect(state.fighters.p2.rosterId).toBe('p2b');
+    expect(state.fighters.p2.health).toBe(75);
+    expect(state.partners.p2.rosterId).toBe('p2a');
+    expect(state.partners.p2.health).toBe(100);
+    expect(state.partners.p2.x).toBe(TAG_CORNERS.p2.x);
+    expect(state.partners.p2.y).toBe(TAG_CORNERS.p2.y);
+    expect(state.teams.p2.tagCooldownTicks).toBe(TAG_COOLDOWN_TICKS);
   });
 
   it('does not retrigger a held attack', () => {
