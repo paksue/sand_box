@@ -1,10 +1,10 @@
 # Tag Arena — Current State
 
 ## Phase
-Phase 2 contextual close-contact grapple/throw is **verified on the production architecture**.
+Phase 3A 2v2 tag-team foundation is **verified on the production architecture**.
 
 ## Active branch
-`agent/tag-arena-phase2-contextual-grapple`
+`agent/tag-arena-phase3a-tag-team-foundation`
 
 ## Production stack
 - TypeScript 7.0.2 strict
@@ -22,38 +22,68 @@ Phase 2 contextual close-contact grapple/throw is **verified on the production a
 - fixed-step composition: `src/runtime/`
 - browser/AI control: `src/debug/`
 
-## Verified foundation
-- production-stack migration PR #34 is merged;
-- legacy migration oracle cleanup PR #35 is merged;
-- `src/sim/` is the only gameplay implementation;
-- Phase 1 movement, collision, strike startup, impact pause, knockback, and rope rebound remain covered and unchanged.
+## Verified combat foundation
+Phase 1 and Phase 2 behavior remains unchanged and covered:
+- deterministic movement/body collision;
+- strike startup/impact/recovery;
+- hit-stop and momentum;
+- arena-edge rebound;
+- contextual close-contact grapple;
+- six-tick clinch and directional throw;
+- four-tick throw impact pause;
+- simultaneous close-range Action fairness.
 
-## Phase 2 contextual rule
-The existing Action input now has two deterministic contexts:
-- normal strike distance: existing strike path;
-- body contact (`<= 44 px`) with one fresh Action press: grapple.
+## Phase 3A persistent teams
+Each player now owns two persistent wrestlers while the proven active-combat API remains stable:
+- `fighters.p1/p2` are the currently active combat slots;
+- `partners.p1/p2` are inactive partners;
+- unique wrestler identities: `p1a`, `p1b`, `p2a`, `p2b` via `rosterId`;
+- wrestler health follows the persistent wrestler record across tags;
+- `teams.p1/p2` own deterministic tag cooldown/recovery counters.
 
-No new primary combat button was added.
+This avoided rewriting strike/grapple/rope rules for four simultaneous entities.
 
-During grapple:
-- both fighters remain position-locked for 6 simulation ticks;
-- the attacker's most recent non-zero movement direction selects throw direction without moving either fighter;
-- no direction defaults to attacker facing;
-- throw applies 15 damage, 13 px/tick momentum, 14 hitstun ticks, 4 global pause ticks, and 6 attacker recovery ticks;
-- throw momentum uses the same existing arena-edge rebound rules;
-- simultaneous close-range Action presses are symmetric and start two ordinary strikes instead of selecting a grapple winner.
+## Tag rules
+Home tag anchors:
+- P1 `(70, 380)`;
+- P2 `(730, 70)`;
+- eligibility radius `64 px`.
+
+Controls:
+- P1 Tag: `Enter`;
+- P2 Tag: `G`.
+
+Successful Tag requires an alive active wrestler and partner, zero team cooldown, neutral active state, no active global pause/grapple, and active wrestler inside the home tag zone.
+
+On success:
+- active and partner persistent records swap;
+- incoming wrestler appears at outgoing arena position with neutral transient state;
+- outgoing wrestler moves to the exact home anchor and becomes `inactive`;
+- health/roster identity remain attached to the wrestler;
+- cooldown becomes `120` ticks;
+- inactive recovery counter resets;
+- incoming wrestler cannot Action on the same tick;
+- Tag takes priority over Action if both are freshly pressed on an eligible tick.
+
+## Inactive recovery
+- inactive partner gains `+1 HP` every `60` eligible simulation ticks;
+- health is capped at `100`;
+- global impact pause freezes both tag cooldown and recovery counters;
+- normal gameplay and grapple-hold ticks advance team timers.
 
 ## Browser/debug contract
-Debug bridge version: `5`.
+Debug bridge version: `6`.
+Game-state version: `5`.
 
-Named Phase 2 scenarios:
-- `grapple`
-- `grapple-rope`
+Named Phase 3A scenarios:
+- `tag-ready`;
+- `tag-ready-p2`;
+- `tag-recovery`.
 
-Pixi visualizes serialized clinch direction, grapple/throw fighter modes, and distinct throw-impact state. Rendering owns no grapple rules.
+Pixi displays both inactive partners, tag zones, partner health, roster identities, and cooldown telemetry while owning no tag eligibility/timer rules.
 
 ## Verification evidence
-GitHub Actions run #97 passed the locked production pipeline:
+GitHub Actions run #114 passed the full locked production pipeline:
 - `npm ci`;
 - strict TypeScript typecheck;
 - native gameplay and architecture tests;
@@ -61,21 +91,20 @@ GitHub Actions run #97 passed the locked production pipeline:
 - real Chromium Pixi/WebGL acceptance test;
 - artifact upload.
 
-The uploaded JSON and screenshot were downloaded and inspected. Exact browser evidence includes:
-- debug bridge `5`;
-- renderer `pixi-v8-webgl`;
+The uploaded JSON and screenshot were downloaded and inspected directly. Exact evidence includes:
+- debug bridge `6`, state version `5`, renderer `pixi-v8-webgl`;
 - console errors `0`;
-- movement regression `48 px`;
-- collision regression `40 px`;
-- existing strike still hits on tick `3`, `100 -> 90`, with 3 pause ticks;
-- grapple begins on tick `1` with 6 hold ticks and no damage;
-- direction changes to `(0, 1)` on tick `2` without position movement;
-- throw resolves on tick `7`, `100 -> 85`, velocity `(0, 13)`, hitstun `14`, pause `4`, recovery `6`;
-- victim position and countdowns remain frozen through the 4 pause ticks;
-- first resumed tick moves exactly `13 px`;
-- rightward throw rebounds at arena X `780` with negative return velocity;
-- simultaneous close-range input creates 2 strike starts and 0 grapple starts;
-- screenshot is the exact tick-7 throw-impact frame and visibly reports `THROWSTOP 4`.
+- movement regression `48 px`, collision regression `40 px`;
+- Phase 2 throw regression remains target `85 HP`, throw velocity `13`, impact pause `4`;
+- P1 persistent swap `p1a -> p1b`;
+- incoming `p1b` preserves `80 HP`;
+- outgoing `p1a` preserves `100 HP` and becomes inactive at the corner;
+- cooldown starts at `120`;
+- immediate tag-back remains locked (`p1b`, cooldown `118` after two eligible ticks);
+- inactive `p1a` recovers exactly `60 -> 61` after 60 eligible ticks;
+- Tag+Action evidence: `1` tag, `0` attack starts, `0` grapple starts;
+- P2 swaps symmetrically to `p2b` at `75 HP`, cooldown `120`;
+- screenshot visibly shows tag zones, active/partner state, health bars, roster IDs, and cooldown telemetry.
 
 ## Next phase
-After Phase 2 merges, the next gameplay slice should build on the same small-control philosophy. The strongest next candidate is 2v2 tagging and inactive-partner recovery, before adding character specials or final art.
+After Phase 3A merges, keep scope narrow. Strong candidates are stamina/tag-recovery depth or the Power Core/special system; do not add both in one slice.
