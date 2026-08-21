@@ -40,7 +40,7 @@ export class PixiGameRenderer {
     g.rect(14, 14, state.arena.width - 28, state.arena.height - 28)
       .stroke({ color: 0xb8aa96, width: 2, alpha: 0.85 });
 
-    // Deterministic marker retained from the harness so seed equivalence remains visible.
+    // Deterministic marker retained from the harness so seeded state remains visible.
     g.circle(state.marker.x, state.marker.y, 5).fill(0x222222);
 
     this.#drawHealth(g, 20, 18, 260, state.fighters.p1, false);
@@ -48,24 +48,59 @@ export class PixiGameRenderer {
     this.#drawFighter(g, state.fighters.p1, 0x1769aa);
     this.#drawFighter(g, state.fighters.p2, 0xb3261e);
 
-    if (state.impact) {
-      const pulse = 16 + state.impact.ticksRemaining * 4;
-      g.circle(state.impact.x, state.impact.y, pulse)
-        .stroke({ color: 0xffa000, width: 5, alpha: 0.9 });
-      g.moveTo(state.impact.x - pulse, state.impact.y)
-        .lineTo(state.impact.x + pulse, state.impact.y)
-        .stroke({ color: 0xffd166, width: 3 });
+    if (state.grapple) {
+      const attacker = state.fighters[state.grapple.attackerId];
+      const target = state.fighters[state.grapple.targetId];
+      const midX = (attacker.x + target.x) * 0.5;
+      const midY = (attacker.y + target.y) * 0.5;
+      const arrowLength = 42;
+
+      g.moveTo(attacker.x, attacker.y)
+        .lineTo(target.x, target.y)
+        .stroke({ color: 0x7b2cbf, width: 8, alpha: 0.8 });
+      g.circle(midX, midY, 11)
+        .stroke({ color: 0xf4a261, width: 4, alpha: 0.95 });
+      g.moveTo(midX, midY)
+        .lineTo(
+          midX + state.grapple.throwX * arrowLength,
+          midY + state.grapple.throwY * arrowLength,
+        )
+        .stroke({ color: 0x111111, width: 4 });
     }
 
-    // Tiny deterministic camera kick; it visualizes simulation hit-stop and owns no gameplay truth.
+    if (state.impact) {
+      const pulse = 16 + state.impact.ticksRemaining * 4;
+      const impactColor = state.impact.kind === 'throw' ? 0x7b2cbf : 0xffa000;
+      const accentColor = state.impact.kind === 'throw' ? 0xe0aaff : 0xffd166;
+      g.circle(state.impact.x, state.impact.y, pulse)
+        .stroke({ color: impactColor, width: 5, alpha: 0.9 });
+      g.moveTo(state.impact.x - pulse, state.impact.y)
+        .lineTo(state.impact.x + pulse, state.impact.y)
+        .stroke({ color: accentColor, width: 3 });
+      if (state.impact.kind === 'throw') {
+        g.moveTo(state.impact.x, state.impact.y - pulse)
+          .lineTo(state.impact.x, state.impact.y + pulse)
+          .stroke({ color: accentColor, width: 3 });
+      }
+    }
+
+    // Tiny deterministic camera kick; it visualizes simulation pause and owns no gameplay truth.
     const shake = state.hitstopTicks > 0 ? (state.tick % 2 === 0 ? 2 : -2) : 0;
     this.#world.position.set(shake, 0);
+
+    const grappleStatus = state.grapple
+      ? `CLINCH ${state.grapple.ticksRemaining} → ${state.grapple.throwX.toFixed(2)},${state.grapple.throwY.toFixed(2)}`
+      : '';
+    const pauseStatus = state.hitstopTicks > 0
+      ? `${state.impact?.kind === 'throw' ? 'THROW' : 'HIT'}STOP ${state.hitstopTicks}`
+      : '';
 
     this.#status.text = [
       `tick ${state.tick}`,
       `P1 ${state.fighters.p1.health}hp ${state.fighters.p1.state}`,
       `P2 ${state.fighters.p2.health}hp ${state.fighters.p2.state}`,
-      state.hitstopTicks > 0 ? `HITSTOP ${state.hitstopTicks}` : '',
+      grappleStatus,
+      pauseStatus,
     ].filter(Boolean).join('  ·  ');
   }
 
@@ -89,6 +124,12 @@ export class PixiGameRenderer {
     if (fighter.state === 'attack') {
       g.circle(fighter.x, fighter.y, FIGHTER_RADIUS + 8)
         .stroke({ color: 0x111111, width: 3 });
+    } else if (fighter.state === 'grapple') {
+      g.circle(fighter.x, fighter.y, FIGHTER_RADIUS + 7)
+        .stroke({ color: 0x7b2cbf, width: 4 });
+    } else if (fighter.state === 'throw') {
+      g.circle(fighter.x, fighter.y, FIGHTER_RADIUS + 8)
+        .stroke({ color: 0xf4a261, width: 4 });
     }
   }
 }
