@@ -10,19 +10,30 @@ Build a fast, deterministic, AI-legible browser tag-fighting game inspired by th
 - Architecture and boundaries: `docs/ARCHITECTURE.md`
 - Current project state: `docs/CURRENT.md`
 
+## Production path
+- gameplay: `src/sim/` (strict TypeScript)
+- rendering: `src/render/` (PixiJS view only)
+- composition/fixed clock: `src/runtime/`
+- physical input adapters: `src/input/`
+- AI/browser control: `src/debug/`
+
+`src/simulation.js` and `src/rng.js` are temporary migration oracles. Do not add features to them.
+
 ## Non-negotiable engineering rules
 1. Gameplay simulation must be deterministic for the same seed and input sequence.
-2. Gameplay randomness must use the project RNG; never `Math.random()` inside simulation code.
-3. Rendering must consume state/events and must not own gameplay rules.
-4. Browser tests must be able to inspect development state through `window.__TAG_ARENA__`.
-5. Every new mechanic needs at least one executable acceptance scenario.
+2. Gameplay randomness must use the project seeded RNG; never `Math.random()` inside simulation code.
+3. Pixi rendering consumes state/events and never owns gameplay rules or gameplay time.
+4. Browser tests must inspect/control development state through `window.__TAG_ARENA__`.
+5. Every new mechanic needs at least one executable acceptance scenario or replay.
 6. Prefer small, reviewable changes over broad rewrites.
-7. Do not add frameworks or dependencies unless the task requires them and the architecture doc is updated.
+7. Architectural boundaries must be mechanically tested, not only documented.
+8. Do not add runtime dependencies without documenting the measured need.
 
 ## Before declaring work complete
 Run or ensure CI runs:
-- deterministic simulation tests
-- browser smoke test
-- architecture checks
+- `npm run typecheck`
+- `npm test`
+- `npm run build`
+- `npm run test:browser`
 
-If behavior is visual, capture evidence in CI artifacts.
+If behavior is visual, inspect the uploaded screenshot as well as machine-readable state evidence.
