@@ -1,5 +1,8 @@
 # Phase 2 — Contextual Close-Contact Grapple
 
+## Status
+**Implemented and verified in GitHub Actions run #97.** Final branch head must still pass after documentation updates before merge.
+
 ## Goal
 Add the first unmistakably wrestling-specific interaction without adding another primary button.
 
@@ -48,3 +51,22 @@ The existing Action/Attack input remains the only combat action:
 7. A rightward grapple throw near the right rope rebounds through the existing rope system.
 8. Simultaneous close-range Action presses start two normal strikes and never create a one-sided grapple.
 9. Chromium verifies the contextual path and leaves its screenshot on the throw-impact frame.
+
+## Verified evidence — run #97
+All acceptance tests passed in the locked production pipeline. The uploaded browser JSON and screenshot were inspected directly.
+
+Observed browser values:
+- bridge version `5`;
+- console errors `0`;
+- grapple begins tick `1`, hold `6`;
+- direction changed to `(0, 1)` on tick `2` with unchanged fighter positions;
+- throw impact tick `7`;
+- target health `85`;
+- target initial velocity `(0, 13)`;
+- target hitstun `14`;
+- impact pause `4`;
+- attacker recovery `6`;
+- first resumed target movement `13 px`;
+- right-boundary rebound at X `780`, return velocity negative;
+- simultaneous Action: `2` strike starts, `0` grapple starts;
+- screenshot visibly shows tick-7 `throw` / `hitstun` state and `THROWSTOP 4`.
