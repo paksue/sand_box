@@ -1,15 +1,15 @@
 import type { GameRuntime } from '../runtime/GameRuntime';
-import type { InputState, PlayerId, ScenarioName } from '../sim/types';
+import type { GameEvent, GameState, InputState, PlayerId, ScenarioName } from '../sim/types';
 
 export interface TagArenaDebugApi {
   readonly version: 4;
   readonly renderer: 'pixi-v8-webgl';
-  getState: GameRuntime['game']['getState'];
-  getEvents: GameRuntime['game']['getEvents'];
+  getState(): GameState;
+  getEvents(): GameEvent[];
   setInput(playerId: PlayerId, input: Partial<InputState>): void;
-  step(ticks?: number): ReturnType<GameRuntime['game']['getState']>;
-  loadScenario(name: ScenarioName): ReturnType<GameRuntime['game']['getState']>;
-  reset(seed?: number): ReturnType<GameRuntime['game']['getState']>;
+  step(ticks?: number): GameState;
+  loadScenario(name: ScenarioName): GameState;
+  reset(seed?: number): GameState;
 }
 
 declare global {
@@ -22,12 +22,12 @@ export function installDebugBridge(runtime: GameRuntime): TagArenaDebugApi {
   const api: TagArenaDebugApi = Object.freeze({
     version: 4,
     renderer: 'pixi-v8-webgl',
-    getState: () => runtime.game.getState(),
-    getEvents: () => runtime.game.getEvents(),
-    setInput: (playerId, input) => runtime.setInput(playerId, input),
-    step: (ticks = 1) => runtime.step(ticks),
-    loadScenario: (name) => runtime.loadScenario(name),
-    reset: (seed = 1) => runtime.reset(seed),
+    getState: (): GameState => runtime.game.getState(),
+    getEvents: (): GameEvent[] => runtime.game.getEvents(),
+    setInput: (playerId: PlayerId, input: Partial<InputState>): void => runtime.setInput(playerId, input),
+    step: (ticks = 1): GameState => runtime.step(ticks),
+    loadScenario: (name: ScenarioName): GameState => runtime.loadScenario(name),
+    reset: (seed = 1): GameState => runtime.reset(seed),
   });
 
   window.__TAG_ARENA__ = api;
