@@ -4,6 +4,7 @@ export const FIXED_HZ = 60;
 export const ARENA = Object.freeze({ width: 800, height: 450 });
 export const FIGHTER_RADIUS = 20;
 export const MOVE_PER_TICK = 4;
+
 export const ATTACK_RANGE = 56;
 export const ATTACK_DAMAGE = 10;
 export const ATTACK_COOLDOWN_TICKS = 14;
@@ -13,6 +14,16 @@ export const HITSTOP_TICKS = 3;
 export const KNOCKBACK_SPEED = 10;
 export const KNOCKBACK_DECAY = 0.82;
 export const HITSTUN_TICKS = 10;
+
+export const GRAPPLE_RANGE = 43;
+export const GRAPPLE_HOLD_TICKS = 4;
+export const GRAPPLE_COOLDOWN_TICKS = 20;
+export const THROW_DAMAGE = 14;
+export const THROW_SPEED = 13;
+export const THROW_HITSTUN_TICKS = 13;
+export const THROW_HITSTOP_TICKS = 4;
+export const THROW_RECOVERY_TICKS = 5;
+
 export const ROPE_RETENTION = 0.75;
 export const REBOUND_LOCK_TICKS = 6;
 
@@ -34,7 +45,7 @@ function normalizeInput(input = {}) {
   };
 }
 
-function createFighter(id, x, y, facingX) {
+function createFighter(id, x, y, facingX, facingY = 0) {
   return {
     id,
     x,
@@ -42,7 +53,7 @@ function createFighter(id, x, y, facingX) {
     vx: 0,
     vy: 0,
     facingX,
-    facingY: 0,
+    facingY,
     state: 'idle',
     health: 100,
     attackCooldown: 0,
@@ -75,11 +86,12 @@ export function createGame(seed = 1) {
   const attackLatch = { p1: false, p2: false };
 
   let state = {
-    version: 3,
+    version: 4,
     seed: normalizedSeed,
     tick: 0,
     hitstopTicks: 0,
     impact: null,
+    grapple: null,
     arena: { ...ARENA },
     marker: {
       x: 240 + Math.floor(rng.next() * 320),
@@ -93,7 +105,7 @@ export function createGame(seed = 1) {
 
   function pushEvent(type, payload = {}) {
     events.push({ tick: state.tick, type, ...payload });
-    if (events.length > 240) events.shift();
+    if (events.length > 280) events.shift();
   }
 
   function syncAttackLatches() {
@@ -280,38 +292,92 @@ export function createGame(seed = 1) {
       && fighter.reboundTicks === 0;
   }
 
+  function canBeGrappled(fighter) {
+    return fighter.health > 0
+      && !hasAttackPhase(fighter)
+      && fighter.hitstunTicks === 0
+      && fighter.reboundTicks === 0;
+  }
+
+  function targetGeometry(attackerId) {
+    const targetId = attackerId === 'p1' ? 'p2' : 'p1';
+    const attacker = state.fighters[attackerId];
+    const target = state.fighters[targetId];
+    const dx = target.x - attacker.x;
+    const dy = target.y - attacker.y;
+    const distance = Math.hypot(dx, dy);
+    const direction = normalizedVector(dx, dy);
+    const facingDot = attacker.facingX * direction.x + attacker.facingY * direction.y;
+    return { attacker, target, targetId, distance, facingDot };
+  }
+
+  function startGrapple(attackerId, targetId) {
+    const attacker = state.fighters[attackerId];
+    const target = state.fighters[targetId];
+
+    attacker.attackCooldown = GRAPPLE_COOLDOWN_TICKS;
+    attacker.attackStartupTicks = 0;
+    attacker.attackRecoveryTicks = 0;
+    attacker.attackActive = false;
+    attacker.vx = 0;
+    attacker.vy = 0;
+    attacker.state = 'grapple';
+
+    target.attackStartupTicks = 0;
+    target.attackRecoveryTicks = 0;
+    target.attackActive = false;
+    target.vx = 0;
+    target.vy = 0;
+    target.state = 'grapple';
+
+    state.grapple = {
+      attackerId,
+      targetId,
+      ticksRemaining: GRAPPLE_HOLD_TICKS,
+    };
+
+    pushEvent('grapple-start', {
+      attackerId,
+      targetId,
+      holdTicks: GRAPPLE_HOLD_TICKS,
+    });
+  }
+
   function processAttackStarts() {
     for (const playerId of ['p1', 'p2']) {
       const fighter = state.fighters[playerId];
       const input = inputs[playerId];
       const pressed = input.attack && !attackLatch[playerId];
 
-      if (pressed && canAttack(fighter)) {
-        fighter.attackCooldown = ATTACK_COOLDOWN_TICKS;
-        fighter.attackStartupTicks = ATTACK_STARTUP_TICKS;
-        fighter.attackRecoveryTicks = 0;
-        fighter.attackActive = false;
-        fighter.state = 'attack';
-        fighter.vx = 0;
-        fighter.vy = 0;
-        pushEvent('attack-start', {
-          fighterId: playerId,
-          startupTicks: ATTACK_STARTUP_TICKS,
-        });
+      if (pressed && canAttack(fighter) && !state.grapple) {
+        const { target, targetId, distance, facingDot } = targetGeometry(playerId);
+        const contextualGrapple = distance <= GRAPPLE_RANGE
+          && facingDot >= 0.35
+          && canBeGrappled(target);
+
+        if (contextualGrapple) {
+          startGrapple(playerId, targetId);
+        } else {
+          fighter.attackCooldown = ATTACK_COOLDOWN_TICKS;
+          fighter.attackStartupTicks = ATTACK_STARTUP_TICKS;
+          fighter.attackRecoveryTicks = 0;
+          fighter.attackActive = false;
+          fighter.state = 'attack';
+          fighter.vx = 0;
+          fighter.vy = 0;
+          pushEvent('attack-start', {
+            fighterId: playerId,
+            startupTicks: ATTACK_STARTUP_TICKS,
+          });
+        }
       }
 
       attackLatch[playerId] = input.attack;
     }
   }
 
-  function applyHit(attackerId, targetId) {
-    const attacker = state.fighters[attackerId];
-    const target = state.fighters[targetId];
-    const toTargetX = target.x - attacker.x;
-    const toTargetY = target.y - attacker.y;
-    const distance = Math.hypot(toTargetX, toTargetY);
-    const toTarget = normalizedVector(toTargetX, toTargetY);
-    const facingDot = attacker.facingX * toTarget.x + attacker.facingY * toTarget.y;
+  function applyStrike(attackerId, targetId) {
+    const { attacker, target, distance, facingDot } = targetGeometry(attackerId);
 
     if (distance <= ATTACK_RANGE && facingDot >= 0.35) {
       target.health = Math.max(0, target.health - ATTACK_DAMAGE);
@@ -326,6 +392,7 @@ export function createGame(seed = 1) {
 
       state.hitstopTicks = HITSTOP_TICKS;
       state.impact = {
+        kind: 'strike',
         attackerId,
         targetId,
         x: (attacker.x + target.x) * 0.5,
@@ -346,6 +413,7 @@ export function createGame(seed = 1) {
         vy: target.vy,
       });
       pushEvent('hitstop-start', {
+        kind: 'strike',
         attackerId,
         targetId,
         ticks: HITSTOP_TICKS,
@@ -368,8 +436,88 @@ export function createGame(seed = 1) {
 
     for (const attackerId of attackers) {
       const targetId = attackerId === 'p1' ? 'p2' : 'p1';
-      applyHit(attackerId, targetId);
+      applyStrike(attackerId, targetId);
     }
+  }
+
+  function resolveThrow() {
+    const grapple = state.grapple;
+    if (!grapple) return;
+
+    const attacker = state.fighters[grapple.attackerId];
+    const target = state.fighters[grapple.targetId];
+    const input = inputs[grapple.attackerId];
+    const inputDirection = normalizedVector(
+      Number(input.right) - Number(input.left),
+      Number(input.down) - Number(input.up),
+    );
+    const fallbackDirection = normalizedVector(attacker.facingX, attacker.facingY);
+    const direction = inputDirection.x !== 0 || inputDirection.y !== 0
+      ? inputDirection
+      : fallbackDirection;
+
+    attacker.facingX = direction.x;
+    attacker.facingY = direction.y;
+    attacker.attackRecoveryTicks = THROW_RECOVERY_TICKS;
+    attacker.state = 'throw';
+
+    target.health = Math.max(0, target.health - THROW_DAMAGE);
+    target.vx = direction.x * THROW_SPEED;
+    target.vy = direction.y * THROW_SPEED;
+    target.hitstunTicks = THROW_HITSTUN_TICKS;
+    target.reboundTicks = 0;
+    target.attackStartupTicks = 0;
+    target.attackRecoveryTicks = 0;
+    target.attackActive = false;
+    target.state = 'hitstun';
+
+    state.hitstopTicks = THROW_HITSTOP_TICKS;
+    state.impact = {
+      kind: 'throw',
+      attackerId: grapple.attackerId,
+      targetId: grapple.targetId,
+      x: target.x,
+      y: target.y,
+      ticksRemaining: THROW_HITSTOP_TICKS,
+    };
+    state.grapple = null;
+
+    pushEvent('throw', {
+      attackerId: grapple.attackerId,
+      targetId: grapple.targetId,
+      damage: THROW_DAMAGE,
+      targetHealth: target.health,
+      vx: target.vx,
+      vy: target.vy,
+    });
+    pushEvent('hitstop-start', {
+      kind: 'throw',
+      attackerId: grapple.attackerId,
+      targetId: grapple.targetId,
+      ticks: THROW_HITSTOP_TICKS,
+    });
+  }
+
+  function advanceGrapple() {
+    if (!state.grapple) return;
+    const attacker = state.fighters[state.grapple.attackerId];
+    const target = state.fighters[state.grapple.targetId];
+    attacker.state = 'grapple';
+    target.state = 'grapple';
+    attacker.vx = 0;
+    attacker.vy = 0;
+    target.vx = 0;
+    target.vy = 0;
+
+    state.grapple.ticksRemaining -= 1;
+    pushEvent('grapple-tick', {
+      attackerId: state.grapple.attackerId,
+      targetId: state.grapple.targetId,
+      remaining: state.grapple.ticksRemaining,
+    });
+    syncAttackLatches();
+
+    if (state.grapple.ticksRemaining === 0) resolveThrow();
   }
 
   function advanceHitstop() {
@@ -393,6 +541,7 @@ export function createGame(seed = 1) {
     state.tick = 0;
     state.hitstopTicks = 0;
     state.impact = null;
+    state.grapple = null;
     state.fighters.p1 = createFighter('p1', 180, 225, 1);
     state.fighters.p2 = createFighter('p2', 620, 225, -1);
 
@@ -410,6 +559,14 @@ export function createGame(seed = 1) {
       case 'attack':
         state.fighters.p1 = createFighter('p1', 350, 225, 1);
         state.fighters.p2 = createFighter('p2', 400, 225, -1);
+        break;
+      case 'grapple':
+        state.fighters.p1 = createFighter('p1', 350, 225, 1);
+        state.fighters.p2 = createFighter('p2', 390, 225, -1);
+        break;
+      case 'grapple-rope':
+        state.fighters.p1 = createFighter('p1', 400, 70, 0, -1);
+        state.fighters.p2 = createFighter('p2', 400, 30, 0, 1);
         break;
       case 'rope':
         state.fighters.p1 = createFighter('p1', 30, 225, -1);
@@ -449,6 +606,11 @@ export function createGame(seed = 1) {
 
         if (state.hitstopTicks > 0) {
           advanceHitstop();
+          continue;
+        }
+
+        if (state.grapple) {
+          advanceGrapple();
           continue;
         }
 
