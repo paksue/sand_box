@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-08-19T11:44:35.078Z",
+  "updatedAt": "2026-08-21T12:37:25.640Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -369,12 +369,12 @@
     {
       "id": "9dd61fa2-b05c-4357-a850-45e65ef28b0a",
       "title": "Review Angelina doctor",
-      "details": "",
+      "details": "Test new app and check doctor Maddie’messages",
       "done": false,
       "deleted": false,
       "order": 0,
       "createdAt": "2026-08-18T01:59:38.763Z",
-      "contentUpdatedAt": "2026-08-18T01:59:38.763Z",
+      "contentUpdatedAt": "2026-08-21T12:37:23.053Z",
       "doneUpdatedAt": "2026-08-18T01:59:38.763Z",
       "orderUpdatedAt": "2026-08-18T02:00:00.624Z",
       "deletedUpdatedAt": ""
