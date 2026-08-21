@@ -30,9 +30,19 @@ jobs:
         with:
           node-version: 22
 
+      - name: Bootstrap current npm
+        run: |
+          npm install --global npm@12.0.2
+          npm --version
+
       - name: Install pinned production dependencies
         working-directory: tag-arena
-        run: npm install --no-audit --no-fund
+        run: |
+          if ! npm install --no-audit --no-fund; then
+            echo '--- npm debug log ---'
+            cat ~/.npm/_logs/*-debug-0.log || true
+            exit 1
+          fi
 
       - name: Typecheck, unit/equivalence tests, and production build
         working-directory: tag-arena
