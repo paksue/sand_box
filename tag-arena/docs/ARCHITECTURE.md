@@ -30,6 +30,16 @@ The same initial seed plus the same ordered input sequence and tick count must p
 
 Simulation advances in fixed ticks. Rendering frequency must not change simulation outcomes.
 
+## Phase 0 simulation rules
+Player intent and physical momentum are distinct concepts.
+- Neutral movement derives velocity from normalized directional input.
+- Hitstun and rope rebound advance using stored physical velocity rather than fresh movement input.
+- Body collision resolution belongs entirely to simulation code.
+- Attack range, facing checks, damage, cooldown, knockback, and hitstun belong entirely to simulation code.
+- Rope contact clamps fighters inside the arena and reverses the incoming velocity component with deterministic retention.
+
+The renderer may visualize fighter state, facing, velocity-derived outcomes, and health, but may not recreate any of those rules.
+
 ## Browser automation contract
 `window.__TAG_ARENA__` must provide at minimum:
 - `getState()` — serializable snapshot
@@ -39,22 +49,25 @@ Simulation advances in fixed ticks. Rendering frequency must not change simulati
 - `getEvents()` — recent simulation events
 - `version` — debug-contract version
 
-The browser smoke test must verify the bridge exists, move a placeholder fighter, confirm state changed numerically, and capture a screenshot plus JSON report.
+Phase 0 also exposes:
+- `loadScenario(name)` — loads a named deterministic acceptance scenario through the public simulation API.
+
+Named scenarios are preferred over arbitrary state mutation because they are reviewable, reproducible, and safe for regression tests.
 
 ## CI contract
 A relevant push or pull request runs:
 1. architecture/unit tests
 2. static browser server
-3. Chromium smoke test
+3. Chromium smoke/combat acceptance test
 4. artifact upload even when the browser test fails
 
 Artifacts should include machine-readable JSON and screenshots so ChatGPT can review evidence rather than only a green/red status.
 
 ## Dependency policy
-Phase -1 uses browser-native ES modules and Node's built-in test runner. Playwright is installed by CI only. Add runtime frameworks only after the harness is proven and only when they materially improve the game.
+The current project uses browser-native ES modules and Node's built-in test runner. Playwright is installed by CI only. Add runtime frameworks only after they materially improve the game.
 
 ## Growth path
-Once the control loop is proven, likely production structure becomes:
+As the project grows, likely production structure becomes:
 - `src/sim/` deterministic simulation
 - `src/render/` rendering adapter (likely PixiJS if useful)
 - `src/input/`
