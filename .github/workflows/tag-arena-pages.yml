@@ -1,4 +1,4 @@
-name: Tag Arena Pages
+name: Tag Arena Compiled Preview
 
 on:
   push:
@@ -14,12 +14,10 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: tag-arena-pages
+  group: tag-arena-compiled-preview
   cancel-in-progress: true
 
 jobs:
@@ -29,6 +27,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -42,42 +42,41 @@ jobs:
         working-directory: tag-arena
         run: npm ci --no-audit --no-fund
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Build Tag Arena for its repo subpath
+      - name: Build compiled Tag Arena preview
         working-directory: tag-arena
-        run: npm run build -- --base=/sand_box/tag-arena/
+        run: npm run build -- --base=/sand_box/previews/tag-arena/
 
-      - name: Assemble multi-app Pages site
+      - name: Verify deployable asset paths
         run: |
-          mkdir -p _site
-          rsync -a \
-            --exclude='.git/' \
-            --exclude='.github/' \
-            --exclude='_site/' \
-            --exclude='tag-arena/' \
-            ./ _site/
-          mkdir -p _site/tag-arena
-          cp -a tag-arena/dist/. _site/tag-arena/
-          touch _site/.nojekyll
+          test -f tag-arena/dist/index.html
+          grep -q '/sand_box/previews/tag-arena/assets/' tag-arena/dist/index.html
+          test -d tag-arena/dist/assets
 
-          test -f _site/tag-arena/index.html
-          grep -q '/sand_box/tag-arena/assets/' _site/tag-arena/index.html
-
-      - name: Upload complete Pages artifact
-        uses: actions/upload-pages-artifact@v4
+      - name: Upload compiled preview artifact
+        uses: actions/upload-artifact@v4
         with:
-          path: _site
+          name: tag-arena-compiled-preview
+          path: tag-arena/dist
+          if-no-files-found: error
 
-  deploy:
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy multi-app site with Tag Arena subpath
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Publish compiled preview into branch-based Pages tree
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          rm -rf previews/tag-arena
+          mkdir -p previews/tag-arena
+          cp -a tag-arena/dist/. previews/tag-arena/
+          touch previews/tag-arena/.nojekyll
+
+          test -f previews/tag-arena/index.html
+          grep -q '/sand_box/previews/tag-arena/assets/' previews/tag-arena/index.html
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add previews/tag-arena
+
+          if git diff --cached --quiet; then
+            echo 'Compiled Tag Arena preview is already current.'
+          else
+            git commit -m 'Publish Tag Arena compiled preview'
+            git push origin HEAD:main
+          fi
