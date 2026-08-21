@@ -1,64 +1,36 @@
 # Tag Arena — Current State
 
 ## Phase
-Production-stack migration: **verified**. The previously verified Phase 1 behavior is preserved on the typed PixiJS production architecture.
+Production architecture is verified. Post-migration cleanup is retiring the temporary legacy oracle so strict TypeScript becomes the only gameplay implementation.
 
 ## Active branch
-`agent/tag-arena-production-stack`
+`agent/tag-arena-retire-legacy-oracle`
 
 ## Production stack
-- TypeScript 7.0.2 in strict mode
+- TypeScript 7.0.2 strict
 - PixiJS 8.20.0 with WebGL preference
 - Vite 8.2.2
 - Vitest 4.1.10
 - Playwright 1.62.1
 - custom deterministic 60 Hz simulation
-- committed `package-lock.json`; CI uses `npm ci`
+- committed dependency lock; CI uses `npm ci`
 
-## Production boundaries
-- `src/sim/` owns gameplay state and deterministic rules.
-- `src/render/` is a read-only Pixi view of serialized state.
-- `src/input/` translates physical controls to typed intent.
-- `src/runtime/` is the only production composition layer connecting input, fixed-step simulation, and rendering.
-- `src/debug/` exposes the public runtime surface for browser automation.
-- the obsolete legacy browser controller and old browser harness have been removed.
+## Single source of truth
+- gameplay state/rules: `src/sim/`
+- rendering: `src/render/`
+- input: `src/input/`
+- fixed-step composition: `src/runtime/`
+- browser/AI control: `src/debug/`
 
-## Temporary migration oracle
-`src/simulation.js` and `src/rng.js` remain temporarily as the untouched Phase 1 behavior oracle. Vitest runs identical seeds, scenarios, inputs, and tick counts through legacy JavaScript and the new TypeScript simulation and compares complete serialized state and event output.
+The temporary JavaScript simulation/RNG oracle and its equivalence test have been removed. The migration already proved complete serialized state/event equivalence before retirement. Native TypeScript regression tests and Chromium acceptance tests now protect behavior going forward.
 
-Do not add features to the oracle files. New development targets `src/sim/` only.
+## Verified production evidence
+Migration PR #34 passed strict typing, native regressions, legacy equivalence, architecture checks, Vite production build, locked `npm ci`, and real Pixi/WebGL Chromium tests. Its inspected browser artifact reported debug bridge version 4, renderer `pixi-v8-webgl`, one canvas, zero console errors, and unchanged deterministic measurements.
 
-## Verification
-The production pipeline proves:
-- strict TypeScript typecheck passes;
-- 6 native TypeScript gameplay regression tests pass;
-- 7 legacy-vs-TypeScript equivalence tests pass;
-- 4 architecture-boundary tests pass;
-- Vite production build succeeds;
-- Chromium boots the TypeScript entry and `pixi-v8-webgl` renderer;
-- exactly one Pixi canvas is present and the legacy controller is absent;
-- zero browser console errors;
-- all previously verified deterministic movement, collision, timing, pause, momentum, and arena-boundary measurements remain unchanged.
-
-### Inspected browser evidence
-Run #67 produced a JSON report and screenshot that were downloaded and inspected. The report confirmed debug bridge version 4, `pixi-v8-webgl`, the expected deterministic numeric measurements, and zero console errors. The screenshot visibly showed the expected paused interaction frame and telemetry.
-
-### Locked workflow
-Run #72 passed the same complete pipeline using the committed dependency lock, read-only GitHub contents permission, npm 12.0.2 CLI, and `npm ci`.
-
-## Exit criteria
-Completed:
-1. strict typing;
-2. native TypeScript regression coverage;
-3. legacy-vs-TypeScript state/event equivalence;
-4. production build;
-5. real Pixi/WebGL Chromium verification;
-6. unchanged deterministic behavior;
-7. inspectable JSON/screenshot/build artifacts;
-8. reproducible locked CI.
+The final migration head passed run #78 after obsolete browser paths were removed.
 
 ## Old experimental branch
-`agent/tag-arena-phase2-grapple` predates this architecture and must not be merged. The next gameplay branch should start fresh from production `main` after this migration merges.
+`agent/tag-arena-phase2-grapple` predates the production architecture and must not be merged.
 
 ## Next phase
-Create a fresh production-based branch for the first contextual close-contact wrestling interaction while keeping the same small control set.
+After this small cleanup passes and merges, create a fresh production-based branch for the first contextual close-contact wrestling interaction while preserving the small control set.
