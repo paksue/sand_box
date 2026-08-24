@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-08-24T13:49:47.765Z",
+  "updatedAt": "2026-08-24T15:57:05.683Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -494,6 +494,19 @@
       "contentUpdatedAt": "2026-08-24T13:49:46.397Z",
       "doneUpdatedAt": "2026-08-24T13:49:46.397Z",
       "orderUpdatedAt": "2026-08-24T13:49:46.397Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "79b17b7b-2a4a-4851-9907-3942f877d4ae",
+      "title": "bottom mattress buy",
+      "details": "",
+      "done": false,
+      "deleted": false,
+      "order": 32,
+      "createdAt": "2026-08-24T15:57:04.500Z",
+      "contentUpdatedAt": "2026-08-24T15:57:04.500Z",
+      "doneUpdatedAt": "2026-08-24T15:57:04.500Z",
+      "orderUpdatedAt": "2026-08-24T15:57:04.500Z",
       "deletedUpdatedAt": ""
     }
   ]
