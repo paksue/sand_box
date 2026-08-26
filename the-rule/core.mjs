@@ -4,24 +4,52 @@ const clone = (value) => JSON.parse(JSON.stringify(value));
 
 export const RATIONALES = Object.freeze({
   fewer_deaths: {
+    appliesTo: 'pull',
     label: 'If someone must die, fewer deaths is better.',
     statement: 'When deaths cannot be avoided, choose the action that leaves fewer people dead.',
     dimensions: ['consequences'],
   },
   prevent_more: {
+    appliesTo: 'pull',
     label: 'I could prevent four unnecessary deaths.',
     statement: 'If I can prevent a greater loss of life, I should intervene.',
     dimensions: ['consequences', 'agency'],
   },
   five_over_one: {
+    appliesTo: 'pull',
     label: 'Five lives matter more than one.',
     statement: 'When lives directly conflict, saving the greater number should decide the action.',
     dimensions: ['consequences'],
   },
-  intuition: {
+  pull_intuition: {
+    appliesTo: 'pull',
     label: 'I do not know. It just seemed right.',
-    statement: 'In an unavoidable life-or-death tradeoff, I accept sacrificing one person to save five.',
+    statement: 'In an unavoidable one-versus-five tradeoff, I accept sacrificing one person to save five.',
     dimensions: ['intuition', 'consequences'],
+  },
+  do_not_redirect: {
+    appliesTo: 'stay',
+    label: 'I would not redirect the danger onto someone else.',
+    statement: 'I should not intentionally redirect lethal harm onto an innocent person, even to save more people.',
+    dimensions: ['agency', 'rights'],
+  },
+  omission_difference: {
+    appliesTo: 'stay',
+    label: 'Causing a death feels worse than failing to prevent deaths.',
+    statement: 'Intentionally causing a person’s death can be worse than allowing a greater harm I did not create.',
+    dimensions: ['agency', 'intention'],
+  },
+  one_has_rights: {
+    appliesTo: 'stay',
+    label: 'The person on the side track had a right not to be sacrificed by me.',
+    statement: 'An innocent person cannot be deliberately sacrificed merely because doing so benefits more people.',
+    dimensions: ['rights', 'means'],
+  },
+  stay_intuition: {
+    appliesTo: 'stay',
+    label: 'I do not know. Pulling it just felt wrong.',
+    statement: 'In an unavoidable one-versus-five tradeoff, I refuse to make one person the target of my intervention.',
+    dimensions: ['intuition', 'agency'],
   },
 });
 
@@ -103,6 +131,10 @@ function touch(state) {
   return state;
 }
 
+function lastDecision(state, scenarioId) {
+  return [...state.decisions].reverse().find((decision) => decision.scenarioId === scenarioId) ?? null;
+}
+
 export function recordDecision(state, scenarioId, choice, meta = {}) {
   const next = clone(state);
   next.decisions.push({
@@ -119,11 +151,16 @@ export function createPrincipleFromRationale(state, rationaleId) {
   const rationale = RATIONALES[rationaleId];
   if (!rationale) throw new Error(`Unknown rationale: ${rationaleId}`);
 
+  const trolleyChoice = lastDecision(state, 'trolley_switch')?.choice ?? null;
+  if (!trolleyChoice) throw new Error('A trolley decision is required before creating Rule 01.');
+  if (rationale.appliesTo !== trolleyChoice) throw new Error(`Rationale ${rationaleId} does not apply to ${trolleyChoice}.`);
+
   const next = clone(state);
   const principle = {
     id: `rule-${next.principles.length + 1}`,
     version: 1,
     source: 'trolley_switch',
+    originChoice: trolleyChoice,
     rationaleId,
     statement: rationale.statement,
     dimensions: [...rationale.dimensions],
@@ -142,22 +179,25 @@ export function predictChoice(state, scenarioId) {
   const rule = activeRule(state);
   if (!rule) return null;
 
-  const consequenceDriven = rule.dimensions.includes('consequences') || rule.rationaleId === 'intuition';
-  if (!consequenceDriven) return null;
-
   if (scenarioId === 'bridge') {
+    const choice = rule.originChoice === 'stay' ? 'refuse' : 'push';
     return {
       ruleId: rule.id,
-      choice: 'push',
-      explanation: 'One person dies instead of five. Your rule treats the smaller loss of life as the action to choose.',
+      choice,
+      explanation: choice === 'push'
+        ? 'One person dies instead of five. Your rule favors intervening for the smaller loss of life.'
+        : 'Your rule rejects deliberately making one innocent person the target or means of your intervention.',
     };
   }
 
   if (scenarioId === 'surgeon') {
+    const choice = rule.originChoice === 'stay' ? 'refuse' : 'harvest';
     return {
       ruleId: rule.id,
-      choice: 'harvest',
-      explanation: 'One person dies and five live. On outcome alone, your rule points toward the sacrifice.',
+      choice,
+      explanation: choice === 'harvest'
+        ? 'One person dies and five live. On the structure of your first rule, the sacrifice is favored.'
+        : 'Your first rule resists intentionally sacrificing one innocent person even to save five.',
     };
   }
 
