@@ -1,0 +1,28 @@
+{
+  "scale": "1-5",
+  "dimensions": [
+    {"id":"clarity","weight":1.0,"question":"Can a first-time player understand what to do without instructions?"},
+    {"id":"causality","weight":1.2,"question":"Do choices feel like actions in the world rather than form submissions?"},
+    {"id":"impact","weight":1.5,"question":"Do consequence and contradiction moments land with audiovisual force appropriate to their importance?"},
+    {"id":"pacing","weight":1.2,"question":"Does reflection happen after action without stalling momentum?"},
+    {"id":"originality","weight":1.1,"question":"Does the experience avoid generic AI dashboard/card aesthetics and feel authored?"},
+    {"id":"coherence","weight":1.0,"question":"Do typography, motion, sound, color and language feel like one deliberate system?"},
+    {"id":"rule_memory","weight":1.6,"question":"Does the player unmistakably feel that the game remembered and reused their own reasoning?"},
+    {"id":"player_pull","weight":1.6,"question":"After the slice, is there strong curiosity to see the next stress test?"},
+    {"id":"mobile_ease","weight":1.0,"question":"Is the same core experience effortless on a phone with touch?"},
+    {"id":"accessibility","weight":0.8,"question":"Are controls semantic/reachable and reduced-motion behavior meaningful?"}
+  ],
+  "ship_rule": {
+    "minimum_weighted_average": 4.0,
+    "hard_minimums": {"impact":4,"rule_memory":4,"player_pull":4,"clarity":4},
+    "note": "Passing automated tests is necessary but insufficient. Human taste gates cannot be auto-waived."
+  },
+  "critic_prompts": [
+    "Find places where the interface explains something the player could discover through action.",
+    "Find decorative animation that does not communicate cause, state or consequence.",
+    "Find generic card/dashboard styling and propose a more authored composition.",
+    "Find moments where the previous rule should feel present but does not.",
+    "Find any beat longer than needed for comprehension or emotional impact.",
+    "Find any mobile interaction that depends on hover, precision or tiny targets."
+  ]
+}
