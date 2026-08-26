@@ -1,0 +1,28 @@
+{
+  "milestone": "M1_VERTICAL_SLICE",
+  "goal": "A polished playable sequence that proves the core fantasy: the game remembers the player's rule and turns it back on them.",
+  "status": "in_progress",
+  "gates": [
+    {"id":"boot","pass":false,"criterion":"Loads from static hosting with no backend and exposes a clear Begin action."},
+    {"id":"responsive","pass":false,"criterion":"Primary path works at phone portrait and desktop widths without clipped controls."},
+    {"id":"trolley_scene","pass":false,"criterion":"Trolley, two track outcomes, five people, one person and lever are visually legible."},
+    {"id":"choice_access","pass":false,"criterion":"Pull and do-nothing choices are large, keyboard reachable and touch friendly."},
+    {"id":"consequence","pass":false,"criterion":"Choice causes a visible animated consequence before reflective text appears."},
+    {"id":"rationale","pass":false,"criterion":"Player can choose why they acted without philosopher labels."},
+    {"id":"principle_create","pass":false,"criterion":"Rationale creates Rule 01 through the pure moral engine."},
+    {"id":"rulebook","pass":false,"criterion":"Rule 01 remains visibly available and is not merely decorative text."},
+    {"id":"bridge_scene","pass":false,"criterion":"Bridge case presents the same 1-versus-5 arithmetic with a different causal mechanism."},
+    {"id":"prediction","pass":false,"criterion":"Rule 01 predicts an action for the bridge before the player chooses."},
+    {"id":"contradiction","pass":false,"criterion":"If the player refuses the predicted action, engine records a contradiction and presentation explicitly compares prior and current choices."},
+    {"id":"consistent_path","pass":false,"criterion":"If the player follows the prediction, game acknowledges consistency and presents a harder next stress test rather than dead-ending."},
+    {"id":"distinction","pass":false,"criterion":"Contradiction path asks what changed and records the selected moral distinction."},
+    {"id":"mutation","pass":false,"criterion":"At least one distinction triggers a case mutation that removes or isolates that variable."},
+    {"id":"persistence","pass":false,"criterion":"Current run can survive accidental refresh through client-side persistence and can be deliberately reset."},
+    {"id":"reduced_motion","pass":false,"criterion":"Reduced-motion preference preserves causal feedback without large camera motion."},
+    {"id":"core_tests","pass":false,"criterion":"Pure moral engine passes automated tests for rule creation, prediction, contradiction and distinctions."},
+    {"id":"syntax","pass":false,"criterion":"All JavaScript modules pass Node syntax checks."},
+    {"id":"no_console_errors","pass":false,"criterion":"Golden path produces no uncaught browser errors."},
+    {"id":"impact","pass":false,"criterion":"Human evaluator rates the rule-coming-back moment at least 4/5 for impact."},
+    {"id":"pull","pass":false,"criterion":"Human evaluator rates desire to continue at least 4/5."}
+  ]
+}
