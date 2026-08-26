@@ -1,0 +1,14 @@
+{
+  "name": "the-rule-m1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:core": "node ./tests.mjs",
+    "check:syntax": "node --check ./core.mjs && node --check ./app.mjs && node --check ./e2e.spec.mjs",
+    "test:browser": "playwright test ./e2e.spec.mjs",
+    "check": "npm run check:syntax && npm run test:core"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.58.0"
+  }
+}
