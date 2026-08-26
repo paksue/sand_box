@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-08-24T15:57:05.683Z",
+  "updatedAt": "2026-08-26T11:54:24.216Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -507,6 +507,19 @@
       "contentUpdatedAt": "2026-08-24T15:57:04.500Z",
       "doneUpdatedAt": "2026-08-24T15:57:04.500Z",
       "orderUpdatedAt": "2026-08-24T15:57:04.500Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "f65ddf8e-9779-4ff7-922f-e9676cd2c0a3",
+      "title": "Snow blower oil and filter",
+      "details": "",
+      "done": false,
+      "deleted": false,
+      "order": 33,
+      "createdAt": "2026-08-26T11:54:22.122Z",
+      "contentUpdatedAt": "2026-08-26T11:54:22.122Z",
+      "doneUpdatedAt": "2026-08-26T11:54:22.122Z",
+      "orderUpdatedAt": "2026-08-26T11:54:22.122Z",
       "deletedUpdatedAt": ""
     }
   ]
