@@ -1,0 +1,81 @@
+name: The Rule Milestone Validation
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'the-rule/**'
+      - '.github/workflows/the-rule-validation.yml'
+  pull_request:
+    paths:
+      - 'the-rule/**'
+      - '.github/workflows/the-rule-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install test tooling
+        working-directory: the-rule
+        run: npm install --no-audit --no-fund
+
+      - name: Syntax and pure moral-engine tests
+        working-directory: the-rule
+        run: npm run check
+
+      - name: Static contract checks
+        run: |
+          grep -q 'phaser@4.2.0' the-rule/index.html
+          grep -q './app.mjs' the-rule/index.html
+          grep -q 'YOUR RULEBOOK' the-rule/index.html
+          grep -q 'M1_VERTICAL_SLICE' the-rule/MILESTONE_1.json
+
+      - name: Install Chromium
+        working-directory: the-rule
+        run: npx playwright install --with-deps chromium
+
+      - name: Start static server
+        run: |
+          python3 -m http.server 4179 >/tmp/the-rule-http.log 2>&1 &
+          echo $! >/tmp/the-rule-http.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4179/the-rule/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/the-rule-http.log
+          exit 1
+
+      - name: Browser playtest and screenshot capture
+        working-directory: the-rule
+        env:
+          THE_RULE_URL: http://127.0.0.1:4179
+        run: npm run test:browser
+
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: the-rule-m1-evidence
+          path: |
+            the-rule/test-results/
+            the-rule/playwright-report/
+          if-no-files-found: warn
+
+      - name: Show static server log on failure
+        if: failure()
+        run: cat /tmp/the-rule-http.log || true
