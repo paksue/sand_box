@@ -11,9 +11,9 @@ import {
   deserializeState,
 } from './core.mjs';
 
-function buildRuledState(rationale = 'fewer_deaths') {
+function buildRuledState(rationale = 'fewer_deaths', trolleyChoice = 'pull') {
   let state = createInitialState();
-  state = recordDecision(state, 'trolley_switch', 'pull');
+  state = recordDecision(state, 'trolley_switch', trolleyChoice);
   state = createPrincipleFromRationale(state, rationale);
   return state;
 }
@@ -39,12 +39,26 @@ function buildRuledState(rationale = 'fewer_deaths') {
 }
 
 {
+  const state = buildRuledState('do_not_redirect', 'stay');
+  const prediction = predictChoice(state, 'bridge');
+  assert.equal(prediction.choice, 'refuse');
+  assert.match(state.principles[0].statement, /should not intentionally redirect/i);
+}
+
+{
   const state = buildRuledState();
   const result = judgeAgainstPrediction(state, 'bridge', 'refuse');
   assert.equal(result.prediction.choice, 'push');
   assert.equal(result.contradiction.actualChoice, 'refuse');
   assert.equal(result.state.contradictions.length, 1);
   assert.equal(result.state.phase, 'contradiction');
+}
+
+{
+  const state = buildRuledState('do_not_redirect', 'stay');
+  const result = judgeAgainstPrediction(state, 'bridge', 'push');
+  assert.equal(result.prediction.choice, 'refuse');
+  assert.equal(result.contradiction.actualChoice, 'push');
 }
 
 {
@@ -74,6 +88,12 @@ function buildRuledState(rationale = 'fewer_deaths') {
   const restored = deserializeState('{ definitely not json');
   assert.equal(restored.phase, 'intro');
   assert.equal(restored.principles.length, 0);
+}
+
+{
+  let state = createInitialState();
+  state = recordDecision(state, 'trolley_switch', 'stay');
+  assert.throws(() => createPrincipleFromRationale(state, 'fewer_deaths'), /does not apply/);
 }
 
 console.log('THE RULE core tests: PASS');
