@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090909">
+  <meta name="description" content="THE RULE — a moral pressure game about the principles behind your choices.">
+  <title>THE RULE</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main id="game-shell" aria-label="THE RULE moral reasoning game">
+    <div id="canvas-host" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="hud-top">
+      <div class="brand" aria-label="The Rule">
+        <span class="brand-mark">I</span>
+        <span>THE RULE</span>
+      </div>
+      <div class="hud-actions">
+        <button id="sound-toggle" class="icon-button" type="button" aria-pressed="true" aria-label="Mute sound">SOUND</button>
+        <button id="reset-button" class="icon-button" type="button">RESET</button>
+      </div>
+    </header>
+
+    <aside id="rulebook" class="rulebook" aria-label="Your rulebook" hidden>
+      <div class="rulebook-label">YOUR RULEBOOK</div>
+      <div id="rulebook-content"></div>
+    </aside>
+
+    <section id="story-panel" class="story-panel" aria-live="polite">
+      <div id="eyebrow" class="eyebrow"></div>
+      <h1 id="story-title">Every choice becomes a rule.</h1>
+      <p id="story-body">Every rule comes back.</p>
+    </section>
+
+    <section id="comparison" class="comparison" hidden aria-live="assertive">
+      <div class="comparison-kicker">YOUR RULE DID NOT PREDICT YOU</div>
+      <div class="comparison-grid">
+        <article>
+          <span>THE LEVER</span>
+          <strong>1 dies · 5 live</strong>
+          <b>YOU INTERVENED</b>
+        </article>
+        <div class="comparison-divider">=</div>
+        <article>
+          <span>THE BRIDGE</span>
+          <strong>1 dies · 5 live</strong>
+          <b>YOU REFUSED</b>
+        </article>
+      </div>
+      <p>Same arithmetic. Different answer.</p>
+    </section>
+
+    <section id="choice-dock" class="choice-dock" aria-label="Choices"></section>
+
+    <section id="intro" class="intro-layer">
+      <div class="intro-copy">
+        <div class="intro-rule">YOU ARE NOT HERE TO FIND THE RIGHT ANSWER.</div>
+        <h1>THE RULE</h1>
+        <p>You are here to make one.</p>
+        <button id="begin-button" class="primary-action" type="button">BEGIN</button>
+        <button id="continue-button" class="secondary-action" type="button" hidden>CONTINUE CURRENT RUN</button>
+      </div>
+    </section>
+
+    <div id="status" class="sr-only" aria-live="polite"></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/phaser@4.2.0/dist/phaser.min.js"></script>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>
