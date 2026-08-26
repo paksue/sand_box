@@ -22,24 +22,24 @@ async function openGame(page, viewport = { width: 1440, height: 900 }) {
 
 async function beginAtTrolley(page) {
   await page.getByRole('button', { name: 'BEGIN' }).click();
-  await expect(page.getByText('Five people are going to die.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Five people are going to die.' })).toBeVisible();
   await expect(page.getByRole('button', { name: /PULL THE LEVER/ })).toBeVisible();
   await expect(page.getByRole('button', { name: /DO NOTHING/ })).toBeVisible();
 }
 
 async function pullAndReachRationale(page) {
   await page.getByRole('button', { name: /PULL THE LEVER/ }).click();
-  await expect(page.getByText('One person died. Five people lived.')).toBeVisible({ timeout: 4000 });
+  await expect(page.getByRole('heading', { name: 'One person died. Five people lived.' })).toBeVisible({ timeout: 4000 });
   await page.getByRole('button', { name: /WHY DID I CHOOSE THAT/ }).click();
-  await expect(page.getByText('COMMIT YOUR REASON')).toBeVisible();
+  await expect(page.locator('#eyebrow')).toHaveText('COMMIT YOUR REASON');
 }
 
 async function createRuleAndReachBridge(page) {
   await page.getByRole('button', { name: 'If someone must die, fewer deaths is better.' }).click();
-  await expect(page.getByText('You have given me a rule.')).toBeVisible();
-  await expect(page.getByText('RULE 01')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'You have given me a rule.' })).toBeVisible();
+  await expect(page.locator('#rulebook')).toContainText('RULE 01');
   await page.getByRole('button', { name: /TEST THE RULE/ }).click();
-  await expect(page.getByText('Your rule says: PUSH HIM.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Your rule says: PUSH HIM.' })).toBeVisible();
 }
 
 test('[stage-1] boot, trolley choice and consequence', async ({ page }) => {
@@ -47,7 +47,7 @@ test('[stage-1] boot, trolley choice and consequence', async ({ page }) => {
   await beginAtTrolley(page);
   await page.screenshot({ path: 'test-results/01-trolley.png', fullPage: true });
   await page.getByRole('button', { name: /PULL THE LEVER/ }).click();
-  await expect(page.getByText('One person died. Five people lived.')).toBeVisible({ timeout: 4000 });
+  await expect(page.getByRole('heading', { name: 'One person died. Five people lived.' })).toBeVisible({ timeout: 4000 });
   expect(errors, errors.join('\n')).toEqual([]);
 });
 
@@ -67,14 +67,14 @@ test('[stage-3] contradiction exposes mismatch and mutates the case', async ({ p
   await createRuleAndReachBridge(page);
 
   await page.getByRole('button', { name: /^REFUSE/ }).click();
-  await expect(page.getByText('YOUR RULE DID NOT PREDICT YOU')).toBeVisible({ timeout: 4000 });
-  await expect(page.getByText('Same arithmetic. Different answer.')).toBeVisible();
+  await expect(page.locator('.comparison-kicker')).toHaveText('YOUR RULE DID NOT PREDICT YOU', { timeout: 4000 });
+  await expect(page.locator('#comparison > p')).toHaveText('Same arithmetic. Different answer.');
   await page.screenshot({ path: 'test-results/03-contradiction.png', fullPage: true });
 
   await page.getByRole('button', { name: 'WHAT CHANGED?' }).click();
   await page.getByRole('button', { name: 'I had to physically push him.' }).click();
-  await expect(page.getByText('The Button')).toBeVisible();
-  await expect(page.getByText('VARIABLE REMOVED: PHYSICAL CONTACT')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'The Button' })).toBeVisible();
+  await expect(page.locator('#eyebrow')).toHaveText('VARIABLE REMOVED: PHYSICAL CONTACT');
   await page.screenshot({ path: 'test-results/04-mutation.png', fullPage: true });
   expect(errors, errors.join('\n')).toEqual([]);
 });
