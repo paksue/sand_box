@@ -61,47 +61,31 @@ jobs:
           exit 1
 
       - name: Stage 1 - boot, trolley and consequence
-        id: stage1
-        continue-on-error: true
         working-directory: the-rule
         env:
           THE_RULE_URL: http://127.0.0.1:4179
         run: npx playwright test ./e2e.spec.mjs --grep '\[stage-1\]'
 
       - name: Stage 2 - rule creation and prediction
-        id: stage2
         if: always()
-        continue-on-error: true
         working-directory: the-rule
         env:
           THE_RULE_URL: http://127.0.0.1:4179
         run: npx playwright test ./e2e.spec.mjs --grep '\[stage-2\]'
 
       - name: Stage 3 - contradiction and mutation
-        id: stage3
         if: always()
-        continue-on-error: true
         working-directory: the-rule
         env:
           THE_RULE_URL: http://127.0.0.1:4179
         run: npx playwright test ./e2e.spec.mjs --grep '\[stage-3\]'
 
       - name: Stage 4 - phone controls
-        id: stage4
         if: always()
-        continue-on-error: true
         working-directory: the-rule
         env:
           THE_RULE_URL: http://127.0.0.1:4179
         run: npx playwright test ./e2e.spec.mjs --grep '\[stage-4\]'
-
-      - name: Enforce browser stage results
-        if: always()
-        run: |
-          test '${{ steps.stage1.outcome }}' = 'success'
-          test '${{ steps.stage2.outcome }}' = 'success'
-          test '${{ steps.stage3.outcome }}' = 'success'
-          test '${{ steps.stage4.outcome }}' = 'success'
 
       - name: Upload visual evidence
         if: always()
