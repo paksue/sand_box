@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#12100d" />
+    <title>Miniature Tabletop Renderer POC</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.179.1/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <main id="app" class="app">
+      <canvas id="scene"></canvas>
+
+      <section class="hud">
+        <div class="eyebrow">VISUAL FIDELITY POC · GLB / PBR</div>
+        <h1>Miniature Tabletop Renderer</h1>
+        <p>
+          Drop finished, textured <strong>.glb</strong> miniatures here. The renderer keeps the real mesh and PBR materials — no low-poly character stand-ins.
+        </p>
+
+        <div class="actions">
+          <label class="import-button">
+            Import GLB
+            <input id="file-input" type="file" accept=".glb,model/gltf-binary" multiple />
+          </label>
+          <button id="clear-button" class="secondary-button" type="button">Clear</button>
+        </div>
+
+        <div class="hint">Left-drag orbit · wheel zoom · right-drag pan</div>
+        <div id="asset-list" class="asset-list" aria-live="polite"></div>
+      </section>
+
+      <section class="camera-strip" aria-label="Camera views">
+        <button data-camera="tabletop" class="camera-button active" type="button">Tabletop</button>
+        <button data-camera="miniature" class="camera-button" type="button">Miniature eye</button>
+        <button data-camera="top" class="camera-button" type="button">Top</button>
+      </section>
+
+      <div id="drop-callout" class="drop-callout">
+        <span>Drop a high-detail fantasy miniature .GLB</span>
+        <small>Embedded 2K–4K PBR textures recommended</small>
+      </div>
+
+      <div id="drop-overlay" class="drop-overlay" hidden>Drop GLB miniatures</div>
+      <div id="status" class="status-chip">Renderer ready</div>
+    </main>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
