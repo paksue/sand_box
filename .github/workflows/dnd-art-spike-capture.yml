@@ -1,0 +1,77 @@
+name: DND Art Spike Capture
+
+on:
+  push:
+    branches:
+      - dnd-art-spike
+    paths:
+      - 'previews/dnd-miniature-art-spike/**'
+      - 'docs/dnd-visual-production-spec.md'
+      - '.github/workflows/dnd-art-spike-capture.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Chrome
+        id: chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: Serve exact commit
+        run: |
+          python3 -m http.server 4173 --directory . >/tmp/art-spike-server.log 2>&1 &
+          for i in $(seq 1 20); do
+            curl --fail --silent http://127.0.0.1:4173/previews/dnd-miniature-art-spike/ >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/art-spike-server.log
+          exit 1
+
+      - name: Capture fixed benchmark cameras
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
+        run: |
+          set -euxo pipefail
+          mkdir -p visual-tests/dnd-art-spike
+          COMMON="--headless=new --no-sandbox --disable-dev-shm-usage --hide-scrollbars --use-angle=swiftshader --enable-unsafe-swiftshader --enable-webgl --ignore-gpu-blocklist --force-device-scale-factor=1 --run-all-compositor-stages-before-draw --virtual-time-budget=35000"
+          URL="http://127.0.0.1:4173/previews/dnd-miniature-art-spike/"
+
+          timeout 120s "$CHROME_PATH" $COMMON \
+            --window-size=700,700 \
+            --screenshot=visual-tests/dnd-art-spike/tabletop.png \
+            "${URL}?visualCapture=1&view=tabletop&commit=${GITHUB_SHA}"
+
+          timeout 120s "$CHROME_PATH" $COMMON \
+            --window-size=700,700 \
+            --screenshot=visual-tests/dnd-art-spike/miniature-eye.png \
+            "${URL}?visualCapture=1&view=eye&commit=${GITHUB_SHA}"
+
+          test -s visual-tests/dnd-art-spike/tabletop.png
+          test -s visual-tests/dnd-art-spike/miniature-eye.png
+          file visual-tests/dnd-art-spike/*.png
+
+      - name: Write capture metadata
+        run: |
+          cat > visual-tests/dnd-art-spike/capture.txt <<EOF
+          commit=${GITHUB_SHA}
+          viewport=700x700
+          tabletop=?visualCapture=1&view=tabletop
+          miniature_eye=?visualCapture=1&view=eye
+          target=photographed handcrafted 28-32mm tabletop diorama
+          EOF
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dnd-art-spike-capture
+          path: visual-tests/dnd-art-spike
+          if-no-files-found: error
+          retention-days: 30
