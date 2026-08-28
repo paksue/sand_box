@@ -44,6 +44,10 @@ controls.minDistance = 2.4
 controls.maxDistance = 18
 controls.target.set(0, 0.55, 0)
 
+let beauty = false
+let beautyReady = false
+let sceneReady = false
+
 const views = {
   tabletop: { pos: [7.4, 5.55, 8.2], target: [0, 0.55, 0] },
   eye: { pos: [4.8, 0.62, 5.9], target: [-0.2, 0.62, -0.6] },
@@ -78,9 +82,6 @@ pathTracer.bounces = 5
 pathTracer.tiles.set(2, 2)
 pathTracer.textureSize.set(2048, 2048)
 pathTracer.renderDelay = 30
-let beauty = false
-let beautyReady = false
-let sceneReady = false
 
 function resetBeauty() {
   if (!beautyReady) return
