@@ -49,15 +49,15 @@ jobs:
         run: |
           set -euxo pipefail
           mkdir -p visual-tests/dnd-miniature/out
-          COMMON="--headless=new --no-sandbox --disable-dev-shm-usage --hide-scrollbars --use-angle=swiftshader --enable-webgl --ignore-gpu-blocklist --force-device-scale-factor=1 --run-all-compositor-stages-before-draw --virtual-time-budget=8000"
+          COMMON="--headless=new --no-sandbox --disable-dev-shm-usage --hide-scrollbars --use-angle=swiftshader --enable-unsafe-swiftshader --enable-webgl --ignore-gpu-blocklist --force-device-scale-factor=1 --run-all-compositor-stages-before-draw --virtual-time-budget=10000"
           URL="http://127.0.0.1:4173/previews/dnd-miniature-web-poc/"
 
-          timeout 35s "$CHROME_PATH" $COMMON \
+          timeout 90s "$CHROME_PATH" $COMMON \
             --window-size=700,700 \
             --screenshot=visual-tests/dnd-miniature/out/terrain-square.png \
             "${URL}?visualCapture=1&commit=${GITHUB_SHA}"
 
-          timeout 35s "$CHROME_PATH" $COMMON \
+          timeout 90s "$CHROME_PATH" $COMMON \
             --window-size=430,932 \
             --screenshot=visual-tests/dnd-miniature/out/mobile-ui.png \
             "${URL}?commit=${GITHUB_SHA}"
@@ -98,5 +98,6 @@ jobs:
             echo 'Visual capture is already current.'
           else
             git commit -m 'Update DND visual capture [visual-capture]'
+            git pull --rebase origin main
             git push origin HEAD:main
           fi
