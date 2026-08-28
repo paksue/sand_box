@@ -1,5 +1,5 @@
-commit=7b658dee00eebeef4a14c8fdc272290489892088
+commit=1c3789fdeb58fd0148a884afb63abd77f5e1d0dd
 terrain_viewport=700x700
-mobile_viewport=430x932
+mobile_viewport=430x932-best-effort
 terrain_url=/previews/dnd-miniature-web-poc/?visualCapture=1
-visual_review=reference-driven; pixel diff is not the quality target
+visual_review=reference-driven; terrain capture is the quality gate
