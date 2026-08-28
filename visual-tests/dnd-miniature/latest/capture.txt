@@ -1,4 +1,4 @@
-commit=b4386519398cbe67529bb868418ca31fd36d10b3
+commit=7b658dee00eebeef4a14c8fdc272290489892088
 terrain_viewport=700x700
 mobile_viewport=430x932
 terrain_url=/previews/dnd-miniature-web-poc/?visualCapture=1
