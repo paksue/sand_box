@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: dnd-miniature-visual-capture
@@ -83,3 +83,20 @@ jobs:
           path: visual-tests/dnd-miniature/out
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish latest visual capture to repository
+        run: |
+          rm -rf visual-tests/dnd-miniature/latest
+          mkdir -p visual-tests/dnd-miniature/latest
+          cp -a visual-tests/dnd-miniature/out/. visual-tests/dnd-miniature/latest/
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add visual-tests/dnd-miniature/latest
+
+          if git diff --cached --quiet; then
+            echo 'Visual capture is already current.'
+          else
+            git commit -m 'Update DND visual capture [visual-capture]'
+            git push origin HEAD:main
+          fi
