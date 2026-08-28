@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-08-26T11:54:24.216Z",
+  "updatedAt": "2026-08-28T15:00:24.401Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -346,11 +346,11 @@
       "details": "Also record the symptoms",
       "done": false,
       "deleted": false,
-      "order": 1,
+      "order": 0,
       "createdAt": "2026-08-17T19:51:48.851Z",
       "contentUpdatedAt": "2026-08-17T19:54:00.678Z",
       "doneUpdatedAt": "2026-08-17T19:51:48.851Z",
-      "orderUpdatedAt": "2026-08-18T02:00:00.624Z",
+      "orderUpdatedAt": "2026-08-28T15:00:23.027Z",
       "deletedUpdatedAt": ""
     },
     {
@@ -370,13 +370,13 @@
       "id": "9dd61fa2-b05c-4357-a850-45e65ef28b0a",
       "title": "Review Angelina doctor",
       "details": "Test new app and check doctor Maddie’messages",
-      "done": false,
+      "done": true,
       "deleted": false,
-      "order": 0,
+      "order": 1,
       "createdAt": "2026-08-18T01:59:38.763Z",
       "contentUpdatedAt": "2026-08-21T12:37:23.053Z",
-      "doneUpdatedAt": "2026-08-18T01:59:38.763Z",
-      "orderUpdatedAt": "2026-08-18T02:00:00.624Z",
+      "doneUpdatedAt": "2026-08-28T15:00:18.587Z",
+      "orderUpdatedAt": "2026-08-28T15:00:23.027Z",
       "deletedUpdatedAt": ""
     },
     {
