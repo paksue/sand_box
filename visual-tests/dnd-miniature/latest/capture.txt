@@ -1,0 +1,5 @@
+commit=b4386519398cbe67529bb868418ca31fd36d10b3
+terrain_viewport=700x700
+mobile_viewport=430x932
+terrain_url=/previews/dnd-miniature-web-poc/?visualCapture=1
+visual_review=reference-driven; pixel diff is not the quality target
