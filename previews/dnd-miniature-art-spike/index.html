@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#17120e" />
+  <title>D&D Miniature Art Spike</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.181.1/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.181.1/examples/jsm/",
+      "three-mesh-bvh": "https://cdn.jsdelivr.net/npm/three-mesh-bvh@0.9.5/src/index.js",
+      "xatlas-web": "https://cdn.jsdelivr.net/npm/xatlas-web@0.1.0/dist/xatlas.js",
+      "three-gpu-pathtracer": "https://cdn.jsdelivr.net/npm/three-gpu-pathtracer@0.0.24/src/index.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="scene"></canvas>
+  <section class="hud">
+    <div class="eyebrow">ART SPIKE · REAL PBR ASSETS</div>
+    <h1>Miniature Diorama Benchmark</h1>
+    <p id="status">Loading scan-quality materials and CC0 assets…</p>
+    <div class="row">
+      <button id="tabletop" class="active">Tabletop</button>
+      <button id="eye">Miniature eye</button>
+      <button id="renderMode">Beauty: off</button>
+    </div>
+    <div class="meter"><span id="samples">Raster</span></div>
+    <small>Art spike only. Current game remains untouched.</small>
+  </section>
+  <div class="credit">CC0 source assets: Poly Haven</div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
