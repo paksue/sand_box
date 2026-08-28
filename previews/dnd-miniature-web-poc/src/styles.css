@@ -240,6 +240,19 @@ p {
   pointer-events: none;
 }
 
+.visual-capture .hud,
+.visual-capture .camera-strip,
+.visual-capture .drop-callout,
+.visual-capture .drop-overlay,
+.visual-capture .status-chip {
+  display: none !important;
+}
+.visual-capture,
+.visual-capture body,
+.visual-capture .app {
+  cursor: none;
+}
+
 @media (max-width: 700px) {
   .hud {
     top: max(10px, env(safe-area-inset-top));
