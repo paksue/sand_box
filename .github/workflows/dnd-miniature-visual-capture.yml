@@ -1,0 +1,85 @@
+name: DND Miniature Visual Capture
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'previews/dnd-miniature-web-poc/**'
+      - '.github/workflows/dnd-miniature-visual-capture.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dnd-miniature-visual-capture
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Chrome
+        id: chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: Start exact-commit preview
+        run: |
+          python3 -m http.server 4173 --directory . >/tmp/dnd-visual-server.log 2>&1 &
+          echo $! >/tmp/dnd-visual-server.pid
+          for attempt in $(seq 1 20); do
+            if curl --fail --silent http://127.0.0.1:4173/previews/dnd-miniature-web-poc/ >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/dnd-visual-server.log
+          exit 1
+
+      - name: Capture deterministic terrain and phone views
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
+        run: |
+          set -euxo pipefail
+          mkdir -p visual-tests/dnd-miniature/out
+          COMMON="--headless=new --no-sandbox --disable-dev-shm-usage --hide-scrollbars --use-angle=swiftshader --enable-webgl --ignore-gpu-blocklist --force-device-scale-factor=1 --run-all-compositor-stages-before-draw --virtual-time-budget=8000"
+          URL="http://127.0.0.1:4173/previews/dnd-miniature-web-poc/"
+
+          timeout 35s "$CHROME_PATH" $COMMON \
+            --window-size=700,700 \
+            --screenshot=visual-tests/dnd-miniature/out/terrain-square.png \
+            "${URL}?visualCapture=1&commit=${GITHUB_SHA}"
+
+          timeout 35s "$CHROME_PATH" $COMMON \
+            --window-size=430,932 \
+            --screenshot=visual-tests/dnd-miniature/out/mobile-ui.png \
+            "${URL}?commit=${GITHUB_SHA}"
+
+          test -s visual-tests/dnd-miniature/out/terrain-square.png
+          test -s visual-tests/dnd-miniature/out/mobile-ui.png
+          file visual-tests/dnd-miniature/out/*.png
+
+      - name: Capture metadata
+        run: |
+          cat > visual-tests/dnd-miniature/out/capture.txt <<EOF
+          commit=${GITHUB_SHA}
+          terrain_viewport=700x700
+          mobile_viewport=430x932
+          terrain_url=/previews/dnd-miniature-web-poc/?visualCapture=1
+          visual_review=reference-driven; pixel diff is not the quality target
+          EOF
+
+      - name: Upload visual-loop artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dnd-miniature-visual-capture
+          path: visual-tests/dnd-miniature/out
+          if-no-files-found: error
+          retention-days: 30
