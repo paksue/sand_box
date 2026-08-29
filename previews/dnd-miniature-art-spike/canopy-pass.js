@@ -1,43 +1,26 @@
 import * as THREE from 'three'
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 
-const loader = new GLTFLoader()
+const RES = '1k'
+const BASE = `https://dl.polyhaven.org/file/ph-assets/Models/jpg/${RES}/moss_01`
+const loader = new THREE.TextureLoader()
 loader.setCrossOrigin('anonymous')
-const url = 'https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/shrub_03/shrub_03_1k.gltf'
 
-function normalize(obj, targetSize) {
-  const box = new THREE.Box3().setFromObject(obj)
-  const size = box.getSize(new THREE.Vector3())
-  const max = Math.max(size.x, size.y, size.z) || 1
-  obj.scale.multiplyScalar(targetSize / max)
-  const box2 = new THREE.Box3().setFromObject(obj)
-  const center = box2.getCenter(new THREE.Vector3())
-  obj.position.x -= center.x
-  obj.position.y -= box2.min.y
-  obj.position.z -= center.z
-  obj.traverse(o => {
-    if (!o.isMesh) return
-    o.castShadow = true
-    o.receiveShadow = true
-    const mats = Array.isArray(o.material) ? o.material : [o.material]
-    for (const m of mats) {
-      if (!m) continue
-      m.side = THREE.DoubleSide
-      if (m.map) m.map.colorSpace = THREE.SRGBColorSpace
-      if (m.alphaMap || m.transparent) {
-        m.transparent = false
-        m.alphaTest = Math.max(m.alphaTest || 0, 0.28)
-      }
-      m.roughness = Math.max(m.roughness ?? 0.8, 0.82)
-    }
+function load(url, color = false) {
+  return loader.loadAsync(url).then(tex => {
+    tex.colorSpace = color ? THREE.SRGBColorSpace : THREE.NoColorSpace
+    tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping
+    tex.minFilter = THREE.LinearMipmapLinearFilter
+    tex.magFilter = THREE.LinearFilter
+    return tex
   })
-  return obj
 }
 
-function clone(obj) {
-  const c = obj.clone(true)
-  c.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true } })
-  return c
+function rng(seed = 24681357) {
+  let s = seed >>> 0
+  return () => {
+    s = (1664525 * s + 1013904223) >>> 0
+    return s / 4294967296
+  }
 }
 
 async function run() {
@@ -47,47 +30,80 @@ async function run() {
     return
   }
 
-  let source
-  try {
-    source = normalize((await loader.loadAsync(url)).scene, 1.0)
-  } catch (err) {
-    console.error('shrub canopy load failed', err)
-    return
-  }
+  const [diff, alpha, normal, rough] = await Promise.all([
+    load(`${BASE}/moss_01_diff_${RES}.jpg`, true),
+    load(`${BASE}/moss_01_alpha_${RES}.jpg`),
+    load(`${BASE}/moss_01_nor_gl_${RES}.jpg`),
+    load(`${BASE}/moss_01_rough_${RES}.jpg`),
+  ])
 
-  const canopy = new THREE.Group()
-  canopy.name = 'cc0_shrub_canopy'
-  canopy.position.set(0.28, 0, -2.45)
-
-  const clusters = [
-    [-0.95,2.05,-0.10,0.92,0.15],[-0.46,2.22,-0.30,1.00,0.82],[0.02,2.30,-0.08,1.02,1.55],[0.48,2.18,0.18,0.96,2.20],[0.92,2.02,-0.06,0.88,2.85],
-    [-0.70,2.58,0.22,0.86,0.58],[-0.24,2.72,-0.04,0.94,1.20],[0.23,2.70,0.20,0.96,1.94],[0.66,2.55,-0.16,0.88,2.54],
-    [-0.42,3.02,0.06,0.76,0.34],[0.02,3.12,-0.18,0.82,1.48],[0.42,3.02,0.04,0.74,2.44],
-  ]
-
-  clusters.forEach(([x,y,z,s,ry], i) => {
-    const c = clone(source)
-    c.scale.multiplyScalar(s)
-    c.position.set(x,y,z)
-    c.rotation.set((i % 3 - 1) * 0.18, ry, (i % 4 - 1.5) * 0.11)
-    canopy.add(c)
+  const material = new THREE.MeshStandardMaterial({
+    name: 'photo_foliage_canopy',
+    color: '#b7c97a',
+    map: diff,
+    alphaMap: alpha,
+    normalMap: normal,
+    roughnessMap: rough,
+    normalScale: new THREE.Vector2(0.6, 0.6),
+    roughness: 0.98,
+    metalness: 0,
+    alphaTest: 0.22,
+    transparent: false,
+    side: THREE.DoubleSide,
   })
 
+  const plane = new THREE.PlaneGeometry(1, 1)
+  const rand = rng()
+  const dummy = new THREE.Object3D()
+
+  const canopy = new THREE.InstancedMesh(plane, material, 180)
+  canopy.name = 'photo_alpha_canopy'
+  canopy.castShadow = true
+  canopy.receiveShadow = false
+
+  for (let i = 0; i < 180; i++) {
+    // Filled ellipsoid with noisier outer silhouette, centered over the real trunk.
+    const u = Math.pow(rand(), 0.62)
+    const theta = rand() * Math.PI * 2
+    const phi = Math.acos(2 * rand() - 1)
+    const rx = 1.30 * u * Math.sin(phi) * Math.cos(theta)
+    const rz = 0.78 * u * Math.sin(phi) * Math.sin(theta)
+    const ry = 0.76 * u * Math.cos(phi)
+    const edgeKick = rand() > 0.78 ? 1.12 : 1
+
+    dummy.position.set(0.28 + rx * edgeKick, 2.62 + ry * edgeKick, -2.45 + rz * edgeKick)
+    dummy.rotation.set((rand() - 0.5) * 1.35, rand() * Math.PI * 2, (rand() - 0.5) * 1.35)
+    const s = 0.34 + rand() * 0.38
+    dummy.scale.set(s * (0.82 + rand() * 0.36), s, 1)
+    dummy.updateMatrix()
+    canopy.setMatrixAt(i, dummy.matrix)
+  }
+  canopy.instanceMatrix.needsUpdate = true
   world.add(canopy)
 
-  const edge = [
-    [-4.15,0.02,-2.8,0.42,0.5],[-3.7,0.02,2.9,0.34,1.2],[3.85,0.02,2.85,0.38,2.0],[4.05,0.02,-2.75,0.36,2.7],[-4.15,0.02,0.8,0.28,3.1]
-  ]
-  edge.forEach(([x,y,z,s,ry]) => {
-    const c = clone(source)
-    c.scale.multiplyScalar(s)
-    c.position.set(x,y,z)
-    c.rotation.y = ry
-    world.add(c)
-  })
+  // Hobby-diorama perimeter flock using the same photographed atlas at smaller scale.
+  const edgeCards = new THREE.InstancedMesh(plane, material, 90)
+  edgeCards.name = 'photo_alpha_ground_flock'
+  edgeCards.castShadow = true
+  for (let i = 0; i < 90; i++) {
+    const side = Math.floor(rand() * 4)
+    let x, z
+    if (side === 0) { x = -4.65 + rand() * 9.3; z = -3.72 + rand() * 0.28 }
+    else if (side === 1) { x = -4.65 + rand() * 9.3; z = 3.44 + rand() * 0.28 }
+    else if (side === 2) { x = -4.65 + rand() * 0.28; z = -3.4 + rand() * 6.8 }
+    else { x = 4.37 + rand() * 0.28; z = -3.4 + rand() * 6.8 }
+    dummy.position.set(x, 0.06 + rand() * 0.09, z)
+    dummy.rotation.set(-Math.PI / 2 + (rand() - 0.5) * 0.65, rand() * Math.PI * 2, (rand() - 0.5) * 0.3)
+    const s = 0.18 + rand() * 0.22
+    dummy.scale.set(s, s, 1)
+    dummy.updateMatrix()
+    edgeCards.setMatrixAt(i, dummy.matrix)
+  }
+  edgeCards.instanceMatrix.needsUpdate = true
+  world.add(edgeCards)
 
   const status = document.querySelector('#status')
-  if (status) status.textContent += ' · real shrub canopy loaded'
+  if (status) status.textContent += ' · photographed alpha foliage loaded'
 }
 
-run()
+run().catch(err => console.error('alpha foliage pass failed', err))
