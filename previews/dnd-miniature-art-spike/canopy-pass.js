@@ -1,197 +1,128 @@
 import * as THREE from 'three'
 
-function rng(seed = 92017411) {
-  let s = seed >>> 0
-  return () => {
-    s = (1664525 * s + 1013904223) >>> 0
-    return s / 4294967296
+function rng(seed=92017411){let s=seed>>>0;return()=>{s=(1664525*s+1013904223)>>>0;return s/4294967296}}
+const rand=rng()
+
+function colorPick(){
+  const colors=['#d2d75c','#bfc94e','#a9b943','#dfe16c','#91a53a','#c6c65a']
+  return new THREE.Color(colors[Math.floor(rand()*colors.length)])
+}
+
+function setSegment(inst,i,a,b,thickness=.012){
+  const d=new THREE.Vector3().subVectors(b,a)
+  const mid=a.clone().add(b).multiplyScalar(.5)
+  const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),d.clone().normalize())
+  const m=new THREE.Matrix4().compose(mid,q,new THREE.Vector3(thickness,d.length(),thickness))
+  inst.setMatrixAt(i,m)
+  inst.setColorAt(i,colorPick())
+}
+
+function addTreeMound(world){
+  const moundMat=new THREE.MeshStandardMaterial({color:'#6f7b4c',roughness:1,metalness:0})
+  const soilMat=new THREE.MeshStandardMaterial({color:'#51412e',roughness:1,metalness:0})
+  const mound=new THREE.Mesh(new THREE.SphereGeometry(1,56,28),moundMat)
+  mound.name='hobby_tree_mound'
+  mound.scale.set(1.32,.32,1.05);mound.position.set(.28,.14,-2.45);mound.castShadow=mound.receiveShadow=true;world.add(mound)
+  const soil=new THREE.Mesh(new THREE.SphereGeometry(1,40,20),soilMat)
+  soil.scale.set(1.05,.20,.82);soil.position.set(.22,.19,-2.42);soil.castShadow=soil.receiveShadow=true;world.add(soil)
+
+  const rootMat=new THREE.MeshStandardMaterial({color:'#72513a',roughness:.97})
+  const rootGeo=new THREE.CylinderGeometry(.035,.075,1,10,3)
+  for(let i=0;i<9;i++){
+    const a=i/9*Math.PI*2+rand()*.35
+    const start=new THREE.Vector3(.28,.29,-2.45)
+    const len=.55+rand()*.62
+    const end=new THREE.Vector3(.28+Math.cos(a)*len,.12+rand()*.08,-2.45+Math.sin(a)*len*.72)
+    const d=end.clone().sub(start),q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),d.clone().normalize())
+    const r=new THREE.Mesh(rootGeo,rootMat);r.position.copy(start).add(end).multiplyScalar(.5);r.quaternion.copy(q);r.scale.set(.7,d.length(),.7);r.castShadow=r.receiveShadow=true;world.add(r)
   }
 }
 
-function makeLichenTexture() {
-  const rand = rng(31337)
-  const c = document.createElement('canvas')
-  c.width = c.height = 512
-  const ctx = c.getContext('2d')
-  ctx.clearRect(0, 0, 512, 512)
-  ctx.lineCap = 'round'
-  ctx.lineJoin = 'round'
+function addLichen(world){
+  const segGeo=new THREE.CylinderGeometry(.7,1,1,6,1,false)
+  const segMat=new THREE.MeshStandardMaterial({color:'#ffffff',roughness:1,metalness:0,vertexColors:true,emissive:'#2e3512',emissiveIntensity:.10})
+  const maxSeg=4200
+  const segs=new THREE.InstancedMesh(segGeo,segMat,maxSeg);segs.name='hobby_lichen_filaments';segs.castShadow=true
+  const nodeGeo=new THREE.IcosahedronGeometry(1,1)
+  const nodeMat=new THREE.MeshStandardMaterial({color:'#ffffff',roughness:1,vertexColors:true,emissive:'#303713',emissiveIntensity:.08})
+  const nodes=new THREE.InstancedMesh(nodeGeo,nodeMat,1800);nodes.name='hobby_lichen_nodes';nodes.castShadow=true
+  let si=0,ni=0
 
-  const palette = ['#d7df63', '#c6d357', '#aebf45', '#e2e578', '#94aa3b']
-
-  function branch(x, y, len, angle, depth, width, color) {
-    if (depth < 0 || len < 4) return
-    const bend = (rand() - 0.5) * 0.24
-    const a2 = angle + bend
-    const x2 = x + Math.cos(a2) * len
-    const y2 = y + Math.sin(a2) * len
-    const mx = (x + x2) / 2 + (rand() - 0.5) * len * 0.18
-    const my = (y + y2) / 2 + (rand() - 0.5) * len * 0.18
-    ctx.strokeStyle = color
-    ctx.lineWidth = Math.max(1.3, width)
-    ctx.beginPath()
-    ctx.moveTo(x, y)
-    ctx.quadraticCurveTo(mx, my, x2, y2)
-    ctx.stroke()
-
-    if (depth === 0) {
-      ctx.fillStyle = color
-      ctx.beginPath()
-      ctx.arc(x2, y2, 1.2 + rand() * 2.1, 0, Math.PI * 2)
-      ctx.fill()
-      return
-    }
-
-    const n = rand() > 0.56 ? 3 : 2
-    for (let i = 0; i < n; i++) {
-      const spread = (i - (n - 1) / 2) * (0.54 + rand() * 0.32)
-      branch(x2, y2, len * (0.61 + rand() * 0.13), a2 + spread, depth - 1, width * 0.72, color)
+  const lobes=[[-.66,.02,.03,.72],[-.28,.22,-.08,.86],[.12,.20,.04,.92],[.52,.10,-.06,.82],[.79,-.02,.05,.64],[-.20,.53,.04,.67],[.27,.50,-.05,.67],[.02,-.30,.04,.78]]
+  function nodeAt(p,r){if(ni>=nodes.count)return;const m=new THREE.Matrix4().makeScale(r,r,r);m.setPosition(p);nodes.setMatrixAt(ni,m);nodes.setColorAt(ni,colorPick());ni++}
+  function grow(p,dir,len,depth){
+    if(depth<0||si>=maxSeg)return
+    const end=p.clone().add(dir.clone().multiplyScalar(len))
+    setSegment(segs,si++,p,end,.008+rand()*.009);nodeAt(end,.012+rand()*.015)
+    if(depth===0)return
+    const n=rand()>.58?3:2
+    for(let j=0;j<n;j++){
+      const d=dir.clone()
+      d.x+=(rand()-.5)*1.05;d.y+=(rand()-.38)*.80;d.z+=(rand()-.5)*1.05;d.normalize()
+      grow(end,d,len*(.58+rand()*.14),depth-1)
     }
   }
-
-  for (let i = 0; i < 26; i++) {
-    const x = 256 + (rand() - 0.5) * 180
-    const y = 290 + (rand() - 0.5) * 135
-    const color = palette[Math.floor(rand() * palette.length)]
-    const stems = 3 + Math.floor(rand() * 4)
-    for (let s = 0; s < stems; s++) {
-      branch(x, y, 34 + rand() * 48, -Math.PI / 2 + (rand() - 0.5) * 2.7, 3, 5 + rand() * 3.5, color)
+  for(let c=0;c<185;c++){
+    const l=lobes[c%lobes.length]
+    const u=Math.pow(rand(),.62),theta=rand()*Math.PI*2,phi=Math.acos(2*rand()-1)
+    const p=new THREE.Vector3(.28+l[0]+.66*l[3]*u*Math.sin(phi)*Math.cos(theta),2.68+l[1]+.50*l[3]*u*Math.cos(phi),-2.45+l[2]+.52*l[3]*u*Math.sin(phi)*Math.sin(theta))
+    const stems=2+Math.floor(rand()*3)
+    for(let s=0;s<stems;s++){
+      const d=new THREE.Vector3((rand()-.5)*1.4,(rand()-.30)*1.15,(rand()-.5)*1.4).normalize()
+      grow(p,d,.09+rand()*.10,2+Math.floor(rand()*2))
     }
   }
-
-  // Fine fibrous breakup around the colony edges.
-  ctx.globalAlpha = 0.75
-  for (let i = 0; i < 650; i++) {
-    const a = rand() * Math.PI * 2
-    const r = Math.pow(rand(), 0.58) * 205
-    const x = 256 + Math.cos(a) * r
-    const y = 262 + Math.sin(a) * r * 0.72
-    ctx.fillStyle = palette[Math.floor(rand() * palette.length)]
-    ctx.fillRect(x, y, 1 + rand() * 2.2, 1 + rand() * 2.2)
+  // Hanging preserved-lichen strands.
+  for(let c=0;c<115;c++){
+    const a=rand()*Math.PI*2,r=.52+rand()*.72
+    let p=new THREE.Vector3(.28+Math.cos(a)*r,2.30+rand()*.45,-2.45+Math.sin(a)*r*.56)
+    const steps=3+Math.floor(rand()*4)
+    for(let s=0;s<steps&&si<maxSeg;s++){
+      const end=p.clone().add(new THREE.Vector3((rand()-.5)*.055,-(.08+rand()*.10),(rand()-.5)*.055))
+      setSegment(segs,si++,p,end,.006+rand()*.007);nodeAt(end,.010+rand()*.011);p=end
+    }
   }
-  ctx.globalAlpha = 1
+  segs.count=si;nodes.count=ni;segs.instanceMatrix.needsUpdate=true;nodes.instanceMatrix.needsUpdate=true
+  if(segs.instanceColor)segs.instanceColor.needsUpdate=true;if(nodes.instanceColor)nodes.instanceColor.needsUpdate=true
+  world.add(segs,nodes)
 
-  const tex = new THREE.CanvasTexture(c)
-  tex.colorSpace = THREE.SRGBColorSpace
-  tex.minFilter = THREE.LinearMipmapLinearFilter
-  tex.magFilter = THREE.LinearFilter
-  tex.generateMipmaps = true
-  return tex
+  // Shadowy interior clumps, almost completely hidden by the lichen network.
+  const coreMat=new THREE.MeshStandardMaterial({color:'#596327',roughness:1})
+  for(const [x,y,z,sx,sy,sz] of [[-.42,2.66,-2.44,.68,.52,.48],[.15,2.82,-2.47,.72,.58,.50],[.58,2.65,-2.43,.60,.46,.44],[.00,2.35,-2.45,.78,.43,.48]]){
+    const core=new THREE.Mesh(new THREE.IcosahedronGeometry(1,3),coreMat);core.scale.set(sx,sy,sz);core.position.set(.28+x,y,z);core.castShadow=true;world.add(core)
+  }
 }
 
-function makeGroundTexture() {
-  const rand = rng(7711)
-  const c = document.createElement('canvas')
-  c.width = c.height = 256
-  const ctx = c.getContext('2d')
-  ctx.clearRect(0, 0, 256, 256)
-  ctx.lineCap = 'round'
-  for (let i = 0; i < 180; i++) {
-    const x = 128 + (rand() - 0.5) * 210
-    const y = 205 + (rand() - 0.5) * 40
-    const h = 18 + rand() * 65
-    ctx.strokeStyle = rand() > 0.55 ? '#9cab42' : '#c1b453'
-    ctx.lineWidth = 1 + rand() * 2.8
-    ctx.beginPath()
-    ctx.moveTo(x, y)
-    ctx.quadraticCurveTo(x + (rand() - 0.5) * 18, y - h * 0.55, x + (rand() - 0.5) * 24, y - h)
-    ctx.stroke()
+function addGroundFlock(world){
+  const bladeGeo=new THREE.BoxGeometry(.012,1,.008)
+  const bladeMat=new THREE.MeshStandardMaterial({color:'#ffffff',roughness=1,vertexColors:true})
+  const blades=new THREE.InstancedMesh(bladeGeo,bladeMat,2600);blades.name='hobby_static_grass'
+  const dummy=new THREE.Object3D()
+  for(let i=0;i<2600;i++){
+    const side=Math.floor(rand()*4);let x,z
+    if(side===0){x=-4.68+rand()*9.36;z=-3.72+rand()*.55}
+    else if(side===1){x=-4.68+rand()*9.36;z=3.17+rand()*.55}
+    else if(side===2){x=-4.68+rand()*.55;z=-3.35+rand()*6.7}
+    else{x=4.13+rand()*.55;z=-3.35+rand()*6.7}
+    const h=.035+rand()*.13
+    dummy.position.set(x,.08+h*.5,z);dummy.rotation.set((rand()-.5)*.22,rand()*Math.PI*2,(rand()-.5)*.22);dummy.scale.set(.65+rand()*.7,h,.65+rand()*.7);dummy.updateMatrix();blades.setMatrixAt(i,dummy.matrix)
+    blades.setColorAt(i,new THREE.Color(rand()>.55?'#a89d3d':'#6f8b36'))
   }
-  const tex = new THREE.CanvasTexture(c)
-  tex.colorSpace = THREE.SRGBColorSpace
-  tex.minFilter = THREE.LinearMipmapLinearFilter
-  tex.magFilter = THREE.LinearFilter
-  return tex
+  blades.instanceMatrix.needsUpdate=true;if(blades.instanceColor)blades.instanceColor.needsUpdate=true;blades.castShadow=true;world.add(blades)
+
+  const mossGeo=new THREE.IcosahedronGeometry(1,1),mossMat=new THREE.MeshStandardMaterial({color:'#ffffff',roughness:1,vertexColors:true})
+  const moss=new THREE.InstancedMesh(mossGeo,mossMat,900);moss.name='hobby_moss_scatter'
+  for(let i=0;i<900;i++){
+    const side=Math.floor(rand()*4);let x,z
+    if(side===0){x=-4.62+rand()*9.24;z=-3.55+rand()*.45}else if(side===1){x=-4.62+rand()*9.24;z=3.10+rand()*.45}else if(side===2){x=-4.58+rand()*.45;z=-3.22+rand()*6.44}else{x=4.13+rand()*.45;z=-3.22+rand()*6.44}
+    const s=.015+rand()*.035;const m=new THREE.Matrix4().makeScale(s*(1+rand()),s*.45,s*(1+rand()));m.setPosition(x,.12,z);moss.setMatrixAt(i,m);moss.setColorAt(i,new THREE.Color(rand()>.5?'#768d34':'#9a9c36'))
+  }
+  moss.instanceMatrix.needsUpdate=true;if(moss.instanceColor)moss.instanceColor.needsUpdate=true;world.add(moss)
 }
 
-function run() {
-  const world = globalThis.__dndArtSpikeWorld
-  if (!world) { setTimeout(run, 250); return }
-
-  const lichenTex = makeLichenTexture()
-  const material = new THREE.MeshStandardMaterial({
-    name: 'procedural_hobby_lichen',
-    color: '#eef09a',
-    map: lichenTex,
-    alphaTest: 0.08,
-    transparent: false,
-    side: THREE.DoubleSide,
-    roughness: 0.99,
-    metalness: 0,
-    emissive: new THREE.Color('#748526'),
-    emissiveIntensity: 0.20,
-  })
-
-  const rand = rng()
-  const dummy = new THREE.Object3D()
-  const plane = new THREE.PlaneGeometry(1, 1)
-  const canopy = new THREE.InstancedMesh(plane, material, 520)
-  canopy.name = 'photo_alpha_canopy'
-  canopy.castShadow = true
-
-  const lobes = [
-    [-0.72,0.00,0.04,.78],[-0.32,.18,-.10,.90],[.08,.18,.03,.98],[.50,.08,-.06,.88],[.82,-.02,.06,.70],
-    [-.24,.53,.04,.72],[.26,.50,-.08,.70],[.02,-.32,.05,.84],
-  ]
-  for (let i = 0; i < 520; i++) {
-    const l = lobes[i % lobes.length]
-    const u = Math.pow(rand(), .64)
-    const theta = rand() * Math.PI * 2
-    const phi = Math.acos(2 * rand() - 1)
-    const rx = l[0] + .66 * l[3] * u * Math.sin(phi) * Math.cos(theta)
-    const rz = l[2] + .52 * l[3] * u * Math.sin(phi) * Math.sin(theta)
-    let ry = l[1] + .50 * l[3] * u * Math.cos(phi)
-    if (rand() > .86) ry -= .20 + rand() * .34
-    dummy.position.set(.28 + rx, 2.67 + ry, -2.45 + rz)
-    dummy.rotation.set((rand()-.5)*1.15, rand()*Math.PI*2, (rand()-.5)*1.15)
-    const s = .23 + rand() * .29
-    dummy.scale.set(s * (.72 + rand()*.46), s, 1)
-    dummy.updateMatrix()
-    canopy.setMatrixAt(i, dummy.matrix)
-  }
-  canopy.instanceMatrix.needsUpdate = true
-  world.add(canopy)
-
-  const drips = new THREE.InstancedMesh(plane, material, 120)
-  drips.name = 'photo_alpha_lichen_drips'
-  drips.castShadow = true
-  for (let i = 0; i < 120; i++) {
-    const a = rand() * Math.PI * 2
-    const radius = .58 + rand() * .66
-    dummy.position.set(.28 + Math.cos(a)*radius, 2.10 + rand()*.54, -2.45 + Math.sin(a)*radius*.56)
-    dummy.rotation.set((rand()-.5)*.25, a + Math.PI/2, (rand()-.5)*.25)
-    dummy.scale.set(.15 + rand()*.13, .38 + rand()*.48, 1)
-    dummy.updateMatrix()
-    drips.setMatrixAt(i, dummy.matrix)
-  }
-  drips.instanceMatrix.needsUpdate = true
-  world.add(drips)
-
-  const grassTex = makeGroundTexture()
-  const grassMat = new THREE.MeshStandardMaterial({
-    name: 'hobby_static_grass', map: grassTex, alphaTest: .08, side: THREE.DoubleSide,
-    roughness: 1, metalness: 0, color: '#d2c66d', emissive: new THREE.Color('#554c16'), emissiveIntensity: .06,
-  })
-  const edgeCards = new THREE.InstancedMesh(plane, grassMat, 420)
-  edgeCards.name = 'photo_alpha_ground_flock'
-  for (let i = 0; i < 420; i++) {
-    const side = Math.floor(rand()*4)
-    let x,z
-    if (side===0){x=-4.65+rand()*9.3;z=-3.75+rand()*.54}
-    else if(side===1){x=-4.65+rand()*9.3;z=3.21+rand()*.54}
-    else if(side===2){x=-4.68+rand()*.54;z=-3.4+rand()*6.8}
-    else{x=4.14+rand()*.54;z=-3.4+rand()*6.8}
-    dummy.position.set(x,.075+rand()*.13,z)
-    dummy.rotation.set(-Math.PI/2+(rand()-.5)*.62,rand()*Math.PI*2,(rand()-.5)*.25)
-    const s=.12+rand()*.20
-    dummy.scale.set(s,s,1)
-    dummy.updateMatrix()
-    edgeCards.setMatrixAt(i,dummy.matrix)
-  }
-  edgeCards.instanceMatrix.needsUpdate=true
-  world.add(edgeCards)
-
-  const status=document.querySelector('#status')
-  if(status)status.textContent+=' · branching hobby-lichen canopy'
+function run(){
+  const world=globalThis.__dndArtSpikeWorld;if(!world){setTimeout(run,250);return}
+  addTreeMound(world);addLichen(world);addGroundFlock(world)
+  const status=document.querySelector('#status');if(status)status.textContent+=' · 3D lichen + static grass'
 }
 run()
