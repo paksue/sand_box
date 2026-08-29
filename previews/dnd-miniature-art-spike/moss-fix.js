@@ -40,23 +40,22 @@ function looksLikeBrokenMossMaterial(mat) {
   const n = (mat.name || '').toLowerCase()
   if (/moss|fern|plant|leaf|foliage/.test(n)) return true
   const c = mat.color
-  const nearlyWhite = c && c.r > 0.86 && c.g > 0.86 && c.b > 0.86
-  const alphaLike = mat.transparent || mat.alphaTest > 0 || mat.opacity < 0.999
-  return Boolean(nearlyWhite && (alphaLike || !mat.map))
+  const nearlyWhite = c && c.r > 0.84 && c.g > 0.84 && c.b > 0.84
+  return Boolean(nearlyWhite)
 }
 
 function buildMaterial(tex) {
   return new THREE.MeshStandardMaterial({
     name: 'moss_01_repaired',
-    color: '#c5cfa0',
+    color: '#b6c77c',
     map: tex.diff,
     alphaMap: tex.alpha,
     normalMap: tex.normal,
     roughnessMap: tex.rough,
-    normalScale: new THREE.Vector2(0.8, 0.8),
-    roughness: 0.96,
+    normalScale: new THREE.Vector2(0.75, 0.75),
+    roughness: 0.98,
     metalness: 0,
-    alphaTest: 0.34,
+    alphaTest: 0.28,
     transparent: false,
     side: THREE.DoubleSide,
   })
@@ -66,7 +65,7 @@ async function repair() {
   const tex = await loadTextures()
   const repaired = buildMaterial(tex)
 
-  for (let attempt = 0; attempt < 60; attempt++) {
+  for (let attempt = 0; attempt < 80; attempt++) {
     const world = globalThis.__dndArtSpikeWorld
     if (!world) {
       await new Promise(r => setTimeout(r, 250))
@@ -88,8 +87,9 @@ async function repair() {
     })
 
     if (count > 0) {
+      console.info(`moss atlas repaired on ${count} meshes`)
       const status = document.querySelector('#status')
-      if (status && !status.textContent.includes('moss')) {
+      if (status && !status.textContent.includes('moss atlas')) {
         status.textContent += ` · moss atlas repaired (${count} meshes)`
       }
       return
