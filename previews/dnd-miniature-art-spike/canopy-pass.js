@@ -72,7 +72,6 @@ function addLichen(world){
       grow(p,d,.09+rand()*.10,2+Math.floor(rand()*2))
     }
   }
-  // Hanging preserved-lichen strands.
   for(let c=0;c<115;c++){
     const a=rand()*Math.PI*2,r=.52+rand()*.72
     let p=new THREE.Vector3(.28+Math.cos(a)*r,2.30+rand()*.45,-2.45+Math.sin(a)*r*.56)
@@ -86,7 +85,6 @@ function addLichen(world){
   if(segs.instanceColor)segs.instanceColor.needsUpdate=true;if(nodes.instanceColor)nodes.instanceColor.needsUpdate=true
   world.add(segs,nodes)
 
-  // Shadowy interior clumps, almost completely hidden by the lichen network.
   const coreMat=new THREE.MeshStandardMaterial({color:'#596327',roughness:1})
   for(const [x,y,z,sx,sy,sz] of [[-.42,2.66,-2.44,.68,.52,.48],[.15,2.82,-2.47,.72,.58,.50],[.58,2.65,-2.43,.60,.46,.44],[.00,2.35,-2.45,.78,.43,.48]]){
     const core=new THREE.Mesh(new THREE.IcosahedronGeometry(1,3),coreMat);core.scale.set(sx,sy,sz);core.position.set(.28+x,y,z);core.castShadow=true;world.add(core)
@@ -95,7 +93,7 @@ function addLichen(world){
 
 function addGroundFlock(world){
   const bladeGeo=new THREE.BoxGeometry(.012,1,.008)
-  const bladeMat=new THREE.MeshStandardMaterial({color:'#ffffff',roughness=1,vertexColors:true})
+  const bladeMat=new THREE.MeshStandardMaterial({color:'#ffffff',roughness:1,vertexColors:true})
   const blades=new THREE.InstancedMesh(bladeGeo,bladeMat,2600);blades.name='hobby_static_grass'
   const dummy=new THREE.Object3D()
   for(let i=0;i<2600;i++){
