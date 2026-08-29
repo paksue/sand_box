@@ -6,25 +6,26 @@ function randLine(i, axis) {
 }
 
 function addBattleGrid(world) {
-  const grout = new THREE.MeshStandardMaterial({ color: '#17130f', roughness: 1, metalness: 0 })
+  // Reference grout is dark and deep, but not pure black or perfectly machine-cut.
+  const grout = new THREE.MeshStandardMaterial({ color: '#30251d', roughness: 1, metalness: 0 })
   const spacing = 0.86
   const halfX = 4.32
   const halfZ = 3.26
   let idx = 0
 
   for (let x = -halfX + spacing; x < halfX; x += spacing) {
-    const jitter = (randLine(idx++, 0) - 0.5) * 0.035
-    const line = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.018, halfZ * 2), grout)
-    line.position.set(x + jitter, 0.112, 0)
-    line.rotation.y = (randLine(idx, 1) - 0.5) * 0.006
+    const jitter = (randLine(idx++, 0) - 0.5) * 0.048
+    const line = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.010, halfZ * 2), grout)
+    line.position.set(x + jitter, 0.110, 0)
+    line.rotation.y = (randLine(idx, 1) - 0.5) * 0.012
     line.receiveShadow = true
     world.add(line)
   }
   for (let z = -halfZ + spacing; z < halfZ; z += spacing) {
-    const jitter = (randLine(idx++, 2) - 0.5) * 0.035
-    const line = new THREE.Mesh(new THREE.BoxGeometry(halfX * 2, 0.018, 0.022), grout)
-    line.position.set(0, 0.113, z + jitter)
-    line.rotation.y = (randLine(idx, 3) - 0.5) * 0.006
+    const jitter = (randLine(idx++, 2) - 0.5) * 0.048
+    const line = new THREE.Mesh(new THREE.BoxGeometry(halfX * 2, 0.010, 0.012), grout)
+    line.position.set(0, 0.111, z + jitter)
+    line.rotation.y = (randLine(idx, 3) - 0.5) * 0.012
     line.receiveShadow = true
     world.add(line)
   }
@@ -60,8 +61,9 @@ function addNumberPlane(group, n, pos, rot) {
 function addDie(world) {
   const g = new THREE.Group()
   const red = new THREE.MeshPhysicalMaterial({
-    color: '#a20d13', roughness: 0.22, metalness: 0,
-    clearcoat: 0.72, clearcoatRoughness: 0.16,
+    color: '#b20c16', roughness: 0.18, metalness: 0,
+    clearcoat: 0.90, clearcoatRoughness: 0.10,
+    transmission: 0.08, thickness: 0.2,
   })
   const body = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.52, 0.52, 5, 5, 5), red)
   body.castShadow = body.receiveShadow = true
@@ -79,7 +81,7 @@ function addDie(world) {
 }
 
 function addMiniBase(world, x, z, r = 0.28) {
-  const dark = new THREE.MeshPhysicalMaterial({ color: '#11110f', roughness: 0.58, clearcoat: 0.18, clearcoatRoughness: 0.48 })
+  const dark = new THREE.MeshPhysicalMaterial({ color: '#0d0d0c', roughness: 0.58, clearcoat: 0.18, clearcoatRoughness: 0.48 })
   const rim = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 1.03, 0.085, 64), dark)
   rim.position.set(x, 0.16, z)
   rim.castShadow = rim.receiveShadow = true
@@ -122,6 +124,6 @@ function run() {
   ;[[-0.70,0.35],[0.05,0.65],[0.75,0.20],[-0.15,-0.25],[0.55,-0.55]].forEach(([x,z]) => addMiniBase(world,x,z))
   addSword(world)
   const status = document.querySelector('#status')
-  if (status) status.textContent += ' · physical scale cues + battle joints'
+  if (status) status.textContent += ' · softened battle joints + physical scale cues'
 }
 run()
