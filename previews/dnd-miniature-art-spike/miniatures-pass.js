@@ -10,6 +10,7 @@ const urls = {
   mage: `${ROOT}/Mage.glb`,
   knight: `${ROOT}/Knight.glb`,
   rogue: `${ROOT}/Rogue.glb`,
+  hooded: `${ROOT}/Rogue_Hooded.glb`,
   barbarian: `${ROOT}/Barbarian.glb`,
 }
 
@@ -47,8 +48,7 @@ function fitAndPlace(root, x, z, targetHeight, yaw) {
   root.updateMatrixWorld(true)
   let box = new THREE.Box3().setFromObject(root)
   const size = box.getSize(new THREE.Vector3())
-  const scale = targetHeight / Math.max(size.y || 1, 0.001)
-  root.scale.multiplyScalar(scale)
+  root.scale.multiplyScalar(targetHeight / Math.max(size.y || 1, 0.001))
   root.updateMatrixWorld(true)
   box = new THREE.Box3().setFromObject(root)
   const center = box.getCenter(new THREE.Vector3())
@@ -60,28 +60,25 @@ function fitAndPlace(root, x, z, targetHeight, yaw) {
 }
 
 async function loadType(type) {
-  try {
-    return await loader.loadAsync(urls[type])
-  } catch (err) {
-    console.warn(`miniature ${type} failed`, err)
-    return null
-  }
+  try { return await loader.loadAsync(urls[type]) }
+  catch (err) { console.warn(`miniature ${type} failed`, err); return null }
 }
 
 async function run() {
   const world = globalThis.__dndArtSpikeWorld
   if (!world) { setTimeout(run, 250); return }
 
-  const loaded = Object.fromEntries(await Promise.all(
-    Object.keys(urls).map(async k => [k, await loadType(k)])
-  ))
+  const loaded = Object.fromEntries(await Promise.all(Object.keys(urls).map(async k => [k, await loadType(k)])))
 
+  // Layout follows the physical reference: hero/caster toward the tree, a loose
+  // enemy group across the middle, and a cloaked hero closer to the camera.
   const placements = [
-    { type: 'mage', x: 0.05, z: 0.65, h: 0.92, yaw: Math.PI * 0.92, tint: null, phase: 0.18 },
-    { type: 'knight', x: -0.70, z: 0.35, h: 0.82, yaw: 1.55, tint: '#b7d9cd', phase: 0.36 },
-    { type: 'rogue', x: 0.75, z: 0.20, h: 0.80, yaw: -1.05, tint: '#9bc6bb', phase: 0.48 },
-    { type: 'knight', x: -0.15, z: -0.25, h: 0.84, yaw: 0.68, tint: '#a9d3c8', phase: 0.62 },
-    { type: 'barbarian', x: 0.55, z: -0.55, h: 0.86, yaw: -0.30, tint: '#b9ccb3', phase: 0.28 },
+    { type:'mage',      x:-0.15, z:-1.35, h:.86, yaw:2.95, tint:null,      phase:.18 },
+    { type:'knight',    x:-1.10, z:-0.32, h:.76, yaw:1.25, tint:'#b8d9cf', phase:.36 },
+    { type:'rogue',     x:-0.15, z:-0.38, h:.74, yaw:.15, tint:'#9fc8bd', phase:.48 },
+    { type:'knight',    x:.78, z:-.62, h:.77, yaw:-.72, tint:'#afd5ca', phase:.62 },
+    { type:'barbarian', x:1.28, z:.18, h:.78, yaw:-1.35, tint:'#bdcdb4', phase:.28 },
+    { type:'hooded',    x:.78, z:1.42, h:.84, yaw:-2.65, tint:'#7fbab5', phase:.42 },
   ]
 
   let count = 0
@@ -98,7 +95,7 @@ async function run() {
   }
 
   const status = document.querySelector('#status')
-  if (status) status.textContent += ` · ${count} GLB fantasy miniatures`
+  if (status) status.textContent += ` · ${count} composed GLB miniatures`
 }
 
 run().catch(err => console.error('miniature pass failed', err))
