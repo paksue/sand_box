@@ -1,0 +1,28 @@
+name: Todo archive tests
+
+on:
+  push:
+    paths:
+      - 'todo/archive-core.mjs'
+      - 'todo/archive-ui.mjs'
+      - 'todo/tests/archive-core.test.mjs'
+      - '.github/workflows/todo-archive-tests.yml'
+  pull_request:
+    paths:
+      - 'todo/archive-core.mjs'
+      - 'todo/archive-ui.mjs'
+      - 'todo/tests/archive-core.test.mjs'
+      - '.github/workflows/todo-archive-tests.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Archive regression tests
+        run: node --test todo/tests/archive-core.test.mjs
+      - name: Archive module syntax
+        run: node --check todo/archive-ui.mjs && node --check todo/archive-core.mjs
