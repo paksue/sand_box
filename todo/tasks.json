@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-08-30T17:44:45.147Z",
+  "updatedAt": "2026-08-30T21:49:41.226Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -526,12 +526,12 @@
       "id": "5c0988c3-93ff-4137-83ad-68b525a01637",
       "title": "Buy fox pee",
       "details": "",
-      "done": false,
+      "done": true,
       "deleted": false,
       "order": 34,
       "createdAt": "2026-08-30T17:43:47.305Z",
       "contentUpdatedAt": "2026-08-30T17:43:47.305Z",
-      "doneUpdatedAt": "2026-08-30T17:43:47.305Z",
+      "doneUpdatedAt": "2026-08-30T21:49:37.023Z",
       "orderUpdatedAt": "2026-08-30T17:43:47.305Z",
       "deletedUpdatedAt": ""
     }
