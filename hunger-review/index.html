@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#e8e6df" />
+  <meta name="description" content="A full-spoiler critical reading of the Thai Netflix film Hunger (2023): class, ambition, Chef Paul, Aoy, the combat-like cooking scenes, and what the ending means." />
+  <meta property="og:title" content="HUNGER — What Are You Still Hungry For?" />
+  <meta property="og:description" content="A complete critical reading of Sitisiri Mongkolsiri’s Hunger (2023)." />
+  <meta property="og:type" content="article" />
+  <title>HUNGER — What Are You Still Hungry For?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;600;700&family=Prata&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --steel:#e8e6df;
+      --steel-2:#d4d2cb;
+      --paper:#f4f2ec;
+      --ink:#172223;
+      --ink-2:#314142;
+      --muted:#697475;
+      --soy:#5b392d;
+      --blood:#6f2328;
+      --flame:#35879a;
+      --copper:#a87848;
+      --lime:#a8b58d;
+      --line:rgba(23,34,35,.18);
+      --shadow:0 24px 80px rgba(24,35,36,.12);
+      --serif:"Prata",Georgia,serif;
+      --sans:"Noto Sans Thai","Avenir Next",Avenir,system-ui,-apple-system,sans-serif;
+      --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;background:var(--steel)}
+    body{margin:0;color:var(--ink);background:
+      radial-gradient(circle at 84% 10%,rgba(53,135,154,.13),transparent 27rem),
+      linear-gradient(180deg,var(--steel) 0,var(--paper) 28rem,var(--paper) 100%);
+      font-family:var(--sans);font-size:17px;line-height:1.72;-webkit-font-smoothing:antialiased}
+    a{color:inherit}
+    ::selection{background:rgba(53,135,154,.25)}
+    .skip{position:absolute;left:-999px;top:0;background:var(--ink);color:white;padding:10px 14px;z-index:50}
+    .skip:focus{left:12px;top:12px}
+    :focus-visible{outline:3px solid var(--flame);outline-offset:4px}
+
+    .heat-rail{position:fixed;left:0;top:0;width:5px;height:100dvh;background:rgba(23,34,35,.08);z-index:40}
+    .heat-fill{width:100%;height:0;background:linear-gradient(180deg,var(--blood),var(--copper) 52%,var(--flame));transition:height .08s linear}
+    .heat-label{position:fixed;left:16px;bottom:18px;z-index:41;font:600 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;writing-mode:vertical-rl;transform:rotate(180deg);color:var(--muted)}
+
+    .wrap{width:min(1180px,calc(100% - 44px));margin:0 auto}
+    .mast{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:24px 0 18px;border-bottom:1px solid var(--line)}
+    .brand{font:600 12px/1 var(--mono);letter-spacing:.15em;text-transform:uppercase}
+    .mast-meta{display:flex;gap:18px;flex-wrap:wrap;justify-content:flex-end;color:var(--muted);font:500 11px/1.35 var(--mono);text-transform:uppercase;letter-spacing:.08em}
+
+    .hero{min-height:82vh;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(300px,.88fr);gap:clamp(28px,6vw,88px);align-items:center;padding:clamp(58px,9vw,132px) 0 80px}
+    .kicker{font:600 12px/1.3 var(--mono);letter-spacing:.15em;text-transform:uppercase;color:var(--blood);margin:0 0 18px}
+    h1,h2,h3,p{margin-top:0}
+    h1{font-family:var(--serif);font-size:clamp(58px,9.2vw,132px);line-height:.86;letter-spacing:-.055em;font-weight:400;margin:0 0 26px;max-width:850px}
+    h1 .cut{display:block;position:relative;width:max-content;max-width:100%}
+    h1 .cut:after{content:"";position:absolute;left:-2%;right:-5%;top:54%;height:2px;background:var(--blood);transform:rotate(-4deg);transform-origin:left center;box-shadow:0 0 0 1px rgba(255,255,255,.28)}
+    .dek{max-width:720px;font-size:clamp(19px,2vw,25px);line-height:1.48;color:var(--ink-2);margin:0 0 28px}
+    .hero-actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+    .spoiler{font:600 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--blood);padding:11px 12px}
+    .read-link{font:600 12px/1.3 var(--mono);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;border-bottom:1px solid currentColor;padding:8px 0}
+
+    .hero-art{position:relative;min-height:480px;display:grid;place-items:center;isolation:isolate}
+    .plate{position:absolute;width:min(36vw,420px);aspect-ratio:1;border:1px solid rgba(23,34,35,.27);border-radius:50%;box-shadow:inset 0 0 0 24px rgba(255,255,255,.16),inset 0 0 0 25px rgba(23,34,35,.08),var(--shadow);background:radial-gradient(circle at 38% 32%,rgba(255,255,255,.75),rgba(255,255,255,.2) 42%,rgba(49,65,66,.06) 70%)}
+    .plate:before{content:"";position:absolute;inset:26%;border-radius:50%;border:1px solid rgba(23,34,35,.16);background:radial-gradient(circle at 50% 50%,rgba(111,35,40,.18),transparent 54%)}
+    .knife{position:absolute;width:min(43vw,510px);height:18px;background:linear-gradient(90deg,var(--soy) 0 23%,#7f8888 23% 76%,#d9dddd 76%);transform:rotate(-34deg);box-shadow:0 14px 24px rgba(23,34,35,.18);z-index:2}
+    .knife:after{content:"";position:absolute;right:-46px;top:0;border-left:46px solid #d9dddd;border-top:9px solid transparent;border-bottom:9px solid transparent}
+    .flame-mark{position:absolute;z-index:3;width:96px;height:138px;border-radius:64% 36% 62% 38% / 70% 38% 62% 30%;background:linear-gradient(150deg,var(--flame),rgba(53,135,154,.18));transform:rotate(23deg);mix-blend-mode:multiply;filter:blur(.2px)}
+    .art-note{position:absolute;right:0;bottom:10%;width:160px;font:500 10px/1.5 var(--mono);text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+
+    .thesis{display:grid;grid-template-columns:minmax(220px,.34fr) minmax(0,.66fr);gap:clamp(28px,6vw,90px);padding:70px 0 92px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .thesis-label{font:600 11px/1.45 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+    .thesis blockquote{font-family:var(--serif);font-size:clamp(30px,4.3vw,57px);line-height:1.19;letter-spacing:-.035em;margin:0}
+    .thesis blockquote em{font-style:normal;color:var(--blood)}
+
+    .layout{display:grid;grid-template-columns:240px minmax(0,760px);gap:clamp(38px,8vw,110px);justify-content:center;padding:92px 0 120px}
+    .toc{position:sticky;top:28px;align-self:start;padding-top:4px}
+    .toc-title{font:600 10px/1.3 var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+    .toc a{display:block;text-decoration:none;padding:8px 0;border-bottom:1px solid rgba(23,34,35,.08);font-size:13px;line-height:1.3;color:var(--muted);transition:color .15s ease,padding-left .15s ease}
+    .toc a:hover,.toc a.active{color:var(--ink);padding-left:8px}
+    .toc a.active{border-bottom-color:var(--flame)}
+    .scorecard{margin-top:26px;padding:16px 0;border-top:2px solid var(--ink);border-bottom:1px solid var(--line)}
+    .score-num{font-family:var(--serif);font-size:50px;line-height:1;color:var(--blood)}
+    .score-copy{font:500 10px/1.45 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:7px}
+
+    article{min-width:0}
+    .section{scroll-margin-top:28px;margin-bottom:92px}
+    .section-rule{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+    .section-rule span{font:600 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--blood);white-space:nowrap}
+    .section-rule:after{content:"";height:1px;background:var(--line);flex:1}
+    h2{font-family:var(--serif);font-weight:400;font-size:clamp(34px,5vw,58px);line-height:1.08;letter-spacing:-.035em;margin-bottom:24px}
+    h3{font-family:var(--serif);font-weight:400;font-size:clamp(24px,3vw,34px);line-height:1.18;letter-spacing:-.02em;margin:46px 0 14px}
+    article p{margin-bottom:21px;color:#293838}
+    article strong{color:var(--ink)}
+    .lead{font-size:22px;line-height:1.58;color:var(--ink)}
+    .pull{margin:44px -48px;padding:34px 48px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-family:var(--serif);font-size:clamp(27px,3.5vw,42px);line-height:1.28;letter-spacing:-.025em;color:var(--soy)}
+    .pull small{display:block;margin-top:16px;font:500 10px/1.5 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+    .fact{margin:34px 0;padding:18px 20px;border-left:4px solid var(--flame);background:rgba(53,135,154,.07);font-size:14px;line-height:1.6;color:var(--ink-2)}
+    .fact b{font:600 10px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;display:block;margin-bottom:7px;color:var(--flame)}
+
+    .hunger-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:34px 0}
+    .hunger-card{padding:22px 20px;border:1px solid var(--line);background:rgba(255,255,255,.3)}
+    .hunger-card b{font-family:var(--serif);font-size:25px;font-weight:400;display:block;margin-bottom:6px}
+    .hunger-card p{font-size:14px;line-height:1.55;margin:0;color:var(--muted)}
+
+    .combat{margin:36px 0 8px;border-top:1px solid var(--ink)}
+    .combat-row{display:grid;grid-template-columns:160px minmax(0,1fr);gap:24px;padding:24px 0;border-bottom:1px solid var(--line)}
+    .combat-name{font:600 11px/1.45 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--blood)}
+    .combat-title{font-family:var(--serif);font-size:27px;line-height:1.25;margin-bottom:8px}
+    .combat p{font-size:15px;line-height:1.62;margin:0;color:var(--muted)}
+
+    .split{display:grid;grid-template-columns:1fr 1fr;margin:42px 0;border:1px solid var(--line)}
+    .split-col{padding:30px 26px}
+    .split-col + .split-col{border-left:1px solid var(--line)}
+    .split-label{font:600 10px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;margin-bottom:15px}
+    .split-col:first-child .split-label{color:var(--blood)}
+    .split-col:last-child .split-label{color:var(--flame)}
+    .split h3{font-size:30px;margin:0 0 12px}
+    .split p{font-size:14px;line-height:1.58;margin:0;color:var(--muted)}
+
+    .ending{background:var(--ink);color:#eef0ea;margin:0 calc(50% - 50vw);padding:92px max(22px,calc((100vw - 1180px)/2));}
+    .ending-inner{width:min(760px,100%);margin-left:auto;margin-right:auto}
+    .ending .section-rule span{color:#b8c3c0}
+    .ending .section-rule:after{background:rgba(255,255,255,.18)}
+    .ending h2,.ending h3{color:white}
+    .ending p{color:#c9d0cd}
+    .ending .pull{border-color:rgba(255,255,255,.18);color:#d7c09f}
+
+    .verdict{padding-top:94px}
+    .verdict-grid{display:grid;grid-template-columns:180px 1fr;gap:32px;align-items:start;margin-top:26px}
+    .big-score{font-family:var(--serif);font-size:88px;line-height:.85;color:var(--blood)}
+    .rating{font:500 10px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:8px}
+    .verdict-copy p:first-child{font-size:21px;color:var(--ink)}
+
+    .sources{margin-top:94px;padding-top:30px;border-top:1px solid var(--line)}
+    .sources h2{font-size:30px}
+    .sources ol{padding-left:20px}
+    .sources li{font-size:13px;line-height:1.55;margin-bottom:11px;color:var(--muted)}
+    .sources a{text-decoration-thickness:1px;text-underline-offset:3px}
+    .method{font-size:12px;line-height:1.6;color:var(--muted);margin-top:24px;padding:18px;border:1px solid var(--line)}
+
+    footer{padding:34px 0 52px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;color:var(--muted);font:500 10px/1.45 var(--mono);letter-spacing:.07em;text-transform:uppercase}
+
+    @media(max-width:880px){
+      .hero{grid-template-columns:1fr;min-height:auto;padding-top:70px}.hero-art{min-height:360px}.plate{width:min(70vw,390px)}.knife{width:min(80vw,470px)}
+      .layout{grid-template-columns:1fr;gap:0}.toc{position:relative;top:auto;margin-bottom:60px;display:grid;grid-template-columns:repeat(2,1fr);column-gap:20px}.toc-title,.scorecard{grid-column:1/-1}
+      .thesis{grid-template-columns:1fr;gap:18px}
+    }
+    @media(max-width:620px){
+      body{font-size:16px}.wrap{width:min(100% - 30px,1180px)}.mast{align-items:flex-start}.mast-meta{display:none}
+      .hero{padding-bottom:60px}.hero-art{min-height:310px}.art-note{right:4%;bottom:2%;width:135px}.plate{width:min(76vw,330px)}.knife{width:min(88vw,390px);height:14px}.knife:after{border-top-width:7px;border-bottom-width:7px}
+      .thesis{padding:54px 0 64px}.layout{padding:64px 0 80px}.toc{grid-template-columns:1fr 1fr}.toc a{font-size:12px}
+      .section{margin-bottom:68px}.pull{margin:36px 0;padding:26px 0}.hunger-grid{grid-template-columns:1fr}.combat-row{grid-template-columns:1fr;gap:8px}.split{grid-template-columns:1fr}.split-col + .split-col{border-left:0;border-top:1px solid var(--line)}
+      .ending{padding-top:68px;padding-bottom:68px}.verdict-grid{grid-template-columns:1fr}.big-score{font-size:72px}
+    }
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.heat-fill,.toc a{transition:none}}
+  </style>
+</head>
+<body>
+  <a class="skip" href="#review">Skip to review</a>
+  <div class="heat-rail" aria-hidden="true"><div class="heat-fill" id="heatFill"></div></div>
+  <div class="heat-label" aria-hidden="true">Hunger → Enough</div>
+
+  <header class="wrap mast">
+    <div class="brand">Film reading / Thailand / 2023</div>
+    <div class="mast-meta"><span>Full spoilers</span><span>≈ 18 min read</span><span>Sitisiri Mongkolsiri</span></div>
+  </header>
+
+  <main>
+    <section class="wrap hero" aria-labelledby="title">
+      <div>
+        <p class="kicker">A complete reading of Netflix’s Thai culinary thriller</p>
+        <h1 id="title"><span class="cut">HUNGER</span> What are you still hungry for?</h1>
+        <p class="dek">The food is only the surface. Underneath it is a movie about class, prestige, resentment, attention, love—and the moment ambition stops serving you and starts eating you alive.</p>
+        <div class="hero-actions"><span class="spoiler">Full spoilers</span><a class="read-link" href="#review">Enter the kitchen ↓</a></div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="plate"></div><div class="knife"></div><div class="flame-mark"></div>
+        <div class="art-note">Plate / blade / flame. Three objects. One question: who is consuming whom?</div>
+      </div>
+    </section>
+
+    <section class="wrap thesis" aria-label="Central thesis">
+      <div class="thesis-label">The film in one idea</div>
+      <blockquote>Paul learns that the world worships status, so he becomes the thing status worships. Aoy’s real victory is becoming capable of being Paul—and <em>choosing not to.</em></blockquote>
+    </section>
+
+    <div class="wrap layout" id="review">
+      <nav class="toc" aria-label="Review sections">
+        <div class="toc-title">On the pass</div>
+        <a href="#point">What the movie is about</a>
+        <a href="#paul">Paul as Aoy’s dark future</a>
+        <a href="#hunger">The different hungers</a>
+        <a href="#rich">Why the rich eat like animals</a>
+        <a href="#combats">The combats decoded</a>
+        <a href="#small-scenes">Small scenes, big meaning</a>
+        <a href="#hornbill">The hornbill and power</a>
+        <a href="#tos">Tos: the softer predator</a>
+        <a href="#finale">The final cook-off</a>
+        <a href="#ending">What the ending means</a>
+        <a href="#weaknesses">Where the film overplays its hand</a>
+        <a href="#verdict">Final verdict</a>
+        <div class="scorecard"><div class="score-num">8.5</div><div class="score-copy">out of 10<br>ambitious, blunt, memorable</div></div>
+      </nav>
+
+      <article>
+        <section class="section" id="point">
+          <div class="section-rule"><span>What it is really about</span></div>
+          <h2>Not food. Not even ambition. It is about the manufacture of desire.</h2>
+          <p class="lead"><em>Hunger</em> starts as the familiar story of a gifted outsider entering an elite world. But the movie keeps changing the question. At first it seems to ask, “Can Aoy become a great chef?” By the end, the better question is, “Who taught her what greatness is supposed to look like?”</p>
+          <p>Food is the perfect vehicle because it can be necessity, pleasure, memory, art, status symbol and weapon—all at once. A bowl of noodles can keep someone alive. The exact same human need can also become a stage on which wealthy people display how far above necessity they live.</p>
+          <p>Director Sitisiri Mongkolsiri has said the movie uses food as a metaphor for hungers that remain after the stomach is full: acceptance, fame, love, recognition and more. That is the organizing principle of the film. Every major character is hungry. The tragedy is that most of them confuse <strong>having an appetite</strong> with <strong>knowing what will satisfy it</strong>.</p>
+          <div class="fact"><b>Filmmaker intent</b>Netflix’s production notes quote Mongkolsiri describing the story as two people driven by their respective “hunger,” and food as a metaphor for desires beyond eating. The movie’s class politics are therefore not a side reading; they are built into the premise.</div>
+          <div class="pull">The dangerous hunger is not wanting more. It is needing somebody else to confirm that what you have is worth wanting.<small>Central reading</small></div>
+        </section>
+
+        <section class="section" id="paul">
+          <div class="section-rule"><span>Chef Paul</span></div>
+          <h2>Paul is not simply Aoy’s villain. He is her possible future.</h2>
+          <p>This is the key that makes Paul’s exaggerated behavior work. In an interview, Mongkolsiri described Paul as deliberately heightened rather than strictly realistic: a fantasy-like character who represents the dark side of Aoy. Once you know that, their relationship stops being merely master and student. It becomes a person arguing with the version of herself she might become.</p>
+          <p>Both begin with humiliation. Aoy is tired of being ordinary. Paul remembers being beneath people who could assign absurd value to a jar of caviar while treating his mother’s labor as disposable. The caviar story explains not only his anger but his entire business model.</p>
+          <p>Paul does not respond to class hierarchy by rejecting it. He studies it, masters it, and reverses the direction of humiliation. His ambition is essentially: <strong>if the rich decide what has value, I will become so valuable that the rich have to beg for me.</strong></p>
+          <p>That is why his success feels triumphant and poisoned at the same time. He has defeated his childhood powerlessness, but only by accepting the original premise—that value is created by prestige, scarcity and domination.</p>
+          <div class="pull">Paul correctly diagnoses the game. His tragedy is deciding that the only answer is to become its best player.</div>
+        </section>
+
+        <section class="section" id="hunger">
+          <div class="section-rule"><span>The title</span></div>
+          <h2>Everyone is hungry. They simply hunger for different currencies.</h2>
+          <div class="hunger-grid">
+            <div class="hunger-card"><b>Aoy</b><p>To stop being ordinary. Skill matters, but recognition becomes the proof that the skill is real.</p></div>
+            <div class="hunger-card"><b>Paul</b><p>To control the class that once controlled him. Prestige becomes revenge refined into a profession.</p></div>
+            <div class="hunger-card"><b>Tone</b><p>To have talent validated on his own terms. Friendship becomes harder once Aoy outruns him.</p></div>
+            <div class="hunger-card"><b>Tos</b><p>To manufacture the next cultural asset. He understands chefs as brands before Aoy understands herself as one.</p></div>
+            <div class="hunger-card"><b>The clients</b><p>To feel exclusive. Once luxury becomes normal, the experience must grow rarer, stranger and more forbidden.</p></div>
+            <div class="hunger-card"><b>The audience</b><p>To decide whether we are watching aspiration, exploitation, or both—and why the spectacle remains seductive.</p></div>
+          </div>
+          <p>The smartest part of the title is that hunger is not automatically noble or corrupt. Hunger gets people out of bed. It makes Aoy practice until she can control a brutal wok and execute Paul’s standards. But hunger has no built-in stopping condition. Without a definition of “enough,” achievement only teaches the appetite to demand a larger meal.</p>
+        </section>
+
+        <section class="section" id="rich">
+          <div class="section-rule"><span>Flesh and blood</span></div>
+          <h2>Why do the rich diners suddenly look like animals?</h2>
+          <p>Because the film wants sophistication to collapse in front of us. The room says refinement: private event, rare ingredients, elite guests, choreographed service. Then the diners tear into meat while red sauce runs down their faces. The social costume disappears and appetite becomes physical again.</p>
+          <p>Mongkolsiri has said that unease was intentional. He wanted food to look beautiful and a little disgusting at the same time, and he directed the eating scenes toward the primitive condition shared by rich and poor: when hunger takes over, manners can vanish.</p>
+          <p>But the images do more than say “everyone is an animal.” They make consumption look predatory. The wealthy guests are not merely eating meat; the movie frames them as people whose social position allows them to consume labor, rarity, attention, spectacle and other people’s obedience along with dinner.</p>
+          <h3>The pool party is the same argument, made louder.</h3>
+          <p>Food sits beside alcohol, sex, bodies, money and performance. Paul’s cooking is no longer nourishment. It is one sensation in a sequence of sensations. That matters because it shows what happens when luxury itself becomes ordinary: the customer needs a stronger hit. The appetite migrates from <em>good</em> to <em>rare</em>, then from rare to <em>forbidden</em>.</p>
+        </section>
+
+        <section class="section" id="combats">
+          <div class="section-rule"><span>The “combat” structure</span></div>
+          <h2>The movie keeps staging fights because cooking is only the visible battlefield.</h2>
+          <p>You noticed the combat quality correctly. <em>Hunger</em> repeatedly converts culinary work into duels, trials, humiliations and showdowns. Each one is actually fighting over a different definition of value.</p>
+          <div class="combat">
+            <div class="combat-row"><div class="combat-name">Audition</div><div><div class="combat-title">Aoy vs. the culinary-school candidate</div><p><strong>Lived skill vs. credential.</strong> Paul appears meritocratic: he recognizes the wok cook whom the elite system would overlook. But the scene plants a later irony—Aoy still needs a powerful gatekeeper to declare that her ability counts.</p></div></div>
+            <div class="combat-row"><div class="combat-name">Wagyu ordeal</div><div><div class="combat-title">Aoy vs. Paul’s standard</div><p><strong>Potential vs. discipline.</strong> Paul is abusive, but the skill gap is real. Aoy’s overnight practice matters because the film refuses an easy moral escape: a cruel teacher can still teach something valuable.</p></div></div>
+            <div class="combat-row"><div class="combat-name">Kitchen sabotage</div><div><div class="combat-title">Dang vs. the younger chefs</div><p><strong>Scarcity vs. solidarity.</strong> The hierarchy teaches workers to experience another person’s advancement as their own disappearance. The fight occurs below the people who created the conditions.</p></div></div>
+            <div class="combat-row"><div class="combat-name">Career divergence</div><div><div class="combat-title">Aoy vs. Tone</div><p><strong>Friendship vs. ranking.</strong> Tone can admire Aoy when he is the discoverer and mentor. Her rise becomes harder to metabolize when it changes the relative status between them.</p></div></div>
+            <div class="combat-row"><div class="combat-name">Final banquet</div><div><div class="combat-title">Aoy vs. Paul</div><p><strong>Cooking vs. attention.</strong> The climactic duel reveals that the scarce resource in the room is not flavor. It is the crowd’s attention—and Paul already owns it before the first spoon is lifted.</p></div></div>
+          </div>
+          <div class="fact"><b>Three layers of combat</b>The visible fight is chef vs. chef. The social fight is outsider vs. establishment, worker vs. boss, poor vs. rich. The deepest fight is each person vs. the hunger inside them.</div>
+        </section>
+
+        <section class="section" id="small-scenes">
+          <div class="section-rule"><span>Scenes that do more than they seem</span></div>
+          <h2>The film’s smaller scenes keep testing the same question: who gets to possess value?</h2>
+          <h3>The chef who steals expensive ingredients</h3>
+          <p>A worker can spend every day touching luxury without ever being allowed to own it. That is why the theft matters. Proximity to wealth is not participation in wealth. Paul’s response is pure system logic—rules were broken, so the worker is removed—but the scene quietly asks what kind of workplace trains people to prepare abundance they are never meant to share.</p>
+          <h3>The indebted family and the murder-suicide</h3>
+          <p>This is one of the film’s bluntest but most useful contrasts. The family can still purchase the <em>appearance</em> of prosperity while their underlying life is collapsing. The private meal becomes an epitaph for the equation “successful-looking = flourishing.” Near the same stretch of the story, Aoy’s own family is dealing with a real health crisis. One household spends to preserve status; another needs resources for survival.</p>
+          <h3>Crybaby Noodles in the hospital</h3>
+          <p>Aoy’s family dish threatens Paul more than another ambitious chef does. If inexpensive food made inside ordinary relationships can carry profound value, then Paul has sacrificed his life to dominate a scoreboard that may not measure the thing he actually needed. His dismissal of “food made with love” reads less like strength than self-protection.</p>
+          <div class="split">
+            <div class="split-col"><div class="split-label">Paul’s economy</div><h3>Value is scarcity.</h3><p>Rarity, reputation, exclusivity and the ability to deny access create desire. The chef becomes more valuable when fewer people can reach him.</p></div>
+            <div class="split-col"><div class="split-label">Aoy’s home</div><h3>Value is continuity.</h3><p>A dish matters because people have eaten it together, remember it, return to it, and care about the person who made it even when nobody is watching.</p></div>
+          </div>
+        </section>
+
+        <section class="section" id="hornbill">
+          <div class="section-rule"><span>The point of no return</span></div>
+          <h2>The hornbill is not about cuisine. It is about the pleasure of exemption.</h2>
+          <p>The protected bird scene is where the movie stops allowing Paul’s philosophy to hide behind culinary excellence. The client does not need a hornbill because it is the world’s most delicious ingredient. The forbiddenness is part of the product.</p>
+          <p>The meal says: <strong>ordinary people are constrained by laws; I can purchase an experience that proves those laws do not fully apply to me.</strong> In interviews, Mongkolsiri has explicitly connected the film’s class and political concerns to this world of power, status and elite impunity.</p>
+          <p>Paul’s participation completes his transformation. The boy who hated seeing wealth overpower his mother has become the professional who converts somebody else’s power into an exquisite plate.</p>
+          <div class="pull">He wanted to make the powerful kneel for his food. Instead, he became the craftsman who beautified their power.</div>
+        </section>
+
+        <section class="section" id="tos">
+          <div class="section-rule"><span>The second mentor</span></div>
+          <h2>Tos is more polite than Paul—and potentially more dangerous.</h2>
+          <p>Paul’s exploitation is easy to see because it comes with shouting, humiliation and impossible standards. Tos works through encouragement. He tells Aoy she is special, gives her resources, creates Flame around her image, and helps convert her ability into fame.</p>
+          <p>That sounds better because in many ways it is better. But Tos understands the cultural machine in a way Aoy does not yet understand herself. Paul commodifies food. Tos commodifies <strong>Aoy</strong>: her rise, her rivalry, her authenticity, her story.</p>
+          <p>The final revelation—that strings were pulled and Tone’s footage became part of the transaction—forces Aoy to see that her supposed autonomous triumph has been engineered. Her ambition made her vulnerable to two opposite techniques of control: Paul said, “You are not enough.” Tos said, “You are the next big thing.” Both statements can make another person easier to direct.</p>
+        </section>
+
+        <section class="section" id="finale">
+          <div class="section-rule"><span>The last service</span></div>
+          <h2>The final cook-off reveals that Paul’s true product was never food.</h2>
+          <p>The banquet is the entire movie compressed into one sequence. Aoy and Paul begin by competing through culinary spectacle. Each tries to seize the room. Fire becomes theater. The giant hanging carcass takes Aoy’s language of heat and enlarges it into something grotesquely theatrical.</p>
+          <p>Aoy eventually returns to Crybaby Noodles—the food tied to family rather than prestige. For a moment it seems the movie will hand us the easy victory: authenticity defeats pretension.</p>
+          <p>Then Paul serves something ordinary, and the room moves toward him anyway.</p>
+          <p>That is his final lesson. He is not saying, “My soup tastes better.” He is saying, <strong>“I am Chef Paul, therefore whatever I serve arrives already desired.”</strong> Reputation acts before taste. The guests have crowned him in advance.</p>
+          <div class="fact"><b>Why the scene matters</b>At the beginning, Paul functions as the person who can recognize Aoy’s talent. At the end, he demonstrates the darker side of that same power: recognized authority can shape what other people experience as valuable.</div>
+          <h3>The giant cow is not excess for its own sake.</h3>
+          <p>It is the logic of an attention economy made physical. If your measure of success is “make them look at me,” there is always a larger flame, a rarer ingredient, a more outrageous reveal, a more exclusive room. Spectacle has no natural finish line.</p>
+        </section>
+      </article>
+    </div>
+
+    <section class="ending" id="ending">
+      <div class="ending-inner">
+        <div class="section-rule"><span>The ending</span></div>
+        <h2>Paul is arrested. Aoy still does not feel like she won.</h2>
+        <p>That emotional mismatch is the point. If this were simply a story about defeating an evil chef, Paul’s downfall would release Aoy into triumph. Instead the victory feels contaminated. Tone traded the video. Tos shaped the opportunity. The party itself immediately moves on to its next entertainment.</p>
+        <p>Aoy sees the machinery behind the applause. She has finally received the external validation she wanted and, at the exact moment of receiving it, discovers that validation can be manufactured, traded and redirected.</p>
+        <div class="pull">Her breakthrough is not realizing that ambition is bad. It is realizing that ambition needs a definition of “enough.”</div>
+        <h3>Why going home is not surrender</h3>
+        <p>A weaker version of this ending would say: “Elite cooking is corrupt; go back to the humble life you had before.” That is not what Aoy does. She returns with more discipline, knowledge, technique, confidence and agency. She intends to make a menu and be the chef.</p>
+        <p>So the ending is not <em>reject growth</em>. It is <strong>keep the skill; change the scoreboard.</strong></p>
+        <p>The family restaurant looked small to Aoy because she had been measuring it using a prestige system that considered it small. The building has barely changed. Aoy’s understanding of value has.</p>
+        <p>Paul has countless admirers and almost no intimacy. Aoy can lose a room full of elite attention and still return to people who care whether she exists when she is not impressive. The film puts those two forms of wealth beside one another and asks which one is actually scarce.</p>
+      </div>
+    </section>
+
+    <div class="wrap layout" style="padding-top:92px">
+      <div aria-hidden="true"></div>
+      <article>
+        <section class="section" id="weaknesses">
+          <div class="section-rule"><span>Where it is weaker</span></div>
+          <h2>The film sometimes explains its metaphor after the image has already done the work.</h2>
+          <p>Paul can feel less like a person than a philosophical instrument. His speeches are effective, but occasionally the screenplay makes him say what the cinematography has already communicated. The wealthy clients are often so grotesque that they stop being people and become an illustrated argument.</p>
+          <p>The career trajectories are accelerated to the point of fantasy. Tone’s resentment, Tos’s manipulation, and the later professional reversals could all have used more time. The indebted-family tragedy is thematically precise but structurally feels inserted to underline a point the movie has already established.</p>
+          <p>Yet some of this exaggeration is intentional. Mongkolsiri has described Paul as heightened and fantasy-like, and his horror background is visible in the way dining bodies become grotesque, meat becomes spectacle and elite spaces feel faintly unreal.</p>
+          <p>So the question is less “Is this how every Michelin kitchen behaves?” and more “Does the exaggeration reveal something true?” Often, yes.</p>
+        </section>
+
+        <section class="verdict" id="verdict">
+          <div class="section-rule"><span>Final verdict</span></div>
+          <h2>A blunt film with a sharp central idea.</h2>
+          <div class="verdict-grid">
+            <div><div class="big-score">8.5</div><div class="rating">out of 10</div></div>
+            <div class="verdict-copy">
+              <p><em>Hunger</em> is strongest when it lets cooking become a language for class and desire rather than merely a plot about professional success.</p>
+              <p>Its symbolism can be heavy-handed. Its rich people can become cartoons. Its timeline bends credibility. But it builds a coherent argument from beginning to end: <strong>prestige can tell you what to want, but it cannot tell you when you have enough.</strong></p>
+              <p>Paul sees the hierarchy and decides to conquer it. Aoy nearly does the same. Her real victory is subtler than beating him at a banquet. She becomes capable of playing Paul’s game and decides she no longer wants that game to define the score.</p>
+            </div>
+          </div>
+          <div class="pull">The opposite of hunger is not having everything. It is knowing what is enough.<small>Final reading</small></div>
+        </section>
+
+        <section class="sources" aria-labelledby="sources-title">
+          <h2 id="sources-title">Sources &amp; filmmaker context</h2>
+          <ol>
+            <li><a href="https://about.netflix.com/en/news/savor-the-taste-of-ambition-in-fiery-thai-film-hunger" target="_blank" rel="noopener">Netflix — “Savor the Taste of Ambition in Fiery Thai Film HUNGER”</a>. Production background, the director’s description of hunger as desire beyond food, and Chef Chalee Kader’s culinary involvement.</li>
+            <li><a href="https://www.netflix.com/tudum/articles/hunger-movie-release-date-news" target="_blank" rel="noopener">Netflix Tudum — “Hunger on Netflix: Everything You Need to Know”</a>. Film setup, cast and culinary context.</li>
+            <li><a href="https://www.salon.com/2023/05/07/hunger-thai-netflix-sitisiri-mongkolsiri/" target="_blank" rel="noopener">Salon — interview with Sitisiri Mongkolsiri</a>. The director discusses the intentionally uneasy, grotesque presentation of food and Paul’s heightened nature.</li>
+            <li><a href="https://www.nme.com/features/film-interviews/hunger-netflix-movie-director-interview-sitisiri-mongkolsiri-3426661" target="_blank" rel="noopener">NME — interview with Sitisiri Mongkolsiri</a>. Satire, horror influences, status and the question of what the wealthy still hunger for.</li>
+            <li><a href="https://www.contentasia.tv/features/i-wanted-showthe-aggression-and-hunger-inside-each-us-thai-director-sitisiri-dom" target="_blank" rel="noopener">ContentAsia — interview with Mongkolsiri</a>. Food as an analogy for class, politics and internal aggression.</li>
+          </ol>
+          <div class="method"><strong>Reading note:</strong> This page separates filmmaker-confirmed intent from interpretation. Statements introduced as Mongkolsiri’s intent are grounded in interviews/production notes above. The broader claims about Paul, Aoy, Tos, the combats and the ending are critical interpretation of the completed film, not claims that the filmmakers explicitly endorsed every reading.</div>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <footer class="wrap"><span>HUNGER / critical reading</span><span>Designed as an editorial analysis, not a Netflix-affiliated page</span><span>2026</span></footer>
+
+  <script>
+    (()=>{
+      const fill=document.getElementById('heatFill');
+      const links=[...document.querySelectorAll('.toc a')];
+      const sections=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+      const update=()=>{
+        const doc=document.documentElement;
+        const max=doc.scrollHeight-innerHeight;
+        const pct=max>0?Math.min(100,Math.max(0,(scrollY/max)*100)):0;
+        fill.style.height=pct+'%';
+        let current=sections[0];
+        const marker=innerHeight*.28;
+        for(const s of sections){if(s.getBoundingClientRect().top<=marker) current=s;}
+        links.forEach(a=>a.classList.toggle('active',current&&a.getAttribute('href')==='#'+current.id));
+      };
+      addEventListener('scroll',update,{passive:true});
+      addEventListener('resize',update);
+      update();
+    })();
+  </script>
+</body>
+</html>
