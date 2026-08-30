@@ -18,13 +18,15 @@
     }
   }
 
-  import('./sync-v3.mjs?v=20260815-1').catch(error => {
-    console.error('Could not load todo sync V3.', error);
-    const status = document.getElementById('syncStatus');
-    const message = document.getElementById('syncMessage');
-    const detail = document.getElementById('syncTime');
-    if (status) status.dataset.type = 'error';
-    if (message) message.textContent = 'Sync module failed to load';
-    if (detail) detail.textContent = 'Local tasks still work. Reload the page to retry GitHub sync.';
-  });
+  import('./sync-v3.mjs?v=20260829-1')
+    .then(() => import('./archive-ui.mjs?v=20260829-1'))
+    .catch(error => {
+      console.error('Could not load todo app modules.', error);
+      const status = document.getElementById('syncStatus');
+      const message = document.getElementById('syncMessage');
+      const detail = document.getElementById('syncTime');
+      if (status) status.dataset.type = 'error';
+      if (message) message.textContent = 'App module failed to load';
+      if (detail) detail.textContent = 'Local tasks still work. Reload the page to retry the enhanced views and GitHub sync.';
+    });
 })();
