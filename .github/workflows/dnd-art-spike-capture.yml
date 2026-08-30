@@ -41,9 +41,16 @@ jobs:
           CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
         run: |
           set -euxo pipefail
-          mkdir -p visual-tests/dnd-art-spike
-          COMMON="--headless=new --no-sandbox --disable-dev-shm-usage --hide-scrollbars --use-angle=swiftshader --enable-unsafe-swiftshader --enable-webgl --ignore-gpu-blocklist --force-device-scale-factor=1 --run-all-compositor-stages-before-draw --virtual-time-budget=35000"
+          mkdir -p visual-tests/dnd-art-spike /tmp/dnd-chrome-profile
+          COMMON="--headless=new --no-sandbox --disable-dev-shm-usage --hide-scrollbars --use-angle=swiftshader --enable-unsafe-swiftshader --enable-webgl --ignore-gpu-blocklist --force-device-scale-factor=1 --run-all-compositor-stages-before-draw --virtual-time-budget=35000 --user-data-dir=/tmp/dnd-chrome-profile"
           URL="http://127.0.0.1:4173/previews/dnd-miniature-art-spike/"
+
+          # Warm remote texture/GLB/CDN caches. A cold first CLI screenshot can
+          # otherwise capture before asynchronous terrain assets become visible.
+          timeout 120s "$CHROME_PATH" $COMMON \
+            --window-size=700,700 \
+            --screenshot=/tmp/dnd-warmup.png \
+            "${URL}?visualCapture=1&view=tabletop&warmup=1&commit=${GITHUB_SHA}" || true
 
           timeout 120s "$CHROME_PATH" $COMMON \
             --window-size=700,700 \
