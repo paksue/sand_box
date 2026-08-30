@@ -34,24 +34,24 @@
 <body>
   <canvas id="scene"></canvas>
   <section class="hud">
-    <div class="eyebrow">ART SPIKE · REAL PBR ASSETS</div>
+    <div class="eyebrow">ART SPIKE · TERRAIN FIRST</div>
     <h1>Miniature Diorama Benchmark</h1>
-    <p id="status">Loading scan-quality materials and CC0 assets…</p>
+    <p id="status">Building physical terrain geometry…</p>
     <div class="row">
       <button id="tabletop" class="active">Tabletop</button>
       <button id="eye">Miniature eye</button>
       <button id="renderMode">Beauty: deferred</button>
     </div>
     <div class="meter"><span id="samples">Raster</span></div>
-    <small>Art spike only. Current game remains untouched.</small>
+    <small>Terrain geometry is the current acceptance gate.</small>
   </section>
   <div class="credit">CC0 source assets: Poly Haven · KayKit</div>
   <script type="module" src="./app.js"></script>
   <script type="module" src="./backdrop-pass.js"></script>
   <script type="module" src="./canopy-pass.js"></script>
   <script type="module" src="./cleanup-pass.js"></script>
+  <script type="module" src="./terrain-pass.js"></script>
   <script type="module" src="./column-pass.js"></script>
-  <script type="module" src="./grout-scale-pass.js"></script>
   <script type="module" src="./miniatures-pass.js"></script>
 </body>
 </html>
