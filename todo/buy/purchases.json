@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "updatedAt": "2026-08-30T22:18:00-04:00",
+  "items": [
+    {
+      "id": "compeed-small-hydrocolloid",
+      "name": "COMPEED Small Hydrocolloid Blister Plasters",
+      "subtitle": "Exact target: Small 2 × 6 cm blister plaster — or the U.S. mixed pack that includes the same Small size.",
+      "category": "Health",
+      "status": "need",
+      "priority": "high",
+      "priceUsd": 10.49,
+      "targetPriceUsd": 11,
+      "store": "CVS / COMPEED U.S.",
+      "purchaseUrl": "https://www.cvs.com/shop/compeed-blister-care-cushions-mixed-sizes-10-ct-prodid-2800131",
+      "quantity": 1,
+      "addedAt": "2026-08-30T22:18:00-04:00",
+      "notes": "The German package is COMPEED Blasenpflaster Small, 6 pieces, 2 × 6 cm. In the U.S., the easiest close match is usually COMPEED Advanced Blister Care Mixed Sizes; the 10-count pack includes 4 Small patches. Prefer an all-Small pack if one is available at a sensible price.",
+      "research": {
+        "checked": "Aug 30, 2026",
+        "us": "U.S. COMPEED mixed 10-count: about $10.49 (~$1.05 per patch overall; 4 are Small).",
+        "germany": "German exact Small 6-pack: roughly €5.92–€8.89 (~$6.87–$10.31 at the exchange rate checked).",
+        "regularBandage": "Ordinary Band-Aid Flexible Fabric: about $0.13 each, but it is not a hydrocolloid blister dressing and is not an equivalent product.",
+        "decision": "Buy COMPEED when treating an actual friction blister; target ≤ $11 for the U.S. pack. If buying only Small patches, an all-Small pack is better value than paying for mixed sizes you will not use."
+      }
+    }
+  ]
+}
