@@ -5,205 +5,111 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Massachusetts Firearm Training Shortlist</title>
   <style>
-    :root {
-      --bg: #f5f7fa;
-      --card: #ffffff;
-      --ink: #172033;
-      --muted: #647084;
-      --line: #dfe5ec;
-      --accent: #244a7c;
-      --ok-bg: #eaf7ef;
-      --ok: #22623c;
-      --maybe-bg: #fff6df;
-      --maybe: #7a5700;
-      --member-bg: #f2edf9;
-      --member: #5d3f86;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--ink);
-      line-height: 1.45;
-    }
-    main { max-width: 1060px; margin: 0 auto; padding: 32px 18px 64px; }
-    h1 { font-size: clamp(1.9rem, 4vw, 3rem); margin: 0 0 8px; line-height: 1.05; }
-    h2 { margin: 34px 0 14px; font-size: 1.35rem; }
-    h3 { margin: 0 0 4px; font-size: 1.05rem; }
-    p { margin: 0 0 10px; }
-    a { color: var(--accent); }
-    .sub { color: var(--muted); max-width: 820px; }
-    .meta { margin-top: 12px; color: var(--muted); font-size: .92rem; }
-    .notice {
-      margin: 22px 0;
-      padding: 14px 16px;
-      border: 1px solid var(--line);
-      border-left: 4px solid var(--accent);
-      background: var(--card);
-      border-radius: 10px;
-    }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(285px, 1fr)); gap: 14px; }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 17px;
-      box-shadow: 0 2px 10px rgba(23, 32, 51, .045);
-    }
-    .top-pick { border-width: 2px; border-color: #9fb6d2; }
-    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 9px 0 12px; }
-    .tag { font-size: .78rem; font-weight: 650; padding: 4px 8px; border-radius: 999px; background: #eef2f7; }
-    .ok { background: var(--ok-bg); color: var(--ok); }
-    .maybe { background: var(--maybe-bg); color: var(--maybe); }
-    .member { background: var(--member-bg); color: var(--member); }
-    ul { margin: 8px 0 0 20px; padding: 0; }
-    li { margin: 4px 0; }
-    .price { font-weight: 750; }
-    .actions { margin-top: 13px; display: flex; flex-wrap: wrap; gap: 8px; }
-    .btn {
-      display: inline-block;
-      text-decoration: none;
-      padding: 8px 11px;
-      border-radius: 9px;
-      border: 1px solid var(--line);
-      background: #f9fbfd;
-      font-weight: 650;
-      font-size: .9rem;
-    }
-    table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; }
-    th, td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
-    th { background: #edf2f7; font-size: .85rem; }
-    tr:last-child td { border-bottom: 0; }
-    .small { color: var(--muted); font-size: .88rem; }
-    footer { margin-top: 34px; color: var(--muted); font-size: .84rem; }
-    @media (max-width: 640px) {
-      main { padding-top: 22px; }
-      table, thead, tbody, th, td, tr { display: block; }
-      thead { display: none; }
-      tr { border-bottom: 1px solid var(--line); padding: 8px 0; }
-      td { border: 0; padding: 5px 12px; }
-    }
+    :root{--bg:#f5f7fa;--card:#fff;--ink:#172033;--muted:#647084;--line:#dfe5ec;--accent:#244a7c;--ok-bg:#eaf7ef;--ok:#22623c;--maybe-bg:#fff6df;--maybe:#7a5700;--member-bg:#f2edf9;--member:#5d3f86}
+    *{box-sizing:border-box} body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
+    main{max-width:1060px;margin:0 auto;padding:32px 18px 64px} h1{font-size:clamp(1.9rem,4vw,3rem);margin:0 0 8px;line-height:1.05} h2{margin:34px 0 14px;font-size:1.35rem} h3{margin:0 0 4px;font-size:1.05rem} p{margin:0 0 10px} a{color:var(--accent)}
+    .sub{color:var(--muted);max-width:820px}.meta{margin-top:12px;color:var(--muted);font-size:.92rem}.notice{margin:22px 0;padding:14px 16px;border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--card);border-radius:10px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(285px,1fr));gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:17px;box-shadow:0 2px 10px rgba(23,32,51,.045)}.top-pick{border-width:2px;border-color:#9fb6d2}
+    .tags{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 12px}.tag{font-size:.78rem;font-weight:650;padding:4px 8px;border-radius:999px;background:#eef2f7}.ok{background:var(--ok-bg);color:var(--ok)}.maybe{background:var(--maybe-bg);color:var(--maybe)}.member{background:var(--member-bg);color:var(--member)}
+    ul{margin:8px 0 0 20px;padding:0}li{margin:4px 0}.price{font-weight:750}.actions{margin-top:13px;display:flex;flex-wrap:wrap;gap:8px}.btn{display:inline-block;text-decoration:none;padding:8px 11px;border-radius:9px;border:1px solid var(--line);background:#f9fbfd;font-weight:650;font-size:.9rem}
+    table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden}th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:#edf2f7;font-size:.85rem}tr:last-child td{border-bottom:0}.small{color:var(--muted);font-size:.88rem}footer{margin-top:34px;color:var(--muted);font-size:.84rem}
+    @media(max-width:640px){main{padding-top:22px}table,thead,tbody,th,td,tr{display:block}thead{display:none}tr{border-bottom:1px solid var(--line);padding:8px 0}td{border:0;padding:5px 12px}}
   </style>
 </head>
 <body>
 <main>
   <header>
     <h1>Massachusetts Firearm Training Shortlist</h1>
-    <p class="sub">A persistent reference for finding a law class plus practical firearm training that three friends can attend together. Two of the three may not be GOAL members.</p>
-    <div class="meta">Last verified: September 1, 2026 · Source pages linked below · Availability can change</div>
+    <p class="sub">Condensed reference for the firearm/self-defense training discussion in this ChatGPT conversation.</p>
+    <div class="meta"><strong>Source scope: THIS CHAT ONLY.</strong> No information from other chats, memories, or unrelated projects is included. Last chat update: September 1, 2026.</div>
   </header>
 
-  <div class="notice">
-    <strong>Best overall approach:</strong> do a beginner/live-fire course first if needed, then a dedicated Massachusetts self-defense/use-of-force law class. Move into defensive-pistol training only after everyone is comfortable with basic safe handgun operation.
-  </div>
+  <div class="notice"><strong>Goal from this chat:</strong> find Massachusetts firearm/self-defense training that you can attend with two friends. Law and physical/firearm classes can be separate. The friends may not be GOAL members.</div>
 
-  <h2>Best choices right now</h2>
+  <h2>Best options discussed</h2>
   <section class="grid">
     <article class="card top-pick">
-      <h3>1. Mass Firearms School — Self Defense Law</h3>
-      <div class="tags"><span class="tag ok">Non-members welcome at MFS</span><span class="tag">LAW</span><span class="tag">Holliston</span></div>
-      <p><span class="price">$100 · 4 hours</span></p>
-      <p>Dedicated Massachusetts self-defense-law course. The current course page names attorney Matthew Trask and covers legal threat assessment, police/investigator interaction, court process, case law, and Massachusetts castle doctrine.</p>
-      <div class="actions">
-        <a class="btn" href="https://www.massfirearmsschool.com/class/self-defense-law/">Self Defense Law</a>
-        <a class="btn" href="https://www.massfirearmsschool.com/classes/">All MFS classes</a>
-      </div>
+      <h3>Mass Firearms School — Self Defense Law</h3>
+      <div class="tags"><span class="tag">LAW</span><span class="tag">Holliston</span></div>
+      <p><span class="price">$100 · about 4 hours</span></p>
+      <p>Dedicated Massachusetts self-defense-law class. In this chat it was described as taught by firearms attorney Matthew Trask, covering self-defense law, castle doctrine, threat assessment, police/investigators, courts, and case law.</p>
+      <div class="actions"><a class="btn" href="https://www.massfirearmsschool.com/class/self-defense-law/">Class page</a></div>
     </article>
 
     <article class="card top-pick">
-      <h3>2. Tactical Dynamics — MA Gun Safety + Use of Force</h3>
-      <div class="tags"><span class="tag ok">Public ticketing</span><span class="tag">LAW + LIVE FIRE</span><span class="tag">Foxboro</span></div>
-      <p><strong>Sept. 12:</strong> 9am–1pm MA Gun Safety <span class="price">$120</span>, then 2pm–6pm Use of Force / Home Defense / Concealed Carry <span class="price">$125</span>.</p>
-      <p>The morning course includes live fire plus Massachusetts use-of-force law, disengagement, storage/transport and licensing material. The afternoon course is classroom-only and focuses more directly on defensive/legal decision-making.</p>
-      <div class="actions"><a class="btn" href="https://tacdynamics.com/">Current Tactical Dynamics schedule</a></div>
+      <h3>Tactical Dynamics — MA Gun Safety + Use of Force</h3>
+      <div class="tags"><span class="tag">LAW + LIVE FIRE</span><span class="tag">Foxborough</span></div>
+      <p><strong>Sept. 12, 2026:</strong> MA Gun Safety 9am–1pm <span class="price">$120</span>; Use of Force / Home Defense / Concealed Carry 2pm–6pm <span class="price">$125</span>.</p>
+      <p>The morning class was described in this chat as live-fire plus MA use-of-force law, disengagement/de-escalation, storage/transport, and LTC material. The afternoon class is classroom-only.</p>
+      <div class="actions"><a class="btn" href="https://tacdynamics.com/">Tactical Dynamics</a></div>
     </article>
 
     <article class="card top-pick">
-      <h3>3. Danvers Fish & Game / Paladin — Basic Firearms Safety</h3>
-      <div class="tags"><span class="tag ok">Explicitly accepts non-members</span><span class="tag">BEGINNER + LIVE FIRE</span><span class="tag">Middleton</span></div>
-      <p><strong>Sept. 26 and Oct. 31 currently listed.</strong> <span class="price">$200 non-member</span>; $180 for club members/immediate family.</p>
-      <p>About 8 hours, live fire, Massachusetts firearm-law material, licensing guidance, and beginner handling. Firearm, ammunition, targets, eye and ear protection are listed as provided. Class is listed as limited to 6.</p>
+      <h3>Danvers Fish & Game — Basic Firearms Safety</h3>
+      <div class="tags"><span class="tag ok">Explicit non-member price discussed</span><span class="tag">BEGINNER + LIVE FIRE</span></div>
+      <p><strong>Dates discussed:</strong> Sept. 26, Oct. 31, and Nov. 28, 2026.</p>
+      <p><span class="price">$200 non-member</span>. In this chat these were identified as basic safety/live-fire classes with Massachusetts-law material, with firearms/ammunition/targets/eye-ear protection described as provided.</p>
       <div class="actions"><a class="btn" href="https://www.dfgc.club/content.aspx?action=cira&club_id=611443&page_id=4001&sif=0&vm=Future">Danvers events</a></div>
     </article>
   </section>
 
-  <h2>GOAL: what works with non-member friends?</h2>
+  <h2>GOAL: guest/non-member situation</h2>
   <section class="grid">
     <article class="card">
-      <h3>GOAL HQ classes</h3>
-      <div class="tags"><span class="tag member">Members only unless noted</span></div>
-      <p>GOAL states that courses held at GOAL headquarters are open to GOAL members only unless the individual course says otherwise. One member's membership does not automatically cover two friends as guests.</p>
-      <div class="actions"><a class="btn" href="https://www.goal.org/training">GOAL Training Academy</a></div>
+      <h3>GOAL headquarters classes</h3>
+      <div class="tags"><span class="tag member">Members only unless class says otherwise</span></div>
+      <p>This chat established that your GOAL membership generally does <strong>not</strong> automatically cover your two non-member friends as guests for GOAL HQ member-only classes.</p>
+      <div class="actions"><a class="btn" href="https://www.goal.org/training">GOAL training</a></div>
     </article>
 
     <article class="card">
       <h3>GOAL Massachusetts Gun Law Seminar</h3>
-      <div class="tags"><span class="tag ok">Can include general public</span><span class="tag">LAW</span></div>
-      <p>GOAL encourages affiliated clubs hosting its Chapter 135 Massachusetts Gun Law Seminar to invite the general public, local law enforcement and elected officials. It runs roughly 6pm–8:30pm when scheduled.</p>
-      <p class="small">For a nearby public session, check GOAL's club-event page or contact Jon Green through GOAL.</p>
-      <div class="actions"><a class="btn" href="https://www.goal.org/lawseminar">GOAL Law Seminar</a></div>
+      <div class="tags"><span class="tag ok">Can be open to general public</span><span class="tag">LAW</span></div>
+      <p>Discussed as a roughly 2.5-hour Massachusetts gun-law seminar covering major Chapter 135 changes. GOAL-affiliated clubs can host these and invite the general public.</p>
+      <p class="small">Jon Green at GOAL was identified in this chat as the contact for finding a public session.</p>
+      <div class="actions"><a class="btn" href="https://www.goal.org/lawseminar">GOAL law seminar</a></div>
     </article>
 
     <article class="card">
-      <h3>Danvers — Know the Law</h3>
+      <h3>Danvers — Know the Law: Home Invasion</h3>
       <div class="tags"><span class="tag maybe">Confirm non-member eligibility</span><span class="tag">LAW</span></div>
-      <p><strong>October 17, 2026</strong> is currently listed by GOAL as “Danvers — Know the Law.” GOAL provides a registration link, but the public listing does not explicitly state the non-member rule, so confirm before booking all three.</p>
-      <div class="actions"><a class="btn" href="https://www.goal.org/clubevents">GOAL affiliated club events</a></div>
+      <p><strong>Oct. 17, 2026</strong> was discussed. Topics mentioned in this chat included when defensive force may be justified, duty to retreat, stand-your-ground concepts, and home invasion.</p>
+      <div class="actions"><a class="btn" href="https://www.goal.org/clubevents">GOAL club events</a></div>
     </article>
   </section>
 
-  <h2>Other useful choices</h2>
+  <h2>Other classes discussed in this chat</h2>
   <div class="card">
     <table>
-      <thead><tr><th>Option</th><th>Good for</th><th>Current useful info</th><th>Guest/member note</th></tr></thead>
+      <thead><tr><th>Class</th><th>Useful info from this chat</th></tr></thead>
       <tbody>
-        <tr>
-          <td><strong>Tactical Dynamics — Intro to Handguns</strong></td>
-          <td>Newer shooters</td>
-          <td>Sept. 5 and Sept. 13 sessions currently listed at <strong>$150</strong>. Classroom + range; students can try up to 10 handguns. Does not itself satisfy MA LTC requirements.</td>
-          <td><span class="tag ok">Public ticketing</span></td>
-        </tr>
-        <tr>
-          <td><strong>Mass Firearms — Mass Law: Beyond the Basics</strong></td>
-          <td>Broader MA firearm-law education</td>
-          <td><strong>$125 · 4 hours</strong>. Current listing names attorney Paul V. Marino. Covers prohibited places, storage/security, license-loss risks, MA firearm-law issues and self-defense basics.</td>
-          <td><span class="tag ok">MFS says non-members welcome</span></td>
-        </tr>
-        <tr>
-          <td><strong>Mass Firearms — Home Defense Tactics</strong></td>
-          <td>Home-defense legal/tactical concepts</td>
-          <td><strong>$100 · 2 hours.</strong> Includes Massachusetts castle doctrine/self-defense law, prevention/deterrence, equipment considerations and communication with first responders. Not an LTC-qualifying course.</td>
-          <td><span class="tag ok">MFS says non-members welcome</span></td>
-        </tr>
-        <tr>
-          <td><strong>GOAL fundraiser — Intuitive Defensive Shooting</strong></td>
-          <td>More experienced shooters</td>
-          <td><strong>Sept. 15 · Worcester · $300</strong>. GOAL lists four Rob Pincus/I.C.E. training days Sept. 15–18. Advanced days have prerequisites.</td>
-          <td><span class="tag maybe">No membership requirement stated; confirm when reserving</span></td>
-        </tr>
+        <tr><td><strong>Tactical Dynamics — Intro to Handguns</strong></td><td>Beginner-friendly; classroom + range; try up to 10 handguns. Sept. 5 or Sept. 13, 2026; <strong>$150/person</strong>.</td></tr>
+        <tr><td><strong>Tactical Dynamics — Pistol Skill Builder Level 1</strong></td><td>More range-focused after basics. Sept. 19; <strong>$160/person</strong>.</td></tr>
+        <tr><td><strong>South Shore Gun Training</strong></td><td>Rockland/Holbrook-area option. This chat described MA self-defense/use-of-force law, where you may carry, storage/transport, de-escalation, and separate live fire. Prices discussed: <strong>$175 classroom + $125 live fire</strong>.</td></tr>
+        <tr><td><strong>GOAL / Worcester — Intuitive Defensive Shooting</strong></td><td>Sept. 15, Worcester Pistol & Rifle Club; <strong>$300/person</strong>. Better suited after basic handgun competence.</td></tr>
+        <tr><td><strong>GOAL advanced courses</strong></td><td>Advanced Pistol Handling Sept. 16; Unorthodox Shooting Positions Sept. 17; additional defensive training Sept. 18. Prerequisites apply to advanced classes.</td></tr>
+        <tr><td><strong>GOAL instructor referral list</strong></td><td>Useful if the three of you want a smaller/private class instead of a large group.</td></tr>
       </tbody>
     </table>
   </div>
 
-  <h2>Simple plan for the three of you</h2>
-  <section class="grid">
-    <article class="card"><h3>If both friends are beginners</h3><ul><li>Start with Tactical Dynamics MA Gun Safety, Intro to Handguns, or the Danvers/Paladin beginner course.</li><li>Then take Mass Firearms Self Defense Law or a public GOAL law seminar together.</li></ul></article>
-    <article class="card"><h3>If they already handle handguns safely</h3><ul><li>Prioritize the dedicated law course.</li><li>Then consider a defensive-pistol course appropriate to their existing skill level and prerequisites.</li></ul></article>
-    <article class="card"><h3>Using your friend's friend</h3><ul><li>Useful for informal familiarization, range etiquette and helping beginners get comfortable.</li><li>Still use a qualified Massachusetts instructor or attorney-led class for authoritative legal instruction.</li></ul></article>
-  </section>
-
-  <h2>Massachusetts licensing-course change to remember</h2>
-  <div class="notice">
-    Massachusetts says Basic Firearms Safety courses conducted on or after <strong>April 2, 2026</strong> must include safe handling/use/storage, secure storage/childproofing, applicable MA firearm laws, firearm operation, suicide/injury prevention, Massachusetts use-of-force law, disengagement/conflict avoidance, and <strong>live-fire training</strong>. When choosing an LTC/BFS course, verify that it is on the current approved-course list.
-    <div class="actions">
-      <a class="btn" href="https://www.mass.gov/doc/basic-firearms-safety-course-information-for-law-enforcement/download">Massachusetts EOPSS memo</a>
-      <a class="btn" href="https://www.mass.gov/doc/approved-basic-firearms-safety-course-list-updated-may-13-2026/download">Approved BFS course list</a>
-    </div>
+  <h2>Using your friend's friend</h2>
+  <div class="card">
+    <p>An experienced, responsible friend can be useful for basic firearm familiarization, range etiquette, safe handling, and helping beginners get comfortable.</p>
+    <p>For Massachusetts law, this chat recommended pairing informal familiarization with a formal Massachusetts self-defense/use-of-force law class.</p>
   </div>
 
+  <h2>Suggested sequence from this chat</h2>
+  <section class="grid">
+    <article class="card"><h3>If the friends are beginners</h3><ol><li>Beginner handgun/live-fire class.</li><li>Dedicated Massachusetts law class.</li><li>Defensive-pistol class later.</li></ol></article>
+    <article class="card"><h3>Top three to investigate first</h3><ol><li>Mass Firearms — Self Defense Law.</li><li>GOAL/Danvers — Know the Law.</li><li>Tactical Dynamics — beginner + defensive firearm progression.</li></ol></article>
+  </section>
+
+  <h2>Massachusetts course change mentioned in this chat</h2>
+  <div class="notice">This chat noted that Massachusetts changed its required Basic Firearms Safety curriculum effective <strong>April 2, 2026</strong>, including live-fire and updated legal/safety material. Verify that an LTC/basic course uses the current approved curriculum. <a href="https://www.mass.gov/doc/basic-firearms-safety-course-information-for-law-enforcement/download">Massachusetts source linked in the chat</a>.</div>
+
   <footer>
-    This page is a shortlist, not legal advice. Prices, seats, dates, instructors and admission rules can change; use the linked official registration pages before booking. Future ChatGPT updates should modify this artifact rather than reproducing it in the conversation.
+    <strong>Artifact rule:</strong> this page is a condensed record of this specific ChatGPT conversation only. Future edits for this artifact should use information introduced in this same chat unless the user explicitly asks to broaden the source scope. It is not legal advice; class dates, prices, seats and admission rules can change.
   </footer>
 </main>
 </body>
