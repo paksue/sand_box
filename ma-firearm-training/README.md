@@ -1,14 +1,25 @@
-# Massachusetts Firearm Training Shortlist
+# Massachusetts Firearm Self-Defense Classes
 
-Persistent reference artifact for the Massachusetts firearm/self-defense training discussion in this specific ChatGPT conversation.
+Persistent reference artifact for this conversation.
 
-- Primary page: `index.html`
+## Scope identity
+
+- Chat key/title: `Massachusetts Firearm Self-Defense Classes`
+- Artifact scope GUID: `a6bf9392-6b0c-43b8-a230-eae656c1c1c9`
 - Chat date: September 1, 2026
-- Intended group: 3 people total; two friends may not be GOAL members.
-- Scope: beginner/live-fire classes, Massachusetts self-defense/use-of-force law education, GOAL guest/non-member rules discussed here, and later defensive-pistol progression.
+
+The GUID above is an **artifact-scope GUID created for this conversation**, not the hidden ChatGPT conversation UUID. The assistant cannot read the browser conversation UUID from inside ChatGPT. If the actual conversation URL/UUID is later supplied, it can replace or supplement this scope key.
 
 ## Source-scope rule
 
-This artifact should contain **only information introduced in this same chat**. Do not pull in details from other ChatGPT conversations, memory, or unrelated projects unless the user explicitly asks to broaden the scope.
+Use/update this artifact only when the user is explicitly working with this artifact/chat topic. Do not import information from unrelated chats, memories, or projects unless the user explicitly asks to broaden the scope.
 
-Future updates should edit the existing files rather than reposting the full summary in chat. Git history provides versioning.
+## How updates work
+
+- `index.html` is now a mostly fixed viewer shell.
+- Current artifact content lives in **GitHub Issue #42**: `Artifact content — Massachusetts Firearm Self-Defense Classes [a6bf9392]`.
+- The public page fetches the Issue body dynamically through GitHub's public API.
+- Normal future content updates should edit **Issue #42 only**. They do **not** require changing `index.html`.
+- Change `index.html` only when redesigning the viewer, changing the data source, or changing technical behavior.
+
+The repository and GitHub Pages site are public, so the page content and Issue #42 are public information. `noindex` is included in the viewer as a search-engine preference, not as an access-control mechanism.
