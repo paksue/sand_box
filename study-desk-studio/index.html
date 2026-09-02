@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tiny Study Desk Studio — High School Room Planner</title>
+  <meta name="description" content="Interactive, source-backed tiny-room study desk guide: wall desks, rolling desks, floating shelves, loft setups, hidden study zones, lap-desk fallbacks, and no-book-clutter systems." />
+  <style>
+    :root{
+      --bg:#0b0d14;
+      --bg2:#101522;
+      --panel:rgba(255,255,255,.075);
+      --panel2:rgba(255,255,255,.11);
+      --line:rgba(255,255,255,.14);
+      --muted:#9ca7bf;
+      --text:#f6f7fb;
+      --cream:#f5ead5;
+      --gold:#f6c76a;
+      --rose:#ff8fb3;
+      --cyan:#7ee8fa;
+      --mint:#9df2c9;
+      --violet:#b69cff;
+      --shadow:0 30px 80px rgba(0,0,0,.45);
+      --radius:28px;
+      --radius2:18px;
+      --max:1200px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 12% 5%, rgba(182,156,255,.25), transparent 30%),
+        radial-gradient(circle at 82% 10%, rgba(126,232,250,.2), transparent 28%),
+        radial-gradient(circle at 52% 92%, rgba(246,199,106,.16), transparent 35%),
+        linear-gradient(180deg, var(--bg), #0b0e16 52%, #07080d);
+      color:var(--text);
+      overflow-x:hidden;
+    }
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.36;
+      background-image:linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size:42px 42px;
+      mask-image:linear-gradient(180deg, black, transparent 82%);
+    }
+    a{color:inherit;text-decoration:none}
+    .wrap{max-width:var(--max);margin:0 auto;padding:0 22px}
+    .topbar{
+      position:sticky;top:0;z-index:20;
+      backdrop-filter: blur(18px);
+      background:linear-gradient(180deg, rgba(9,11,18,.86), rgba(9,11,18,.56));
+      border-bottom:1px solid var(--line);
+    }
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:72px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:-.03em}
+    .logo{
+      width:42px;height:42px;border-radius:15px;
+      background:linear-gradient(135deg, var(--gold), var(--rose) 45%, var(--violet));
+      box-shadow:0 12px 40px rgba(246,199,106,.25);
+      position:relative;overflow:hidden;
+    }
+    .logo:after{content:"";position:absolute;inset:11px;border:2px solid rgba(10,12,20,.78);border-radius:8px;transform:skew(-8deg)}
+    .navlinks{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .navlinks a,.pill-btn{
+      border:1px solid transparent;
+      color:var(--muted);
+      padding:9px 12px;
+      border-radius:999px;
+      font-size:13px;
+      background:rgba(255,255,255,.035);
+    }
+    .navlinks a:hover,.pill-btn:hover{color:var(--text);border-color:var(--line);background:rgba(255,255,255,.075)}
+    .hero{padding:84px 0 48px;position:relative}
+    .hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:28px;align-items:center}
+    .eyebrow{display:inline-flex;align-items:center;gap:9px;padding:8px 12px;border-radius:999px;border:1px solid rgba(246,199,106,.35);background:rgba(246,199,106,.08);color:var(--cream);font-size:13px;font-weight:700}
+    h1{font-size:clamp(44px, 6vw, 82px);line-height:.91;letter-spacing:-.075em;margin:22px 0 18px;max-width:900px}
+    .lead{font-size:clamp(17px,2vw,22px);line-height:1.55;color:#c7cee0;max-width:760px;margin:0 0 26px}
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+    .btn{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line);background:rgba(255,255,255,.08);padding:13px 17px;border-radius:16px;font-weight:800;box-shadow:0 14px 44px rgba(0,0,0,.18)}
+    .btn.primary{background:linear-gradient(135deg, #f7d286, #ff9abd 52%, #aa95ff);color:#11131c;border:0}
+    .btn:hover{transform:translateY(-1px)}
+    .statrow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:32px;max-width:760px}
+    .stat{border:1px solid var(--line);background:rgba(255,255,255,.055);border-radius:18px;padding:15px 14px}
+    .stat b{display:block;font-size:23px;color:#fff;letter-spacing:-.03em}.stat span{font-size:12px;color:var(--muted)}
+    .room-card{min-height:520px;border:1px solid var(--line);border-radius:34px;background:linear-gradient(160deg, rgba(255,255,255,.13), rgba(255,255,255,.04));box-shadow:var(--shadow);padding:22px;position:relative;overflow:hidden}
+    .room-card:before{content:"";position:absolute;inset:-60px -80px auto auto;width:250px;height:250px;background:radial-gradient(circle, rgba(126,232,250,.28), transparent 62%);filter:blur(6px)}
+    .mini-room{height:330px;border-radius:26px;background:linear-gradient(180deg,#172032,#0e1320);border:1px solid rgba(255,255,255,.12);position:relative;overflow:hidden}
+    .floor{position:absolute;left:0;right:0;bottom:0;height:35%;background:linear-gradient(140deg, rgba(245,234,213,.11), rgba(255,255,255,.02));border-top:1px solid rgba(255,255,255,.08)}
+    .bed{position:absolute;left:22px;bottom:54px;width:210px;height:78px;border-radius:16px;background:linear-gradient(135deg,#e7d7ba,#f7f1e6);box-shadow:0 18px 40px rgba(0,0,0,.32)}
+    .bed:after{content:"";position:absolute;left:18px;top:13px;width:56px;height:28px;border-radius:10px;background:#fff7ea}
+    .desk-visual{position:absolute;right:42px;bottom:100px;width:165px;height:68px;border-radius:14px;background:linear-gradient(135deg,#f6c76a,#ff8fb3);box-shadow:0 18px 50px rgba(255,143,179,.24);transform:perspective(500px) rotateY(-14deg)}
+    .desk-visual:before{content:"";position:absolute;right:-16px;top:-84px;width:20px;height:150px;border-radius:9px;background:rgba(255,255,255,.23)}
+    .chair{position:absolute;right:88px;bottom:45px;width:68px;height:76px;border-radius:18px 18px 12px 12px;border:2px solid rgba(255,255,255,.34)}
+    .peg{position:absolute;right:58px;top:54px;width:134px;height:102px;border-radius:18px;background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.12);background-image:radial-gradient(rgba(255,255,255,.38) 1px, transparent 1px);background-size:14px 14px}
+    .lamp{position:absolute;right:215px;bottom:153px;width:56px;height:5px;background:#f6c76a;box-shadow:0 0 28px #f6c76a;border-radius:999px;transform:rotate(-18deg)}
+    .annotation{position:absolute;padding:9px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.13);background:rgba(10,12,20,.7);backdrop-filter:blur(10px);font-size:12px;color:#dfe4f3}.a1{top:20px;left:22px}.a2{right:24px;top:184px}.a3{left:220px;bottom:18px}
+    .room-caption{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.caption{border:1px solid var(--line);border-radius:20px;padding:15px;background:rgba(255,255,255,.055)}.caption b{display:block;margin-bottom:4px}.caption span{color:var(--muted);font-size:13px;line-height:1.4}
+    section{padding:64px 0}.section-head{display:flex;justify-content:space-between;gap:24px;align-items:end;margin-bottom:24px}.section-head h2{font-size:clamp(30px,4vw,52px);line-height:1;letter-spacing:-.055em;margin:0}.section-head p{color:var(--muted);line-height:1.55;max-width:520px;margin:0}
+    .filters{display:flex;gap:9px;flex-wrap:wrap;margin:18px 0 24px}.filter{cursor:pointer;border:1px solid var(--line);background:rgba(255,255,255,.055);color:#cbd3e5;padding:10px 13px;border-radius:999px;font-weight:800;font-size:13px}.filter.active{color:#11131c;background:linear-gradient(135deg,var(--gold),var(--rose));border:0}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.solution{border:1px solid var(--line);border-radius:26px;background:linear-gradient(180deg,rgba(255,255,255,.095),rgba(255,255,255,.04));padding:18px;min-height:315px;position:relative;overflow:hidden;box-shadow:0 16px 45px rgba(0,0,0,.2)}
+    .solution:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 0%, rgba(255,255,255,.12), transparent 30%);opacity:.7}.solution > *{position:relative}.tag{display:inline-flex;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:12px;color:#d8deee;font-weight:800}.solution h3{font-size:22px;letter-spacing:-.035em;margin:16px 0 9px}.solution p{color:#c7cee0;line-height:1.48;margin:0 0 14px}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}.meter{border-radius:14px;background:rgba(255,255,255,.06);padding:10px;border:1px solid rgba(255,255,255,.08)}.meter b{font-size:17px}.meter span{display:block;color:var(--muted);font-size:11px;margin-top:2px}.best{color:var(--mint)}.warn{color:var(--gold)}.bad{color:#ff9aa8}.card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.smallbtn{border:1px solid var(--line);background:rgba(255,255,255,.07);border-radius:13px;padding:9px 10px;font-size:12px;font-weight:800;color:#e8ecf7;cursor:pointer}.smallbtn.saved{background:rgba(157,242,201,.15);border-color:rgba(157,242,201,.35);color:#bfffe0}
+    .wizard{display:grid;grid-template-columns:.9fr 1.1fr;gap:18px}.panel{border:1px solid var(--line);background:rgba(255,255,255,.07);border-radius:var(--radius);padding:22px;box-shadow:0 20px 70px rgba(0,0,0,.22)}.question{margin:0 0 18px}.question label{display:block;color:#dce2f0;font-weight:850;margin-bottom:8px}.question select,.question input{width:100%;background:#0d1320;color:#fff;border:1px solid rgba(255,255,255,.16);border-radius:15px;padding:13px 14px;font:inherit;outline:none}.rec{min-height:340px;display:flex;flex-direction:column;justify-content:space-between}.rec h3{font-size:32px;line-height:1;letter-spacing:-.05em;margin:0 0 10px}.rec p{color:#c8d0e2;line-height:1.55}.rec-list{display:grid;gap:9px;margin:18px 0}.rec-list div{padding:12px 13px;border-radius:16px;background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.09)}
+    .portable-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.portable-card{display:grid;grid-template-columns:112px 1fr;gap:16px;align-items:center;border:1px solid var(--line);border-radius:24px;background:rgba(255,255,255,.06);padding:16px}.iconbox{height:96px;border-radius:22px;background:linear-gradient(145deg, rgba(246,199,106,.9), rgba(255,143,179,.78));position:relative;overflow:hidden}.iconbox.rolling:after{content:"";position:absolute;left:20px;right:20px;bottom:14px;height:10px;border-radius:999px;background:#101522;box-shadow: -20px 13px 0 -2px #101522, 20px 13px 0 -2px #101522}.iconbox.ctable:before{content:"";position:absolute;right:22px;top:25px;width:52px;height:42px;border:7px solid #101522;border-left:0;border-radius:0 18px 18px 0}.iconbox.lap:before{content:"";position:absolute;left:18px;right:18px;top:30px;height:38px;background:#101522;border-radius:12px;box-shadow:0 18px 0 rgba(16,21,34,.7)}.iconbox.cart:before{content:"";position:absolute;left:30px;top:18px;width:52px;height:60px;border:5px solid #101522;border-radius:12px;box-shadow:0 19px 0 -7px #101522}.portable-card h3{margin:0 0 6px;letter-spacing:-.035em}.portable-card p{margin:0;color:#c5ccdd;line-height:1.45}.portable-card small{display:inline-flex;margin-top:9px;color:#9df2c9;font-weight:850}
+    .shopping{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}.shop{border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));border-radius:22px;padding:16px;min-height:195px}.shop strong{display:block;font-size:17px;letter-spacing:-.03em;margin-bottom:8px}.shop p{color:#bdc7dc;font-size:13px;line-height:1.45;margin:0 0 12px}.shop a{display:inline-flex;border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:8px 10px;font-size:12px;font-weight:850;background:rgba(255,255,255,.065);margin:4px 4px 0 0}
+    .principles{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.principle{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:26px;padding:22px}.principle h3{margin:0 0 10px;font-size:24px;letter-spacing:-.04em}.principle p{margin:0;color:#c7cee0;line-height:1.58}.principle ul{margin:14px 0 0;padding-left:18px;color:#c7cee0;line-height:1.6}.principle li{margin:6px 0}
+    .render-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.render-card{border:1px solid var(--line);border-radius:26px;padding:16px;background:rgba(255,255,255,.055);overflow:hidden}.render-scene{height:170px;border-radius:20px;background:linear-gradient(140deg,#131a2b,#26324c);position:relative;margin-bottom:14px;overflow:hidden}.render-scene:before{content:"";position:absolute;inset:auto 0 0;height:38%;background:linear-gradient(90deg,rgba(246,199,106,.13),rgba(255,255,255,.03))}.render-scene .wall-desk{position:absolute;right:26px;bottom:60px;width:86px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--gold),var(--rose));box-shadow:0 18px 40px rgba(0,0,0,.22)}.render-scene .bed-small{position:absolute;left:18px;bottom:42px;width:104px;height:38px;border-radius:12px;background:#eee2cf}.render-scene .cart-small{position:absolute;right:122px;bottom:38px;width:35px;height:54px;border:2px solid rgba(255,255,255,.55);border-radius:9px}.render-card h3{margin:0 0 7px}.render-card p{color:#c8d0e2;line-height:1.45;margin:0 0 12px;font-size:14px}.prompt{display:none}.copy{width:100%;justify-content:center}
+    .source-list{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.source{border:1px solid var(--line);border-radius:18px;padding:14px;background:rgba(255,255,255,.05)}.source b{display:block;margin-bottom:4px}.source span{display:block;color:var(--muted);font-size:13px;line-height:1.4}.source a{color:#f6c76a;text-decoration:underline;text-underline-offset:3px}.note{border:1px solid rgba(246,199,106,.27);background:rgba(246,199,106,.08);border-radius:22px;padding:16px;color:#f5ead5;line-height:1.52;margin:16px 0}.footer{padding:44px 0 70px;color:#939db5;text-align:center}.hidden{display:none!important}.fade{animation:fade .25s ease both}@keyframes fade{from{opacity:.25;transform:translateY(4px)}to{opacity:1;transform:none}}
+    @media (max-width:980px){.hero-grid,.wizard,.portable-grid,.principles{grid-template-columns:1fr}.cards{grid-template-columns:1fr 1fr}.shopping{grid-template-columns:1fr 1fr}.render-grid{grid-template-columns:1fr 1fr}.navlinks{display:none}.room-card{min-height:auto}.statrow{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:640px){.wrap{padding:0 16px}.hero{padding-top:54px}.cards,.shopping,.render-grid,.source-list{grid-template-columns:1fr}.section-head{display:block}.section-head p{margin-top:12px}.portable-card{grid-template-columns:1fr}.room-caption{grid-template-columns:1fr}.mini-room{height:280px}.bed{width:165px}.desk-visual{right:28px;width:122px}.peg{right:32px}.a3{left:18px}.topbar{position:relative}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap nav">
+      <a class="brand" href="#top" aria-label="Tiny Study Desk Studio home"><span class="logo"></span><span>Tiny Study Desk Studio</span></a>
+      <nav class="navlinks" aria-label="Page navigation">
+        <a href="#solutions">Solutions</a><a href="#wizard">Picker</a><a href="#portable">Portable</a><a href="#buy">Buy</a><a href="#renders">Render briefs</a><a href="#sources">Sources</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <span class="eyebrow">High-school tiny-room desk planner • built from this chat</span>
+          <h1>Make a study desk appear without letting it eat the bedroom.</h1>
+          <p class="lead">A premium, navigable decision guide for adding a serious study spot in a very small room: fold-down desks, floating shelf desks, loft setups, hidden study closets, rolling desks, C-tables, lap-desk fallbacks, and school-supply carts — with a hard rule against turning the room into a book-storage tower.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#wizard">Find the best setup</a>
+            <a class="btn" href="#portable">Jump to portable/no-drill</a>
+            <a class="btn" href="#buy">Where to buy</a>
+          </div>
+          <div class="statrow" aria-label="Design summary">
+            <div class="stat"><b>10</b><span>solution patterns</span></div>
+            <div class="stat"><b>0</b><span>big bookcases needed</span></div>
+            <div class="stat"><b>20”+</b><span>monitor distance target</span></div>
+            <div class="stat"><b>1</b><span>clear work surface</span></div>
+          </div>
+        </div>
+        <aside class="room-card" aria-label="Illustrated tiny room study setup">
+          <div class="mini-room">
+            <span class="annotation a1">bed stays calm</span>
+            <span class="annotation a2">fold-down work mode</span>
+            <span class="annotation a3">chair clearance first</span>
+            <div class="peg"></div><div class="lamp"></div><div class="bed"></div><div class="desk-visual"></div><div class="chair"></div><div class="floor"></div>
+          </div>
+          <div class="room-caption">
+            <div class="caption"><b>The principle</b><span>The desk is for doing work. Storage goes vertical, mobile, or hidden.</span></div>
+            <div class="caption"><b>The trap</b><span>A bulky hutch desk can technically fit but still destroy the room because the chair cannot move.</span></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="solutions">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Solution gallery</h2>
+          <p>Filter by constraint. The scores are practical heuristics from the discussion: footprint, real-study quality, and risk/effort.</p>
+        </div>
+        <div class="filters" role="toolbar" aria-label="Filter study desk solutions">
+          <button class="filter active" data-filter="all">All</button>
+          <button class="filter" data-filter="portable">Portable</button>
+          <button class="filter" data-filter="no-drill">No drill</button>
+          <button class="filter" data-filter="wall">Wall mounted</button>
+          <button class="filter" data-filter="hidden">Hidden</button>
+          <button class="filter" data-filter="daily">Best daily study</button>
+          <button class="filter" data-filter="extreme">Extreme tiny</button>
+        </div>
+        <div class="cards" id="solutionCards">
+          <article class="solution" data-tags="wall hidden daily extreme" data-key="murphy">
+            <span class="tag">#1 tiny-room default</span><h3>Fold-down wall desk / Murphy desk</h3>
+            <p>Best when floor space is the bottleneck. It creates a real work surface only during homework, then folds away so the bedroom feels like a bedroom again.</p>
+            <div class="metrics"><div class="meter"><b class="best">A+</b><span>footprint</span></div><div class="meter"><b>A</b><span>study</span></div><div class="meter"><b class="warn">mount</b><span>risk</span></div></div>
+            <p><strong>Use when:</strong> drilling into studs is allowed. <strong>Avoid when:</strong> wall mounting is unsafe or the student needs a huge monitor.</p>
+            <div class="card-actions"><button class="smallbtn save">Save</button><a class="smallbtn" href="#buy">Buy paths</a></div>
+          </article>
+          <article class="solution" data-tags="wall daily" data-key="floating">
+            <span class="tag">cleanest look</span><h3>Floating shelf desk</h3>
+            <p>A deep wall shelf becomes a minimalist desk. No legs, less visual weight, and easy to pair with a tuck-in chair.</p>
+            <div class="metrics"><div class="meter"><b>A</b><span>footprint</span></div><div class="meter"><b>B+</b><span>study</span></div><div class="meter"><b class="warn">depth</b><span>risk</span></div></div>
+            <p><strong>Critical:</strong> do not make it too shallow. Writing plus laptop can work; monitor use needs more depth.</p>
+            <div class="card-actions"><button class="smallbtn save">Save</button><a class="smallbtn" href="#principles">Sizing rules</a></div>
+          </article>
+          <article class="solution" data-tags="hidden wall daily extreme" data-key="closet">
+            <span class="tag">sleep/study separation</span><h3>Hidden closet or curtain study nook</h3>
+            <p>A small desk behind a curtain, inside a closet, or behind cabinet doors. Strong psychologically because school disappears when closed.</p>
+            <div class="metrics"><div class="meter"><b>A</b><span>calm</span></div><div class="meter"><b>B+</b><span>study</span></div><div class="meter"><b class="warn">storage</b><span>tradeoff</span></div></div>
+            <p>Works best if clothing storage is already solved or the closet has an awkward unused section.</p>
+            <div class="card-actions"><button class="smallbtn save">Save</button><a class="smallbtn" href="#renders">Render brief</a></div>
+          </article>
+          <article class="solution" data-tags="extreme daily" data-key="loft">
+            <span class="tag">maximum floor recovery</span><h3>Loft bed with desk underneath</h3>
+            <p>The bed goes vertical and the desk moves underneath. This is the most aggressive way to gain floor area.</p>
+            <div class="metrics"><div class="meter"><b class="best">A+</b><span>floor gain</span></div><div class="meter"><b>B</b><span>study</span></div><div class="meter"><b class="bad">ceiling</b><span>risk</span></div></div>
+            <p>Only consider if ceiling height, fan/light clearance, mattress thickness, and teen comfort all work.</p>
+            <div class="card-actions"><button class="smallbtn save">Save</button><a class="smallbtn" href="#principles">Safety checks</a></div>
+          </article>
+          <article class="solution" data-tags="daily hidden" data-key="vanity">
+            <span class="tag">two jobs, one surface</span><h3>Desk / vanity hybrid</h3>
+            <p>One compact desk doubles as homework station and get-ready station. Good when the teen already wants a mirror/vanity.</p>
+            <div class="metrics"><div class="meter"><b>A</b><span>multi-use</span></div><div class="meter"><b>B</b><span>study</span></div><div class="meter"><b class="warn">clutter</b><span>risk</span></div></div>
+            <p>Needs a clear “study mode” reset: cosmetics and accessories off the surface before homework.</p>
+            <div class="card-actions"><button class="smallbtn save">Save</button><a class="smallbtn" href="#principles">No-clutter rule</a></div>
+          </article>
+          <article class="solution" data-tags="portable no-drill daily" data-key="rolling">
+            <span class="tag">best portable pick</span><h3>Rolling foldable desk</h3>
+            <p>The strongest no-drill option. It offers a real surface, rolls to the best light/quiet spot, then folds or parks against a wall.</p>
+            <div class="metrics"><div class="meter"><b>A</b><span>portable</span></div><div class="meter"><b>A-</b><span>study</span></div><div class="meter"><b class="warn">wobble</b><span>risk</span></div></div>
+            <p>Pair with locking wheels and a separate school cart so the desktop stays clean.</p>
+            <div class="card-actions"><button class="smallbtn save">Save</button><a class="smallbtn" href="#portable">Portable map</a></div>
+          </article>
+          <article class="solution" data-tags="portable no-drill" data-key="folding">
+            <span class="tag">simple fallback</span><h3>Plain folding desk / tray-table desk</h3>
+            <p>A lightweight folding table is cheap, temporary, and easy to test before buying a permanent desk.</p>
+            <div class="metrics"><div class="meter"><b>A</b><span>low risk</span></div><div class="meter"><b>B</b><span>study</span></div><div class="meter"><b class="warn">storage</b><span>risk</span></div></div>
+            <p>Best for testing the room: can the chair pull out? where does the lamp go? where do papers land?</p>
+            <div class="card-actions"><button class="smallbtn save">Save</button><a class="smallbtn" href="#buy">Buy paths</a></div>
+          </article>
+          <article class="solution" data-tags="portable no-drill extreme" data-key="ctable">
+            <span class="tag">bedside/couch option</span><h3>C-shaped laptop table</h3>
+            <p>Slides beside a bed or chair when there is no chair-pullout clearance. Good for review, laptop tasks, flashcards, and short sessions.</p>
+            <div class="metrics"><div class="meter"><b>A</b><span>tiny fit</span></div><div class="meter"><b>C+</b><span>study</span></div><div class="meter"><b class="warn">posture</b><span>risk</span></div></div>
+            <p>Not ideal as the only daily homework station unless no other surface is possible.</p>
+            <div class="card-actions"><button class="smallbtn save">Save</button><a class="smallbtn" href="#principles">Ergonomics</a></div>
+          </article>
+          <article class="solution" data-tags="portable no-drill extreme" data-key="lap">
+            <span class="tag">emergency mode</span><h3>Lap desk / bed tray</h3>
+            <p>Useful for reading, flashcards, writing a quick assignment, or sick days. Weak as a main desk because the neck usually bends down.</p>
+            <div class="metrics"><div class="meter"><b>A+</b><span>storage</span></div><div class="meter"><b>C</b><span>study</span></div><div class="meter"><b class="bad">neck</b><span>risk</span></div></div>
+            <p>If laptop use is long, add a stand plus keyboard/mouse somewhere else.</p>
+            <div class="card-actions"><button class="smallbtn save">Save</button><a class="smallbtn" href="#portable">Fallback notes</a></div>
+          </article>
+          <article class="solution" data-tags="portable no-drill daily" data-key="cart">
+            <span class="tag">storage without hutch</span><h3>Rolling school-supply cart</h3>
+            <p>The desk stays small because the supplies live on wheels. Cart holds binders, current books, charger, calculator, headphones, and paper.</p>
+            <div class="metrics"><div class="meter"><b>A+</b><span>declutter</span></div><div class="meter"><b>A</b><span>support</span></div><div class="meter"><b>A</b><span>reuse</span></div></div>
+            <p>This is the “don’t add too many books” unlock: current materials only, everything else stored elsewhere.</p>
+            <div class="card-actions"><button class="smallbtn save">Save</button><a class="smallbtn" href="#buy">Cart shopping</a></div>
+          </article>
+          <article class="solution" data-tags="no-drill daily" data-key="micke">
+            <span class="tag">safe normal desk</span><h3>Small normal desk</h3>
+            <p>When wall mounting is out and portability is not needed, a compact fixed desk is still better than a bulky hutch desk.</p>
+            <div class="metrics"><div class="meter"><b>B</b><span>footprint</span></div><div class="meter"><b>A</b><span>study</span></div><div class="meter"><b>A</b><span>stability</span></div></div>
+            <p>Look for about 28–36 inches wide, shallow cable management, one drawer max, and a chair that fully tucks in.</p>
+            <div class="card-actions"><button class="smallbtn save">Save</button><a class="smallbtn" href="#buy">MICKE path</a></div>
+          </article>
+          <article class="solution" data-tags="wall daily" data-key="diy">
+            <span class="tag">custom fit</span><h3>DIY shelf + folding brackets</h3>
+            <p>Best when the room has weird dimensions. A custom board plus heavy-duty folding brackets gives exact width/depth without a furniture tower.</p>
+            <div class="metrics"><div class="meter"><b>A</b><span>fit</span></div><div class="meter"><b>A-</b><span>study</span></div><div class="meter"><b class="warn">skill</b><span>risk</span></div></div>
+            <p>Mount into studs or solid backing. The cost can be low, but installation quality matters.</p>
+            <div class="card-actions"><button class="smallbtn save">Save</button><a class="smallbtn" href="#buy">DIY parts</a></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="wizard">
+      <div class="wrap">
+        <div class="section-head"><h2>Room-fit picker</h2><p>Answer five constraints and it will steer you toward the best setup from the current chat.</p></div>
+        <div class="wizard">
+          <form class="panel" id="pickerForm">
+            <div class="question"><label for="drill">Can you safely drill/mount into studs?</label><select id="drill"><option value="yes">Yes, wall mounting is possible</option><option value="no">No drilling / rental / uncertain wall</option></select></div>
+            <div class="question"><label for="clearance">Can a chair pull out without blocking bed, door, or closet?</label><select id="clearance"><option value="yes">Yes, chair clearance exists</option><option value="tight">Barely / only sometimes</option><option value="no">No, normal chair clearance fails</option></select></div>
+            <div class="question"><label for="hide">Should the desk disappear visually after homework?</label><select id="hide"><option value="nice">Nice to have</option><option value="must">Yes, must hide / keep room calm</option><option value="no">No, it can stay visible</option></select></div>
+            <div class="question"><label for="computer">Computer setup?</label><select id="computer"><option value="laptop">Laptop/Chromebook mostly</option><option value="monitor">External monitor needed</option><option value="paper">Mostly paper/books, little screen</option></select></div>
+            <div class="question"><label for="ceiling">Ceiling/loft comfort?</label><select id="ceiling"><option value="no">Do not consider loft bed</option><option value="maybe">Maybe, if ceiling is tall enough</option><option value="yes">Loft bed is acceptable</option></select></div>
+          </form>
+          <aside class="panel rec fade" id="recommendation" aria-live="polite"></aside>
+        </div>
+      </div>
+    </section>
+
+    <section id="portable">
+      <div class="wrap">
+        <div class="section-head"><h2>Portable / no-drill map</h2><p>This is the deeper portable layer: real work surface first, cart second, lap desk last.</p></div>
+        <div class="portable-grid">
+          <div class="portable-card"><div class="iconbox rolling"></div><div><h3>1. Rolling foldable desk + cart</h3><p>Best no-drill answer. Locking wheels, 31–36 inch width, folds/parks after study. Cart holds supplies so the desk stays empty.</p><small>Main recommendation</small></div></div>
+          <div class="portable-card"><div class="iconbox rolling"></div><div><h3>2. Plain folding desk</h3><p>Good low-risk trial. Lets you test the real constraint: chair clearance, lighting, and paper spread before committing.</p><small>Best experiment</small></div></div>
+          <div class="portable-card"><div class="iconbox ctable"></div><div><h3>3. C-shaped table</h3><p>Works beside a bed/chair when a desk chair cannot pull out. Good for laptop review and short homework, weaker for long writing.</p><small>Tightest-room fallback</small></div></div>
+          <div class="portable-card"><div class="iconbox lap"></div><div><h3>4. Lap desk / bed tray</h3><p>Emergency mode only. Useful for flashcards, reading, and quick assignments. Not ideal as the primary high-school desk.</p><small>Use sparingly</small></div></div>
+          <div class="portable-card"><div class="iconbox cart"></div><div><h3>5. Rolling school cart</h3><p>The most underrated piece. It replaces hutch/bookcase clutter with mobile, current-course storage.</p><small>Buy even with a tiny desk</small></div></div>
+          <div class="portable-card"><div class="iconbox ctable"></div><div><h3>6. Dining-table kit</h3><p>If the teen studies outside the room sometimes, keep a grab-and-go caddy: laptop charger, notebook, pens, calculator, headphones.</p><small>Whole-house option</small></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="principles">
+      <div class="wrap">
+        <div class="section-head"><h2>First-principles rules</h2><p>Use these before buying. A “desk that fits” is still a failure if posture, chair clearance, or clutter fails.</p></div>
+        <div class="principles">
+          <div class="principle"><h3>1. Chair clearance beats desk width</h3><p>The room does not fail because the desk is too wide. It fails when the chair blocks the closet, bed, door swing, or walking path.</p><ul><li>Measure chair pull-out, not just tabletop.</li><li>Use a stool/folding chair only if the teen can still sit comfortably.</li><li>Wall desks still need knee space.</li></ul></div>
+          <div class="principle"><h3>2. Desk = active work, not storage</h3><p>Keep the surface almost empty: laptop, notebook, lamp, pencil cup. Books go into a cart, under-bed bin, closet bin, or existing shelf.</p><ul><li>Current 1–3 books only near the desk.</li><li>Use vertical pegboard/corkboard instead of a hutch.</li><li>Make a nightly reset routine.</li></ul></div>
+          <div class="principle"><h3>3. Laptop-only can be shallow; monitor cannot</h3><p>A laptop shelf can be compact. A monitor setup needs depth so the screen is not too close and the keyboard/mouse are usable.</p><ul><li>Target at least about 20 inches eye-to-screen for monitor work.</li><li>If laptop use is long, add a stand plus keyboard/mouse.</li><li>Do not let the student study with neck bent down for hours.</li></ul></div>
+          <div class="principle"><h3>4. Hide the school zone to protect sleep</h3><p>In a bedroom, visual clutter matters. A curtain, folding door, closed wall cabinet, or rolling cart parked away helps switch from study mode to sleep mode.</p><ul><li>Hidden desk is best for anxious/clutter-sensitive rooms.</li><li>Use warm lighting and one small task lamp.</li><li>Keep the bed visually separate from homework piles.</li></ul></div>
+        </div>
+        <div class="note">Best default from the whole chat: <strong>rolling foldable desk + rolling school cart</strong> when you cannot drill; <strong>fold-down wall desk + pegboard/cart</strong> when you can mount safely.</div>
+      </div>
+    </section>
+
+    <section id="buy">
+      <div class="wrap">
+        <div class="section-head"><h2>Buying paths</h2><p>These are starting points, not price guarantees. Inventory, reviews, and prices change, so verify before buying.</p></div>
+        <div class="shopping">
+          <div class="shop"><strong>IKEA NORBERG</strong><p>Wall-mounted drop-leaf / fold-down route. Best when studs are available and you want the desk to disappear.</p><a href="https://www.ikea.com/us/en/p/norberg-wall-mount-drop-leaf-tbl-w-storage-white-20497928/" target="_blank" rel="noopener">IKEA</a><a href="https://www.ikea.com/us/en/cat/wall-mounted-tables-25206/" target="_blank" rel="noopener">wall tables</a></div>
+          <div class="shop"><strong>IKEA MICKE small desk</strong><p>Safe compact normal desk. Best when no wall mounting, but you still want stable daily homework.</p><a href="https://www.ikea.com/us/en/p/micke-desk-white-30213076/" target="_blank" rel="noopener">28¾ × 19⅝”</a><a href="https://www.ikea.com/us/en/cat/micke-series-17499/" target="_blank" rel="noopener">series</a></div>
+          <div class="shop"><strong>HOMCOM rolling foldable</strong><p>Strong portable/no-drill path. Look for locking wheels and folded depth around side-table size.</p><a href="https://www.target.com/p/-/A-1003358989" target="_blank" rel="noopener">Target</a><a href="https://homcomstore.com/products/homcom-small-folding-desk-31-5-space-saving-portable-writing-table" target="_blank" rel="noopener">HOMCOM</a></div>
+          <div class="shop"><strong>Origami rolling desk</strong><p>Foldaway rolling laptop/workstation style. Good if you want no drilling and quick deployment.</p><a href="https://origamirack.com/products/rdpseries" target="_blank" rel="noopener">Origami Rack</a><a href="https://www.wayfair.com/keyword.php?keyword=origami+folding+computer+desk" target="_blank" rel="noopener">Wayfair search</a></div>
+          <div class="shop"><strong>Fold-out wall cabinet desks</strong><p>Ready-made Murphy desk cabinet style with small internal storage. Avoid overloaded versions that become bulky.</p><a href="https://www.target.com/s?searchTerm=wall+mounted+folding+desk" target="_blank" rel="noopener">Target search</a><a href="https://www.walmart.com/search?q=wall+mounted+folding+desk" target="_blank" rel="noopener">Walmart search</a></div>
+          <div class="shop"><strong>Floating shelf / DIY</strong><p>Exact custom size: board + heavy-duty folding brackets + stud mounting. Best for weird room dimensions.</p><a href="https://www.homedepot.com/s/heavy%20duty%20folding%20shelf%20bracket" target="_blank" rel="noopener">Home Depot brackets</a><a href="https://www.lowes.com/search?searchTerm=heavy%20duty%20folding%20shelf%20bracket" target="_blank" rel="noopener">Lowe’s brackets</a></div>
+          <div class="shop"><strong>Rolling cart</strong><p>The anti-bookcase piece. Holds active binders, charger, calculator, paper, headphones, and current books only.</p><a href="https://www.ikea.com/us/en/search/?q=rolling%20cart" target="_blank" rel="noopener">IKEA carts</a><a href="https://www.target.com/s?searchTerm=3+tier+rolling+cart" target="_blank" rel="noopener">Target carts</a></div>
+          <div class="shop"><strong>Used / local</strong><p>Great for testing cheaply: IKEA MICKE, folding desks, small rolling desks, kids desks, and compact chairs.</p><a href="https://www.facebook.com/marketplace/search/?query=IKEA%20MICKE%20desk" target="_blank" rel="noopener">Marketplace MICKE</a><a href="https://www.facebook.com/marketplace/search/?query=folding%20desk" target="_blank" rel="noopener">folding desks</a></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="renders">
+      <div class="wrap">
+        <div class="section-head"><h2>AI render briefs</h2><p>Use these to generate room mockups later. Each card is designed as a clear image prompt for a small high-school bedroom.</p></div>
+        <div class="render-grid">
+          <article class="render-card"><div class="render-scene"><span class="bed-small"></span><span class="wall-desk"></span><span class="cart-small"></span></div><h3>Fold-down calm room</h3><p>Premium teen bedroom, fold-down wall desk, corkboard inside cabinet, rolling cart parked beside closet, almost no books visible.</p><button class="smallbtn copy" data-prompt="Photorealistic high-end tiny high-school bedroom, fold-down wall-mounted study desk open, corkboard and pencil cup inside shallow cabinet, compact tuck-in chair, small rolling school cart, warm task lamp, bed kept visually calm, no big bookcase, minimal current books only, premium interior design, soft evening light, wide angle but realistic proportions">Copy render prompt</button></article>
+          <article class="render-card"><div class="render-scene"><span class="bed-small"></span><span class="wall-desk"></span></div><h3>No-drill rolling station</h3><p>Rolling foldable desk with locking casters, laptop stand, keyboard/mouse, compact chair, cart supplies, desk parks against wall.</p><button class="smallbtn copy" data-prompt="Photorealistic small teen bedroom no-drill study setup, rolling foldable desk with locking caster wheels, laptop stand with external keyboard and mouse, compact chair, three-tier rolling school cart, desk can park against wall, clean modern high-end design, no hutch, no book clutter, realistic tiny-room spacing">Copy render prompt</button></article>
+          <article class="render-card"><div class="render-scene"><span class="bed-small"></span><span class="cart-small"></span></div><h3>Hidden closet study nook</h3><p>Desk hidden behind soft curtain or wardrobe doors, shallow shelves, warm lighting, sleep zone protected from school clutter.</p><button class="smallbtn copy" data-prompt="Photorealistic tiny high-school bedroom with hidden study nook inside a closet, soft curtain partially open, shallow desk surface, warm under-shelf lighting, compact chair, vertical organizer, current books only, bed area calm and uncluttered, high-end interior design, cozy but practical">Copy render prompt</button></article>
+          <article class="render-card"><div class="render-scene"><span class="bed-small"></span><span class="wall-desk"></span></div><h3>Floating shelf desk</h3><p>Custom shelf-width desk under window or on blank wall, one lamp, one pegboard, chair tucks fully underneath.</p><button class="smallbtn copy" data-prompt="High-end tiny bedroom study area with floating shelf desk mounted under a window, compact chair tucked fully underneath, slim pegboard, small clamp lamp, laptop and notebook only on surface, no large bookcase, peaceful teen room, realistic proportions and chair clearance">Copy render prompt</button></article>
+          <article class="render-card"><div class="render-scene"><span class="wall-desk"></span><span class="cart-small"></span></div><h3>Desk / vanity hybrid</h3><p>One small surface serves study and vanity, but with closed storage and a clear homework reset state.</p><button class="smallbtn copy" data-prompt="Premium tiny teen bedroom desk vanity hybrid, small white desk with mirror that can switch to study mode, closed storage for cosmetics, laptop and notebook on clear desktop, compact chair, warm lamp, no clutter, no bookcase, elegant high-end small-space design">Copy render prompt</button></article>
+          <article class="render-card"><div class="render-scene"><span class="bed-small" style="bottom:96px;left:32px;width:150px;height:34px"></span><span class="wall-desk" style="right:40px;bottom:38px;width:110px"></span></div><h3>Loft-bed study zone</h3><p>For extreme rooms only: desk under loft, good light, head clearance, and no feeling of being trapped.</p><button class="smallbtn copy" data-prompt="Photorealistic high-end tiny teen bedroom with loft bed and compact study desk underneath, safe generous head clearance, warm task lighting, small rolling cart, no bulky bookshelf, minimal bedding, calm focused study zone, realistic ceiling height and cozy not cramped">Copy render prompt</button></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="sources">
+      <div class="wrap">
+        <div class="section-head"><h2>Sources behind the guide</h2><p>Built from the current chat plus public source paths discussed: real-user threads, small-space designers, retailer pages, and ergonomic guidance.</p></div>
+        <div class="source-list">
+          <div class="source"><b>Actual user signals</b><span>Reddit discussions on small-room desk layouts, teen rooms, no-desk brainstorming, mobile workstations, loft-bed tradeoffs, and lap desks.</span><a href="https://www.reddit.com/r/malelivingspace/comments/oqiea9/which_layout_seems_the_best_for_a_one_person/" target="_blank" rel="noopener">layout thread</a> · <a href="https://www.reddit.com/r/Parenting/comments/16knnoa/loft_bunk_bed_with_desk_under_it_for_a_small_room/" target="_blank" rel="noopener">loft thread</a></div>
+          <div class="source"><b>IKEA small-room patterns</b><span>Bedroom workspace ideas, MICKE compact desk, NORBERG wall-mounted table, rolling drawer/cart patterns.</span><a href="https://www.ikea.com/us/en/p/micke-desk-white-30213076/" target="_blank" rel="noopener">MICKE</a> · <a href="https://www.ikea.com/us/en/p/norberg-wall-mount-drop-leaf-tbl-w-storage-white-20497928/" target="_blank" rel="noopener">NORBERG</a></div>
+          <div class="source"><b>Small-space design sources</b><span>Apartment Therapy, Houzz, and Never Too Small patterns: fold-away desks, closet offices, floating desks, tray-table hacks, and vertical storage.</span><a href="https://www.apartmenttherapy.com/the-best-desks-for-small-spaces-227882" target="_blank" rel="noopener">small desks</a> · <a href="https://www.nevertoosmall.com/post/hidden-home-offices" target="_blank" rel="noopener">hidden offices</a></div>
+          <div class="source"><b>Ergonomics guardrails</b><span>OSHA workstation guidance: monitor distance, desk depth, leg clearance, laptop limitations, and avoiding awkward posture.</span><a href="https://www.osha.gov/etools/computer-workstations/components/desks" target="_blank" rel="noopener">desks</a> · <a href="https://www.osha.gov/etools/computer-workstations/checklists/purchasing-guide" target="_blank" rel="noopener">purchasing guide</a></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><div class="wrap">Built for the tiny high-school bedroom problem. Last updated September 1, 2026. Source scope: current chat decisions plus linked public references.</div></footer>
+
+  <script>
+    const filters = document.querySelectorAll('.filter');
+    const cards = document.querySelectorAll('.solution');
+    const saved = new Set(JSON.parse(localStorage.getItem('studyDeskSaved') || '[]'));
+    function updateSavedButtons(){
+      document.querySelectorAll('.solution').forEach(card=>{
+        const btn = card.querySelector('.save');
+        if(!btn) return;
+        const isSaved = saved.has(card.dataset.key);
+        btn.classList.toggle('saved', isSaved);
+        btn.textContent = isSaved ? 'Saved' : 'Save';
+      });
+    }
+    updateSavedButtons();
+    filters.forEach(btn=>btn.addEventListener('click',()=>{
+      filters.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter;
+      cards.forEach(card=>{
+        const show = f === 'all' || card.dataset.tags.split(' ').includes(f);
+        card.classList.toggle('hidden', !show);
+        if(show){card.classList.add('fade'); setTimeout(()=>card.classList.remove('fade'),250)}
+      })
+    }));
+    document.querySelectorAll('.save').forEach(btn=>btn.addEventListener('click', e=>{
+      const key = e.target.closest('.solution').dataset.key;
+      if(saved.has(key)) saved.delete(key); else saved.add(key);
+      localStorage.setItem('studyDeskSaved', JSON.stringify([...saved]));
+      updateSavedButtons();
+    }));
+
+    const rec = document.getElementById('recommendation');
+    const form = document.getElementById('pickerForm');
+    function pick(){
+      const drill = document.getElementById('drill').value;
+      const clearance = document.getElementById('clearance').value;
+      const hide = document.getElementById('hide').value;
+      const computer = document.getElementById('computer').value;
+      const ceiling = document.getElementById('ceiling').value;
+      let title, why, kit, caution, badge;
+      if(ceiling === 'yes' && clearance !== 'yes'){
+        title = 'Loft bed + desk below'; badge='Extreme tiny-room move';
+        why = 'Because normal chair clearance is failing and you are open to moving the bed vertical.';
+        kit = ['Loft bed with real head clearance', 'Compact desk underneath', 'Warm task lamp', 'Rolling school cart', 'Strict ceiling/fan/mattress check'];
+        caution = 'Do not do this if the teen dislikes climbing, the ceiling is low, or the room has a ceiling fan/light conflict.';
+      } else if(drill === 'yes' && hide === 'must'){
+        title = 'Fold-down wall study cabinet'; badge='Best calm-room answer';
+        why = 'Because wall mounting is possible and the room needs school clutter to disappear after homework.';
+        kit = ['Fold-down Murphy/wall desk', 'Corkboard or pegboard inside', 'Compact tuck-in chair', 'Small rolling supply cart', 'One warm task lamp'];
+        caution = 'Mount into studs/solid backing and check laptop/monitor depth before buying.';
+      } else if(drill === 'yes'){
+        title = computer === 'monitor' ? 'Deeper floating or corner desk' : 'Floating shelf or fold-down desk'; badge='Cleanest wall solution';
+        why = 'Because you can use the wall to remove visual weight and free floor space.';
+        kit = computer === 'monitor' ? ['Deeper shelf/corner surface', 'Monitor at usable distance', 'Keyboard/mouse zone', 'Cable channel', 'Tuck-in chair'] : ['Floating shelf desk or NORBERG-style table', 'Clamp lamp', 'Wall organizer', 'Tuck-in chair', 'Cart for binders'];
+        caution = 'Ultra-shallow shelves are laptop-only; monitor setups need more depth.';
+      } else if(clearance === 'yes'){
+        title = 'Rolling foldable desk + school cart'; badge='Best no-drill default';
+        why = 'Because drilling is out, but there is enough space for a real chair and real study posture.';
+        kit = ['31–36 inch rolling/foldable desk', 'Locking casters', 'Compact chair', '3-tier school cart', 'Laptop stand if screen use is long'];
+        caution = 'Check wobble and wheel locks. Avoid flimsy snack tables as the main desk.';
+      } else if(clearance === 'tight'){
+        title = 'Folding desk trial or C-table backup'; badge='Test before committing';
+        why = 'Because the real constraint is chair movement, not just tabletop width.';
+        kit = ['Plain folding desk first', 'Slim chair or stool trial', 'Rolling cart for supplies', 'C-shaped table for backup', 'Clamp/rechargeable lamp'];
+        caution = 'If the chair cannot pull out comfortably, shift to wall-mounted or whole-house/dining-table kit.';
+      } else {
+        title = 'C-table + dining-table study kit'; badge='No room for a real desk';
+        why = 'Because a normal desk station would block movement. The room gets a short-session surface; serious work moves to a better table.';
+        kit = ['C-shaped laptop table', 'Lap desk for reading only', 'Portable supply caddy', 'Dining/kitchen table study routine', 'Rolling cart parked outside/closet'];
+        caution = 'Do not make bed-laptop posture the default for long study sessions.';
+      }
+      rec.innerHTML = `<div><span class="tag">${badge}</span><h3>${title}</h3><p>${why}</p><div class="rec-list">${kit.map(x=>`<div>${x}</div>`).join('')}</div></div><div class="note"><strong>Watch out:</strong> ${caution}</div>`;
+      rec.classList.remove('fade'); void rec.offsetWidth; rec.classList.add('fade');
+    }
+    form.addEventListener('change', pick); pick();
+
+    document.querySelectorAll('.copy').forEach(btn=>btn.addEventListener('click', async ()=>{
+      const text = btn.dataset.prompt;
+      try{ await navigator.clipboard.writeText(text); btn.textContent='Copied'; setTimeout(()=>btn.textContent='Copy render prompt',1400); }
+      catch(e){ btn.textContent='Prompt ready'; alert(text); setTimeout(()=>btn.textContent='Copy render prompt',1400); }
+    }));
+  </script>
+</body>
+</html>
