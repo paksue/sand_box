@@ -1,0 +1,28 @@
+name: Todo sort tests
+
+on:
+  push:
+    paths:
+      - 'todo/sort-core.mjs'
+      - 'todo/sort-ui.mjs'
+      - 'todo/tests/sort-core.test.mjs'
+      - '.github/workflows/todo-sort-tests.yml'
+  pull_request:
+    paths:
+      - 'todo/sort-core.mjs'
+      - 'todo/sort-ui.mjs'
+      - 'todo/tests/sort-core.test.mjs'
+      - '.github/workflows/todo-sort-tests.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Sort regression tests
+        run: node --test todo/tests/sort-core.test.mjs
+      - name: Sort UI syntax
+        run: node --check todo/sort-ui.mjs
