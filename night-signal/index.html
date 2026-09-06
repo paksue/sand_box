@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#071015" />
+<title>NIGHT SIGNAL // Coastal Relay 9</title>
+<style>
+:root{
+  --bg:#050a0d;--panel:#081116e8;--panel2:#0c171d;--line:#1c323b;--text:#d7e4e7;
+  --muted:#71868d;--cyan:#7ee7e1;--cyan2:#2aa9a4;--amber:#ffc66d;--red:#ff6d6d;--green:#8fe5a0;
+  --shadow:0 20px 70px #000b;--radius:14px;--mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+  --sans:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden}
+button,input{font:inherit}.hidden{display:none!important}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:99;background:repeating-linear-gradient(180deg,#fff0 0 2px,#b9ffff08 3px 4px);mix-blend-mode:screen;opacity:.16}
+body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:98;background:radial-gradient(circle at 50% 40%,transparent 45%,#0009 100%)}
+#storm{position:fixed;inset:0;width:100%;height:100%;z-index:0;background:linear-gradient(#071118,#020608)}
+.shell{position:relative;z-index:2;height:100dvh;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));display:flex;flex-direction:column;gap:10px}
+.topbar{height:54px;display:flex;align-items:center;gap:14px;padding:0 14px;background:linear-gradient(180deg,#0c171de8,#071015e8);border:1px solid #193039;border-radius:12px;box-shadow:var(--shadow);backdrop-filter:blur(12px)}
+.brand{display:flex;align-items:center;gap:10px;min-width:240px}.sigmark{width:28px;height:28px;border:1px solid var(--cyan2);border-radius:50%;position:relative;box-shadow:0 0 18px #3dd7d533 inset,0 0 18px #3dd7d522}.sigmark:after{content:"";position:absolute;width:3px;height:12px;background:var(--cyan);left:12px;top:7px;transform-origin:50% 100%;transform:rotate(28deg);box-shadow:0 0 8px var(--cyan)}
+.brand strong{font-size:13px;letter-spacing:.18em}.brand span{display:block;color:var(--muted);font:10px var(--mono);letter-spacing:.12em;margin-top:2px}.top-stat{font:11px var(--mono);color:var(--muted);display:flex;gap:8px;align-items:center}.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}.grow{flex:1}.clock{font:700 14px var(--mono);letter-spacing:.12em;color:var(--amber)}
+.iconbtn{border:1px solid #20343c;background:#0b151a;color:#9db0b5;border-radius:9px;padding:8px 10px;cursor:pointer}.iconbtn:hover{border-color:#41606b;color:white}
+.gamegrid{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(340px,.7fr);gap:10px}
+.console,.side{background:linear-gradient(180deg,#091217e8,#050b0fe8);border:1px solid #193039;border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(10px);min-height:0;overflow:hidden}
+.console{display:grid;grid-template-rows:1fr 150px;position:relative}.radar-wrap{position:relative;min-height:0;overflow:hidden;background:radial-gradient(circle at 50% 50%,#0b1d25,#050a0e 68%)}#radar{width:100%;height:100%;display:block}.radar-hud{position:absolute;inset:0;pointer-events:none;padding:16px;display:flex;justify-content:space-between;align-items:flex-start}.hud-chip{border:1px solid #1e3942;background:#061014bd;color:#7da0a7;font:10px var(--mono);padding:7px 9px;border-radius:7px;letter-spacing:.08em}.hud-chip b{color:var(--cyan);font-weight:600}.watermark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:700 clamp(34px,8vw,96px) var(--sans);letter-spacing:.18em;color:#b9ffff05;white-space:nowrap;pointer-events:none}
+.spectrum{border-top:1px solid #173039;background:linear-gradient(180deg,#071116,#04080b);display:grid;grid-template-columns:1fr 210px;min-height:0}.wavebox{position:relative;min-width:0}.wavebox canvas{width:100%;height:100%;display:block}.freq-read{position:absolute;left:14px;top:12px;font:700 28px var(--mono);letter-spacing:.06em;color:#d9eeee;text-shadow:0 0 18px #77ffff22}.freq-read small{font-size:10px;color:var(--muted);margin-left:6px}.strength-box{border-left:1px solid #173039;padding:14px;display:flex;flex-direction:column;gap:8px}.meter-label{font:10px var(--mono);color:var(--muted);letter-spacing:.12em}.meter{height:9px;background:#0c181d;border:1px solid #1a3038;border-radius:99px;overflow:hidden}.meter>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan2),var(--cyan),var(--amber));box-shadow:0 0 15px #70ffff44;transition:width .12s}.quality{font:11px var(--mono);color:#789096}.quality strong{color:var(--text)}
+.side{display:flex;flex-direction:column}.tabs{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid #193039}.tab{border:0;border-right:1px solid #142930;background:#071015;color:#657b82;padding:13px 8px;font:700 10px var(--mono);letter-spacing:.12em;cursor:pointer}.tab:last-child{border-right:0}.tab.active{color:var(--cyan);background:#0b171c;box-shadow:inset 0 -2px 0 var(--cyan2)}.pane{display:none;overflow:auto;padding:16px;min-height:0;flex:1}.pane.active{display:block}.eyebrow{font:10px var(--mono);color:var(--cyan2);letter-spacing:.14em;margin-bottom:7px}.pane h2{font-size:20px;margin:0 0 6px;letter-spacing:.02em}.lede{font-size:12px;line-height:1.55;color:#81959b;margin:0 0 16px}
+.control{margin:15px 0}.control-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:8px}.control-head label{font:10px var(--mono);letter-spacing:.1em;color:#7e959b}.control-head output{font:700 13px var(--mono);color:var(--amber)}input[type=range]{width:100%;appearance:none;height:28px;background:transparent;cursor:pointer}input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:99px;background:linear-gradient(90deg,#17343e,#2b5b65,#17343e);border:1px solid #2b454e}input[type=range]::-webkit-slider-thumb{appearance:none;margin-top:-6px;width:17px;height:17px;border-radius:50%;background:#d8f7f5;border:3px solid #113039;box-shadow:0 0 14px #70ffff66}.bearing-scale{font:9px var(--mono);color:#52676e;display:flex;justify-content:space-between;margin-top:-3px}
+.lockbtn,.primary{width:100%;border:1px solid #34717a;border-radius:10px;padding:12px 14px;background:linear-gradient(180deg,#143039,#0c1d23);color:#dff;letter-spacing:.1em;font:700 11px var(--mono);cursor:pointer;box-shadow:0 0 0 #55ffff00;transition:.18s}.lockbtn:hover,.primary:hover{border-color:var(--cyan);box-shadow:0 0 24px #55ffff18}.lockbtn.ready{animation:pulse 1.3s infinite;border-color:var(--cyan);color:white}.lockbtn:disabled{opacity:.35;cursor:not-allowed;animation:none}.lockhint{text-align:center;font:10px var(--mono);color:#5d737a;margin:8px 0 0}
+@keyframes pulse{50%{box-shadow:0 0 24px #55ffff32}}
+.log{margin-top:16px;border-top:1px solid #173039;padding-top:12px}.logline{display:grid;grid-template-columns:48px 1fr;gap:9px;font:10px/1.45 var(--mono);padding:6px 0;border-bottom:1px solid #102329;color:#769097}.logline time{color:#425b62}.logline b{color:#b8d2d6;font-weight:600}
+.contact{border:1px solid #1a323a;background:#081216;border-radius:11px;margin:0 0 10px;overflow:hidden}.contact-head{display:flex;align-items:center;gap:9px;padding:11px 12px;cursor:pointer}.contact-code{font:700 11px var(--mono);color:var(--cyan);min-width:67px}.contact-title{font-size:12px;font-weight:700;flex:1}.badge{font:700 9px var(--mono);letter-spacing:.08em;padding:4px 6px;border:1px solid #29454d;border-radius:5px;color:#6e8991}.badge.real{color:var(--green);border-color:#366243}.badge.risk{color:var(--amber);border-color:#6d5934}.badge.unknown{color:#769096}.contact-body{padding:0 12px 12px;font-size:11px;color:#81989d;line-height:1.55}.quote{border-left:2px solid #2a626a;margin:2px 0 10px;padding:7px 10px;background:#0b181d;color:#c5d7da;font:11px/1.55 var(--mono)}.evidence{display:grid;gap:6px}.ev{padding:7px 8px;border:1px solid #183039;border-radius:7px;background:#071014;font:10px/1.4 var(--mono)}.ev strong{color:#b9d6da}.lookup{margin-top:8px;border:1px solid #263f47;background:#0b171c;color:#94adb3;border-radius:7px;padding:7px 9px;font:700 9px var(--mono);letter-spacing:.08em;cursor:pointer}.lookup:hover{color:white;border-color:#47717c}
+.dispatch-card{border:1px solid #1c343b;border-radius:12px;background:linear-gradient(180deg,#0a171c,#071014);padding:13px;margin:0 0 10px}.dispatch-card h3{margin:0 0 4px;font-size:13px}.dispatch-card p{margin:0;color:#7d949a;font-size:11px;line-height:1.45}.dispatch-card button{margin-top:10px;width:100%;border:1px solid #6d5433;background:#261c10;color:var(--amber);border-radius:8px;padding:9px;font:700 10px var(--mono);letter-spacing:.08em;cursor:pointer}.dispatch-card button:hover{border-color:var(--amber);background:#302110}.dispatch-card button:disabled{opacity:.35;cursor:not-allowed}.boat-status{padding:10px;border:1px solid #1b333a;background:#071115;border-radius:9px;font:10px/1.45 var(--mono);color:#789299;margin-bottom:12px}.boat-status b{color:var(--green)}
+.overlay{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 40%,#0e2228ed,#020506fa 72%);backdrop-filter:blur(16px)}.titlecard{max-width:720px;width:100%;text-align:center}.kicker{font:700 11px var(--mono);color:var(--cyan);letter-spacing:.24em;margin-bottom:16px}.titlecard h1{font-size:clamp(48px,11vw,116px);line-height:.82;margin:0;letter-spacing:-.055em;color:#e8f5f4;text-shadow:0 0 55px #55ffff22}.titlecard h1 span{display:block;color:#6fbfbd;font-size:.26em;letter-spacing:.31em;margin:18px 0 0 5px}.titlecard p{max-width:560px;margin:26px auto 20px;color:#8aa0a5;line-height:1.6;font-size:13px}.mission{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:22px auto;max-width:580px}.mission div{border:1px solid #1d363e;border-radius:9px;padding:10px;background:#081216;color:#728a90;font:10px/1.4 var(--mono)}.mission b{display:block;color:#c1d8dc;margin-bottom:3px}.start{max-width:360px;margin:auto;padding:14px 18px}.tiny{font:9px var(--mono);color:#4f686f;margin-top:12px}.brief{text-align:left;max-width:520px;margin:20px auto;border:1px solid #1e3840;border-radius:12px;background:#081216;padding:15px;color:#8fa4a9;font:11px/1.65 var(--mono)}.brief b{color:var(--amber)}
+#ending .titlecard h1{font-size:clamp(40px,8vw,82px)}.grade{font:700 72px var(--mono);color:var(--cyan);text-shadow:0 0 30px #65ffff44;margin:10px}.ending-copy{max-width:560px;margin:14px auto;color:#91a7ac;font-size:13px;line-height:1.6}.ending-detail{max-width:560px;margin:18px auto;text-align:left;border-top:1px solid #1e3840;padding-top:12px;font:10px/1.6 var(--mono);color:#718b91}.ending-detail b{color:#c8dfe2}
+.flash{position:fixed;inset:0;z-index:5;background:white;opacity:0;pointer-events:none}.flash.on{animation:lightning .55s ease-out}@keyframes lightning{0%,12%{opacity:0}14%{opacity:.35}18%{opacity:0}24%{opacity:.15}100%{opacity:0}}
+.toast{position:fixed;z-index:150;left:50%;bottom:26px;transform:translate(-50%,20px);opacity:0;background:#0b171ceb;border:1px solid #2a4f59;border-radius:9px;padding:10px 14px;color:#bcd3d7;font:10px var(--mono);letter-spacing:.04em;pointer-events:none;transition:.25s}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:850px){html,body{overflow:auto}.shell{height:auto;min-height:100dvh}.brand{min-width:auto}.brand span,.top-stat{display:none}.gamegrid{grid-template-columns:1fr}.console{min-height:64dvh}.side{min-height:520px}.spectrum{grid-template-columns:1fr 150px}.mission{grid-template-columns:1fr}.titlecard h1{font-size:58px}}
+@media(max-width:520px){.shell{padding:7px}.topbar{height:48px}.console{grid-template-rows:54vh 130px}.spectrum{grid-template-columns:1fr}.strength-box{display:none}.pane{padding:13px}.clock{font-size:12px}.titlecard h1{font-size:48px}.radar-hud{padding:10px}.hud-chip:nth-child(2){display:none}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<canvas id="storm"></canvas><div class="flash" id="flash"></div>
+<div class="shell" id="gameShell">
+  <header class="topbar">
+    <div class="brand"><div class="sigmark"></div><div><strong>NIGHT SIGNAL</strong><span>COASTAL RELAY 9 // NORTH ATLANTIC</span></div></div>
+    <div class="top-stat"><span class="dot"></span><span>ARRAY ONLINE</span></div><div class="grow"></div>
+    <div class="top-stat">STORM WINDOW</div><div class="clock" id="clock">03:00</div>
+    <button class="iconbtn" id="soundBtn" aria-label="Toggle sound">SOUND ◉</button>
+  </header>
+  <main class="gamegrid">
+    <section class="console">
+      <div class="radar-wrap"><canvas id="radar"></canvas><div class="watermark">RELAY 9</div>
+        <div class="radar-hud"><div class="hud-chip">SEARCH ARC <b id="arcText">000°</b><br>RANGE 32 NM</div><div class="hud-chip">WIND <b>43 KT SW</b><br>SEA STATE 7</div></div>
+      </div>
+      <div class="spectrum">
+        <div class="wavebox"><canvas id="wave"></canvas><div class="freq-read"><span id="freqBig">463.20</span><small>MHz</small></div></div>
+        <div class="strength-box"><div class="meter-label">SIGNAL COHERENCE</div><div class="meter"><i id="meterFill"></i></div><div class="quality">Carrier: <strong id="carrierText">noise</strong></div><div class="quality">Decode: <strong id="decodeText">0%</strong></div></div>
+      </div>
+    </section>
+    <aside class="side">
+      <div class="tabs"><button class="tab active" data-tab="tune">TUNE</button><button class="tab" data-tab="archive">ARCHIVE <span id="archiveCount"></span></button><button class="tab" data-tab="dispatch">DISPATCH</button></div>
+      <section class="pane active" id="pane-tune">
+        <div class="eyebrow">RDF / MANUAL ACQUISITION</div><h2>Find the voices.</h2><p class="lede">Sweep frequency and bearing. When the carrier resolves, lock it long enough to extract the transmission.</p>
+        <div class="control"><div class="control-head"><label>RECEIVER FREQUENCY</label><output id="freqOut">463.20 MHz</output></div><input id="freq" type="range" min="460" max="470" value="463.2" step="0.01"><div class="bearing-scale"><span>460</span><span>465</span><span>470 MHz</span></div></div>
+        <div class="control"><div class="control-head"><label>DIRECTIONAL ARRAY</label><output id="bearingOut">000°</output></div><input id="bearing" type="range" min="0" max="359" value="0" step="1"><div class="bearing-scale"><span>N 000°</span><span>E 090°</span><span>S 180°</span><span>W 270°</span></div></div>
+        <button class="lockbtn" id="lockBtn" disabled>LOCK CARRIER</button><p class="lockhint" id="lockHint">Need ≥ 82% coherence</p>
+        <div class="log"><div class="eyebrow">STATION LOG</div><div id="stationLog"></div></div>
+      </section>
+      <section class="pane" id="pane-archive"><div class="eyebrow">RECOVERED TRANSMISSIONS</div><h2>Cross-check everything.</h2><p class="lede">A distress call is evidence, not truth. Compare timing, registry, drift and the physical signal.</p><div id="contacts"></div></section>
+      <section class="pane" id="pane-dispatch"><div class="eyebrow">SAR / SINGLE ASSET AVAILABLE</div><h2>One boat. One decision.</h2><p class="lede">Rescue 4 can reach only one contact before gale closure. Dispatch once. There is no recall.</p><div class="boat-status" id="boatStatus"><b>RESCUE 4 READY</b><br>CREW 3 · RANGE 34 NM · ETA CALCULATED ON DISPATCH</div><div id="dispatchList"></div></section>
+    </aside>
+  </main>
+</div>
+<div class="overlay" id="intro"><div class="titlecard"><div class="kicker">A COASTAL SEARCH & RESCUE THRILLER</div><h1>NIGHT<br>SIGNAL<span>COASTAL RELAY 9</span></h1><p>At 02:17, a storm erased every automated system along the coast. Three distress transmissions are bleeding through the static. You have one rescue boat.</p><div class="mission"><div><b>01 · FIND</b>Tune frequency + bearing.</div><div><b>02 · VERIFY</b>Cross-check the archive.</div><div><b>03 · COMMIT</b>Send Rescue 4 once.</div></div><button class="primary start" id="startBtn">BEGIN NIGHT SHIFT</button><div class="tiny">HEADPHONES RECOMMENDED · ALL AUDIO SYNTHESIZED LOCALLY</div></div></div>
+<div class="overlay hidden" id="briefing"><div class="titlecard"><div class="kicker">02:17:40 // EMERGENCY POWER</div><h1 style="font-size:clamp(42px,8vw,78px)">AUTOMATION<br>IS DOWN.</h1><div class="brief">The lighthouse network is blind. AIS is intermittent. <b>Rescue 4 is your only movable asset.</b><br><br>Manual RDF is still alive. Distress carriers should cluster somewhere inside 460–470 MHz. Sweep the band, rotate the array, lock coherent transmissions, then verify them in ARCHIVE.<br><br><b>Storm closure in 03:00.</b></div><button class="primary start" id="briefBtn">TAKE CONSOLE</button></div></div>
+<div class="overlay hidden" id="ending"><div class="titlecard"><div class="kicker" id="endKicker">SHIFT REPORT</div><h1 id="endTitle">DECISION LOGGED</h1><div class="grade" id="grade">A</div><div class="ending-copy" id="endCopy"></div><div class="ending-detail" id="endDetail"></div><button class="primary start" onclick="location.reload()">RUN SHIFT AGAIN</button></div></div>
+<div class="toast" id="toast"></div>
+<script>
+(()=>{
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const TAU=Math.PI*2, clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const state={started:false,time:180,freq:463.2,bearing:0,strength:0,lockProgress:0,locking:false,decoded:new Set(),looked:new Set(),dispatched:null,ended:false,sound:true,last:performance.now(),lightning:0};
+const signals=[
+ {id:'A',code:'TX-7A',name:'MV CORMORANT',freq:467.38,bearing:71,range:18.4,urgency:'CRITICAL',truth:'real',
+  call:'“Mayday, Relay Nine… Cormorant. Steering bus is dead. Electrical fire aft. Six souls. We are drifting east—Bell Shoal light is off our port quarter…”',
+  ev:['Voice is live and non-looping','Bearing drift: +1.8° / min','Hull return at 18.4 NM'],
+  lookup:['Registry: MV Cormorant · active','Last AIS: 01:52 · 6 persons filed','Wind drift intersects Bell Shoal reef in ~14 min'],
+  result:'Rescue 4 reached Cormorant minutes before the vessel crossed Bell Shoal. Six people recovered. The electrical fire consumed the wheelhouse after evacuation.'},
+ {id:'B',code:'TX-2F',name:'VEGA THREE',freq:462.14,bearing:298,range:27.1,urgency:'UNKNOWN',truth:'ghost',
+  call:'“Relay Nine, Vega Three. We have struck something below the waterline. Four aboard. Pumps cannot hold. Position follows—” [transmission repeats]',
+  ev:['Exactly 11.8 s repetition interval','No bearing drift over 4 samples','Carrier contains obsolete beacon framing'],
+  lookup:['Registry: Vega Three · LOST 2004','Wreck position: 41 NM southeast','Signal format matches decommissioned emergency repeater'],
+  result:'Rescue 4 found no vessel—only Beacon 12, torn loose by the storm and replaying a cached distress packet from 2004. While the crew searched empty water, Cormorant grounded at Bell Shoal.'},
+ {id:'C',code:'TX-9C',name:'F/V LARK',freq:464.76,bearing:191,range:12.7,urgency:'PRIORITY',truth:'safe',
+  call:'“Relay Nine, this is Lark. Engine seized hard. One person aboard. Taking heavy spray. I have anchor set but I don’t know how long she’ll hold.”',
+  ev:['Live voice + engine-room alarm','Range stable across 3 sweeps','Anchor chain acoustic return detected'],
+  lookup:['Registry: F/V Lark · active','Chart depth: 42 m · sand bottom','Measured drift: 0.2 kt; lee shore > 9 h away'],
+  result:'Rescue 4 secured Lark without difficulty, but Cormorant received no assistance and grounded at Bell Shoal. Lark would have held safely until first light.'}
+];
+
+function angularDiff(a,b){let d=Math.abs(a-b)%360;return d>180?360-d:d}
+function calcStrength(){
+  let best=0;
+  for(const s of signals){
+    if(state.decoded.has(s.id)) continue;
+    const fd=Math.abs(state.freq-s.freq), bd=angularDiff(state.bearing,s.bearing);
+    const f=Math.exp(-(fd*fd)/(.30*.30)), b=Math.exp(-(bd*bd)/(18*18));
+    best=Math.max(best, f*.64+b*.36);
+  }
+  state.strength=clamp(best+(Math.random()-.5)*.025,0,1);
+  return state.strength;
+}
+function targetNear(){return signals.filter(s=>!state.decoded.has(s.id)).sort((a,b)=>{
+  const sa=Math.exp(-Math.pow(Math.abs(state.freq-a.freq)/.30,2))*.64+Math.exp(-Math.pow(angularDiff(state.bearing,a.bearing)/18,2))*.36;
+  const sb=Math.exp(-Math.pow(Math.abs(state.freq-b.freq)/.30,2))*.64+Math.exp(-Math.pow(angularDiff(state.bearing,b.bearing)/18,2))*.36;return sb-sa})[0]}
+function log(text,hot=false){const el=document.createElement('div');el.className='logline';const t=180-state.time;const min=Math.floor(t/60).toString().padStart(2,'0'),sec=Math.floor(t%60).toString().padStart(2,'0');el.innerHTML=`<time>+${min}:${sec}</time><span>${hot?'<b>'+text+'</b>':text}</span>`;$('#stationLog').prepend(el)}
+function toast(msg){const e=$('#toast');e.textContent=msg;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),1800)}
+
+$$('.tab').forEach(b=>b.addEventListener('click',()=>{ $$('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');$$('.pane').forEach(p=>p.classList.remove('active'));$('#pane-'+b.dataset.tab).classList.add('active')}));
+$('#freq').addEventListener('input',e=>{state.freq=+e.target.value;state.lockProgress=0;updateControls()});
+$('#bearing').addEventListener('input',e=>{state.bearing=+e.target.value;state.lockProgress=0;updateControls()});
+function updateControls(){ $('#freqOut').textContent=state.freq.toFixed(2)+' MHz';$('#freqBig').textContent=state.freq.toFixed(2);$('#bearingOut').textContent=String(Math.round(state.bearing)).padStart(3,'0')+'°';$('#arcText').textContent=String(Math.round(state.bearing)).padStart(3,'0')+'°'}
+
+$('#lockBtn').addEventListener('pointerdown',()=>{if(state.strength>.82){state.locking=true;audio.lockTone(true)}});
+['pointerup','pointercancel','pointerleave'].forEach(ev=>$('#lockBtn').addEventListener(ev,()=>{state.locking=false;audio.lockTone(false)}));
+$('#lockBtn').addEventListener('click',e=>e.preventDefault());
+
+function decodeSignal(s){
+  if(!s||state.decoded.has(s.id))return;state.decoded.add(s.id);state.lockProgress=0;state.locking=false;audio.lockTone(false);audio.success();
+  state.time=Math.min(180,state.time+12);log(`Carrier ${s.code} decoded · ${s.freq.toFixed(2)} MHz / ${s.bearing}°`,true);toast('TRANSMISSION RECOVERED · +12 SEC');renderContacts();renderDispatch();
+  $$('.tab')[1].click();
+}
+function renderContacts(){
+  const root=$('#contacts');root.innerHTML='';$('#archiveCount').textContent=state.decoded.size?`(${state.decoded.size})`:'';
+  if(!state.decoded.size){root.innerHTML='<div class="boat-status">NO RECOVERED TRANSMISSIONS<br><br>Return to TUNE and resolve a carrier.</div>';return}
+  signals.filter(s=>state.decoded.has(s.id)).forEach(s=>{
+    const looked=state.looked.has(s.id), d=document.createElement('article');d.className='contact';
+    d.innerHTML=`<div class="contact-head"><div class="contact-code">${s.code}</div><div class="contact-title">${s.name}</div><span class="badge ${s.urgency==='CRITICAL'?'risk':'unknown'}">${s.urgency}</span></div><div class="contact-body"><div class="quote">${s.call}</div><div class="evidence">${s.ev.map(x=>`<div class="ev"><strong>RDF</strong> · ${x}</div>`).join('')}${looked?s.lookup.map(x=>`<div class="ev"><strong>ARCHIVE</strong> · ${x}</div>`).join(''):''}</div>${looked?'':`<button class="lookup" data-look="${s.id}">CROSS-CHECK REGISTRY + CHART</button>`}</div>`;
+    root.appendChild(d)
+  });
+  $$('[data-look]').forEach(b=>b.onclick=()=>{const id=b.dataset.look;state.looked.add(id);audio.click();log(`Archive cross-check complete for ${signals.find(s=>s.id===id).code}`);renderContacts();renderDispatch()});
+}
+function renderDispatch(){
+  const root=$('#dispatchList');root.innerHTML='';
+  if(state.dispatched){const s=signals.find(x=>x.id===state.dispatched);root.innerHTML=`<div class="dispatch-card"><h3>RESCUE 4 → ${s.name}</h3><p>Command transmitted. Asset committed.</p></div>`;return}
+  signals.filter(s=>state.decoded.has(s.id)).forEach(s=>{const d=document.createElement('div');d.className='dispatch-card';const eta=Math.max(7,Math.round(s.range/1.5));d.innerHTML=`<h3>${s.code} · ${s.name}</h3><p>${s.range.toFixed(1)} NM · estimated intercept ${eta} min${state.looked.has(s.id)?' · archive checked':''}</p><button data-dispatch="${s.id}">DISPATCH RESCUE 4</button>`;root.appendChild(d)});
+  if(!state.decoded.size)root.innerHTML='<div class="boat-status">NO VERIFIED CONTACTS AVAILABLE.</div>';
+  $$('[data-dispatch]').forEach(b=>b.onclick=()=>dispatch(b.dataset.dispatch));
+}
+function dispatch(id){if(state.dispatched||state.ended)return;const s=signals.find(x=>x.id===id);if(!confirm(`Commit Rescue 4 to ${s.name}? This cannot be recalled.`))return;state.dispatched=id;audio.dispatch();log(`RESCUE 4 committed to ${s.code} · ${s.name}`,true);$('#boatStatus').innerHTML=`<b>RESCUE 4 UNDERWAY</b><br>DESTINATION ${s.name} · RADIO SILENCE AFTER DEPARTURE`;renderDispatch();setTimeout(()=>endGame(id),1400)}
+
+function endGame(id){if(state.ended)return;state.ended=true;const s=signals.find(x=>x.id===id);let grade='C',title='THE WRONG WATER',kicker='03:02 // AFTER ACTION';
+  if(id==='A'){grade=state.decoded.size===3&&state.looked.size>=2?'S':'A';title='SIX LIGHTS HOME';kicker='02:49 // RESCUE COMPLETE'}
+  else if(id==='C'){grade='B';title='A SAFE BOAT, A LOST ONE'}
+  const known=state.decoded.size,checked=state.looked.size;
+  $('#endKicker').textContent=kicker;$('#endTitle').textContent=title;$('#grade').textContent=grade;$('#endCopy').textContent=s.result;
+  $('#endDetail').innerHTML=`<b>SHIFT ANALYSIS</b><br>Signals recovered: ${known}/3 · Archive cross-checks: ${checked}/3 · Remaining storm window: ${formatTime(state.time)}<br><br>${id==='A'?'Correct priority: Cormorant had both immediate drift evidence and independent registry confirmation. Vega Three was a replay; Lark was stable at anchor.':'Best dispatch: MV Cormorant. Its changing RDF bearing + active registry + forecast drift all independently pointed to immediate reef impact.'}`;
+  $('#ending').classList.remove('hidden');localStorage.setItem('nightSignalBest',grade)}
+function timeout(){if(state.ended)return;state.ended=true;audio.fail();$('#endKicker').textContent='03:00 // GALE CLOSURE';$('#endTitle').textContent='NO BOAT LEFT HARBOR';$('#grade').textContent='D';$('#endCopy').textContent='The harbor master closed the bar. Cormorant grounded at Bell Shoal before another rescue asset could launch.';$('#endDetail').innerHTML='<b>SHIFT ANALYSIS</b><br>The evidence only matters if you act on it. Recover enough signal to make a defensible decision, then commit before the weather closes.';$('#ending').classList.remove('hidden')}
+function formatTime(t){return `${Math.floor(t/60).toString().padStart(2,'0')}:${Math.floor(t%60).toString().padStart(2,'0')}`}
+
+// AUDIO — procedural, no network assets.
+const audio={ctx:null,master:null,noise:null,lock:null,
+ init(){if(this.ctx)return;const C=window.AudioContext||window.webkitAudioContext;if(!C)return;this.ctx=new C();this.master=this.ctx.createGain();this.master.gain.value=.24;this.master.connect(this.ctx.destination);const len=this.ctx.sampleRate*2,b=this.ctx.createBuffer(1,len,this.ctx.sampleRate),d=b.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*.36;const src=this.ctx.createBufferSource();src.buffer=b;src.loop=true;const f=this.ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=420;const g=this.ctx.createGain();g.gain.value=.06;src.connect(f).connect(g).connect(this.master);src.start();this.noise=g},
+ tone(freq=.0,dur=.08,gain=.08,type='sine'){if(!this.ctx||!state.sound)return;const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(gain,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(.0001,this.ctx.currentTime+dur);o.connect(g).connect(this.master);o.start();o.stop(this.ctx.currentTime+dur)},
+ click(){this.tone(780,.035,.025,'square')},success(){this.tone(520,.13,.06);setTimeout(()=>this.tone(780,.18,.05),90)},fail(){this.tone(120,.5,.08,'sawtooth')},dispatch(){this.tone(240,.18,.06,'square');setTimeout(()=>this.tone(360,.2,.05,'square'),160)},
+ lockTone(on){if(!this.ctx||!state.sound)return;if(on&&!this.lock){const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.type='sine';o.frequency.value=610;g.gain.value=.025;o.connect(g).connect(this.master);o.start();this.lock={o,g}}else if(!on&&this.lock){this.lock.g.gain.exponentialRampToValueAtTime(.0001,this.ctx.currentTime+.05);this.lock.o.stop(this.ctx.currentTime+.06);this.lock=null}},
+ set(on){state.sound=on;if(this.master)this.master.gain.value=on?.24:0;$('#soundBtn').textContent=on?'SOUND ◉':'SOUND ○'}
+};
+$('#soundBtn').onclick=()=>{audio.init();audio.set(!state.sound)};
+
+$('#startBtn').onclick=()=>{audio.init();audio.click();$('#intro').classList.add('hidden');$('#briefing').classList.remove('hidden')};
+$('#briefBtn').onclick=()=>{audio.click();$('#briefing').classList.add('hidden');state.started=true;state.last=performance.now();log('Manual RDF console online');log('Three unstable carriers detected across search band');requestAnimationFrame(loop)};
+
+// CANVAS VISUALS
+const storm=$('#storm'),radar=$('#radar'),wave=$('#wave');const sx=storm.getContext('2d'),rx=radar.getContext('2d'),wx=wave.getContext('2d');
+let rain=[];
+function fit(c){const dpr=Math.min(devicePixelRatio||1,2),r=c.getBoundingClientRect();if(c.width!==Math.floor(r.width*dpr)||c.height!==Math.floor(r.height*dpr)){c.width=Math.floor(r.width*dpr);c.height=Math.floor(r.height*dpr);c.getContext('2d').setTransform(dpr,0,0,dpr,0,0)}return r}
+function drawStorm(t){const r=fit(storm),w=r.width,h=r.height;sx.clearRect(0,0,w,h);if(!rain.length)for(let i=0;i<150;i++)rain.push({x:Math.random()*w,y:Math.random()*h,l:8+Math.random()*25,s:7+Math.random()*14});sx.strokeStyle='#8edfe515';sx.lineWidth=1;sx.beginPath();for(const p of rain){p.x-=p.s*.55;p.y+=p.s;if(p.y>h+30||p.x<-30){p.x=Math.random()*w+60;p.y=-30}sx.moveTo(p.x,p.y);sx.lineTo(p.x+p.l*.28,p.y-p.l)}sx.stroke();if(Math.random()<.0017&&state.started){$('#flash').classList.remove('on');void $('#flash').offsetWidth;$('#flash').classList.add('on');audio.tone(55,1.1,.025,'sawtooth')}}
+function drawRadar(t){const r=fit(radar),w=r.width,h=r.height;rx.clearRect(0,0,w,h);const cx=w/2,cy=h/2,rad=Math.min(w,h)*.40;rx.save();rx.translate(cx,cy);rx.strokeStyle='#31535c55';rx.lineWidth=1;for(let i=1;i<=4;i++){rx.beginPath();rx.arc(0,0,rad*i/4,0,TAU);rx.stroke()}for(let a=0;a<360;a+=30){const q=(a-90)*Math.PI/180;rx.beginPath();rx.moveTo(Math.cos(q)*18,Math.sin(q)*18);rx.lineTo(Math.cos(q)*rad,Math.sin(q)*rad);rx.stroke()}rx.fillStyle='#6d909855';rx.font='9px '+getComputedStyle(document.documentElement).getPropertyValue('--mono');rx.textAlign='center';[['N',0,-rad-8],['E',rad+10,3],['S',0,rad+14],['W',-rad-11,3]].forEach(v=>rx.fillText(v[0],v[1],v[2]));
+  // sweep
+  const ang=(t*.00022)%TAU-Math.PI/2;const grad=rx.createRadialGradient(0,0,0,0,0,rad);grad.addColorStop(0,'#6cffff28');grad.addColorStop(1,'#6cffff00');rx.fillStyle=grad;rx.beginPath();rx.moveTo(0,0);rx.arc(0,0,rad,ang-.34,ang);rx.closePath();rx.fill();rx.strokeStyle='#80ffff88';rx.beginPath();rx.moveTo(0,0);rx.lineTo(Math.cos(ang)*rad,Math.sin(ang)*rad);rx.stroke();
+  // current bearing
+  const ba=(state.bearing-90)*Math.PI/180;rx.strokeStyle='#ffc66d55';rx.setLineDash([5,6]);rx.beginPath();rx.moveTo(0,0);rx.lineTo(Math.cos(ba)*rad,Math.sin(ba)*rad);rx.stroke();rx.setLineDash([]);
+  // contacts
+  signals.forEach((s,i)=>{const a=(s.bearing-90)*Math.PI/180,rr=rad*(s.range/32),x=Math.cos(a)*rr,y=Math.sin(a)*rr;const visible=state.decoded.has(s.id);const near=angularDiff(state.bearing,s.bearing)<18&&Math.abs(state.freq-s.freq)<.32;if(visible||near){const alpha=visible?1:.25+.5*state.strength;rx.fillStyle=visible?'#7ee7e1':'#ffc66d';rx.shadowBlur=14;rx.shadowColor=rx.fillStyle;rx.beginPath();rx.arc(x,y,visible?4:3,0,TAU);rx.fill();rx.shadowBlur=0;if(visible){rx.fillStyle='#8fb0b5';rx.font='9px '+getComputedStyle(document.documentElement).getPropertyValue('--mono');rx.textAlign='left';rx.fillText(s.code,x+8,y+3)}}});
+  // station
+  rx.fillStyle='#e1ffff';rx.shadowBlur=16;rx.shadowColor='#7ee7e1';rx.beginPath();rx.arc(0,0,3,0,TAU);rx.fill();rx.restore();
+}
+function drawWave(t){const r=fit(wave),w=r.width,h=r.height;wx.clearRect(0,0,w,h);wx.strokeStyle='#18323a';wx.lineWidth=1;for(let y=30;y<h;y+=28){wx.beginPath();wx.moveTo(0,y);wx.lineTo(w,y);wx.stroke()}for(let x=20;x<w;x+=60){wx.beginPath();wx.moveTo(x,0);wx.lineTo(x,h);wx.stroke()}const s=state.strength,mid=h*.62;wx.strokeStyle=s>.82?'#8af5ee':'#3d8c93';wx.lineWidth=1.5;wx.shadowBlur=s>.82?12:3;wx.shadowColor='#70ffff';wx.beginPath();for(let x=0;x<w;x+=2){const n=(Math.random()-.5)*(18*(1-s));const y=mid+Math.sin(x*.075+t*.01)*6*s+Math.sin(x*.014+t*.004)*10*s+n+(Math.random()-.5)*4; x?wx.lineTo(x,y):wx.moveTo(x,y)}wx.stroke();wx.shadowBlur=0}
+
+function update(dt){
+ if(!state.started||state.ended)return;state.time-=dt; if(state.time<=0){state.time=0;$('#clock').textContent='00:00';timeout();return}$('#clock').textContent=formatTime(state.time);
+ const s=calcStrength();$('#meterFill').style.width=(s*100).toFixed(0)+'%';$('#carrierText').textContent=s>.82?'coherent':s>.55?'partial':'noise';$('#decodeText').textContent=Math.round(state.lockProgress*100)+'%';const btn=$('#lockBtn');btn.disabled=s<=.82;btn.classList.toggle('ready',s>.82);$('#lockHint').textContent=s>.82?'HOLD TO DECODE':'Need ≥ 82% coherence';
+ if(state.locking){if(s>.82){state.lockProgress=clamp(state.lockProgress+dt*.7,0,1);if(state.lockProgress>=1)decodeSignal(targetNear())}else{state.lockProgress=Math.max(0,state.lockProgress-dt*1.5)}} else state.lockProgress=Math.max(0,state.lockProgress-dt*.18);
+}
+function loop(now){const dt=Math.min(.05,(now-state.last)/1000);state.last=now;update(dt);drawStorm(now);drawRadar(now);drawWave(now);if(!state.ended)requestAnimationFrame(loop)}
+function ambientLoop(now){drawStorm(now);if(!state.started){drawRadar(now);drawWave(now)}requestAnimationFrame(ambientLoop)}
+
+renderContacts();renderDispatch();updateControls();requestAnimationFrame(ambientLoop);
+window.addEventListener('keydown',e=>{if(!state.started||state.ended)return;const step=e.shiftKey?.1:.02;if(e.key==='ArrowLeft'){state.freq=clamp(state.freq-step,460,470);$('#freq').value=state.freq;updateControls()}if(e.key==='ArrowRight'){state.freq=clamp(state.freq+step,460,470);$('#freq').value=state.freq;updateControls()}if(e.key==='ArrowUp'){state.bearing=(state.bearing+358)%360;$('#bearing').value=state.bearing;updateControls()}if(e.key==='ArrowDown'){state.bearing=(state.bearing+2)%360;$('#bearing').value=state.bearing;updateControls()}if(e.code==='Space'&&state.strength>.82){e.preventDefault();state.locking=true;audio.lockTone(true)}});window.addEventListener('keyup',e=>{if(e.code==='Space'){state.locking=false;audio.lockTone(false)}});
+})();
+</script>
+</body>
+</html>
