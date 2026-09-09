@@ -1,0 +1,55 @@
+name: The Forge Movie Pages Preview
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'the-forge-movie/**'
+      - '.github/workflows/the-forge-movie-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: the-forge-movie-pages-preview
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Verify source movie
+        run: |
+          test -f the-forge-movie/index.html
+          test -f the-forge-movie/styles.css
+          test -f the-forge-movie/app.js
+          grep -q 'THE FORGE' the-forge-movie/index.html
+
+      - name: Publish movie into branch-based Pages tree
+        run: |
+          rm -rf previews/the-forge-movie
+          mkdir -p previews/the-forge-movie
+          cp -a the-forge-movie/. previews/the-forge-movie/
+          touch previews/the-forge-movie/.nojekyll
+
+          test -f previews/the-forge-movie/index.html
+          test -f previews/the-forge-movie/app.js
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add previews/the-forge-movie
+
+          if git diff --cached --quiet; then
+            echo 'The Forge movie preview is already current.'
+          else
+            git commit -m 'Publish The Forge movie preview'
+            git push origin HEAD:main
+          fi
