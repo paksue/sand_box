@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-09-14T00:27:06.047Z",
+  "updatedAt": "2026-09-14T11:57:01.102Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -637,6 +637,19 @@
       "contentUpdatedAt": "2026-09-13T22:47:08.374Z",
       "doneUpdatedAt": "2026-09-13T18:24:30.184Z",
       "orderUpdatedAt": "2026-09-13T18:24:30.184Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "50c7eaa2-0896-4a95-a1c5-aa960a6afba4",
+      "title": "Exercise list do",
+      "details": "",
+      "done": false,
+      "deleted": false,
+      "order": 42,
+      "createdAt": "2026-09-14T11:56:59.009Z",
+      "contentUpdatedAt": "2026-09-14T11:56:59.009Z",
+      "doneUpdatedAt": "2026-09-14T11:56:59.009Z",
+      "orderUpdatedAt": "2026-09-14T11:56:59.009Z",
       "deletedUpdatedAt": ""
     }
   ]
