@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-09-14T11:57:01.102Z",
+  "updatedAt": "2026-09-14T19:09:31.896Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -650,6 +650,19 @@
       "contentUpdatedAt": "2026-09-14T11:56:59.009Z",
       "doneUpdatedAt": "2026-09-14T11:56:59.009Z",
       "orderUpdatedAt": "2026-09-14T11:56:59.009Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "56d66f69-cf4d-4fd5-9927-1a7139530f88",
+      "title": "Finish financial app full review",
+      "details": "",
+      "done": false,
+      "deleted": false,
+      "order": 43,
+      "createdAt": "2026-09-14T19:09:29.872Z",
+      "contentUpdatedAt": "2026-09-14T19:09:29.872Z",
+      "doneUpdatedAt": "2026-09-14T19:09:29.872Z",
+      "orderUpdatedAt": "2026-09-14T19:09:29.872Z",
       "deletedUpdatedAt": ""
     }
   ]
