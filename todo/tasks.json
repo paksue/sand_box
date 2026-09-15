@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-09-15T01:09:23.334Z",
+  "updatedAt": "2026-09-15T01:38:16.352Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -670,13 +670,13 @@
       "title": "Water safe slipper gym",
       "details": "",
       "done": false,
-      "deleted": false,
+      "deleted": true,
       "order": 44,
       "createdAt": "2026-09-15T01:09:21.677Z",
       "contentUpdatedAt": "2026-09-15T01:09:21.677Z",
       "doneUpdatedAt": "2026-09-15T01:09:21.677Z",
       "orderUpdatedAt": "2026-09-15T01:09:21.677Z",
-      "deletedUpdatedAt": ""
+      "deletedUpdatedAt": "2026-09-15T01:38:15.146Z"
     }
   ]
 }
