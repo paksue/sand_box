@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-09-15T12:04:07.552Z",
+  "updatedAt": "2026-09-19T19:21:51.309Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -689,6 +689,19 @@
       "contentUpdatedAt": "2026-09-15T12:04:06.115Z",
       "doneUpdatedAt": "2026-09-15T12:04:06.115Z",
       "orderUpdatedAt": "2026-09-15T12:04:06.115Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "0965b86f-5822-48b9-a921-59100bed4551",
+      "title": "Buy book",
+      "details": "https://www.amazon.com/One-Man-Explosive-Firsthand-Special-Ops/dp/1982177330?tag=ustxtadsp-20",
+      "done": false,
+      "deleted": false,
+      "order": 45,
+      "createdAt": "2026-09-19T19:21:43.316Z",
+      "contentUpdatedAt": "2026-09-19T19:21:50.104Z",
+      "doneUpdatedAt": "2026-09-19T19:21:43.316Z",
+      "orderUpdatedAt": "2026-09-19T19:21:43.316Z",
       "deletedUpdatedAt": ""
     }
   ]
