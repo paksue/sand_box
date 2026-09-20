@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-09-20T20:40:05.856Z",
+  "updatedAt": "2026-09-20T20:40:54.230Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -629,12 +629,12 @@
     {
       "id": "4e81034e-dbe8-4f23-9e6b-c8f25ac919b3",
       "title": "move optum hsa to fidelity hsa",
-      "details": "initiated from fidelity. followup",
+      "details": "initiated from fidelity. follow-up.\nchecked fidelity account created, optum transfered out.  awaiting filling to fidelity.",
       "done": false,
       "deleted": false,
       "order": 41,
       "createdAt": "2026-09-13T18:24:30.184Z",
-      "contentUpdatedAt": "2026-09-13T22:47:08.374Z",
+      "contentUpdatedAt": "2026-09-20T20:40:52.250Z",
       "doneUpdatedAt": "2026-09-13T18:24:30.184Z",
       "orderUpdatedAt": "2026-09-13T18:24:30.184Z",
       "deletedUpdatedAt": ""
