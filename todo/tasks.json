@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-09-20T20:36:07.509Z",
+  "updatedAt": "2026-09-20T20:40:05.856Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -355,13 +355,13 @@
     },
     {
       "id": "1adc28ce-b4f2-4867-88c9-0317ce3f7920",
-      "title": "Screen fasting before school",
+      "title": "Screen fasting",
       "details": "",
       "done": false,
       "deleted": false,
       "order": 7,
       "createdAt": "2026-08-18T01:39:12.774Z",
-      "contentUpdatedAt": "2026-08-18T01:39:12.774Z",
+      "contentUpdatedAt": "2026-09-20T20:40:03.723Z",
       "doneUpdatedAt": "2026-08-18T01:39:12.774Z",
       "orderUpdatedAt": "2026-09-12T13:01:47.017Z",
       "deletedUpdatedAt": ""
@@ -461,12 +461,12 @@
       "id": "0b40e0e2-b187-4b3b-8e22-77e7f217db47",
       "title": "mower (filters) + blower (filter)",
       "details": "",
-      "done": false,
+      "done": true,
       "deleted": false,
       "order": 24,
       "createdAt": "2026-08-24T13:48:10.229Z",
       "contentUpdatedAt": "2026-08-24T13:48:10.229Z",
-      "doneUpdatedAt": "2026-08-24T13:48:10.229Z",
+      "doneUpdatedAt": "2026-09-20T20:36:23.741Z",
       "orderUpdatedAt": "2026-09-04T12:25:15.396Z",
       "deletedUpdatedAt": ""
     },
@@ -487,12 +487,12 @@
       "id": "2df44d17-0730-498c-962c-b8bfa176bd61",
       "title": "all air filters for both cars",
       "details": "",
-      "done": false,
+      "done": true,
       "deleted": false,
       "order": 25,
       "createdAt": "2026-08-24T13:49:46.397Z",
       "contentUpdatedAt": "2026-08-24T13:49:46.397Z",
-      "doneUpdatedAt": "2026-08-24T13:49:46.397Z",
+      "doneUpdatedAt": "2026-09-20T20:36:19.721Z",
       "orderUpdatedAt": "2026-09-04T12:25:15.396Z",
       "deletedUpdatedAt": ""
     },
@@ -513,12 +513,12 @@
       "id": "f65ddf8e-9779-4ff7-922f-e9676cd2c0a3",
       "title": "Snow blower oil and filter",
       "details": "",
-      "done": false,
+      "done": true,
       "deleted": false,
       "order": 27,
       "createdAt": "2026-08-26T11:54:22.122Z",
       "contentUpdatedAt": "2026-08-26T11:54:22.122Z",
-      "doneUpdatedAt": "2026-08-26T11:54:22.122Z",
+      "doneUpdatedAt": "2026-09-20T20:36:15.604Z",
       "orderUpdatedAt": "2026-09-04T12:25:15.396Z",
       "deletedUpdatedAt": ""
     },
