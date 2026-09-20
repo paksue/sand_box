@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-09-20T14:21:50.398Z",
+  "updatedAt": "2026-09-20T20:36:07.509Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -591,12 +591,12 @@
       "id": "34a5452f-852d-4e10-b038-330004577016",
       "title": "Today",
       "details": "All purchases include Michael return frame, buy walmart online\nLowes rider oil change\nQueenie initial talk cholesterol\nMow lawn\nBlue light sun light talk",
-      "done": false,
+      "done": true,
       "deleted": false,
       "order": 29,
       "createdAt": "2026-09-07T12:53:59.585Z",
-      "contentUpdatedAt": "2026-09-07T14:14:52.105Z",
-      "doneUpdatedAt": "2026-09-07T12:53:59.585Z",
+      "contentUpdatedAt": "2026-09-20T20:36:02.891Z",
+      "doneUpdatedAt": "2026-09-20T20:36:04.286Z",
       "orderUpdatedAt": "2026-09-12T13:01:03.020Z",
       "deletedUpdatedAt": ""
     },
