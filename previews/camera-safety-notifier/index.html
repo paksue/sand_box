@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Camera Safety Notifier — Synthetic Demo</title>
+<style>
+:root{--b:#081019;--p:#101b29;--p2:#142235;--t:#edf6ff;--m:#9aacc0;--l:#293a50;--a:#59e4b5;--a2:#83baff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top right,#16304a 0,transparent 34rem),var(--b);color:var(--t);font:14px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+main{width:min(1120px,calc(100% - 28px));margin:auto;padding:40px 0}.hero{display:flex;justify-content:space-between;gap:24px;align-items:flex-start}.eyebrow{color:var(--a);font-size:12px;font-weight:800;letter-spacing:.14em}
+h1{font-size:clamp(38px,6vw,68px);line-height:1;margin:8px 0 12px;letter-spacing:-.04em}p{color:var(--m)}.pill,.tag{border:1px solid var(--l);border-radius:999px;padding:7px 10px;color:var(--m);white-space:nowrap}
+.safe{border:1px solid #30775f;background:#0d2a22;padding:13px 15px;border-radius:13px;margin:22px 0;color:#d7f6eb}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.panel{background:var(--p);border:1px solid var(--l);border-radius:16px;padding:18px}.wide{grid-column:1/-1}.head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.k{color:var(--a);font-size:11px;font-weight:800;letter-spacing:.14em}
+h2{margin:3px 0 14px;font-size:21px}.buttons{display:flex;flex-wrap:wrap;gap:7px}.buttons button,.run{border:1px solid var(--l);background:var(--p2);color:var(--t);border-radius:10px;padding:9px 11px;font-weight:700;cursor:pointer}
+.buttons button.active,.run{background:var(--a);color:#06120e;border-color:var(--a)}.run{width:100%;margin-top:14px;padding:12px}.record,.why{margin-top:14px;border:1px solid var(--l);border-radius:12px;padding:13px;background:#0a121c}
+dl{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0}dt{font-size:10px;color:var(--m);text-transform:uppercase}dd{margin:2px 0 0;overflow-wrap:anywhere}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px}.metric{border:1px solid var(--l);border-radius:11px;padding:12px}.metric span{display:block;color:var(--m);font-size:10px;text-transform:uppercase}.metric strong{display:block;margin-top:6px}
+.guard{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:11px}.guard div{display:flex;justify-content:space-between;border:1px solid var(--l);border-radius:9px;padding:8px;color:var(--m)}.guard strong{color:var(--a)}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#081019;border:1px solid var(--l);border-radius:11px;padding:14px;color:#dceafa}.flow{display:flex;gap:7px;align-items:center;overflow:auto}.node{min-width:120px;border:1px solid var(--l);border-radius:10px;padding:12px;text-align:center;background:var(--p2);font-weight:700}.arrow{color:var(--m)}
+footer{display:flex;justify-content:space-between;margin-top:18px;color:var(--m);font-size:12px}a{color:var(--a2)}
+@media(max-width:760px){.hero{display:block}.pill{display:inline-block;margin-top:12px}.grid{grid-template-columns:1fr}.wide{grid-column:1}.metrics,dl,.guard{grid-template-columns:1fr}}
+</style>
+</head>
+<body><main>
+<div class="hero"><div><div class="eyebrow">PUBLIC-SERVICE SECURITY PROTOTYPE</div><h1>Camera Safety Notifier</h1><p>Metadata-only triage for likely exposed cameras/NVRs, followed by cautious routing to the party able to fix the exposure.</p></div><div class="pill">Synthetic demo only</div></div>
+<div class="safe"><strong>Hard boundary:</strong> this page cannot open video, fetch snapshots, try passwords, bypass authentication, control devices, exploit vulnerabilities, or scan the Internet.</div>
+<div class="grid">
+<section class="panel"><div class="head"><div><div class="k">01</div><h2>Choose a synthetic finding</h2></div><span class="tag">No network calls</span></div><div id="buttons" class="buttons"></div><div class="record"><dl><div><dt>ID</dt><dd id="id"></dd></div><div><dt>IP</dt><dd id="ip"></dd></div><div><dt>Port</dt><dd id="port"></dd></div><div><dt>Service</dt><dd id="svc"></dd></div><div><dt>Vendor</dt><dd id="vendor"></dd></div><div><dt>Owner</dt><dd id="owner"></dd></div></dl><p id="banner"></p></div><button class="run" id="run">Run metadata triage</button></section>
+<section class="panel"><div class="head"><div><div class="k">02</div><h2>Triage decision</h2></div><span class="tag">Human approval required</span></div><div class="metrics"><div class="metric"><span>Device</span><strong id="device">—</strong></div><div class="metric"><span>Confidence</span><strong id="conf">—</strong></div><div class="metric"><span>Risk</span><strong id="risk">—</strong></div><div class="metric"><span>Route</span><strong id="route">—</strong></div></div><div class="why"><strong>Why</strong><ul id="why"><li>Run triage to see the metadata reasoning.</li></ul></div><div class="guard"><div>Video viewed <strong>NO</strong></div><div>Credentials tried <strong>NO</strong></div><div>Commands sent <strong>NO</strong></div><div>Internet scanned <strong>NO</strong></div></div></section>
+<section class="panel wide"><div class="head"><div><div class="k">03</div><h2>Responsible notification draft</h2></div><span class="tag" id="recipient">Not routed</span></div><pre id="draft">Run triage to generate a sample notification.</pre></section>
+<section class="panel wide"><div class="head"><div><div class="k">04</div><h2>Production architecture</h2></div><span class="tag">Pages demo ≠ FastAPI backend</span></div><div class="flow"><div class="node">Authorized metadata</div><div class="arrow">→</div><div class="node">Rules</div><div class="arrow">→</div><div class="node">Laya advisory</div><div class="arrow">→</div><div class="node">Policy routing</div><div class="arrow">→</div><div class="node">Human approval</div><div class="arrow">→</div><div class="node">Notification</div></div><p>The production prototype is Python/FastAPI. This Pages build is a static, client-side demonstration with documentation-only IP addresses and synthetic records.</p></section>
+</div>
+<footer><span>Camera Safety Notifier v0.1</span><a href="https://github.com/paksue/sand_box/tree/main/camera-safety-notifier">Source in sand_box</a></footer>
+</main>
+<script>
+const S=[
+["Likely camera",{id:"CAM-DEMO-001",ip:"192.0.2.44",port:554,svc:"RTSP",vendor:"ExampleCam",banner:"RTSP/1.0 — Network Camera",owner:"Example Residential ISP",type:"residential",contact:"security@example.invalid",tags:"camera rtsp"}],
+["NVR / organization",{id:"CAM-DEMO-002",ip:"198.51.100.77",port:443,svc:"HTTPS",vendor:"ExampleVision",banner:"Example NVR management service",owner:"Example Library",type:"organization",contact:"security@example.invalid",tags:"nvr"}],
+["Ambiguous service",{id:"CAM-DEMO-003",ip:"203.0.113.22",port:8080,svc:"HTTP",vendor:"Example Devices",banner:"Embedded device management",owner:"Example Network",type:"unknown",contact:"",tags:"iot"}],
+["Known vulnerability",{id:"CAM-DEMO-004",ip:"192.0.2.88",port:554,svc:"RTSP",vendor:"ExampleSecureCam",banner:"ONVIF RTSP network camera",owner:"Example Office",type:"organization",contact:"psirt@example.invalid",tags:"onvif camera",vuln:true}]
+];let n=0;const $=x=>document.getElementById(x);
+function show(){const f=S[n][1];["id","ip","port","vendor"].forEach(k=>$(k).textContent=f[k]);$("svc").textContent=f.svc;$("owner").textContent=f.owner;$("banner").textContent="Metadata: "+f.banner;document.querySelectorAll("#buttons button").forEach((b,i)=>b.classList.toggle("active",i===n));reset()}
+function reset(){["device","conf","risk","route"].forEach(x=>$(x).textContent="—");$("why").innerHTML="<li>Run triage to see the metadata reasoning.</li>";$("draft").textContent="Run triage to generate a sample notification.";$("recipient").textContent="Not routed"}
+S.forEach((s,i)=>{const b=document.createElement("button");b.textContent=s[0];b.onclick=()=>{n=i;show()};$("buttons").appendChild(b)});
+function triage(){const f=S[n][1],t=(f.svc+" "+f.banner+" "+f.vendor+" "+f.tags).toLowerCase();let d="unknown",c=0,r=[],route="human review",recipient="Human review";
+if(t.includes("nvr")||t.includes("dvr")){d="nvr/dvr";c=.95;r.push("Metadata contains an NVR/DVR identifier.")}else{for(const [x,w] of [["network camera",.55],["onvif",.5],["camera",.35],["rtsp",.25]])if(t.includes(x)){c+=w;r.push("Matched camera indicator: "+x)}if(f.port===554){c+=.2;r.push("Port 554 supports RTSP identification but is not proof by itself.")}c=Math.min(c,.99);if(c>=.6)d="camera"}
+let risk=f.vuln?"known vulnerability":(d!=="unknown"&&c>=.8?"probable misconfiguration":(c>=.25?"reachable":"manual review"));
+if(f.vuln){route="vendor PSIRT";recipient=f.contact;r.push("Known vulnerability: vendor-security review is preferred.")}else if(f.type==="organization"&&f.contact){route="organization security";recipient=f.contact;r.push("Organization-owned asset with a security contact.")}else if(f.type==="residential"&&f.contact){route="ISP abuse/security";recipient=f.contact;r.push("Residential subscriber: route through ISP rather than identify the resident.")}else r.push("No verified responsible-party contact: keep in human review.");
+$("device").textContent=d;$("conf").textContent=Math.round(c*100)+"%";$("risk").textContent=risk;$("route").textContent=route;$("recipient").textContent=recipient;$("why").innerHTML=r.map(x=>"<li>"+x+"</li>").join("");
+$("draft").textContent="Security notification regarding "+f.owner+"\n\nOur public-service project received metadata indicating that a service at "+f.ip+":"+f.port+" was publicly reachable. The metadata is consistent with a "+d+" (confidence "+Math.round(c*100)+"%).\n\nWe did not view video or audio, attempt credentials, bypass authentication, or send commands to the device. Please verify whether this Internet exposure is intended and, if not, restrict access and review the device/vendor security guidance.\n\nReference: "+f.id}
+$("run").onclick=triage;show();
+</script></body></html>
