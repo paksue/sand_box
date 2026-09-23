@@ -1,0 +1,21 @@
+{
+  "finding": {
+    "finding_id": "SYN-2026-0001",
+    "observed_at": "2026-09-23T19:22:00Z",
+    "source": "synthetic",
+    "ip": "192.0.2.44",
+    "port": 554,
+    "protocol": "rtsp",
+    "service_name": "RTSP",
+    "banner": "Synthetic Network Camera test fixture",
+    "vendor": "ExampleCam",
+    "model": "TEST-1",
+    "tags": ["camera", "synthetic"]
+  },
+  "owner": {
+    "owner_type": "residential",
+    "organization": "Example ISP",
+    "asn": "AS64500",
+    "abuse_contact": "security@example.invalid"
+  }
+}
