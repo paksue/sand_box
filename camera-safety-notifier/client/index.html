@@ -1,108 +1,197 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Camera Safety Notifier — Client Only</title>
-<style>
-:root{--bg:#071019;--p:#0e1a28;--p2:#122235;--l:#263b52;--t:#edf7ff;--m:#98acc1;--g:#5ce1b3;--b:#7cb8ff;--y:#ffc86a;--r:#ff8f8f}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top right,#153654 0,transparent 42rem),var(--bg);color:var(--t);font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}a{color:var(--b)}
-main{width:min(1280px,calc(100% - 28px));margin:auto;padding:28px 0 48px}.top{display:flex;justify-content:space-between;gap:22px;align-items:flex-start}.ey{font-size:11px;font-weight:900;letter-spacing:.15em;color:var(--g)}h1{font-size:clamp(34px,5vw,58px);line-height:1;margin:6px 0 10px;letter-spacing:-.04em}h2{font-size:19px;margin:0}h3{font-size:14px;margin:0 0 8px}p{color:var(--m)}
-.badge,.chip{border:1px solid var(--l);border-radius:999px;padding:6px 9px;color:var(--m);white-space:nowrap}.safe{margin:18px 0;border:1px solid #285e52;background:#0b251f;border-radius:13px;padding:13px 15px;color:#d5f5e9}.toolbar,.actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.btn{border:1px solid var(--l);background:var(--p2);color:var(--t);border-radius:9px;padding:8px 11px;font-weight:750;text-decoration:none}.btn.primary{background:var(--g);color:#06120e;border-color:var(--g)}.btn.warn{border-color:#6a552b;color:#ffd794}.btn:disabled{opacity:.4;cursor:not-allowed}
-.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin:12px 0 16px}.stat,.panel{background:var(--p);border:1px solid var(--l);border-radius:12px}.stat{padding:12px}.stat span,.box span{display:block;color:var(--m);font-size:10px;text-transform:uppercase;letter-spacing:.08em}.stat strong{font-size:24px;display:block;margin-top:3px}.layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(340px,.75fr);gap:14px}.panel{padding:14px;min-width:0}.ph{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}
-.search{display:grid;grid-template-columns:1fr 160px 160px;gap:8px;margin-bottom:10px}input,select,textarea{width:100%;background:#09131e;color:var(--t);border:1px solid var(--l);border-radius:8px;padding:8px}textarea{min-height:90px}.tw{overflow:auto;border:1px solid var(--l);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:840px}th,td{text-align:left;padding:9px 10px;border-bottom:1px solid #1d3044;vertical-align:top}th{background:#0a1521;color:var(--m);font-size:10px;text-transform:uppercase;position:sticky;top:0}tr:hover,tr.sel{background:#10283a}.small{font-size:11px;color:var(--m)}.pill{display:inline-block;border-radius:999px;padding:3px 7px;border:1px solid var(--l);font-size:11px}.pill.hi{color:#ffacac;border-color:#704040}.pill.med{color:#ffd284;border-color:#6f5a31}.pill.ok{color:#a9f0d6;border-color:#316a59}
-.dg{display:grid;grid-template-columns:1fr 1fr;gap:8px}.box{background:#09131e;border:1px solid var(--l);border-radius:10px;padding:10px}.box strong{display:block;margin-top:4px;overflow-wrap:anywhere}.section{margin-top:13px}ul{padding-left:19px;color:var(--m)}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#08111b;border:1px solid var(--l);border-radius:10px;padding:11px;color:#dceafb;max-height:300px;overflow:auto}.gate{border:1px solid #5c4c2d;background:#241d0d;color:#ffe0a1;border-radius:10px;padding:10px}.gate.ok{border-color:#2c6554;background:#0a251e;color:#caf2e4}.hidden{display:none!important}
-.modal{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}.modal.open{display:flex}.card{width:min(720px,100%);max-height:92vh;overflow:auto;background:var(--p);border:1px solid var(--l);border-radius:14px;padding:16px}.fg{display:grid;grid-template-columns:1fr 1fr;gap:9px}.full{grid-column:1/-1}label{display:block;font-size:11px;color:var(--m);margin-bottom:4px}footer{margin-top:16px;color:var(--m);font-size:12px;display:flex;justify-content:space-between;gap:12px}
-@media(max-width:980px){.layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(3,1fr)}}@media(max-width:680px){.top{display:block}.stats{grid-template-columns:1fr 1fr}.search,.fg,.dg{grid-template-columns:1fr}.full{grid-column:auto}}
-</style></head><body><main>
-<div class="top"><div><div class="ey">CLIENT-ONLY RESPONSIBLE DISCLOSURE WORKBENCH</div><h1>Camera Safety Notifier</h1><p>Import authorized exposure metadata, triage locally, route to the responsible party, draft a notice, and track remediation.</p></div><div class="badge">No backend · local-first</div></div>
-<div class="safe"><strong>Hard boundary:</strong> no Internet scanning, camera/video/audio access, snapshots, credential testing, authentication bypass, exploit attempts, or device commands. Only metadata you import or enter is processed.</div>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Camera Safety Notifier — Client Only</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <header class="top">
+    <div>
+      <div class="ey">CLIENT-ONLY RESPONSIBLE DISCLOSURE WORKBENCH</div>
+      <h1>Camera Safety Notifier</h1>
+      <p>Import authorized exposure metadata, triage locally, identify the responsible network, prepare a disclosure, and track remediation.</p>
+    </div>
+    <div class="badge">No backend · local-first</div>
+  </header>
 
-<div class="toolbar"><button class="btn primary" id="samples">Load samples</button><button class="btn" id="add">Add finding</button><button class="btn" id="imp">Import JSON/CSV</button><button class="btn" id="exp">Export cases</button><button class="btn warn" id="clear">Clear local cases</button><input id="file" class="hidden" type="file" accept=".json,.csv,application/json,text/csv"></div>
+  <div class="safe"><strong>Hard boundary:</strong> this application never scans the Internet, opens camera/video/audio streams, retrieves snapshots, tries credentials, bypasses authentication, exploits devices, or sends device commands. It works only with metadata you explicitly import or enter.</div>
 
-<div class="stats"><div class="stat"><span>Total</span><strong id="st0">0</strong></div><div class="stat"><span>Likely camera/NVR</span><strong id="st1">0</strong></div><div class="stat"><span>Human review</span><strong id="st2">0</strong></div><div class="stat"><span>Approved</span><strong id="st3">0</strong></div><div class="stat"><span>Resolved</span><strong id="st4">0</strong></div></div>
+  <nav class="toolbar" aria-label="Case actions">
+    <button class="btn primary" id="samples" type="button">Load samples</button>
+    <button class="btn" id="add" type="button">Add finding</button>
+    <button class="btn" id="imp" type="button">Import JSON/CSV</button>
+    <button class="btn" id="backup" type="button">Backup project</button>
+    <button class="btn" id="restore" type="button">Restore backup</button>
+    <button class="btn" id="exportCsv" type="button">Export CSV</button>
+    <button class="btn" id="publicReport" type="button">Export public summary</button>
+    <button class="btn warn" id="clear" type="button">Clear local data</button>
+    <input id="file" class="hidden" type="file" accept=".json,.csv,application/json,text/csv">
+    <input id="restoreFile" class="hidden" type="file" accept=".json,application/json">
+  </nav>
 
-<div class="layout">
-<section class="panel"><div class="ph"><div><div class="ey">CASE QUEUE</div><h2>Findings</h2></div><span class="chip" id="store">Stored locally</span></div>
-<div class="search"><input id="q" placeholder="Search ID, IP, vendor, owner, banner…"><select id="rf"><option value="">All risks</option><option>reachable</option><option>probable misconfiguration</option><option>known vulnerability</option><option>manual review</option><option>escalation review</option></select><select id="sf"><option value="">All statuses</option><option>new</option><option>reviewed</option><option>approved</option><option>notified</option><option>resolved</option></select></div>
-<div class="tw"><table><thead><tr><th>ID</th><th>Device</th><th>Confidence</th><th>Risk</th><th>Route</th><th>Owner/network</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table></div><p class="small">Cases stay in this browser until you export or clear them.</p></section>
+  <section class="stats" aria-label="Project statistics">
+    <div class="stat"><span>Total</span><strong id="st0">0</strong></div>
+    <div class="stat"><span>Likely camera/NVR</span><strong id="st1">0</strong></div>
+    <div class="stat"><span>Needs review</span><strong id="st2">0</strong></div>
+    <div class="stat"><span>Ready to notify</span><strong id="st3">0</strong></div>
+    <div class="stat"><span>Resolved</span><strong id="st4">0</strong></div>
+    <div class="stat"><span>Notifications</span><strong id="st5">0</strong></div>
+  </section>
 
-<aside class="panel"><div class="ph"><div><div class="ey">REVIEW</div><h2>Selected finding</h2></div><span class="chip" id="sid">None</span></div><div id="empty"><p>Select a finding to review it.</p></div>
-<div id="detail" class="hidden"><div class="dg"><div class="box"><span>Device</span><strong id="dv"></strong></div><div class="box"><span>Confidence</span><strong id="dc"></strong></div><div class="box"><span>Risk</span><strong id="dr"></strong></div><div class="box"><span>Route</span><strong id="dro"></strong></div><div class="box"><span>Owner/network</span><strong id="dn"></strong></div><div class="box"><span>Contact</span><strong id="dco"></strong></div></div>
-<div class="section"><h3>Reasoning</h3><ul id="why"></ul></div>
-<div class="section"><h3>Metadata</h3><pre id="meta"></pre></div>
-<div class="section"><div class="ph"><h3>Optional RDAP ownership lookup</h3><span class="chip">User-triggered</span></div><p class="small">This sends only the selected IP to rdap.org. Everything else remains local.</p><button class="btn" id="rdap">Lookup RDAP</button><pre id="rdapo" class="hidden"></pre></div>
-<div class="section"><h3>Human review gate</h3><div id="gate" class="gate">Not approved. Review metadata and routing first.</div><div class="actions"><button class="btn" id="reviewed">Mark reviewed</button><button class="btn primary" id="approve">Approve notice</button><button class="btn" id="notified">Mark notified</button><button class="btn" id="resolved">Mark resolved</button></div></div>
-<div class="section"><h3>Disclosure draft</h3><pre id="draft"></pre><div class="actions"><button class="btn" id="copy">Copy draft</button><a class="btn hidden" id="mail" href="#">Open email draft</a></div></div></div></aside>
-</div>
-<footer><span>Operational client prototype · metadata triage, not a scanner</span><a href="https://github.com/paksue/sand_box/tree/main/camera-safety-notifier">Project source</a></footer>
+  <div class="layout">
+    <section class="panel queue-panel">
+      <div class="ph"><div><div class="ey">CASE QUEUE</div><h2>Findings</h2></div><span class="chip" id="store">Stored locally</span></div>
+      <div class="search">
+        <input id="q" aria-label="Search cases" placeholder="Search ID, IP, vendor, owner, banner…">
+        <select id="rf" aria-label="Filter by risk">
+          <option value="">All risks</option><option>reachable</option><option>probable misconfiguration</option><option>known vulnerability</option><option>manual review</option><option>escalation review</option>
+        </select>
+        <select id="sf" aria-label="Filter by status">
+          <option value="">All statuses</option><option>new</option><option>reviewed</option><option>approved</option><option>notified</option><option>follow-up due</option><option>resolved</option>
+        </select>
+      </div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>ID</th><th>Device</th><th>Confidence</th><th>Risk</th><th>Route</th><th>Owner/network</th><th>Status</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p class="small">All case data remains in this browser unless you deliberately export it or open an external lookup/email action.</p>
+    </section>
+
+    <aside class="panel review-panel">
+      <div class="ph"><div><div class="ey">REVIEW</div><h2>Selected finding</h2></div><span class="chip" id="sid">None</span></div>
+      <div id="empty"><p>Select a finding to review it.</p></div>
+      <div id="detail" class="hidden">
+        <div class="dg">
+          <div class="box"><span>Device</span><strong id="dv"></strong></div>
+          <div class="box"><span>Confidence</span><strong id="dc"></strong></div>
+          <div class="box"><span>Risk</span><strong id="dr"></strong></div>
+          <div class="box"><span>Route</span><strong id="dro"></strong></div>
+          <div class="box"><span>Owner/network</span><strong id="dn"></strong></div>
+          <div class="box"><span>Contact</span><strong id="dco"></strong></div>
+        </div>
+
+        <div class="section"><h3>Reasoning</h3><ul id="why"></ul></div>
+        <div class="section"><h3>Metadata</h3><pre id="meta"></pre></div>
+
+        <div class="section action-card">
+          <div class="ph"><div><h3>Ownership & contact resolution</h3><p class="small compact">User-triggered lookups only.</p></div><span class="chip">External only when clicked</span></div>
+          <div class="actions">
+            <button class="btn" id="rdap" type="button">Lookup RDAP</button>
+            <button class="btn" id="securityTxt" type="button">Open security.txt</button>
+            <button class="btn" id="editContact" type="button">Edit contact</button>
+          </div>
+          <pre id="rdapo" class="hidden"></pre>
+          <div id="contactGate" class="gate">Contact has not been verified.</div>
+          <div class="actions"><button class="btn" id="verifyContact" type="button">Verify contact</button></div>
+        </div>
+
+        <div class="section action-card">
+          <h3>Human review gate</h3>
+          <div id="gate" class="gate">Not approved. Review metadata and routing first.</div>
+          <div class="actions">
+            <button class="btn" id="reviewed" type="button">Mark reviewed</button>
+            <button class="btn primary" id="approve" type="button">Approve notice</button>
+            <button class="btn" id="notified" type="button">Mark notified</button>
+            <button class="btn" id="resolved" type="button">Mark resolved</button>
+          </div>
+        </div>
+
+        <div class="section action-card">
+          <div class="ph"><div><h3>Re-check tracking</h3><p class="small compact">Record results from a later authorized dataset/review. No probing is performed here.</p></div><span class="chip" id="recheckCount">0 checks</span></div>
+          <div class="actions"><button class="btn" id="addRecheck" type="button">Record re-check</button></div>
+          <div id="rechecks"></div>
+        </div>
+
+        <div class="section action-card">
+          <h3>Disclosure draft</h3>
+          <textarea id="draft" rows="13" aria-label="Disclosure draft"></textarea>
+          <div class="actions">
+            <button class="btn" id="resetDraft" type="button">Reset draft</button>
+            <button class="btn" id="copy" type="button">Copy draft</button>
+            <a class="btn hidden" id="mail" href="#">Default mail app</a>
+            <a class="btn hidden" id="gmail" href="#" target="_blank" rel="noopener">Gmail</a>
+            <a class="btn hidden" id="outlook" href="#" target="_blank" rel="noopener">Outlook</a>
+          </div>
+        </div>
+
+        <div class="section action-card">
+          <div class="ph"><h3>Audit trail</h3><span class="chip" id="auditCount">0 events</span></div>
+          <div id="audit" class="audit"></div>
+        </div>
+
+        <div class="section actions">
+          <button class="btn" id="edit" type="button">Edit case</button>
+          <button class="btn warn" id="delete" type="button">Delete case</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <footer><span>Client-only operational prototype · metadata triage, not a scanner</span><a href="https://github.com/paksue/sand_box/tree/main/camera-safety-notifier">Project source</a></footer>
 </main>
 
-<div class="modal" id="modal"><div class="card"><div class="ph"><div><div class="ey">NEW CASE</div><h2>Add metadata finding</h2></div><button class="btn" id="close">Close</button></div>
-<form id="form"><div class="fg">
-<div><label>Finding ID</label><input name="finding_id" placeholder="CAM-2026-001"></div><div><label>Observed at</label><input name="observed_at" type="datetime-local"></div>
-<div><label>IP address</label><input name="ip" required placeholder="192.0.2.44"></div><div><label>Port</label><input name="port" type="number" min="1" max="65535"></div>
-<div><label>Protocol/service</label><input name="protocol" placeholder="RTSP"></div><div><label>Vendor/model</label><input name="vendor" placeholder="Vendor or product"></div>
-<div><label>Owner/network</label><input name="network" placeholder="ISP or organization"></div><div><label>Owner type</label><select name="owner_type"><option value="unknown">unknown</option><option value="residential">residential / ISP subscriber</option><option value="organization">organization</option><option value="network">network / ISP</option></select></div>
-<div><label>Security/abuse contact</label><input name="security_contact" type="email"></div><div><label>Vendor PSIRT contact</label><input name="vendor_contact" type="email"></div>
-<div class="full"><label>Banner / metadata notes</label><textarea name="banner" placeholder="Metadata only — no private content"></textarea></div>
-<div><label><input style="width:auto" type="checkbox" name="known_vulnerability"> Known vulnerability</label></div><div><label><input style="width:auto" type="checkbox" name="suspected_intrusion"> Suspected intrusion</label></div><div><label><input style="width:auto" type="checkbox" name="immediate_danger"> Immediate danger concern</label></div>
-</div><div class="actions"><button class="btn primary" type="submit">Add and triage</button></div></form></div></div>
+<div class="modal" id="caseModal" role="dialog" aria-modal="true" aria-labelledby="caseTitle">
+  <div class="card">
+    <div class="ph"><div><div class="ey">CASE EDITOR</div><h2 id="caseTitle">Add metadata finding</h2></div><button class="btn closeModal" type="button">Close</button></div>
+    <form id="caseForm">
+      <div class="fg">
+        <div><label>Finding ID</label><input name="finding_id" placeholder="CAM-2026-001"></div>
+        <div><label>Observed at</label><input name="observed_at" type="datetime-local"></div>
+        <div><label>Source / dataset</label><input name="source" placeholder="Authorized export / internal inventory"></div>
+        <div><label>IP address</label><input name="ip" required placeholder="192.0.2.44"></div>
+        <div><label>Port</label><input name="port" type="number" min="1" max="65535"></div>
+        <div><label>Protocol/service</label><input name="protocol" placeholder="RTSP"></div>
+        <div><label>Vendor</label><input name="vendor" placeholder="Vendor"></div>
+        <div><label>Model/product</label><input name="model" placeholder="Model/product"></div>
+        <div><label>Owner/network</label><input name="network" placeholder="ISP or organization"></div>
+        <div><label>Owner type</label><select name="owner_type"><option value="unknown">unknown</option><option value="residential">residential / ISP subscriber</option><option value="organization">organization</option><option value="network">network / ISP</option></select></div>
+        <div><label>Organization domain (optional)</label><input name="domain" placeholder="example.org"></div>
+        <div><label>Security/abuse contact</label><input name="security_contact" type="email"></div>
+        <div><label>Vendor PSIRT contact</label><input name="vendor_contact" type="email"></div>
+        <div><label>CVE/advisory ID</label><input name="advisory" placeholder="CVE-2026-... or vendor advisory"></div>
+        <div class="full"><label>Banner / metadata notes</label><textarea name="banner" placeholder="Metadata only — no private content"></textarea></div>
+        <div><label class="check"><input type="checkbox" name="known_vulnerability"> Known applicable vulnerability</label></div>
+        <div><label class="check"><input type="checkbox" name="suspected_intrusion"> Suspected unauthorized access</label></div>
+        <div><label class="check"><input type="checkbox" name="immediate_danger"> Immediate physical danger concern</label></div>
+      </div>
+      <div id="caseError" class="error hidden"></div>
+      <div class="actions"><button class="btn primary" type="submit">Save and triage</button></div>
+    </form>
+  </div>
+</div>
 
-<script>
-(function(){
-"use strict";
-var KEY="cameraSafetyNotifier.client.v3", RDAP="https://rdap.org/ip/", cases=[], selected=null;
-function $(x){return document.getElementById(x)}
-function esc(x){return String(x==null?"":x).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]})}
-function yes(v){v=String(v==null?"":v).toLowerCase();return v==="true"||v==="1"||v==="yes"||v==="on"}
-function email(v){v=String(v||"").trim();return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)?v:""}
-function id(){return "CAM-"+new Date().getFullYear()+"-"+Math.random().toString(36).slice(2,8).toUpperCase()}
-function norm(o){
-  var m={};Object.keys(o||{}).forEach(function(k){m[k.trim().toLowerCase().replace(/[\s-]+/g,"_")]=o[k]});
-  function p(){for(var i=0;i<arguments.length;i++){var v=m[arguments[i]];if(v!==undefined&&v!==null&&String(v)!=="")return v}}
-  return {finding_id:String(p("finding_id","id","case_id")||id()),observed_at:String(p("observed_at","timestamp","date")||new Date().toISOString()),ip:String(p("ip","ip_address","address")||"").trim(),port:Number(p("port")||0)||null,protocol:String(p("protocol","service")||""),banner:String(p("banner","metadata","notes")||""),vendor:String(p("vendor","manufacturer","product")||""),network:String(p("network","organization","owner","isp")||""),owner_type:String(p("owner_type","asset_type")||"unknown").toLowerCase(),security_contact:email(p("security_contact","abuse_contact","security_email","abuse_email","contact")),vendor_contact:email(p("vendor_contact","psirt","vendor_email")),known_vulnerability:yes(p("known_vulnerability","known_vuln","vulnerable")),suspected_intrusion:yes(p("suspected_intrusion","intrusion","compromised")),immediate_danger:yes(p("immediate_danger","danger","emergency")),status:String(p("status")||"new").toLowerCase(),approved:yes(p("approved")),rdap:null}
-}
-function tri(f){
-  var text=[f.protocol,f.banner,f.vendor].join(" ").toLowerCase(), score=0, dev="unknown", why=[];
-  function add(term,w,msg){if(text.indexOf(term)>=0){score+=w;why.push(msg||("Matched metadata indicator: "+term))}}
-  if(/\bnvr\b|\bdvr\b|network video recorder/.test(text)){dev="nvr/dvr";score=.95;why.push("Metadata identifies an NVR/DVR.")}
-  else{add("network camera",.55);add("ip camera",.55);add("onvif",.5,"ONVIF metadata strongly supports a network video-device classification.");add("camera",.3);add("rtsp",.22);add("webcam",.35);add("surveillance",.25);if(f.port===554){score+=.2;why.push("Port 554 commonly carries RTSP; it supports but does not prove camera identification.")}if(f.port===8554){score+=.14;why.push("Port 8554 commonly carries alternate RTSP.")}score=Math.min(score,.99);if(score>=.6)dev="camera";else if(score>=.3)dev="possible camera/video device"}
-  var risk="manual review",route="human review",contact="";
-  if(f.immediate_danger){risk="escalation review";route="urgent human safety review";why.push("Immediate-danger cases stay human-only; this app never contacts police automatically.")}
-  else if(f.suspected_intrusion){risk="escalation review";route="security incident / human review";why.push("Possible intrusion requires evidence-preserving human review, not an automated accusation.")}
-  else if(f.known_vulnerability){risk="known vulnerability";if(f.vendor_contact){route="vendor PSIRT";contact=f.vendor_contact}else if(f.owner_type==="organization"&&f.security_contact){route="organization security";contact=f.security_contact}else route="vendor / CERT coordination review";why.push("A known applicable vulnerability raises priority above simple exposure.")}
-  else if(dev!=="unknown"&&score>=.8)risk="probable misconfiguration";else if(score>=.3||f.port)risk="reachable";
-  if(!contact&&risk!=="escalation review"){if(f.owner_type==="organization"&&f.security_contact){route="organization security";contact=f.security_contact;why.push("Organization-owned asset has a supplied security contact.")}else if(f.owner_type==="residential"&&f.security_contact){route="ISP abuse/security";contact=f.security_contact;why.push("Residential cases route through the ISP rather than trying to identify the resident.")}else if(f.owner_type==="network"&&f.security_contact){route="network abuse/security";contact=f.security_contact;why.push("Network case has a supplied security/abuse contact.")}else if(f.rdap&&f.rdap.email){route=f.owner_type==="residential"?"ISP abuse/security":"network abuse/security";contact=f.rdap.email;why.push("RDAP supplied a network contact; verify it manually before sending.")}else if(route==="human review")why.push("No verified responsible-party contact is available.")}
-  return {device:dev,confidence:Math.round(score*1000)/10,risk:risk,route:route,contact:contact,why:why}
-}
-function draft(f){var t=tri(f);return "Subject: Possible publicly reachable camera-related service ("+f.finding_id+")\n\nHello,\n\nOur public-service security project received metadata indicating that a service at "+(f.ip||"[IP unavailable]")+(f.port?":"+f.port:"")+" was publicly reachable at "+f.observed_at+".\n\nThe imported metadata is consistent with a "+t.device+" (confidence "+t.confidence+"%)."+(f.known_vulnerability?" A known applicable vulnerability was also flagged in the imported metadata.":"")+"\n\nWe did not view video or audio, retrieve snapshots, attempt credentials, bypass authentication, exploit a vulnerability, or send commands to the device. This notification is based on service metadata only.\n\nPlease verify whether the exposure is intended. If not, consider restricting Internet access and reviewing the device/vendor security guidance.\n\nReference: "+f.finding_id+"\n\nThank you."}
-function save(){localStorage.setItem(KEY,JSON.stringify(cases));$("store").textContent="Stored locally · "+cases.length+" case"+(cases.length===1?"":"s")}
-function load(){try{cases=JSON.parse(localStorage.getItem(KEY)||"[]").map(norm)}catch(e){cases=[]}}
-function current(){return cases.find(function(x){return x.finding_id===selected})}
-function rclass(r){return r==="known vulnerability"||r==="escalation review"?"hi":r==="probable misconfiguration"?"med":""}
-function render(){
- var q=$("q").value.toLowerCase(),rf=$("rf").value,sf=$("sf").value, arr=cases.filter(function(f){var t=tri(f),hay=[f.finding_id,f.ip,f.vendor,f.network,f.banner,t.device,t.route].join(" ").toLowerCase();return(!q||hay.indexOf(q)>=0)&&(!rf||t.risk===rf)&&(!sf||f.status===sf)});
- $("rows").innerHTML=arr.map(function(f){var t=tri(f);return '<tr data-id="'+esc(f.finding_id)+'" class="'+(f.finding_id===selected?"sel":"")+'"><td><strong>'+esc(f.finding_id)+'</strong><div class="small">'+esc(f.ip)+(f.port?":"+esc(f.port):"")+'</div></td><td>'+esc(t.device)+'</td><td>'+t.confidence+'%</td><td><span class="pill '+rclass(t.risk)+'">'+esc(t.risk)+'</span></td><td>'+esc(t.route)+'</td><td>'+esc(f.network||"—")+'</td><td><span class="pill '+(f.status==="resolved"?"ok":"")+'">'+esc(f.status)+'</span></td></tr>'}).join("")||'<tr><td colspan="7" class="small">No matching cases.</td></tr>';
- Array.from($("rows").querySelectorAll("tr[data-id]")).forEach(function(tr){tr.onclick=function(){selected=tr.getAttribute("data-id");render();detail()}});
- var ts=cases.map(tri);$("st0").textContent=cases.length;$("st1").textContent=ts.filter(function(t){return t.device==="camera"||t.device==="nvr/dvr"}).length;$("st2").textContent=ts.filter(function(t){return t.route.indexOf("review")>=0||t.risk==="escalation review"}).length;$("st3").textContent=cases.filter(function(f){return f.approved}).length;$("st4").textContent=cases.filter(function(f){return f.status==="resolved"}).length;
-}
-function detail(){
- var f=current();$("empty").classList.toggle("hidden",!!f);$("detail").classList.toggle("hidden",!f);if(!f){$("sid").textContent="None";return}var t=tri(f);
- $("sid").textContent=f.finding_id;$("dv").textContent=t.device;$("dc").textContent=t.confidence+"%";$("dr").textContent=t.risk;$("dro").textContent=t.route;$("dn").textContent=f.network||(f.rdap&&f.rdap.name)||"Unknown";$("dco").textContent=t.contact||"Not verified";$("why").innerHTML=t.why.map(function(x){return"<li>"+esc(x)+"</li>"}).join("");
- $("meta").textContent=JSON.stringify({finding_id:f.finding_id,observed_at:f.observed_at,ip:f.ip,port:f.port,protocol:f.protocol,vendor:f.vendor,network:f.network,owner_type:f.owner_type,banner:f.banner,known_vulnerability:f.known_vulnerability,suspected_intrusion:f.suspected_intrusion,immediate_danger:f.immediate_danger,status:f.status},null,2);$("draft").textContent=draft(f);
- $("gate").className="gate"+(f.approved?" ok":"");$("gate").textContent=f.approved?"Notice approved by a human reviewer. Verify the recipient once more before opening email.":"Not approved. Review metadata and routing first.";$("approve").textContent=f.approved?"Revoke approval":"Approve notice";
- $("mail").classList.toggle("hidden",!(f.approved&&t.contact&&t.risk!=="escalation review"));if(f.approved&&t.contact&&t.risk!=="escalation review"){var body=draft(f).replace(/^Subject:.*\n\n/,"");$("mail").href="mailto:"+encodeURIComponent(t.contact)+"?subject="+encodeURIComponent("Possible publicly reachable camera-related service ("+f.finding_id+")")+"&body="+encodeURIComponent(body)}
- $("rdapo").classList.toggle("hidden",!f.rdap);$("rdapo").textContent=f.rdap?JSON.stringify(f.rdap,null,2):"";
-}
-function upsert(list){var map=new Map(cases.map(function(f){return[f.finding_id,f]}));list.forEach(function(raw){var f=norm(raw);if(!f.ip)return;if(map.has(f.finding_id)){var old=map.get(f.finding_id),approved=old.approved,status=old.status,rdap=old.rdap;Object.assign(old,f);old.approved=approved||f.approved;old.status=status||f.status;old.rdap=rdap||f.rdap}else{cases.push(f);map.set(f.finding_id,f)}});save();render();if(!selected&&cases[0]){selected=cases[0].finding_id;render();detail()}}
-function csv(txt){var rs=[],r=[],v="",q=false;for(var i=0;i<txt.length;i++){var c=txt[i],n=txt[i+1];if(c==='"'&&q&&n==='"'){v+='"';i++}else if(c==='"')q=!q;else if(c===","&&!q){r.push(v);v=""}else if((c==="\n"||c==="\r")&&!q){if(c==="\r"&&n==="\n")i++;r.push(v);v="";if(r.some(function(x){return x.trim()}))rs.push(r);r=[]}else v+=c}r.push(v);if(r.some(function(x){return x.trim()}))rs.push(r);if(rs.length<2)return[];var h=rs[0].map(function(x){return x.trim()});return rs.slice(1).map(function(row){var o={};h.forEach(function(k,i){o[k]=row[i]||""});return o})}
-function samples(){return[{finding_id:"CAM-DEMO-001",observed_at:"2026-09-23T18:04:00Z",ip:"192.0.2.44",port:554,protocol:"RTSP",vendor:"ExampleCam",banner:"RTSP/1.0 Network Camera",network:"Example Residential ISP",owner_type:"residential",security_contact:"abuse@example.org"},{finding_id:"CAM-DEMO-002",observed_at:"2026-09-23T18:08:00Z",ip:"198.51.100.77",port:443,protocol:"HTTPS",vendor:"ExampleVision",banner:"Example NVR management service",network:"Example Library",owner_type:"organization",security_contact:"security@example.org"},{finding_id:"CAM-DEMO-003",observed_at:"2026-09-23T18:13:00Z",ip:"203.0.113.22",port:8080,protocol:"HTTP",vendor:"Example Devices",banner:"Embedded device management",network:"Example Network",owner_type:"unknown"},{finding_id:"CAM-DEMO-004",observed_at:"2026-09-23T18:17:00Z",ip:"192.0.2.88",port:554,protocol:"RTSP",vendor:"ExampleSecureCam",banner:"ONVIF RTSP network camera",network:"Example Office",owner_type:"organization",known_vulnerability:true,vendor_contact:"psirt@example.org"},{finding_id:"CAM-DEMO-005",observed_at:"2026-09-23T18:21:00Z",ip:"203.0.113.99",port:554,protocol:"RTSP",vendor:"ExampleCam",banner:"Network camera metadata; possible unauthorized changes reported",network:"Example Business",owner_type:"organization",security_contact:"security@example.org",suspected_intrusion:true}]}
-$("samples").onclick=function(){upsert(samples())};$("add").onclick=function(){$("modal").classList.add("open")};$("close").onclick=function(){$("modal").classList.remove("open")};$("imp").onclick=function(){$("file").click()};$("file").onchange=async function(e){var f=e.target.files&&e.target.files[0];if(!f)return;try{var txt=await f.text(),data;if(f.name.toLowerCase().endsWith(".csv"))data=csv(txt);else{var obj=JSON.parse(txt);data=Array.isArray(obj)?obj:(Array.isArray(obj.records)?obj.records:[obj])}upsert(data)}catch(err){alert("Import failed: "+err.message)}e.target.value=""};
-$("form").onsubmit=function(e){e.preventDefault();var fd=new FormData(e.target),o={};fd.forEach(function(v,k){o[k]=v});["known_vulnerability","suspected_intrusion","immediate_danger"].forEach(function(k){o[k]=fd.has(k)});upsert([o]);$("modal").classList.remove("open");e.target.reset()};
-$("q").oninput=render;$("rf").onchange=render;$("sf").onchange=render;
-$("exp").onclick=function(){var blob=new Blob([JSON.stringify(cases.map(function(f){return Object.assign({},f,{triage:tri(f)})}),null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="camera-safety-cases.json";a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},1000)};
-$("clear").onclick=function(){if(confirm("Clear all locally stored cases?")){cases=[];selected=null;save();render();detail()}};
-$("reviewed").onclick=function(){var f=current();if(f){f.status="reviewed";save();render();detail()}};$("approve").onclick=function(){var f=current();if(f){f.approved=!f.approved;if(f.approved&&f.status==="new")f.status="approved";save();render();detail()}};$("notified").onclick=function(){var f=current();if(!f)return;if(!f.approved){alert("Approve the notice after human review first.");return}f.status="notified";save();render();detail()};$("resolved").onclick=function(){var f=current();if(f){f.status="resolved";save();render();detail()}};
-$("copy").onclick=async function(){try{await navigator.clipboard.writeText($("draft").textContent);$("copy").textContent="Copied";setTimeout(function(){$("copy").textContent="Copy draft"},1000)}catch(e){alert("Clipboard access unavailable; copy the draft manually.")}};
-$("rdap").onclick=async function(){var f=current();if(!f||!f.ip)return;if(!confirm("Send only "+f.ip+" to rdap.org for a public registration lookup?"))return;$("rdap").disabled=true;$("rdapo").classList.remove("hidden");$("rdapo").textContent="Looking up RDAP…";try{var res=await fetch(RDAP+encodeURIComponent(f.ip),{headers:{Accept:"application/rdap+json, application/json"}});if(!res.ok)throw new Error("HTTP "+res.status);var j=await res.json(),em="";(j.entities||[]).forEach(function(ent){((ent.vcardArray&&ent.vcardArray[1])||[]).forEach(function(x){if(x[0]==="email"&&!em)em=email(x[3])})});f.rdap={name:j.name||j.handle||"",handle:j.handle||"",country:j.country||"",startAddress:j.startAddress||"",endAddress:j.endAddress||"",email:em};if(!f.network&&f.rdap.name)f.network=f.rdap.name;save();render();detail()}catch(e){f.rdap={error:String(e.message||e)};save();detail()}finally{$("rdap").disabled=false}};
-load();render();detail();
-})();
-</script></body></html>
+<div class="modal" id="contactModal" role="dialog" aria-modal="true">
+  <div class="card narrow"><div class="ph"><h2>Contact details</h2><button class="btn closeModal" type="button">Close</button></div>
+    <form id="contactForm">
+      <label>Owner/network</label><input name="network">
+      <label>Owner type</label><select name="owner_type"><option value="unknown">unknown</option><option value="residential">residential / ISP subscriber</option><option value="organization">organization</option><option value="network">network / ISP</option></select>
+      <label>Organization domain</label><input name="domain" placeholder="example.org">
+      <label>Security/abuse contact</label><input name="security_contact" type="email">
+      <label>Vendor PSIRT contact</label><input name="vendor_contact" type="email">
+      <label>Verification note</label><textarea name="contact_note" placeholder="Example: confirmed on official abuse page / security.txt"></textarea>
+      <div class="actions"><button class="btn primary" type="submit">Save contact</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="recheckModal" role="dialog" aria-modal="true">
+  <div class="card narrow"><div class="ph"><h2>Record re-check</h2><button class="btn closeModal" type="button">Close</button></div>
+    <form id="recheckForm">
+      <label>Checked at</label><input name="checked_at" type="datetime-local">
+      <label>Result</label><select name="result"><option value="still reachable">still reachable in authorized data</option><option value="not observed">not observed / appears fixed</option><option value="unknown">unknown / inconclusive</option></select>
+      <label>Source</label><input name="source" placeholder="Dataset/report used for re-check">
+      <label>Notes</label><textarea name="notes" placeholder="Metadata-only notes"></textarea>
+      <div class="actions"><button class="btn primary" type="submit">Record re-check</button></div>
+    </form>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
