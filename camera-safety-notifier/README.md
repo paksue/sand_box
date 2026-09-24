@@ -91,3 +91,16 @@ The browser app currently uses deterministic local triage rather than pretending
 - Opening security.txt sends the supplied public domain to that site in a normal browser navigation.
 - Email buttons open a compose window; they do not silently send messages.
 - The public-summary export intentionally excludes IP addresses, contacts, banners, and organization names.
+
+
+## CamScout discovery sidecar
+
+The open-source collector lives in `camscout/`. It performs bounded, metadata-only discovery on explicitly authorized target ranges and exports NDJSON for the browser app. The browser importer accepts `.ndjson`/`.jsonl`, JSON, and CSV.
+
+Typical flow:
+
+```text
+authorized CIDRs -> CamScout -> findings.ndjson -> browser review -> RDAP/contact -> human approval -> notification -> later re-check
+```
+
+CamScout's built-in scan uses Nmap TCP connect scanning on a small camera-relevant port set plus the safe `rtsp-methods` script. Its policy rejects targets outside the explicit allowlist and caps one run at 65,536 addresses.
