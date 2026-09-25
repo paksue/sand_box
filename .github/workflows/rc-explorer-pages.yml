@@ -18,7 +18,7 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v4
@@ -45,3 +45,20 @@ jobs:
             git commit -m 'Publish RC Explorer GitHub Pages preview'
             git push origin HEAD:main
           fi
+      - name: Verify live GitHub Pages
+        run: |
+          URL='https://paksue.github.io/sand_box/previews/rc-explorer/'
+          for i in {1..30}; do
+            HTML="$(curl -fsSL --max-time 15 "$URL" || true)"
+            if printf '%s' "$HTML" | grep -q 'Tiny Trails · RC Explorer'; then
+              ASSET="$(printf '%s' "$HTML" | grep -oE './assets/index-[A-Za-z0-9_-]+\.js' | head -1)"
+              if [ -n "$ASSET" ] && curl -fsSL --max-time 15 "${URL}${ASSET#./}" >/dev/null; then
+                echo "Live RC Explorer verified at $URL"
+                exit 0
+              fi
+            fi
+            echo "Waiting for Pages propagation ($i/30)…"
+            sleep 4
+          done
+          echo "Live Pages verification failed for $URL"
+          exit 1
