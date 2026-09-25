@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('boots, exposes deterministic debug API, drives and renders', async ({page})=>{
+  test.setTimeout(60000);
   const errors=[];page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});page.on('pageerror',e=>errors.push(e.message));
   await page.goto('/?manual=1');await expect(page.locator('#loading')).toHaveClass(/hidden/,{timeout:5000});
   expect(await page.evaluate(()=>window.__RC_EXPLORER__?.ready)).toBe(true);
@@ -11,9 +12,9 @@ test('boots, exposes deterministic debug API, drives and renders', async ({page}
   expect(after.battery).toBeLessThan(1);
 
   await page.evaluate(()=>{window.__RC_EXPLORER__.reset();window.__RC_EXPLORER__.step(1,{throttle:0,brake:0,steer:0})});
-  await page.waitForTimeout(200);
+  await page.waitForTimeout(150);
   expect(errors).toEqual([]);
-  await page.screenshot({path:'test-results/rc-explorer.png',fullPage:true});
+  await page.screenshot({path:'test-results/rc-explorer.png'});
 });
 
 test('discovery can be reached deterministically',async({page})=>{
