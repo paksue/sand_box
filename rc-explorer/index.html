@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#172116">
+  <meta name="description" content="Tiny Trails: a client-side 3D RC exploration game.">
+  <title>Tiny Trails · RC Explorer</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<main id="game-shell">
+  <div id="viewport"></div>
+  <div id="loading" class="loading"><div class="spinner"></div><strong>Preparing the backyard…</strong><span>Everything runs in your browser.</span></div>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">TT</span><span><b>TINY TRAILS</b><small>RC EXPLORER</small></span></div>
+    <div class="top-actions">
+      <button id="camera-btn">CAM <span id="camera-name">CHASE</span></button>
+      <button id="lights-btn">LIGHTS</button><button id="photo-btn">PHOTO</button><button id="menu-btn">☰</button>
+    </div>
+  </header>
+  <section id="objective" class="objective">
+    <span class="eyebrow">BACKYARD AFTER RAIN</span>
+    <strong id="objective-title">Explore anywhere</strong>
+    <span id="objective-sub">Find hidden places, difficult climbs and quiet views.</span>
+  </section>
+  <section class="telemetry">
+    <div class="speed"><span id="speed">0</span><small>km/h</small></div>
+    <div class="meter"><span>BATTERY</span><i><b id="battery-bar"></b></i></div>
+    <div class="surface"><span id="surface">WET GRASS</span><small>TRAIL</small></div>
+  </section>
+  <section id="discovery-toast" class="toast"><span>DISCOVERY</span><strong id="discovery-name"></strong><small id="discovery-count"></small></section>
+  <section id="help-panel" class="panel" aria-hidden="true">
+    <button id="close-help" class="close">×</button><span class="eyebrow">FIELD GUIDE</span>
+    <h1>Drive. Wander. Notice things.</h1>
+    <p>This is not a race. The backyard is a miniature off-road world. Crawl rocks, cross water, look under structures and find places a full-size vehicle could never reach.</p>
+    <div class="control-grid">
+      <div><kbd>W</kbd><kbd>S</kbd><span>Throttle / reverse</span></div><div><kbd>A</kbd><kbd>D</kbd><span>Steer</span></div>
+      <div><kbd>C</kbd><span>Camera</span></div><div><kbd>L</kbd><span>Headlights</span></div>
+      <div><kbd>R</kbd><span>Recover</span></div><div><kbd>P</kbd><span>Photo mode</span></div>
+    </div>
+    <p class="muted">Gamepads are supported. Progress is stored only on this device.</p>
+    <button id="resume-btn" class="primary">RETURN TO THE TRAIL</button>
+  </section>
+  <div id="mobile-controls" class="mobile-controls">
+    <div><button data-control="left">◀</button><button data-control="right">▶</button></div>
+    <div><button data-control="brake">▼</button><button data-control="gas">▲</button></div>
+  </div>
+  <div id="photo-ui" class="photo-ui"><span>PHOTO MODE</span><small>Press P to return</small></div>
+  <div class="vignette"></div>
+</main>
+<script type="module" src="./src/main.js"></script>
+</body></html>
