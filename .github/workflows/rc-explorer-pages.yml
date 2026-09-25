@@ -1,0 +1,47 @@
+name: RC Explorer GitHub Pages Preview
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'rc-explorer/**'
+      - '.github/workflows/rc-explorer-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rc-explorer-pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install and build
+        working-directory: rc-explorer
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+      - name: Publish into sandbox Pages tree
+        run: |
+          rm -rf previews/rc-explorer
+          mkdir -p previews/rc-explorer
+          cp -a rc-explorer/dist/. previews/rc-explorer/
+          touch previews/rc-explorer/.nojekyll
+          test -f previews/rc-explorer/index.html
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add previews/rc-explorer
+          if git diff --cached --quiet; then
+            echo 'RC Explorer Pages preview already current.'
+          else
+            git commit -m 'Publish RC Explorer GitHub Pages preview'
+            git push origin HEAD:main
+          fi
