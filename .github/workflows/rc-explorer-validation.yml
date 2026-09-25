@@ -1,0 +1,64 @@
+name: RC Explorer Validation
+
+on:
+  push:
+    branches:
+      - 'agent/rc-explorer-*'
+    paths:
+      - 'rc-explorer/**'
+      - '.github/workflows/rc-explorer-validation.yml'
+  pull_request:
+    paths:
+      - 'rc-explorer/**'
+      - '.github/workflows/rc-explorer-validation.yml'
+      - '.github/workflows/rc-explorer-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        working-directory: rc-explorer
+        run: npm install --no-audit --no-fund
+      - name: Build
+        working-directory: rc-explorer
+        run: npm run build
+      - name: Install Chromium
+        working-directory: rc-explorer
+        run: npx playwright install --with-deps chromium
+      - name: Start production preview
+        working-directory: rc-explorer
+        run: |
+          npm exec vite -- preview --host 127.0.0.1 --port 4182 >/tmp/rc-explorer.log 2>&1 &
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4182/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/rc-explorer.log
+          exit 1
+      - name: Browser playtest
+        working-directory: rc-explorer
+        env:
+          RC_EXPLORER_URL: http://127.0.0.1:4182
+        run: npm run test:browser
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rc-explorer-playtest
+          path: |
+            rc-explorer/test-results/
+            rc-explorer/dist/
+          if-no-files-found: warn
+      - name: Log on failure
+        if: failure()
+        run: cat /tmp/rc-explorer.log || true
