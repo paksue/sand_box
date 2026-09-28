@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#080d12">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' https://api.trello.com https://trello.com https://trello-attachments.s3.amazonaws.com https://*.amazonaws.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self' https://trello.com; upgrade-insecure-requests">
+  <title>Trello Vault — private workspace export</title>
+  <meta name="description" content="Export your Trello Workspace directly to your computer. Read-only, client-side, no backend.">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="core.js"></script>
+  <script defer src="exporter.js"></script>
+</head>
+<body>
+  <div class="aurora" aria-hidden="true"></div>
+  <header class="topbar shell">
+    <a class="brand" href="./" aria-label="Trello Vault home">
+      <span class="logo"><i></i><i></i></span><span>Trello Vault</span>
+    </a>
+    <div class="top-actions">
+      <span class="safe-pill"><b></b>Client-side only</span>
+      <a href="https://github.com/paksue/sand_box/tree/main/trello-vault" target="_blank" rel="noreferrer">Source ↗</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero shell">
+      <div class="kicker">PRIVATE BACKUP CONSOLE</div>
+      <h1>Take your Trello<br><em>home.</em></h1>
+      <p>Export an entire Workspace straight from Trello to your PC. No app server. No database. No analytics. Your access token stays in memory.</p>
+      <div class="hero-facts">
+        <span>Read-only permission</span><span>1-hour session</span><span>Local-first backup</span>
+      </div>
+    </section>
+
+    <section class="shell two-col" id="connectArea">
+      <article class="card connect-card">
+        <div class="card-head">
+          <div><small>01</small><h2>Connect Trello</h2></div>
+          <span class="badge" id="connectionBadge">Not connected</span>
+        </div>
+
+        <div id="connectForm">
+          <p class="muted">Paste your Trello API key. Trello treats the API key as a public identifier; the temporary access token is the secret.</p>
+          <label for="apiKey">Trello API key</label>
+          <div class="input-row">
+            <input id="apiKey" type="text" autocomplete="off" spellcheck="false" placeholder="Paste API key">
+            <button id="clearKey" class="icon-btn" type="button" aria-label="Clear API key">×</button>
+          </div>
+          <div class="under-field">
+            <label class="check"><input id="rememberKey" type="checkbox"> Remember API key on this browser</label>
+            <a href="https://trello.com/apps/admin" target="_blank" rel="noreferrer">Manage key ↗</a>
+          </div>
+
+          <div class="origin-box">
+            <span>↗</span>
+            <div><strong>One-time popup setup</strong><br>Add <code id="originValue"></code> to the key's <b>Allowed Origins</b> in Trello.</div>
+          </div>
+
+          <button id="connectBtn" class="primary" type="button"><span>Connect read-only</span><b>→</b></button>
+          <button id="manualToggle" class="link-btn" type="button" aria-expanded="false">Popup blocked? Use a manual token</button>
+
+          <div id="manualBox" class="manual" hidden>
+            <p>Open Trello's 1-hour, read-only authorization page, approve access, then paste the token Trello shows you.</p>
+            <button id="openManual" class="secondary" type="button">Open Trello authorization ↗</button>
+            <label for="manualToken">Temporary token</label>
+            <div class="input-row">
+              <input id="manualToken" type="password" autocomplete="off" spellcheck="false" placeholder="Paste temporary token">
+              <button id="showToken" class="icon-btn" type="button" aria-label="Show or hide token">◎</button>
+            </div>
+            <button id="useManual" class="secondary full" type="button">Use this token</button>
+          </div>
+          <div id="connectError" class="error" hidden></div>
+        </div>
+
+        <div id="accountBox" hidden>
+          <div class="account">
+            <div class="avatar" id="avatar">T</div>
+            <div><strong id="accountName">Connected</strong><span id="accountUser"></span></div>
+            <button id="disconnectBtn" class="link-btn small" type="button">Disconnect</button>
+          </div>
+          <div class="session-grid">
+            <div><span>Permission</span><b>Read only</b></div>
+            <div><span>Token</span><b>Memory only</b></div>
+            <div><span>Expiry</span><b>~1 hour</b></div>
+          </div>
+        </div>
+      </article>
+
+      <aside class="card security-card">
+        <small class="step">SECURITY MODEL</small>
+        <h2>Your data has one route.</h2>
+        <div class="route">
+          <div><b>1</b><span><strong>This page</strong><small>Static GitHub Pages app</small></span></div>
+          <i></i>
+          <div><b>2</b><span><strong>Trello API</strong><small>Read-only HTTPS calls</small></span></div>
+          <i></i>
+          <div><b>3</b><span><strong>Your PC</strong><small>Files written locally</small></span></div>
+        </div>
+        <ul>
+          <li>No backend or database</li>
+          <li>No analytics or third-party runtime scripts</li>
+          <li>Token never stored in localStorage</li>
+          <li>No write permission requested</li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="shell section" id="workspaceSection" hidden>
+      <div class="section-head">
+        <div><small>02</small><h2>Choose a Workspace</h2></div>
+        <p id="workspaceSummary">Loading…</p>
+      </div>
+      <div class="workspace-grid" id="workspaceGrid"></div>
+    </section>
+
+    <section class="shell section" id="exportSection" hidden>
+      <div class="section-head">
+        <div><small>03</small><h2>Build the backup</h2></div>
+        <p id="selectedWorkspaceLabel"></p>
+      </div>
+      <div class="export-grid">
+        <article class="card options">
+          <h3>What to capture</h3>
+          <label class="option"><input id="optComments" type="checkbox" checked><span><b>Comments</b><small>Page through comment history beyond the first 1,000 actions.</small></span></label>
+          <label class="option"><input id="optActivity" type="checkbox"><span><b>Full activity history</b><small>Moves, edits and other board actions. May be large.</small></span></label>
+          <label class="option"><input id="optAttachments" type="checkbox" checked><span><b>Download Trello uploads</b><small>Save uploaded files when Trello/browser CORS permits. Link attachments stay as metadata.</small></span></label>
+          <label class="option"><input id="optPlugins" type="checkbox" checked><span><b>Power-Up metadata</b><small>Public plugin metadata where Trello exposes it.</small></span></label>
+          <div class="capture">
+            <span>✓ archived boards</span><span>✓ archived cards</span><span>✓ lists</span><span>✓ labels</span>
+            <span>✓ checklists</span><span>✓ custom fields</span><span>✓ members</span><span>✓ attachment metadata</span>
+          </div>
+          <div class="limit-note"><b>Public API limits</b><br>Butler automations and some private Power-Up data are not fully exposed by Trello's public API.</div>
+        </article>
+
+        <aside class="card action-card">
+          <div id="selectedCard" class="selected-card"></div>
+          <div class="mode-box" id="folderMode">
+            <span><b>Recommended</b><strong>Folder export</strong></span>
+            <small>Structured JSON plus downloaded attachments, written directly to a folder you choose.</small>
+          </div>
+          <button id="exportFolderBtn" class="primary big" type="button"><span>Choose folder & export</span><b>↓</b></button>
+          <button id="exportJsonBtn" class="secondary full" type="button">Download JSON snapshot</button>
+          <p class="fine center">JSON includes attachment metadata, not binary files.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="shell section" id="progressSection" hidden>
+      <article class="card progress-card">
+        <div class="progress-head">
+          <div><small>EXPORT</small><h2 id="progressTitle">Building backup</h2></div>
+          <strong id="progressPercent">0%</strong>
+        </div>
+        <div class="progress-track"><i id="progressBar"></i></div>
+        <p id="progressMessage">Preparing…</p>
+        <div id="progressStats" class="stats"></div>
+        <div id="progressLog" class="log" aria-live="polite"></div>
+        <div class="progress-actions">
+          <button id="cancelBtn" class="link-btn" type="button">Cancel</button>
+          <button id="doneBtn" class="secondary" type="button" hidden>Done</button>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="shell footer">
+    <div><strong>Trello Vault</strong><span>Static. Read-only. Yours.</span></div>
+    <div><a href="https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/" target="_blank" rel="noreferrer">Trello auth docs ↗</a><a href="SECURITY.md" target="_blank">Security notes ↗</a></div>
+  </footer>
+</body>
+</html>
