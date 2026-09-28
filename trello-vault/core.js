@@ -3,7 +3,7 @@
 window.TV = {
   API: 'https://api.trello.com/1',
   ORIGIN: 'https://trello.com',
-  version: '1.0.0',
+  version: '1.1.0',
   state: {
     apiKey: '',
     token: '',
@@ -32,7 +32,7 @@ window.TV = {
     workspaceSection:$('workspaceSection'), workspaceGrid:$('workspaceGrid'), workspaceSummary:$('workspaceSummary'),
     exportSection:$('exportSection'), selectedWorkspaceLabel:$('selectedWorkspaceLabel'), selectedCard:$('selectedCard'),
     optComments:$('optComments'), optActivity:$('optActivity'), optAttachments:$('optAttachments'), optPlugins:$('optPlugins'),
-    folderMode:$('folderMode'), exportFolderBtn:$('exportFolderBtn'), exportJsonBtn:$('exportJsonBtn'),
+    zipMode:$('zipMode'), exportZipBtn:$('exportZipBtn'), exportFolderBtn:$('exportFolderBtn'), exportJsonBtn:$('exportJsonBtn'), folderSupport:$('folderSupport'),
     progressSection:$('progressSection'), progressTitle:$('progressTitle'), progressPercent:$('progressPercent'),
     progressBar:$('progressBar'), progressMessage:$('progressMessage'), progressStats:$('progressStats'),
     progressLog:$('progressLog'), cancelBtn:$('cancelBtn'), doneBtn:$('doneBtn')
@@ -290,8 +290,11 @@ window.TV = {
     if (remembered) { TV.ui.apiKey.value=remembered; TV.ui.rememberKey.checked=true; }
     TV.ui.originValue.textContent=location.origin;
     if (!window.showDirectoryPicker) {
-      TV.ui.folderMode.innerHTML='<span><b>Browser fallback</b><strong>Folder export unavailable</strong></span><small>Use desktop Chrome or Edge for structured folder export. JSON snapshot still works here.</small>';
       TV.ui.exportFolderBtn.disabled=true;
+      TV.ui.exportFolderBtn.textContent='Folder export not supported in this browser';
+      TV.ui.folderSupport.textContent='Complete ZIP is the recommended fallback here — it still includes actual Trello-uploaded files when Trello permits download.';
+    } else {
+      TV.ui.folderSupport.textContent='Optional: choose a folder to write the same structured backup directly to disk.';
     }
 
     TV.ui.clearKey.addEventListener('click',function(){TV.ui.apiKey.value='';localStorage.removeItem('trello-vault-api-key');TV.ui.apiKey.focus();});
