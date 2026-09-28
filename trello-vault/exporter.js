@@ -41,12 +41,13 @@
       const backup=await collectBackup(choice.workspace,choice.boards,opt);
       assertActive();
       if (mode==='folder') await writeFolder(root,backup,opt);
+      else if (mode==='zip') await downloadZip(backup,opt);
       else await downloadSnapshot(backup);
       finish(backup,mode);
     } catch(err) {
       if (err.name==='AbortError') {
         ui.progressTitle.textContent='Export cancelled';
-        TV.setProgress(0,'No Trello data was changed. A partial local folder may remain if files had already been written.');
+        TV.setProgress(0,mode==='folder'?'No Trello data was changed. A partial local folder may remain if files had already been written.':'No Trello data was changed. The unfinished browser backup was discarded.');
         TV.log('Export cancelled by user.','warn');
       } else {
         ui.progressTitle.textContent='Export stopped';
@@ -282,6 +283,84 @@
     }
   }
 
+  async function downloadZip(backup,opt) {
+    assertActive();
+    if (!window.TrelloVaultZip || !window.TrelloVaultZip.ZipWriter) throw new Error('The ZIP module did not load. Refresh Trello Vault and try again.');
+
+    const rootName=TV.safeName(backup.workspace.displayName || backup.workspace.name || 'trello')+'-trello-vault-'+stamp();
+    const prefix=rootName+'/';
+    const zip=new window.TrelloVaultZip.ZipWriter();
+
+    TV.setProgress(86,'Packing structured backup into ZIP…');
+    await zip.addJson(prefix+'workspace.json',backup.workspace);
+    await zip.addJson(prefix+'members.json',backup.members);
+    await zip.addJson(prefix+'memberships.json',backup.memberships);
+
+    for (let i=0;i<backup.boards.length;i++) {
+      assertActive();
+      const item=backup.boards[i];
+      const boardFolder=String(i+1).padStart(3,'0')+'-'+TV.safeName(item.board.name || item.board.id);
+      const base=prefix+'boards/'+boardFolder+'/';
+      await zip.addJson(base+'board.json',item.board);
+      await zip.addJson(base+'lists.json',item.lists);
+      await zip.addJson(base+'cards.json',item.cards);
+      await zip.addJson(base+'checklists.json',item.checklists);
+      await zip.addJson(base+'labels.json',item.labels);
+      await zip.addJson(base+'custom-fields.json',item.customFields);
+      await zip.addJson(base+'members.json',item.members);
+      if (item.plugins && item.plugins.length) await zip.addJson(base+'plugins.json',item.plugins);
+      if (item.comments && item.comments.length) await zip.addJson(base+'comments.json',item.comments);
+      if (item.activity && item.activity.length) await zip.addJson(base+'activity.json',item.activity);
+    }
+
+    const report={attempted:0,downloaded:0,skippedLinks:0,failed:[]};
+    if (opt.attachments) {
+      const uploads=[];
+      backup.boards.forEach(function(item,boardIndex){
+        (item.cards||[]).forEach(function(card){
+          (card.attachments||[]).forEach(function(att){
+            if (att.isUpload) uploads.push({item:item,boardIndex:boardIndex,card:card,att:att});
+            else report.skippedLinks++;
+          });
+        });
+      });
+
+      if (!uploads.length) {
+        TV.log('No Trello-uploaded attachment files found.','ok');
+      } else {
+        for (let i=0;i<uploads.length;i++) {
+          assertActive();
+          const row=uploads[i];
+          report.attempted++;
+          const boardFolder=String(row.boardIndex+1).padStart(3,'0')+'-'+TV.safeName(row.item.board.name || row.item.board.id);
+          const cardFolder=TV.safeName(row.card.name || 'card').slice(0,70)+'-'+String(row.card.id).slice(-8);
+          const fileName=String(row.att.id).slice(-8)+'-'+TV.safeName(row.att.fileName || row.att.name || 'attachment');
+          const path=prefix+'boards/'+boardFolder+'/attachments/'+cardFolder+'/'+fileName;
+          try {
+            const blob=await fetchAttachment(row.card.id,row.att);
+            await zip.add(path,blob);
+            report.downloaded++;
+          } catch(err) {
+            if (err.name==='AbortError') throw err;
+            report.failed.push({cardId:row.card.id,cardName:row.card.name,attachmentId:row.att.id,name:row.att.name,error:TV.friendly(err)});
+            TV.log('Attachment skipped: '+(row.att.name || row.att.id),'warn');
+          }
+          TV.setProgress(90+Math.round(((i+1)/uploads.length)*7),'Packing attachment '+(i+1)+' of '+uploads.length);
+        }
+      }
+    }
+
+    backup.attachmentReport=report;
+    await zip.addJson(prefix+'manifest.json',manifest(backup));
+    await zip.addText(prefix+'README.txt',readmeText(backup));
+
+    TV.setProgress(98,'Finalizing ZIP locally in your browser…');
+    const blob=zip.finalize();
+    downloadBlob(blob,rootName+'.zip');
+    TV.setProgress(100,'Complete ZIP downloaded.');
+    TV.log('ZIP complete: '+rootName+'.zip','ok');
+  }
+
   async function fetchAttachment(cardId,att) {
     const file=att.fileName || att.name || 'attachment';
     const url=TV.API+'/cards/'+encodeURIComponent(cardId)+'/attachments/'+encodeURIComponent(att.id)+'/download/'+encodeURIComponent(file);
@@ -374,7 +453,7 @@
   function finish(backup,mode) {
     const c=backup.counts;
     ui.progressTitle.textContent='Backup complete';
-    TV.setProgress(100,mode==='folder'?'Your Trello data was written directly to the folder you selected.':'Your browser downloaded the snapshot locally.');
+    TV.setProgress(100,mode==='folder'?'Your Trello data was written directly to the folder you selected.':mode==='zip'?'Your browser downloaded a complete ZIP with structured data and successfully fetched Trello uploads.':'Your browser downloaded the metadata snapshot locally.');
     ui.progressStats.innerHTML=stat(c.boards,'boards')+stat(c.cards,'cards')+stat(c.comments,'comments')+stat(c.attachments,'attachments');
     ui.cancelBtn.hidden=true;
     ui.doneBtn.hidden=false;
@@ -403,6 +482,7 @@
     ui.progressSection.scrollIntoView({behavior:'smooth'});
   }
 
+  ui.exportZipBtn.addEventListener('click',function(){startExport('zip');});
   ui.exportFolderBtn.addEventListener('click',function(){startExport('folder');});
   ui.exportJsonBtn.addEventListener('click',function(){startExport('json');});
 })();
