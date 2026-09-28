@@ -26,4 +26,4 @@ Trello-uploaded attachment files are requested with the authenticated Trello dow
 
 ## Local files
 
-Folder export uses the browser File System Access API after an explicit user folder choice. JSON export uses a normal browser download. A cancelled folder export may leave already-written partial files in the chosen local folder; Trello itself is never modified.
+Complete ZIP export is assembled in browser memory and saved with a normal browser download, so it does not depend on the File System Access API. Optional folder export uses that API only after an explicit user folder choice. A cancelled folder export may leave already-written partial files in the chosen local folder; Trello itself is never modified.
