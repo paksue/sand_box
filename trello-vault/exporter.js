@@ -7,7 +7,6 @@
     return {
       comments:ui.optComments.checked,
       activity:ui.optActivity.checked,
-      attachments:ui.optAttachments.checked,
       plugins:ui.optPlugins.checked
     };
   }
@@ -24,7 +23,7 @@
     if (s.exporting) return;
     let choice;
     try { choice=selected(); } catch(err) { showError(err.message); return; }
-    if (mode==='folder' && !window.showDirectoryPicker) { showError('Folder export is not available in this browser. Use the JSON snapshot instead.'); return; }
+    if (mode==='folder' && !window.showDirectoryPicker) { showError('Folder export is not available in this browser. Use the card archive ZIP instead.'); return; }
 
     let root=null;
     if (mode==='folder') {
@@ -78,13 +77,13 @@
   async function collectBackup(workspace,boardRefs,opt) {
     const startedAt=new Date().toISOString();
     TV.log('Reading Workspace metadata…');
-    const detail=await TV.api('/organizations/'+encodeURIComponent(workspace.id),{fields:'all'},'object') || workspace;
-    const members=await TV.api('/organizations/'+encodeURIComponent(workspace.id)+'/members/all',{fields:'id,fullName,username,avatarUrl,url'},'array');
+    const detail=await TV.api('/organizations/'+encodeURIComponent(workspace.id),{fields:'id,name,displayName,desc,url'},'object') || workspace;
+    const members=await TV.api('/organizations/'+encodeURIComponent(workspace.id)+'/members/all',{fields:'id,fullName,username,url'},'array');
     const memberships=await TV.api('/organizations/'+encodeURIComponent(workspace.id)+'/memberships',{},'array');
 
     const backup={
       schema:'trello-vault',
-      schemaVersion:1,
+      schemaVersion:2,
       generatedAt:null,
       startedAt:startedAt,
       generator:{name:'Trello Vault',version:TV.version,mode:'client-side'},
@@ -95,10 +94,16 @@
       memberships:memberships,
       boards:[],
       warnings:[],
+      exportPolicy:{
+        cardDataOnly:true,
+        attachmentsIncluded:false,
+        imagesIncluded:false,
+        attachmentMetadataIncluded:false
+      },
       limitations:[
+        'Attachments, image files, card cover image metadata, and attachment metadata are intentionally excluded.',
         'Butler automations are not fully exposed by the public Trello REST API.',
-        'Some private Power-Up data may not be available through the public API.',
-        'External link attachments are preserved as metadata and are not downloaded.'
+        'Some private Power-Up data may not be available through the public API.'
       ]
     };
 
@@ -131,17 +136,17 @@
       }
     };
 
-    const board=await TV.api('/boards/'+id,{fields:'all'});
+    const board=await TV.api('/boards/'+id,{fields:'id,name,desc,closed,url,shortUrl,dateLastActivity,idOrganization'});
     const results=await Promise.all([
       optional('/boards/'+id+'/lists',{filter:'all',fields:'id,name,closed,pos,idBoard,subscribed'},'lists'),
       optional('/boards/'+id+'/cards/all',{
-        fields:'id,name,desc,closed,idList,idBoard,idMembers,idLabels,url,shortUrl,pos,due,dueComplete,start,cover,dateLastActivity,labels',
-        attachments:'true',attachment_fields:'all',customFieldItems:'true',checklists:'all',checklist_fields:'all'
+        fields:'id,name,desc,closed,idList,idBoard,idMembers,idLabels,url,shortUrl,pos,due,dueComplete,start,dateLastActivity,labels',
+        customFieldItems:'true',checklists:'all',checklist_fields:'all'
       },'cards'),
       optional('/boards/'+id+'/checklists',{},'checklists'),
       optional('/boards/'+id+'/labels',{limit:1000,fields:'all'},'labels'),
       optional('/boards/'+id+'/customFields',{},'custom fields'),
-      optional('/boards/'+id+'/members',{fields:'id,fullName,username,avatarUrl,url'},'members')
+      optional('/boards/'+id+'/members',{fields:'id,fullName,username,url'},'members')
     ]);
 
     let plugins=[];
@@ -197,7 +202,7 @@
   }
 
   function summarize(boards) {
-    const c={boards:boards.length,archivedBoards:0,lists:0,cards:0,archivedCards:0,comments:0,actions:0,checklists:0,attachments:0};
+    const c={boards:boards.length,archivedBoards:0,lists:0,cards:0,archivedCards:0,comments:0,actions:0,checklists:0};
     boards.forEach(function(b){
       if (b.board && b.board.closed) c.archivedBoards++;
       c.lists+=(b.lists||[]).length;
@@ -206,7 +211,6 @@
       c.comments+=(b.comments||[]).length;
       c.actions+=(b.activity||[]).length;
       c.checklists+=(b.checklists||[]).length;
-      c.attachments+=(b.cards||[]).reduce(function(n,card){return n+(card.attachments||[]).length;},0);
     });
     return c;
   }
@@ -239,48 +243,10 @@
       if (item.activity && item.activity.length) await writeJson(dir,'activity.json',item.activity);
     }
 
-    const report={attempted:0,downloaded:0,skippedLinks:0,failed:[]};
-    if (opt.attachments) await downloadAttachments(boardsDir,backup,report);
-    backup.attachmentReport=report;
-
     await writeJson(out,'manifest.json',manifest(backup));
     await writeText(out,'README.txt',readmeText(backup));
     TV.setProgress(100,'Backup saved to '+folderName);
     TV.log('Local folder complete: '+folderName,'ok');
-  }
-
-  async function downloadAttachments(boardsDir,backup,report) {
-    const uploads=[];
-    backup.boards.forEach(function(item,boardIndex){
-      (item.cards||[]).forEach(function(card){
-        (card.attachments||[]).forEach(function(att){
-          if (att.isUpload) uploads.push({item:item,boardIndex:boardIndex,card:card,att:att});
-          else report.skippedLinks++;
-        });
-      });
-    });
-
-    if (!uploads.length) { TV.log('No Trello-uploaded attachment files found.','ok'); return; }
-
-    for (let i=0;i<uploads.length;i++) {
-      assertActive();
-      const row=uploads[i];
-      report.attempted++;
-      const boardFolder=String(row.boardIndex+1).padStart(3,'0')+'-'+TV.safeName(row.item.board.name || row.item.board.id);
-      const boardDir=await boardsDir.getDirectoryHandle(boardFolder,{create:true});
-      const attachments=await boardDir.getDirectoryHandle('attachments',{create:true});
-      const cardDir=await attachments.getDirectoryHandle(TV.safeName(row.card.name || 'card').slice(0,70)+'-'+String(row.card.id).slice(-8),{create:true});
-      const fileName=String(row.att.id).slice(-8)+'-'+TV.safeName(row.att.fileName || row.att.name || 'attachment');
-      try {
-        const blob=await fetchAttachment(row.card.id,row.att);
-        await writeBlob(cardDir,fileName,blob);
-        report.downloaded++;
-      } catch(err) {
-        report.failed.push({cardId:row.card.id,cardName:row.card.name,attachmentId:row.att.id,name:row.att.name,error:TV.friendly(err)});
-        TV.log('Attachment skipped: '+(row.att.name || row.att.id),'warn');
-      }
-      TV.setProgress(90+Math.round(((i+1)/uploads.length)*7),'Downloading attachment '+(i+1)+' of '+uploads.length);
-    }
   }
 
   async function downloadZip(backup,opt) {
@@ -313,66 +279,14 @@
       if (item.activity && item.activity.length) await zip.addJson(base+'activity.json',item.activity);
     }
 
-    const report={attempted:0,downloaded:0,skippedLinks:0,failed:[]};
-    if (opt.attachments) {
-      const uploads=[];
-      backup.boards.forEach(function(item,boardIndex){
-        (item.cards||[]).forEach(function(card){
-          (card.attachments||[]).forEach(function(att){
-            if (att.isUpload) uploads.push({item:item,boardIndex:boardIndex,card:card,att:att});
-            else report.skippedLinks++;
-          });
-        });
-      });
-
-      if (!uploads.length) {
-        TV.log('No Trello-uploaded attachment files found.','ok');
-      } else {
-        for (let i=0;i<uploads.length;i++) {
-          assertActive();
-          const row=uploads[i];
-          report.attempted++;
-          const boardFolder=String(row.boardIndex+1).padStart(3,'0')+'-'+TV.safeName(row.item.board.name || row.item.board.id);
-          const cardFolder=TV.safeName(row.card.name || 'card').slice(0,70)+'-'+String(row.card.id).slice(-8);
-          const fileName=String(row.att.id).slice(-8)+'-'+TV.safeName(row.att.fileName || row.att.name || 'attachment');
-          const path=prefix+'boards/'+boardFolder+'/attachments/'+cardFolder+'/'+fileName;
-          try {
-            const blob=await fetchAttachment(row.card.id,row.att);
-            await zip.add(path,blob);
-            report.downloaded++;
-          } catch(err) {
-            if (err.name==='AbortError') throw err;
-            report.failed.push({cardId:row.card.id,cardName:row.card.name,attachmentId:row.att.id,name:row.att.name,error:TV.friendly(err)});
-            TV.log('Attachment skipped: '+(row.att.name || row.att.id),'warn');
-          }
-          TV.setProgress(90+Math.round(((i+1)/uploads.length)*7),'Packing attachment '+(i+1)+' of '+uploads.length);
-        }
-      }
-    }
-
-    backup.attachmentReport=report;
     await zip.addJson(prefix+'manifest.json',manifest(backup));
     await zip.addText(prefix+'README.txt',readmeText(backup));
 
     TV.setProgress(98,'Finalizing ZIP locally in your browser…');
     const blob=zip.finalize();
     downloadBlob(blob,rootName+'.zip');
-    TV.setProgress(100,'Complete ZIP downloaded.');
+    TV.setProgress(100,'Card archive ZIP downloaded.');
     TV.log('ZIP complete: '+rootName+'.zip','ok');
-  }
-
-  async function fetchAttachment(cardId,att) {
-    const file=att.fileName || att.name || 'attachment';
-    const url=TV.API+'/cards/'+encodeURIComponent(cardId)+'/attachments/'+encodeURIComponent(att.id)+'/download/'+encodeURIComponent(file);
-    const response=await fetch(url,{
-      method:'GET',
-      headers:{Authorization:TV.authHeader()},
-      redirect:'follow',
-      cache:'no-store',
-      signal:s.controller?s.controller.signal:undefined
-    });
-    if (!response.ok) throw new Error('Attachment download '+response.status);
-    return response.blob();
   }
 
   async function writeJson(dir,name,value) { await writeText(dir,name,JSON.stringify(value==null?null:value,null,2)); }
@@ -380,12 +294,6 @@
     const handle=await dir.getFileHandle(name,{create:true});
     const writer=await handle.createWritable();
     await writer.write(text);
-    await writer.close();
-  }
-  async function writeBlob(dir,name,blob) {
-    const handle=await dir.getFileHandle(name,{create:true});
-    const writer=await handle.createWritable();
-    await writer.write(blob);
     await writer.close();
   }
 
@@ -424,7 +332,7 @@
       sourceAccount:backup.sourceAccount,
       workspace:{id:backup.workspace.id,name:backup.workspace.name,displayName:backup.workspace.displayName,url:backup.workspace.url},
       counts:backup.counts,
-      attachmentReport:backup.attachmentReport || null,
+      exportPolicy:backup.exportPolicy,
       warnings:backup.warnings,
       limitations:backup.limitations,
       boards:backup.boards.map(function(item,i){
@@ -432,8 +340,7 @@
           index:i+1,id:item.board.id,name:item.board.name,closed:Boolean(item.board.closed),url:item.board.url,
           counts:{
             lists:(item.lists||[]).length,cards:(item.cards||[]).length,checklists:(item.checklists||[]).length,
-            labels:(item.labels||[]).length,comments:(item.comments||[]).length,actions:(item.activity||[]).length,
-            attachments:(item.cards||[]).reduce(function(n,c){return n+(c.attachments||[]).length;},0)
+            labels:(item.labels||[]).length,comments:(item.comments||[]).length,actions:(item.activity||[]).length
           }
         };
       })
@@ -446,15 +353,15 @@
       '\nBoards: '+backup.counts.boards+
       '\nCards: '+backup.counts.cards+
       '\nComments: '+backup.counts.comments+
-      '\nAttachments in metadata: '+backup.counts.attachments+
-      '\n\nThis backup was created entirely in your browser with a read-only Trello token.\nThe token and API key are not stored in this backup.\n\nKnown public API limitations:\n- Butler automations are not fully exportable through the public REST API.\n- Some private Power-Up data is not exposed.\n- External link attachments are metadata only.\n';
+      '\nChecklists: '+backup.counts.checklists+
+      '\n\nThis is a card-data-only archive. Attachments, images, card cover image metadata, and attachment metadata are intentionally excluded.\nThis backup was created entirely in your browser with a read-only Trello token.\nThe token and API key are not stored in this backup.\n\nKnown public API limitations:\n- Butler automations are not fully exportable through the public REST API.\n- Some private Power-Up data is not exposed.\n';
   }
 
   function finish(backup,mode) {
     const c=backup.counts;
     ui.progressTitle.textContent='Backup complete';
-    TV.setProgress(100,mode==='folder'?'Your Trello data was written directly to the folder you selected.':mode==='zip'?'Your browser downloaded a complete ZIP with structured data and successfully fetched Trello uploads.':'Your browser downloaded the metadata snapshot locally.');
-    ui.progressStats.innerHTML=stat(c.boards,'boards')+stat(c.cards,'cards')+stat(c.comments,'comments')+stat(c.attachments,'attachments');
+    TV.setProgress(100,mode==='folder'?'Your card-data archive was written directly to the folder you selected.':mode==='zip'?'Your browser downloaded the card-data ZIP. No attachments or images were collected.':'Your browser downloaded the card-data JSON locally.');
+    ui.progressStats.innerHTML=stat(c.boards,'boards')+stat(c.cards,'cards')+stat(c.comments,'comments')+stat(c.checklists,'checklists');
     ui.cancelBtn.hidden=true;
     ui.doneBtn.hidden=false;
   }
