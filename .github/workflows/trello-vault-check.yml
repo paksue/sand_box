@@ -1,0 +1,38 @@
+name: Trello Vault checks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'trello-vault/**'
+      - '.github/workflows/trello-vault-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: JavaScript syntax
+        run: |
+          node --check trello-vault/core.js
+          node --check trello-vault/exporter.js
+      - name: Security contract
+        run: |
+          grep -q "scope','read" trello-vault/core.js
+          grep -q "expiration','1hour" trello-vault/core.js
+          grep -q "Authorization:TV.authHeader()" trello-vault/exporter.js
+          ! grep -RE "localStorage.*token|sessionStorage.*token" trello-vault/*.js
+      - name: Static asset contract
+        run: |
+          test -f trello-vault/index.html
+          test -f trello-vault/styles.css
+          grep -q 'src="core.js"' trello-vault/index.html
+          grep -q 'src="exporter.js"' trello-vault/index.html
