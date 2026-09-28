@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#080d12">
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' https://api.trello.com https://trello.com https://trello-attachments.s3.amazonaws.com https://*.amazonaws.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self' https://trello.com; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' https://api.trello.com https://trello.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self' https://trello.com; upgrade-insecure-requests">
   <title>Trello Vault — private workspace export</title>
   <meta name="description" content="Export your Trello Workspace directly to your computer. Read-only, client-side, no backend.">
   <link rel="stylesheet" href="styles.css">
@@ -30,7 +30,7 @@
     <section class="hero shell">
       <div class="kicker">PRIVATE BACKUP CONSOLE</div>
       <h1>Take your Trello<br><em>home.</em></h1>
-      <p>Export an entire Workspace straight from Trello to your PC. No app server. No database. No analytics. Your access token stays in memory.</p>
+      <p>Export the useful Trello card data you can read, search, analyze, and reuse later. No images or attachments. No app server. No database.</p>
       <div class="hero-facts">
         <span>Read-only permission</span><span>1-hour session</span><span>Local-first backup</span>
       </div>
@@ -127,11 +127,10 @@
           <h3>What to capture</h3>
           <label class="option"><input id="optComments" type="checkbox" checked><span><b>Comments</b><small>Page through comment history beyond the first 1,000 actions.</small></span></label>
           <label class="option"><input id="optActivity" type="checkbox"><span><b>Full activity history</b><small>Moves, edits and other board actions. May be large.</small></span></label>
-          <label class="option"><input id="optAttachments" type="checkbox" checked><span><b>Download Trello uploads</b><small>Save uploaded files when Trello/browser CORS permits. Link attachments stay as metadata.</small></span></label>
           <label class="option"><input id="optPlugins" type="checkbox" checked><span><b>Power-Up metadata</b><small>Public plugin metadata where Trello exposes it.</small></span></label>
           <div class="capture">
             <span>✓ archived boards</span><span>✓ archived cards</span><span>✓ lists</span><span>✓ labels</span>
-            <span>✓ checklists</span><span>✓ custom fields</span><span>✓ members</span><span>✓ attachment metadata</span>
+            <span>✓ checklists</span><span>✓ custom fields</span><span>✓ descriptions</span><span>✓ due dates</span>
           </div>
           <div class="limit-note"><b>Public API limits</b><br>Butler automations and some private Power-Up data are not fully exposed by Trello's public API.</div>
         </article>
@@ -139,13 +138,13 @@
         <aside class="card action-card">
           <div id="selectedCard" class="selected-card"></div>
           <div class="mode-box" id="zipMode">
-            <span><b>Recommended</b><strong>Complete ZIP backup</strong></span>
-            <small>One normal browser download containing structured JSON plus actual Trello-uploaded images and files when Trello permits them.</small>
+            <span><b>Recommended</b><strong>Card data archive</strong></span>
+            <small>Structured JSON for boards, lists, cards, descriptions, comments, checklists, labels and custom fields. Attachments and images are intentionally excluded.</small>
           </div>
-          <button id="exportZipBtn" class="primary big" type="button"><span>Download complete ZIP</span><b>↓</b></button>
+          <button id="exportZipBtn" class="primary big" type="button"><span>Download card archive ZIP</span><b>↓</b></button>
           <button id="exportFolderBtn" class="secondary full" type="button">Choose folder instead</button>
-          <button id="exportJsonBtn" class="link-btn full" type="button">Metadata-only JSON snapshot</button>
-          <p class="fine center" id="folderSupport">Folder export is optional. ZIP works without showDirectoryPicker().</p>
+          <button id="exportJsonBtn" class="link-btn full" type="button">Download single JSON file</button>
+          <p class="fine center" id="folderSupport">No attachment or image files are collected.</p>
         </aside>
       </div>
     </section>
