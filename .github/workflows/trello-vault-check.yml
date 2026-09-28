@@ -23,6 +23,7 @@ jobs:
       - name: JavaScript syntax
         run: |
           node --check trello-vault/core.js
+          node --check trello-vault/zip.js
           node --check trello-vault/exporter.js
       - name: Security contract
         run: |
@@ -35,4 +36,6 @@ jobs:
           test -f trello-vault/index.html
           test -f trello-vault/styles.css
           grep -q 'src="core.js"' trello-vault/index.html
+          grep -q 'src="zip.js"' trello-vault/index.html
           grep -q 'src="exporter.js"' trello-vault/index.html
+          grep -q 'Download complete ZIP' trello-vault/index.html
