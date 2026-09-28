@@ -1,16 +1,19 @@
 # Trello Vault
 
-A static, client-side Trello Workspace exporter for paksue/sand_box GitHub Pages.
+A static, client-side Trello Workspace **card-data exporter** for paksue/sand_box GitHub Pages.
 
 ## What it does
 
 - Connects to Trello with a temporary **read-only** authorization token.
 - Discovers the Workspaces available to the signed-in Trello account.
-- Exports open and archived boards, lists, cards, labels, checklists, custom fields, members, comments, attachment metadata, and optional activity/Power-Up metadata.
-- Primary export is now a **complete ZIP** built entirely in the browser. It contains structured JSON plus Trello-uploaded attachment files when Trello permits download.
-- Can also write the same structured backup directly to a chosen folder when the File System Access API is available.
-- Can download a metadata-only JSON snapshot as a lightweight fallback.
+- Exports open and archived boards, lists, cards, card descriptions, labels, checklists, custom fields, members, comments, due dates, and optional activity/Power-Up metadata.
+- **Intentionally excludes attachments, uploaded files, images, card cover image metadata, and attachment metadata.**
+- Primary export is a structured ZIP built entirely in the browser.
+- Can also write the same structured card-data archive directly to a chosen folder when the File System Access API is available.
+- Can download a single JSON file as a lightweight alternative.
 - Uses an in-repo ZIP writer; no third-party runtime library or backend is required.
+
+The purpose is a compact archive that can be searched, analyzed, transformed, or given to an AI later without hauling around hundreds of image/file attachments.
 
 ## Security model
 
@@ -19,7 +22,7 @@ A static, client-side Trello Workspace exporter for paksue/sand_box GitHub Pages
 - Access token is held in JavaScript memory only. It is never placed in localStorage, sessionStorage, IndexedDB, the backup, or this repository.
 - The Trello API key can optionally be remembered locally. It is not included in backups.
 - API requests authenticate with the Authorization header rather than putting the token in request URLs.
-- A restrictive Content Security Policy limits scripts to this site and network access to Trello/attachment hosts.
+- The app only calls Trello data APIs; it does not fetch attachment binary hosts.
 
 ## GitHub Pages
 
@@ -33,9 +36,7 @@ For popup authorization, add the GitHub Pages origin:
 
 to the Trello API key's **Allowed Origins**. The app also has a manual-token fallback.
 
-## Backup layout
-
-The ZIP contains a top-level Workspace folder with the same structure as folder export:
+## Archive layout
 
     Workspace-trello-vault-YYYY-MM-DD_HH-MM-SS/
       manifest.json
@@ -54,13 +55,13 @@ The ZIP contains a top-level Workspace folder with the same structure as folder 
           members.json
           comments.json
           activity.json
-          attachments/
+
+There is deliberately no attachments directory.
 
 ## Public API limitations
 
-A public Trello API export cannot guarantee a byte-for-byte copy of everything Trello stores internally. In particular, Butler automations and some private Power-Up data may not be exposed. External link attachments are kept as metadata rather than downloaded.
-
+A public Trello API export cannot reproduce every internal Trello feature. Butler automations and some private Power-Up data may not be exposed.
 
 ## Browser compatibility
 
-The complete ZIP export does **not** require `showDirectoryPicker()`. Folder export is optional and appears only in browsers that expose the File System Access API.
+The ZIP export does **not** require showDirectoryPicker(). Folder export is optional and appears only in browsers that expose the File System Access API.
