@@ -29,7 +29,7 @@ jobs:
         run: |
           grep -q "scope','read" trello-vault/core.js
           grep -q "expiration','1hour" trello-vault/core.js
-          grep -q "Authorization:TV.authHeader()" trello-vault/exporter.js
+          grep -q "Authorization:TV.authHeader()" trello-vault/core.js
           ! grep -RE "localStorage.*token|sessionStorage.*token" trello-vault/*.js
       - name: Static asset contract
         run: |
@@ -38,4 +38,7 @@ jobs:
           grep -q 'src="core.js"' trello-vault/index.html
           grep -q 'src="zip.js"' trello-vault/index.html
           grep -q 'src="exporter.js"' trello-vault/index.html
-          grep -q 'Download complete ZIP' trello-vault/index.html
+          grep -q 'Download card archive ZIP' trello-vault/index.html
+          ! grep -q "optAttachments" trello-vault/index.html
+          ! grep -q "attachments:'true'" trello-vault/exporter.js
+          ! grep -q "fetchAttachment" trello-vault/exporter.js
