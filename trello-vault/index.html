@@ -11,6 +11,7 @@
   <meta name="description" content="Export your Trello Workspace directly to your computer. Read-only, client-side, no backend.">
   <link rel="stylesheet" href="styles.css">
   <script defer src="core.js"></script>
+  <script defer src="zip.js"></script>
   <script defer src="exporter.js"></script>
 </head>
 <body>
@@ -137,13 +138,14 @@
 
         <aside class="card action-card">
           <div id="selectedCard" class="selected-card"></div>
-          <div class="mode-box" id="folderMode">
-            <span><b>Recommended</b><strong>Folder export</strong></span>
-            <small>Structured JSON plus downloaded attachments, written directly to a folder you choose.</small>
+          <div class="mode-box" id="zipMode">
+            <span><b>Recommended</b><strong>Complete ZIP backup</strong></span>
+            <small>One normal browser download containing structured JSON plus actual Trello-uploaded images and files when Trello permits them.</small>
           </div>
-          <button id="exportFolderBtn" class="primary big" type="button"><span>Choose folder & export</span><b>↓</b></button>
-          <button id="exportJsonBtn" class="secondary full" type="button">Download JSON snapshot</button>
-          <p class="fine center">JSON includes attachment metadata, not binary files.</p>
+          <button id="exportZipBtn" class="primary big" type="button"><span>Download complete ZIP</span><b>↓</b></button>
+          <button id="exportFolderBtn" class="secondary full" type="button">Choose folder instead</button>
+          <button id="exportJsonBtn" class="link-btn full" type="button">Metadata-only JSON snapshot</button>
+          <p class="fine center" id="folderSupport">Folder export is optional. ZIP works without showDirectoryPicker().</p>
         </aside>
       </div>
     </section>
