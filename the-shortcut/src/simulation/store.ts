@@ -19,10 +19,24 @@ try {
   saveStatus = "Save unavailable or invalid; fresh session loaded";
 }
 const listeners = new Set<() => void>();
+let uiState = state;
 export const snapshot = () => state;
-export function dispatch(action: Action) {
-  state = reduce(state, action);
+const uiSnapshot = () => uiState;
+function publish() {
+  uiState = state;
   listeners.forEach((fn) => fn());
+}
+export function dispatch(action: Action) {
+  const previousState = state;
+  state = reduce(state, action);
+  if (
+    action.type !== "tick" ||
+    state.story !== previousState.story ||
+    state.inspection !== previousState.inspection ||
+    (state.target !== previousState.target && !state.target) ||
+    Math.floor(state.ticks / 1200) !== Math.floor(previousState.ticks / 1200)
+  )
+    publish();
 }
 export function save() {
   try {
@@ -32,7 +46,7 @@ export function save() {
     saveStatus = "Could not save in this browser";
   }
   state = { ...state };
-  listeners.forEach((fn) => fn());
+  publish();
 }
 export const status = () => saveStatus;
 export function reset() {
@@ -45,7 +59,7 @@ export function useGame() {
     return () => {
       listeners.delete(fn);
     };
-  }, snapshot);
+  }, uiSnapshot);
 }
 let accumulator = 0,
   previous = performance.now();

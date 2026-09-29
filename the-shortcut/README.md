@@ -25,7 +25,7 @@ The game must combine:
 4. Read `docs/VISUAL_BIBLE.md` and `docs/KINGS_QUEST_REFERENCES.md`.
 5. Implement only the current milestone under `docs/milestones/`.
 
-No implementation has been approved yet. This commit is the director package/source of truth.
+The documents in `docs/` remain the approved creative source of truth. Implementation status is recorded below.
 
 ## Milestone 01 implementation
 
@@ -61,3 +61,35 @@ Save writes to localStorage; autosave runs every two seconds and on page hide. R
 - `evidence/`: representative screenshots and acceptance report.
 
 Time advances six game seconds per real second using fixed 50 ms steps. Background suspension does not fast-forward missed wall time. Direct time jumps recompute NPC locations from the content schedule, including backward jumps. Sarah's 09:40–09:50 coffee interval is a provisional **Milestone 01 test fixture**, not an addition to the approved story. NPC placeholders switch between scheduled anchors; authored transitions and dialogue remain later work.
+
+## Milestone 02 — The Conference in graybox
+
+The full 08:47–17:15 day is playable. Only placeholder geometry and characters are used. No final art or Milestone 03 puzzle expansion is included.
+
+- Use **Interact** (or click an object/NPC) to approach a workstation, person, noticeboard, infrastructure desk or elevator. This also supplies keyboard access outside Debug.
+- Inspect Daniel’s source, requirements, yesterday’s chat and test output. Join stand-up through the noticeboard at 09:00.
+- Workstation apps group Work, Messages, Records and Incident actions. The notebook retains evidence, the day log and optional hints.
+- Open object/NPC inspections pause the clock. Authored actions show their game-minute costs. **Wait to next moment** advances to the next schedule/story boundary; it is a normal player control, not a debug cheat.
+- Sarah’s 09:40–09:50 coffee opportunity and Kevin’s 12:00–12:30 private-message opportunity are optional. Asking Sarah or independent derivation remain available after missing coffee.
+- Luis supplies infrastructure access. Technical recovery (patch, rollback, holding ambiguous rows) and team disclosure use separate interactions.
+- At 16:10 reply to Mark from Messages. At 17:15 approach the elevator to reconstruct the day. Ignored problems remain in the handover; they do not create a softlock.
+- Debug exposes state, schedules and JSON export. Backward time jumps change schedules but do not erase already recorded events; reset to replay a fresh day.
+
+`src/content/story.ts` owns authored action definitions, records, characters and beat times. `src/simulation/story.ts` owns serializable truth, claims, evidence, NPC knowledge/beliefs, directional NPC→Daniel relationships, observations and consequences. The original movement reducer and R3F boundary remain. R3F reads the live 20 Hz simulation; DOM subscribers publish on actions, minute boundaries, story changes, arrival and autosave instead of every movement tick.
+
+Save envelope v1 is retained for compatibility, with a versioned `story.schema = 1` extension. An M01 save without that extension initializes narrative state at its saved time; unsupported/malformed data is rejected. M01 saves have no narrative choices to reconstruct. New saves preserve the entire day, including open interactions, evidence, relationships and ending.
+
+The infrastructure audit distinguishes Daniel’s previously deployed wrapper from today’s unfinished feature build. This lets the scheduled production incident occur even if Daniel never uploads today’s work. Luis isolates unresolved production at closing; the report records that fallback instead of crediting Daniel with a repair.
+
+### Verification
+
+```sh
+npm run build
+npm test                 # original M01 tests plus narrative regressions
+npm run test:browser     # unchanged M01 browser suite
+npm run test:story-browser
+```
+
+Browser tests use Playwright Chromium; set `CHROMIUM_PATH` if supplying a compatible local executable. The M02 browser suite performs four complete normal-control routes without debug time or state injection, saves/reloads at multiple story points, checks console/page errors and captures screenshots. Results and exact acceptance mapping: [evidence/milestone-02/ACCEPTANCE.md](evidence/milestone-02/ACCEPTANCE.md).
+
+Known scope limits: this is an authored graybox, not final visual production; human 35–50 minute pacing and independent blind-player puzzle quality are not yet validated. The deterministic test routes use the normal wait control to skip idle time. Characters use schedule anchors rather than final walking/acting animation. Cross-browser/device testing beyond the documented Chromium desktop/mobile-viewports remains outstanding. The pre-existing Three.js bundle-size advisory remains non-blocking.

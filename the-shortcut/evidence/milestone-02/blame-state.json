@@ -1,0 +1,1196 @@
+{
+  "version": 1,
+  "story": {
+    "schema": 1,
+    "flags": [
+      "requirements",
+      "source",
+      "yesterday",
+      "tests",
+      "samples",
+      "assessed",
+      "standup",
+      "sarahCode",
+      "matching",
+      "committed",
+      "sarahReturned",
+      "submitted",
+      "qaFailure",
+      "qaOutput",
+      "config",
+      "qaCode",
+      "qaFixed",
+      "private",
+      "git",
+      "tracker",
+      "upload",
+      "chat",
+      "compared",
+      "prodLog",
+      "access",
+      "contract",
+      "wrapper",
+      "coverage",
+      "diagnosed",
+      "blamedSarah",
+      "recovered",
+      "markAnswered"
+    ],
+    "done": [
+      "read-requirements",
+      "read-source",
+      "read-yesterday",
+      "read-tests",
+      "read-samples",
+      "assess",
+      "stand-done",
+      "read-sarahCode",
+      "copy",
+      "credit",
+      "submit",
+      "read-qaOutput",
+      "read-config",
+      "read-qaCode",
+      "qa-fix",
+      "qa-correct",
+      "help-kevin",
+      "read-private",
+      "read-git",
+      "read-tracker",
+      "read-upload",
+      "read-chat",
+      "compare",
+      "read-prodLog",
+      "access",
+      "read-contract",
+      "read-wrapper",
+      "read-coverage",
+      "diagnose",
+      "incident-blame",
+      "fix-wrapper",
+      "mark-short",
+      "finish"
+    ],
+    "beats": [
+      "standup",
+      "departure",
+      "matching",
+      "qa",
+      "private",
+      "timeline",
+      "incident",
+      "return",
+      "ending"
+    ],
+    "facts": {
+      "matching": "adapted without permission",
+      "production": "correct totals; feature active",
+      "task": "implementation in progress",
+      "standup": "“It’s done. I’ll get Maya a build after this.”",
+      "matchTime": "09:48",
+      "commitTime": "09:48",
+      "credit": "Sarah acknowledged",
+      "uploadTime": "09:50",
+      "qa": "unmatched rows retained",
+      "privateRead": "12:00",
+      "cause": "Daniel wrapper selected first candidate",
+      "recovery": "fix-wrapper",
+      "recoveryTime": "14:56",
+      "markReply": "Reply to Mark: “We have a stable service. Details are in the task.”"
+    },
+    "claims": [
+      {
+        "at": 540.315,
+        "text": "“It’s done. I’ll get Maya a build after this.”",
+        "kind": "stand-done"
+      }
+    ],
+    "knowledge": {
+      "sarah": [
+        "libraryContract",
+        "leadDiscussion",
+        "stand-done",
+        "credited",
+        "productionAlert",
+        "libraryAccusation"
+      ],
+      "maya": [
+        "stand-done",
+        "buildReceived",
+        "qaFailure",
+        "qaPass",
+        "wrapperEmptyFault",
+        "productionAlert",
+        "libraryAccusation",
+        "serviceStable"
+      ],
+      "kevin": [
+        "stand-done",
+        "helpedAPI",
+        "productionAlert",
+        "libraryAccusation"
+      ],
+      "mark": [
+        "deadline",
+        "reliabilityDoubt",
+        "stand-done",
+        "libraryAccusation",
+        "productionAlert",
+        "serviceStable",
+        "handover"
+      ],
+      "luis": [
+        "productionAlert",
+        "accessRequested",
+        "deploymentChanged"
+      ]
+    },
+    "beliefs": {
+      "sarah": {},
+      "maya": {
+        "qa": "Daniel empty-result branch",
+        "incident": "library under investigation"
+      },
+      "kevin": {
+        "incident": "Sarah library suspected"
+      },
+      "mark": {
+        "progress": "ready",
+        "incident": "Sarah library suspected in team thread"
+      },
+      "luis": {}
+    },
+    "relationships": {
+      "sarah": {
+        "trust": 0,
+        "suspicion": 0,
+        "warmth": 0,
+        "confidence": 1,
+        "resentment": 2
+      },
+      "maya": {
+        "trust": 1,
+        "suspicion": 0,
+        "warmth": 0,
+        "confidence": 1,
+        "resentment": 0
+      },
+      "kevin": {
+        "trust": 0,
+        "suspicion": 0,
+        "warmth": 1,
+        "confidence": 0,
+        "resentment": 0
+      },
+      "mark": {
+        "trust": 0,
+        "suspicion": 1,
+        "warmth": 0,
+        "confidence": 1,
+        "resentment": 0
+      },
+      "luis": {
+        "trust": 0,
+        "suspicion": 0,
+        "warmth": 0,
+        "confidence": 0,
+        "resentment": 0
+      }
+    },
+    "evidence": [
+      {
+        "id": "requirements",
+        "source": "Requirements",
+        "at": 527.18,
+        "content": "Yesterday 16:20 · Match by account ID before name; preserve unmatched rows. Thursday client demo requires a reconciled ledger.",
+        "editable": false,
+        "visibility": "private",
+        "access": [
+          "daniel"
+        ],
+        "altered": false,
+        "provenance": "inspected original"
+      },
+      {
+        "id": "source",
+        "source": "Local source",
+        "at": 528.18,
+        "content": "08:47 · matchRows() still returns TODO. Task says “implementation in progress.” No QA build exists.",
+        "editable": false,
+        "visibility": "private",
+        "access": [
+          "daniel"
+        ],
+        "altered": false,
+        "provenance": "inspected original"
+      },
+      {
+        "id": "yesterday",
+        "source": "Yesterday’s team chat",
+        "at": 529.18,
+        "content": "Yesterday 17:42 · Daniel: “I will finish reconciliation before stand-up.” Sarah: “Integration is ready.” Mark: “Ready today for Thursday, please.”",
+        "editable": false,
+        "visibility": "private",
+        "access": [
+          "daniel"
+        ],
+        "altered": false,
+        "provenance": "inspected original"
+      },
+      {
+        "id": "tests",
+        "source": "Local test output",
+        "at": 530.18,
+        "content": "08:47 baseline · 0 of 6 tests pass: matcher unimplemented. This test run is local, not proof of a submitted build.",
+        "editable": false,
+        "visibility": "private",
+        "access": [
+          "daniel"
+        ],
+        "altered": false,
+        "provenance": "inspected original"
+      },
+      {
+        "id": "samples",
+        "source": "Sample ledger",
+        "at": 531.18,
+        "content": "A-41 / Lee: 10; B-12 / Patel: 20. Matching by account ID preserves both. A missing account must remain unresolved, not disappear.",
+        "editable": false,
+        "visibility": "private",
+        "access": [
+          "daniel"
+        ],
+        "altered": false,
+        "provenance": "inspected original"
+      },
+      {
+        "id": "standup-claim",
+        "source": "Stand-up minutes",
+        "at": 540.315,
+        "content": "“It’s done. I’ll get Maya a build after this.”",
+        "editable": false,
+        "visibility": "shared",
+        "access": [
+          "daniel",
+          "sarah",
+          "maya",
+          "kevin",
+          "mark"
+        ],
+        "altered": false,
+        "provenance": "recorded observation"
+      },
+      {
+        "id": "sarahCode",
+        "source": "Sarah’s implementation",
+        "at": 580.155,
+        "content": "CandidateMatcher groups by account ID and returns candidates. Header: Sarah Chen. Copying the implementation preserves her naming and signature.",
+        "editable": false,
+        "visibility": "private",
+        "access": [
+          "daniel"
+        ],
+        "altered": false,
+        "provenance": "Sarah Chen implementation"
+      },
+      {
+        "id": "provenance",
+        "source": "Local diff",
+        "at": 582.155,
+        "content": "Sarah’s signature and variable names persist in Daniel’s branch.",
+        "editable": false,
+        "visibility": "private",
+        "access": [
+          "daniel"
+        ],
+        "altered": false,
+        "provenance": "Sarah Chen"
+      },
+      {
+        "id": "commit-record",
+        "source": "Remote Git audit",
+        "at": 588.345,
+        "content": "Commit with Sarah’s matching work acknowledged; adapted without permission",
+        "editable": false,
+        "visibility": "shared",
+        "access": [
+          "daniel",
+          "sarah",
+          "kevin"
+        ],
+        "altered": false,
+        "provenance": "immutable commit"
+      },
+      {
+        "id": "upload-record",
+        "source": "QA upload ledger",
+        "at": 590.345,
+        "content": "First Daniel build received",
+        "editable": false,
+        "visibility": "shared",
+        "access": [
+          "daniel",
+          "maya"
+        ],
+        "altered": false,
+        "provenance": "recorded observation"
+      },
+      {
+        "id": "qaOutput",
+        "source": "QA failure report",
+        "at": 630.275,
+        "content": "Maya · Unmatched account C-07 disappears. Expected: unresolved row retained. Actual: missing row. Repro attached.",
+        "editable": false,
+        "visibility": "private",
+        "access": [
+          "daniel"
+        ],
+        "altered": false,
+        "provenance": "inspected original"
+      },
+      {
+        "id": "config",
+        "source": "QA configuration diff",
+        "at": 631.275,
+        "content": "Maya changed locale en-GB → en-US at 10:15. Input account IDs and row counts are identical before and after.",
+        "editable": false,
+        "visibility": "private",
+        "access": [
+          "daniel"
+        ],
+        "altered": false,
+        "provenance": "inspected original"
+      },
+      {
+        "id": "qaCode",
+        "source": "Wrapper / empty result",
+        "at": 632.555,
+        "content": "Daniel wrapper: if candidates.length === 0, continue. The unmatched row never reaches the output.",
+        "editable": false,
+        "visibility": "private",
+        "access": [
+          "daniel"
+        ],
+        "altered": false,
+        "provenance": "inspected original"
+      },
+      {
+        "id": "private",
+        "source": "Private conversation",
+        "at": 720.05,
+        "content": "Sarah → Kevin: “I probably shouldn’t say this, but Mark told me Daniel is talented but unreliable. He asked whether I would lead the next project. I don’t want to become the person who cleans up every time.”",
+        "editable": false,
+        "visibility": "shared",
+        "access": [
+          "daniel",
+          "sarah",
+          "kevin"
+        ],
+        "altered": false,
+        "provenance": "inspected original"
+      },
+      {
+        "id": "git",
+        "source": "Source history",
+        "at": 810.09,
+        "content": "Server-side Git records keep commit times and diffs. The first implementation commit is later than stand-up; local edits cannot rewrite the remote audit copy.",
+        "editable": false,
+        "visibility": "private",
+        "access": [
+          "daniel"
+        ],
+        "altered": false,
+        "provenance": "inspected original"
+      },
+      {
+        "id": "tracker",
+        "source": "Task history",
+        "at": 811.09,
+        "content": "Task description and displayed status can be edited. Status audit events preserve both the prior value and the time of each edit.",
+        "editable": true,
+        "visibility": "private",
+        "access": [
+          "daniel"
+        ],
+        "altered": false,
+        "provenance": "inspected original"
+      },
+      {
+        "id": "upload",
+        "source": "QA upload ledger",
+        "at": 812.09,
+        "content": "Maya’s upload ledger timestamps when the first build actually arrived. It is independent of Daniel’s task description.",
+        "editable": false,
+        "visibility": "private",
+        "access": [
+          "daniel"
+        ],
+        "altered": false,
+        "provenance": "inspected original"
+      },
+      {
+        "id": "chat",
+        "source": "Team chat chronology",
+        "at": 813.09,
+        "content": "Stand-up minutes and subsequent team messages remain timestamped in the shared transcript. Editing the task cannot change them.",
+        "editable": false,
+        "visibility": "private",
+        "access": [
+          "daniel"
+        ],
+        "altered": false,
+        "provenance": "inspected original"
+      },
+      {
+        "id": "deployment",
+        "source": "Deployment audit",
+        "at": 860,
+        "content": "Yesterday 16:05: Daniel’s reconciliation wrapper deployed behind the existing reconciliation job. Today’s feature is a separate pending build.",
+        "editable": false,
+        "visibility": "shared",
+        "access": [
+          "daniel",
+          "luis"
+        ],
+        "altered": false,
+        "provenance": "immutable deployment audit"
+      },
+      {
+        "id": "prodLog",
+        "source": "Production duplicate-name failures",
+        "at": 860.335,
+        "content": "14:20 · Lee / account A-41 and Lee / account A-42 collapse into one total. Stack: CandidateMatcher → Daniel.reconcile. Library appears in every trace.",
+        "editable": false,
+        "visibility": "private",
+        "access": [
+          "daniel"
+        ],
+        "altered": false,
+        "provenance": "inspected original"
+      },
+      {
+        "id": "contract",
+        "source": "CandidateMatcher contract",
+        "at": 865.75,
+        "content": "A query returns a SET of possible matches, not a single chosen row. Multiple candidates are valid output. Callers must resolve using account ID or mark ambiguous.",
+        "editable": false,
+        "visibility": "private",
+        "access": [
+          "daniel"
+        ],
+        "altered": false,
+        "provenance": "inspected original"
+      },
+      {
+        "id": "wrapper",
+        "source": "Deployed wrapper",
+        "at": 867.75,
+        "content": "Daniel.reconcile uses candidates[0]. Production contains duplicate names; the wrapper picks one before checking account ID.",
+        "editable": false,
+        "visibility": "private",
+        "access": [
+          "daniel"
+        ],
+        "altered": false,
+        "provenance": "inspected original"
+      },
+      {
+        "id": "coverage",
+        "source": "Prior test coverage",
+        "at": 869.75,
+        "content": "All previous matcher fixtures used distinct names. No test exercised two accounts sharing one name.",
+        "editable": false,
+        "visibility": "private",
+        "access": [
+          "daniel"
+        ],
+        "altered": false,
+        "provenance": "inspected original"
+      },
+      {
+        "id": "recovery",
+        "source": "Deployment audit",
+        "at": 896.075,
+        "content": "correct totals; feature active",
+        "editable": false,
+        "visibility": "shared",
+        "access": [
+          "daniel",
+          "luis",
+          "maya"
+        ],
+        "altered": false,
+        "provenance": "immutable deployment"
+      }
+    ],
+    "observations": [
+      {
+        "action": "read-requirements",
+        "at": 527.18,
+        "category": "inspection",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Yesterday 16:20 · Match by account ID before name; preserve unmatched rows. Thursday client demo requires a reconciled ledger."
+      },
+      {
+        "action": "read-source",
+        "at": 528.18,
+        "category": "inspection",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "08:47 · matchRows() still returns TODO. Task says “implementation in progress.” No QA build exists."
+      },
+      {
+        "action": "read-yesterday",
+        "at": 529.18,
+        "category": "inspection",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Yesterday 17:42 · Daniel: “I will finish reconciliation before stand-up.” Sarah: “Integration is ready.” Mark: “Ready today for Thursday, please.”"
+      },
+      {
+        "action": "read-tests",
+        "at": 530.18,
+        "category": "inspection",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "08:47 baseline · 0 of 6 tests pass: matcher unimplemented. This test run is local, not proof of a submitted build."
+      },
+      {
+        "action": "read-samples",
+        "at": 531.18,
+        "category": "inspection",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "A-41 / Lee: 10; B-12 / Patel: 20. Matching by account ID preserves both. A missing account must remain unresolved, not disappear."
+      },
+      {
+        "action": "assess",
+        "at": 532.18,
+        "category": "action",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "The feature is not almost finished: there is no matcher and no passing build. The task status was accurate; yesterday’s promise was not fulfilled."
+      },
+      {
+        "action": "stand-done",
+        "at": 540.315,
+        "category": "claim",
+        "detection": "high",
+        "benefit": "protect apparent progress",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "“It’s done. I’ll get Maya a build after this.”",
+        "summary": "Mark: “Good. Send Maya the build. I’ll be travelling.” Maya reserves her test slot."
+      },
+      {
+        "action": "read-sarahCode",
+        "at": 580.155,
+        "category": "inspection",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "CandidateMatcher groups by account ID and returns candidates. Header: Sarah Chen. Copying the implementation preserves her naming and signature."
+      },
+      {
+        "action": "copy",
+        "at": 582.155,
+        "category": "action",
+        "detection": "low",
+        "benefit": "gain time or information",
+        "harm": "none established",
+        "context": "private",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "The matcher now handles the sample ledger. The wrapper still needs QA. Commit and upload from Daniel’s workstation."
+      },
+      {
+        "action": "credit",
+        "at": 588.345,
+        "category": "action",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Commit stored in remote history. Maya still needs the uploaded build."
+      },
+      {
+        "action": "submit",
+        "at": 590.345,
+        "category": "action",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Build uploaded. Maya’s first QA slot starts at 10:30."
+      },
+      {
+        "action": "read-qaOutput",
+        "at": 630.275,
+        "category": "inspection",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Maya · Unmatched account C-07 disappears. Expected: unresolved row retained. Actual: missing row. Repro attached."
+      },
+      {
+        "action": "read-config",
+        "at": 631.275,
+        "category": "inspection",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Maya changed locale en-GB → en-US at 10:15. Input account IDs and row counts are identical before and after."
+      },
+      {
+        "action": "read-qaCode",
+        "at": 632.555,
+        "category": "inspection",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Daniel wrapper: if candidates.length === 0, continue. The unmatched row never reaches the output."
+      },
+      {
+        "action": "qa-fix",
+        "at": 634.555,
+        "category": "repair",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Six sample tests and Maya’s unmatched-row reproduction pass. Maya: “That build is usable. What changed?”"
+      },
+      {
+        "action": "qa-correct",
+        "at": 649.835,
+        "category": "action",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": true,
+        "rationalization": "",
+        "summary": "Maya: “Thanks. I’ll attach the failing and passing runs. We can stop chasing locale.”"
+      },
+      {
+        "action": "help-kevin",
+        "at": 690.205,
+        "category": "action",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Kevin: “The API retries were duplicating requests. Nice catch. Lunch is on me next time.” He records Daniel’s help in the thread."
+      },
+      {
+        "action": "read-private",
+        "at": 720.05,
+        "category": "inspection",
+        "detection": "low",
+        "benefit": "gain time or information",
+        "harm": "private confidence exposed",
+        "context": "private",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Sarah → Kevin: “I probably shouldn’t say this, but Mark told me Daniel is talented but unreliable. He asked whether I would lead the next project. I don’t want to become the person who cleans up every time.” Daniel now knows why the afternoon feels different. Sarah and Kevin do not know he opened it."
+      },
+      {
+        "action": "read-git",
+        "at": 810.09,
+        "category": "inspection",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Server-side Git records keep commit times and diffs. The first implementation commit is later than stand-up; local edits cannot rewrite the remote audit copy."
+      },
+      {
+        "action": "read-tracker",
+        "at": 811.09,
+        "category": "inspection",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Task description and displayed status can be edited. Status audit events preserve both the prior value and the time of each edit."
+      },
+      {
+        "action": "read-upload",
+        "at": 812.09,
+        "category": "inspection",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Maya’s upload ledger timestamps when the first build actually arrived. It is independent of Daniel’s task description."
+      },
+      {
+        "action": "read-chat",
+        "at": 813.09,
+        "category": "inspection",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Stand-up minutes and subsequent team messages remain timestamped in the shared transcript. Editing the task cannot change them."
+      },
+      {
+        "action": "compare",
+        "at": 814.09,
+        "category": "action",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Stand-up: “It’s done. I’ll get Maya a build after this.”. First commit: 09:48. QA upload: 09:50. Task: implementation in progress. Changing the task alone cannot make independent timestamps agree."
+      },
+      {
+        "action": "read-prodLog",
+        "at": 860.335,
+        "category": "inspection",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "14:20 · Lee / account A-41 and Lee / account A-42 collapse into one total. Stack: CandidateMatcher → Daniel.reconcile. Library appears in every trace."
+      },
+      {
+        "action": "access",
+        "at": 862.395,
+        "category": "action",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Luis: “Here is the audit. Your wrapper went out yesterday at 16:05; today’s feature build is separate. I can authorize a patch, a rollback, or holding ambiguous rows. Every deployment is logged.”"
+      },
+      {
+        "action": "read-contract",
+        "at": 865.75,
+        "category": "inspection",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "A query returns a SET of possible matches, not a single chosen row. Multiple candidates are valid output. Callers must resolve using account ID or mark ambiguous."
+      },
+      {
+        "action": "read-wrapper",
+        "at": 867.75,
+        "category": "inspection",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Daniel.reconcile uses candidates[0]. Production contains duplicate names; the wrapper picks one before checking account ID."
+      },
+      {
+        "action": "read-coverage",
+        "at": 869.75,
+        "category": "inspection",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "All previous matcher fixtures used distinct names. No test exercised two accounts sharing one name."
+      },
+      {
+        "action": "diagnose",
+        "at": 871.75,
+        "category": "action",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Reproduction confirms the chain: duplicate names → valid candidate set → Daniel picks index zero → wrong account total. Earlier tests used unique names. The library kept its contract."
+      },
+      {
+        "action": "incident-blame",
+        "at": 876.75,
+        "category": "action",
+        "detection": "high",
+        "benefit": "protect apparent progress",
+        "harm": "Sarah absorbs suspicion",
+        "context": "public",
+        "initiated": true,
+        "escalation": true,
+        "correction": false,
+        "rationalization": "Message team: “The trace points at Sarah’s library. Please check that first.”",
+        "summary": "Kevin moves to Sarah’s library. Sarah stops typing: “A stack trace names a call, not the cause. Send me the failing inputs.” Investigation time shifts away from the wrapper."
+      },
+      {
+        "action": "fix-wrapper",
+        "at": 878.075,
+        "category": "repair",
+        "detection": "low",
+        "benefit": "gain time or information",
+        "harm": "none established",
+        "context": "private",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Duplicate-name regression passes; the new wrapper is live. Luis records the deployment. No explanation has been sent automatically."
+      },
+      {
+        "action": "mark-short",
+        "at": 970.325,
+        "category": "action",
+        "detection": "high",
+        "benefit": "protect apparent progress",
+        "harm": "none established",
+        "context": "public",
+        "initiated": false,
+        "escalation": true,
+        "correction": false,
+        "rationalization": "Reply to Mark: “We have a stable service. Details are in the task.”",
+        "summary": "Mark: “Stable is useful. It doesn’t tell me what changed or what the demo can do. Keep the audit for tomorrow.”"
+      },
+      {
+        "action": "finish",
+        "at": 1035,
+        "category": "action",
+        "detection": "high",
+        "benefit": "advance shared work",
+        "harm": "none established",
+        "context": "public",
+        "initiated": true,
+        "escalation": false,
+        "correction": false,
+        "rationalization": "",
+        "summary": "Sarah: “Tomorrow, we need to separate the trace from the story people told about it.”"
+      }
+    ],
+    "journal": [
+      {
+        "at": 527,
+        "text": "Mark: “Reconciliation needs to be ready today for Thursday’s client demo. Stand-up at nine.”"
+      },
+      {
+        "at": 528.18,
+        "text": "Yesterday 16:20 · Match by account ID before name; preserve unmatched rows. Thursday client demo requires a reconciled ledger."
+      },
+      {
+        "at": 529.18,
+        "text": "08:47 · matchRows() still returns TODO. Task says “implementation in progress.” No QA build exists."
+      },
+      {
+        "at": 530.18,
+        "text": "Yesterday 17:42 · Daniel: “I will finish reconciliation before stand-up.” Sarah: “Integration is ready.” Mark: “Ready today for Thursday, please.”"
+      },
+      {
+        "at": 531.18,
+        "text": "08:47 baseline · 0 of 6 tests pass: matcher unimplemented. This test run is local, not proof of a submitted build."
+      },
+      {
+        "at": 532.18,
+        "text": "A-41 / Lee: 10; B-12 / Patel: 20. Matching by account ID preserves both. A missing account must remain unresolved, not disappear."
+      },
+      {
+        "at": 533.18,
+        "text": "The feature is not almost finished: there is no matcher and no passing build. The task status was accurate; yesterday’s promise was not fulfilled."
+      },
+      {
+        "at": 540,
+        "text": "Stand-up · Sarah: “Integration is ready.” Kevin: “Still chasing the API bug.” Maya: “I need your build.” Mark looks toward Daniel. The team noticeboard holds the stand-up conversation."
+      },
+      {
+        "at": 540.315,
+        "text": "Mark: “Good. Send Maya the build. I’ll be travelling.” Maya reserves her test slot."
+      },
+      {
+        "at": 551,
+        "text": "Mark takes his suitcase. “Message me if the demo is at risk.” The door closes. Daniel notices how quiet the room becomes. There is suddenly room to breathe."
+      },
+      {
+        "at": 560,
+        "text": "The matcher is harder than the task title suggests. Requirements and sample rows are on Daniel’s workstation. Sarah has worked on this before."
+      },
+      {
+        "at": 582.155,
+        "text": "CandidateMatcher groups by account ID and returns candidates. Header: Sarah Chen. Copying the implementation preserves her naming and signature."
+      },
+      {
+        "at": 588.155,
+        "text": "The matcher now handles the sample ledger. The wrapper still needs QA. Commit and upload from Daniel’s workstation."
+      },
+      {
+        "at": 590.345,
+        "text": "Commit stored in remote history. Maya still needs the uploaded build."
+      },
+      {
+        "at": 593.345,
+        "text": "Build uploaded. Maya’s first QA slot starts at 10:30."
+      },
+      {
+        "at": 630,
+        "text": "Maya is ready to test. An uploaded build will produce her report; the QA desk keeps the reproduction available."
+      },
+      {
+        "at": 630,
+        "text": "Maya: “An unmatched row vanished. The locale changed this morning, but I need to compare the reproduction before blaming the environment.”"
+      },
+      {
+        "at": 631.275,
+        "text": "Maya · Unmatched account C-07 disappears. Expected: unresolved row retained. Actual: missing row. Repro attached."
+      },
+      {
+        "at": 632.275,
+        "text": "Maya changed locale en-GB → en-US at 10:15. Input account IDs and row counts are identical before and after."
+      },
+      {
+        "at": 634.555,
+        "text": "Daniel wrapper: if candidates.length === 0, continue. The unmatched row never reaches the output."
+      },
+      {
+        "at": 649.555,
+        "text": "Six sample tests and Maya’s unmatched-row reproduction pass. Maya: “That build is usable. What changed?”"
+      },
+      {
+        "at": 650.835,
+        "text": "Maya: “Thanks. I’ll attach the failing and passing runs. We can stop chasing locale.”"
+      },
+      {
+        "at": 698.205,
+        "text": "Kevin: “The API retries were duplicating requests. Nice catch. Lunch is on me next time.” He records Daniel’s help in the thread."
+      },
+      {
+        "at": 720,
+        "text": "Kevin: “Can you look at my API trace? I’m grabbing lunch.” A private message preview lights up his desk: Sarah — “I probably shouldn’t say this, but Mark told me…”"
+      },
+      {
+        "at": 722.05,
+        "text": "Sarah → Kevin: “I probably shouldn’t say this, but Mark told me Daniel is talented but unreliable. He asked whether I would lead the next project. I don’t want to become the person who cleans up every time.” Daniel now knows why the afternoon feels different. Sarah and Kevin do not know he opened it."
+      },
+      {
+        "at": 810,
+        "text": "The afternoon build window opens. Git history, the task, chat and QA uploads tell slightly different stories. They can be compared at Daniel’s workstation."
+      },
+      {
+        "at": 811.09,
+        "text": "Server-side Git records keep commit times and diffs. The first implementation commit is later than stand-up; local edits cannot rewrite the remote audit copy."
+      },
+      {
+        "at": 812.09,
+        "text": "Task description and displayed status can be edited. Status audit events preserve both the prior value and the time of each edit."
+      },
+      {
+        "at": 813.09,
+        "text": "Maya’s upload ledger timestamps when the first build actually arrived. It is independent of Daniel’s task description."
+      },
+      {
+        "at": 814.09,
+        "text": "Stand-up minutes and subsequent team messages remain timestamped in the shared transcript. Editing the task cannot change them."
+      },
+      {
+        "at": 817.09,
+        "text": "Stand-up: “It’s done. I’ll get Maya a build after this.”. First commit: 09:48. QA upload: 09:50. Task: implementation in progress. Changing the task alone cannot make independent timestamps agree."
+      },
+      {
+        "at": 860,
+        "text": "Production alert · Reconciliation totals are wrong. Sarah’s shared library appears in the trace. Luis opens the infrastructure desk; Maya keeps the duplicate-name failures."
+      },
+      {
+        "at": 862.335,
+        "text": "14:20 · Lee / account A-41 and Lee / account A-42 collapse into one total. Stack: CandidateMatcher → Daniel.reconcile. Library appears in every trace."
+      },
+      {
+        "at": 865.395,
+        "text": "Luis: “Here is the audit. Your wrapper went out yesterday at 16:05; today’s feature build is separate. I can authorize a patch, a rollback, or holding ambiguous rows. Every deployment is logged.”"
+      },
+      {
+        "at": 867.75,
+        "text": "A query returns a SET of possible matches, not a single chosen row. Multiple candidates are valid output. Callers must resolve using account ID or mark ambiguous."
+      },
+      {
+        "at": 869.75,
+        "text": "Daniel.reconcile uses candidates[0]. Production contains duplicate names; the wrapper picks one before checking account ID."
+      },
+      {
+        "at": 871.75,
+        "text": "All previous matcher fixtures used distinct names. No test exercised two accounts sharing one name."
+      },
+      {
+        "at": 876.75,
+        "text": "Reproduction confirms the chain: duplicate names → valid candidate set → Daniel picks index zero → wrong account total. Earlier tests used unique names. The library kept its contract."
+      },
+      {
+        "at": 877.75,
+        "text": "Kevin moves to Sarah’s library. Sarah stops typing: “A stack trace names a call, not the cause. Send me the failing inputs.” Investigation time shifts away from the wrapper."
+      },
+      {
+        "at": 896.075,
+        "text": "Duplicate-name regression passes; the new wrapper is live. Luis records the deployment. No explanation has been sent automatically."
+      },
+      {
+        "at": 970,
+        "text": "Mark is online: “Landed. How did everything go?” His message is waiting at Daniel’s workstation."
+      },
+      {
+        "at": 970,
+        "text": "Mark: “Landed. How did everything go? The thread points at Sarah’s library. Has anyone verified that?”"
+      },
+      {
+        "at": 971.325,
+        "text": "Mark: “Stable is useful. It doesn’t tell me what changed or what the demo can do. Keep the audit for tomorrow.”"
+      },
+      {
+        "at": 1035,
+        "text": "17:15 · The office empties. Sarah waits by the elevator. Unfinished work will remain part of the handover, not disappear."
+      },
+      {
+        "at": 1035,
+        "text": "Sarah: “Tomorrow, we need to separate the trace from the story people told about it.”"
+      }
+    ],
+    "message": "Sarah: “Tomorrow, we need to separate the trace from the story people told about it.”",
+    "finished": true,
+    "hints": 0
+  },
+  "ticks": 1242000,
+  "paused": false,
+  "player": {
+    "x": 4.6,
+    "z": 2.8
+  },
+  "target": null,
+  "pending": null,
+  "inspected": [
+    "daniel-desk",
+    "noticeboard",
+    "sarah-desk",
+    "maya",
+    "kevin",
+    "kevin-desk",
+    "server",
+    "luis",
+    "elevator"
+  ],
+  "inspection": "elevator"
+}

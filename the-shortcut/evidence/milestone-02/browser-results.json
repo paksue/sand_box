@@ -1,0 +1,62 @@
+{
+  "passed": true,
+  "errors": [],
+  "routes": [
+    {
+      "name": "full",
+      "matching": "ask-matcher",
+      "recovery": "fix-wrapper",
+      "social": "before",
+      "privateRead": true,
+      "completed": true,
+      "saveReload": [
+        "qa",
+        "private",
+        "recovery",
+        "ending"
+      ]
+    },
+    {
+      "name": "independent",
+      "matching": "derive",
+      "recovery": "rollback",
+      "social": "after",
+      "privateRead": false,
+      "completed": true,
+      "saveReload": [
+        "qa",
+        "recovery",
+        "ending"
+      ]
+    },
+    {
+      "name": "quiet",
+      "matching": "copy",
+      "recovery": "safe-hold",
+      "social": "quiet",
+      "privateRead": false,
+      "completed": true,
+      "saveReload": [
+        "qa",
+        "recovery",
+        "ending"
+      ]
+    },
+    {
+      "name": "blame",
+      "matching": "copy",
+      "recovery": "fix-wrapper",
+      "social": "blame",
+      "privateRead": true,
+      "completed": true,
+      "saveReload": [
+        "qa",
+        "private",
+        "recovery",
+        "ending"
+      ]
+    }
+  ],
+  "debugTimeUsed": false,
+  "stateInjectionUsed": false
+}

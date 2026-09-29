@@ -6,7 +6,13 @@ import {
 } from "@react-three/fiber";
 import { memo, useEffect, useRef } from "react";
 import { Group } from "three";
-import { locations, objects } from "../content/world";
+import {
+  locations,
+  allObjects,
+  npcLocations,
+  extraSchedule,
+} from "../content/world";
+import { characters, type NPC } from "../content/story";
 import { npcState } from "../simulation/game";
 import { dispatch, snapshot } from "../simulation/store";
 function Box({
@@ -25,22 +31,43 @@ function Box({
     </mesh>
   );
 }
-function Character({
-  who,
-  color,
-}: {
-  who: "daniel" | "sarah" | "mark";
-  color: string;
-}) {
+function Character({ who, color }: { who: "daniel" | NPC; color: string }) {
   const ref = useRef<Group>(null);
   useFrame(() => {
     const s = snapshot();
-    const p = who === "daniel" ? s.player : locations[npcState(s)[who]];
+    const minute = s.ticks / 1200;
+    const extra = who === "maya" || who === "kevin" || who === "luis";
+    const p =
+      who === "daniel"
+        ? s.player
+        : extra
+          ? minute >= 540 && minute < 551
+            ? {
+                x: who === "maya" ? -0.2 : who === "kevin" ? -1.4 : -2.4,
+                z: 1.8,
+              }
+            : npcLocations[who]
+          : who === "sarah" && minute >= 1035
+            ? locations.exit
+            : locations[npcState(s)[who]];
     ref.current!.position.set(p.x, 0, p.z);
-    ref.current!.visible = who !== "mark" || npcState(s).mark !== "exit";
+    ref.current!.visible =
+      who === "mark"
+        ? npcState(s).mark !== "exit"
+        : extra
+          ? !["lunch", "rounds", "away"].includes(extraSchedule(who, minute))
+          : true;
   });
   return (
-    <group ref={ref}>
+    <group
+      ref={ref}
+      onClick={(e) => {
+        if (who !== "daniel") {
+          e.stopPropagation();
+          dispatch({ type: "inspect", id: who });
+        }
+      }}
+    >
       <mesh position={[0, 0.62, 0]} castShadow>
         <capsuleGeometry args={[0.2, 0.65, 4, 8]} />
         <meshStandardMaterial color={color} />
@@ -127,7 +154,7 @@ function Scene({ onHover }: { onHover: (s: string) => void }) {
           color="#b3c2c1"
         />
       ))}
-      {objects.map((o) => (
+      {allObjects.map((o) => (
         <group
           key={o.id}
           position={[o.x, 0, o.z]}
@@ -141,7 +168,7 @@ function Scene({ onHover }: { onHover: (s: string) => void }) {
           }}
           onPointerOut={() => onHover("")}
         >
-          {o.id === "noticeboard" ? (
+          {o.id === "noticeboard" || o.id === "elevator" ? (
             <>
               <Box
                 position={[0, 1.2, 0]}
@@ -170,8 +197,9 @@ function Scene({ onHover }: { onHover: (s: string) => void }) {
       ))}
       <Box position={[-4.9, 0.45, 3.1]} size={[1, 0.9, 0.65]} color="#8e9690" />
       <Character who="daniel" color="#d6b46f" />
-      <Character who="sarah" color="#7da6ac" />
-      <Character who="mark" color="#a697af" />
+      {Object.entries(characters).map(([id, c]) => (
+        <Character key={id} who={id as NPC} color={c.color} />
+      ))}
       <Target />
     </Canvas>
   );
