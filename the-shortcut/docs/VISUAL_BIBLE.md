@@ -5,6 +5,22 @@
 
 Not pixel-art parody, photorealistic office simulator, generic low-poly indie office, SaaS dashboard with a 3D background, or CRT/VHS nostalgia filter.
 
+## Default visual production architecture
+Use a **hybrid 2.5D fixed-camera pipeline**.
+
+The goal is authored-image quality first, realtime rendering second.
+
+Preferred scene layers:
+1. high-quality authored/painterly background plate;
+2. optional depth/occlusion/foreground layers;
+3. hidden/lightweight walk geometry and hotspot anchors;
+4. realtime Daniel/NPC characters;
+5. realtime hero props only where interaction benefits;
+6. realtime atmosphere/FX such as rain, monitor glow, light transitions;
+7. DOM UI.
+
+Do not force every wall, desk, and decoration to remain fully realtime 3D if a fixed-camera rendered/art-directed plate produces a substantially better image.
+
 ## Camera
 - fixed or semi-fixed three-quarter cinematic views;
 - roughly 30–40° elevation as a starting language;
@@ -18,7 +34,36 @@ Every authored view needs foreground framing, a readable player/NPC action plane
 The environment dominates the frame; characters remain readable but not oversized.
 
 ## Art language
-Stylized 3D with painterly surface treatment; hand-authored-looking texture variation; controlled illustrative lighting; simplified geometry where silhouette/light can carry quality; expressive poses; subtle atmosphere and restrained post-processing.
+Painterly, authored, storybook-like scene treatment supported by controlled geometry where useful. Favor coherent lighting, material language, silhouette, texture, and composition over polygon count.
+
+## Art-generation workflow
+1. Build a KQ III–VI reference board.
+2. Generate multiple concept directions.
+3. Select one approved visual North Star.
+4. Lock camera and room composition.
+5. Produce a structural scene source:
+   - Blender if available/appropriate, or
+   - browser/Three.js blockout plus explicit layout data if Blender is unavailable.
+6. Render/export a clean structural image.
+7. Refine toward the approved painterly target with controlled image editing/generation.
+8. Compare with North Star and KQ reference board.
+9. Reject drift.
+10. Export final scene layers plus masks/anchors needed by runtime.
+
+AI image generation is an art-direction/refinement tool, not permission to regenerate every scene independently from text.
+
+## Blender lane
+Blender is optional but valuable for:
+- consistent perspective;
+- repeated camera views;
+- exact architecture;
+- character scale;
+- lighting variants;
+- depth and occlusion;
+- spatial anchors;
+- reusable structural exports.
+
+Blender is **not required for Milestones 01–03** and must not block web Astra work. If used later, its outputs are production assets/specifications consumed by the browser game.
 
 ## Time-of-day palette
 Morning: warm ivory, muted teal, rain-softened gold.
@@ -33,7 +78,7 @@ The developer bullpen is the visual benchmark and must reach near-final quality 
 Normal exploration shows almost no chrome: compact time/status only if needed, transient interaction prompt, dialogue only during dialogue, inventory/journal on demand. Computer mode is deliberately full-screen and convincing.
 
 ## Character consistency
-Approve shared-style character sheets before final 3D production: front, profile, 3/4, clothing/material palette, silhouette, facial/pose language.
+Approve shared-style character sheets before final character production: front, profile, 3/4, clothing/material palette, silhouette, facial/pose language. Reuse approved references; do not independently regenerate characters from text for each scene.
 
 ## Visual QA
 Compare focal point, character scale, depth separation, color hierarchy, path readability, interactives, clutter, HUD obstruction, and emotional time-of-day read. A technically correct scene fails if it looks like a default asset pack.

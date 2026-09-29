@@ -24,13 +24,26 @@ This directory contains a deliberately authored game. Treat the documents here a
 ## Skill routing
 - Umbrella/router: `game-studio`
 - Architecture/state: `web-game-foundations`
-- React 3D runtime: `react-three-fiber-game`
+- React runtime: `react-three-fiber-game`
 - UI/HUD/dialogue surfaces: `game-ui-frontend`
-- 3D assets: `web-3d-asset-pipeline`
-- Authored room construction: `build-3d-game-rooms`
+- Optional 3D asset preparation: `web-3d-asset-pipeline`
+- Optional authored-room/Blender lane: `build-3d-game-rooms`
 - Browser QA/playtesting: `game-playtest`
 
-Do not mix Phaser and Three.js/R3F implementations. The approved direction is React + TypeScript + Vite + React Three Fiber/Three.js, unless the director docs are explicitly changed.
+Do not mix Phaser and Three.js/R3F implementations. The approved runtime direction is React + TypeScript + Vite + React Three Fiber/Three.js.
+
+## Visual architecture: hybrid 2.5D by default
+The browser does **not** need to render the entire office as detailed realtime 3D.
+
+Default production target:
+- authored fixed-camera background plates/layers;
+- walk/depth/occlusion data aligned to those plates;
+- realtime characters;
+- realtime interactive hero props only where useful;
+- realtime atmosphere/FX such as rain, monitor glow, light shifts;
+- DOM UI for dialogue and computer surfaces.
+
+Blender is an optional offline consistency tool, not a web-build dependency. Never assume that web ChatGPT Work has access to the user's local Blender installation. If Blender is unavailable, continue with concept art, layered 2.5D assets, browser runtime geometry, and explicit Blender-ready specifications rather than blocking the milestone.
 
 ## Non-negotiable creative rules
 - Never show a morality score during play.
