@@ -1,0 +1,88 @@
+name: The Shortcut GitHub Pages Preview
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'the-shortcut/**'
+      - '.github/workflows/the-shortcut-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: the-shortcut-pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: the-shortcut/package-lock.json
+
+      - name: Install locked dependencies
+        working-directory: the-shortcut
+        run: npm ci --no-audit --no-fund
+
+      - name: Run simulation tests
+        working-directory: the-shortcut
+        run: npm test
+
+      - name: Build GitHub Pages preview
+        working-directory: the-shortcut
+        run: npm run build -- --base=/sand_box/previews/the-shortcut/
+
+      - name: Verify deployable asset paths
+        run: |
+          test -f the-shortcut/dist/index.html
+          test -d the-shortcut/dist/assets
+          grep -q '/sand_box/previews/the-shortcut/assets/' the-shortcut/dist/index.html
+
+      - name: Publish into sandbox Pages tree
+        run: |
+          rm -rf previews/the-shortcut
+          mkdir -p previews/the-shortcut
+          cp -a the-shortcut/dist/. previews/the-shortcut/
+          touch previews/the-shortcut/.nojekyll
+
+          test -f previews/the-shortcut/index.html
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add previews/the-shortcut
+
+          if git diff --cached --quiet; then
+            echo 'The Shortcut Pages preview is already current.'
+          else
+            git commit -m 'Publish The Shortcut GitHub Pages preview'
+            git push origin HEAD:main
+          fi
+
+      - name: Verify live GitHub Pages
+        run: |
+          URL='https://paksue.github.io/sand_box/previews/the-shortcut/'
+          for i in {1..30}; do
+            HTML="$(curl -fsSL --max-time 15 "$URL" || true)"
+            if printf '%s' "$HTML" | grep -q 'The Shortcut · Graybox'; then
+              ASSET="$(printf '%s' "$HTML" | grep -oE '/sand_box/previews/the-shortcut/assets/index-[A-Za-z0-9_-]+\.js' | head -1)"
+              if [ -n "$ASSET" ] && curl -fsSL --max-time 15 "https://paksue.github.io$ASSET" >/dev/null; then
+                echo "Live The Shortcut verified at $URL"
+                exit 0
+              fi
+            fi
+            echo "Waiting for Pages propagation ($i/30)…"
+            sleep 4
+          done
+          echo "Live Pages verification failed for $URL"
+          exit 1
