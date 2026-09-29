@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "errors": [],
+  "checks": [
+    "production base-path boot",
+    "floor click movement",
+    "three mesh inspections",
+    "09:00 stand-up",
+    "09:40 coffee and Mark departure",
+    "paused save/reload exact equality",
+    "09:50 Sarah return",
+    "keyboard inspection",
+    "mobile viewport",
+    "corrupt-save recovery"
+  ]
+}
