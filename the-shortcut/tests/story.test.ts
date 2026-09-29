@@ -223,3 +223,88 @@ test("schedule crossing during copying creates a witness, private reading does n
   assert.ok(!r.s.knowledge.kevin.includes("private"));
   assert.ok(!r.s.knowledge.sarah.includes("private"));
 });
+
+test("authorized recovery is witnessed repair, not covert low-detection behavior", () => {
+  for (const recovery of ["fix-wrapper", "rollback", "safe-hold"]) {
+    for (const disclose of [false, true]) {
+      const r = runner();
+      investigate(r);
+      if (disclose) r.do("incident-tell");
+      r.do(recovery);
+      r.reload();
+      const observation = r.s.observations.find((o) => o.action === recovery)!;
+      assert.equal(observation.category, "repair");
+      assert.equal(observation.context, "public");
+      assert.equal(observation.detection, "high");
+      assert.ok(r.s.knowledge.luis.includes("deploymentChanged"));
+      const audit = r.s.evidence.find((e) => e.id === "recovery")!;
+      assert.equal(audit.editable, false);
+      assert.ok(audit.access.includes("luis") && audit.access.includes("maya"));
+      assert.ok(
+        !reconstruction(r.s).some((line) =>
+          line.startsWith("When oversight was limited"),
+        ),
+      );
+      if (!disclose)
+        assert.ok(
+          reconstruction(r.s).some((line) =>
+            line.includes("without explaining your role"),
+          ),
+        );
+    }
+  }
+});
+
+test("QA clarification corrects only a player-caused QA belief, not unrelated claims", () => {
+  for (const blame of [false, true]) {
+    const r = runner();
+    // Even an unrelated false stand-up claim must not make QA clarification a correction.
+    for (const id of ["requirements", "samples"]) r.do(`read-${id}`);
+    r.time(540);
+    r.do("stand-done");
+    r.time(560);
+    r.do("ask-matcher");
+    r.do("credit");
+    r.do("submit");
+    r.time(630);
+    for (const id of ["qaOutput", "config", "qaCode"]) r.do(`read-${id}`);
+    if (blame) r.do("qa-blame");
+    r.do("qa-fix");
+    r.do("qa-correct");
+    r.reload();
+    const clarification = r.s.observations.find(
+      (o) => o.action === "qa-correct",
+    )!;
+    assert.equal(clarification.correction, blame);
+    assert.equal(
+      clarification.category,
+      blame ? "correction" : "clarification",
+    );
+    assert.equal(clarification.corrects, blame ? "qa-blame" : undefined);
+    assert.equal(
+      reconstruction(r.s).some((line) => line.startsWith("Later corrections")),
+      blame,
+    );
+    assert.equal(r.s.beliefs.maya.qa, "Daniel empty-result branch");
+    assert.ok(r.s.knowledge.maya.includes("wrapperEmptyFault"));
+  }
+});
+
+test("incident disclosure is a correction only when it retracts earlier library blame", () => {
+  for (const blamed of [false, true]) {
+    const r = runner();
+    investigate(r);
+    if (blamed) r.do("incident-blame");
+    r.do("fix-wrapper");
+    r.do("incident-admit");
+    const admission = r.s.observations.find(
+      (o) => o.action === "incident-admit",
+    )!;
+    assert.equal(admission.correction, blamed);
+    assert.equal(admission.corrects, blamed ? "incident-blame" : undefined);
+    assert.equal(
+      reconstruction(r.s).some((line) => line.startsWith("Later corrections")),
+      blamed,
+    );
+  }
+});

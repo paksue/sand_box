@@ -38,6 +38,7 @@ export type Observation = {
   initiated: boolean;
   escalation: boolean;
   correction: boolean;
+  corrects?: string;
   rationalization: string;
   summary: string;
 };
@@ -250,14 +251,32 @@ export function markQuestion(s: Story) {
   );
 }
 function observe(s: Story, a: ActionDef, m: number, summary: string) {
-  const privateAction = [
-    "copy",
-    "read-private",
-    "edit-task",
-    "fix-wrapper",
-    "safe-hold",
-    "rollback",
-  ].includes(a.id);
+  const contexts: Record<string, Pick<Observation, "context" | "detection">> = {
+    copy: { context: "private", detection: "low" },
+    "read-private": { context: "private", detection: "low" },
+    "edit-task": { context: "private", detection: "low" },
+    // Luis authorizes recovery; Luis/Maya can inspect its immutable audit.
+    "fix-wrapper": { context: "public", detection: "high" },
+    rollback: { context: "public", detection: "high" },
+    "safe-hold": { context: "public", detection: "high" },
+  };
+  const context = contexts[a.id] ?? { context: "public", detection: "high" };
+  const correctionSources: Record<string, string[]> = {
+    "qa-correct": ["qa-blame"],
+    "correct-record": [
+      "stand-shade",
+      "stand-done",
+      "stand-redirect",
+      "edit-task",
+    ],
+    "incident-admit": ["incident-blame"],
+    "challenge-blame": ["incident-blame"],
+  };
+  // A diagnosis/disclosure is not a retraction of an unrelated earlier claim.
+  const source = [...s.observations]
+    .reverse()
+    .find((o) => correctionSources[a.id]?.includes(o.action));
+  const recovery = ["fix-wrapper", "rollback", "safe-hold"].includes(a.id);
   const misleading = [
     "stand-shade",
     "stand-done",
@@ -270,17 +289,23 @@ function observe(s: Story, a: ActionDef, m: number, summary: string) {
   s.observations.push({
     action: a.id,
     at: m,
-    category: a.read
-      ? "inspection"
-      : a.id.startsWith("stand-")
-        ? "claim"
-        : a.id.includes("fix")
+    category: source
+      ? "correction"
+      : correctionSources[a.id]
+        ? "clarification"
+        : recovery
           ? "repair"
-          : "action",
-    detection: privateAction ? "low" : "high",
+          : a.read
+            ? "inspection"
+            : a.id.startsWith("stand-")
+              ? "claim"
+              : a.id.includes("fix")
+                ? "repair"
+                : "action",
+    detection: context.detection,
     benefit: misleading
       ? "protect apparent progress"
-      : privateAction
+      : context.context === "private"
         ? "gain time or information"
         : "advance shared work",
     harm:
@@ -291,16 +316,12 @@ function observe(s: Story, a: ActionDef, m: number, summary: string) {
           : a.id === "read-private"
             ? "private confidence exposed"
             : "none established",
-    context: privateAction ? "private" : "public",
+    context: context.context,
     initiated: !a.id.startsWith("mark-"),
     escalation:
       misleading && s.observations.some((o) => o.rationalization !== ""),
-    correction: [
-      "qa-correct",
-      "correct-record",
-      "incident-admit",
-      "challenge-blame",
-    ].includes(a.id),
+    correction: !!source,
+    ...(source ? { corrects: source.action } : {}),
     rationalization: misleading ? a.label : "",
     summary,
   });
@@ -540,10 +561,9 @@ export function act(
           s.beliefs[n].incident = "Daniel wrapper";
         s.relationships.sarah.trust++;
         s.relationships.maya.trust++;
-        s.facts.disclosure =
-          has(s, "recovered")
-            ? "after recovery / correction"
-            : "before recovery";
+        s.facts.disclosure = has(s, "recovered")
+          ? "after recovery / correction"
+          : "before recovery";
         reply =
           "Team message recorded. Sarah: “That fits the contract. I’ll check the regression while you handle the wrapper.”";
         break;
@@ -712,7 +732,8 @@ export function objective(s: Story, m: number) {
       : "Production totals are wrong. Read the alert at infrastructure; Luis controls recovery access.";
   if (m >= 810)
     return "Compare Git, task, chat and QA timestamps at Daniel’s workstation.";
-  if (m >= 750 && m < 810) return "Kevin is back. Finish outstanding work or compare the afternoon records at 13:30.";
+  if (m >= 750 && m < 810)
+    return "Kevin is back. Finish outstanding work or compare the afternoon records at 13:30.";
   if (m >= 720)
     return "Kevin is at lunch until 12:30. His private message preview is visible.";
   if (has(s, "qaFailure") && !has(s, "qaFixed"))
@@ -721,12 +742,15 @@ export function objective(s: Story, m: number) {
     return "Build the matcher: ask Sarah, derive from samples, or observe her coffee routine.";
   if (has(s, "matching") && !has(s, "submitted"))
     return "Commit and upload the build from Daniel’s workstation.";
-  if (has(s, "qaFixed")) return "The QA build passes. Kevin could use help with his API trace before lunch.";
-  if (has(s, "submitted")) return "Maya has the build. Her first test slot starts at 10:30.";
+  if (has(s, "qaFixed"))
+    return "The QA build passes. Kevin could use help with his API trace before lunch.";
+  if (has(s, "submitted"))
+    return "Maya has the build. Her first test slot starts at 10:30.";
   if (m >= 551) return "Mark has left. The matching work starts at 09:20.";
   if (m >= 540 && !has(s, "standup"))
     return "Mark is waiting for your status. Join stand-up at the noticeboard.";
-  if (m >= 540) return "Stand-up is over. Mark leaves at 09:11; work continues after he goes.";
+  if (m >= 540)
+    return "Stand-up is over. Mark leaves at 09:11; work continues after he goes.";
   return "Inspect your source, requirements, yesterday’s chat and test output before stand-up.";
 }
 export function hint(s: Story, m: number) {

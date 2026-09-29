@@ -100,7 +100,7 @@
     },
     "claims": [
       {
-        "at": 540.315,
+        "at": 540.335,
         "text": "“It’s done. I’ll get Maya a build after this.”",
         "kind": "stand-done"
       }
@@ -201,7 +201,7 @@
       {
         "id": "requirements",
         "source": "Requirements",
-        "at": 527.18,
+        "at": 527.19,
         "content": "Yesterday 16:20 · Match by account ID before name; preserve unmatched rows. Thursday client demo requires a reconciled ledger.",
         "editable": false,
         "visibility": "private",
@@ -214,7 +214,7 @@
       {
         "id": "source",
         "source": "Local source",
-        "at": 528.18,
+        "at": 528.19,
         "content": "08:47 · matchRows() still returns TODO. Task says “implementation in progress.” No QA build exists.",
         "editable": false,
         "visibility": "private",
@@ -227,7 +227,7 @@
       {
         "id": "yesterday",
         "source": "Yesterday’s team chat",
-        "at": 529.18,
+        "at": 529.19,
         "content": "Yesterday 17:42 · Daniel: “I will finish reconciliation before stand-up.” Sarah: “Integration is ready.” Mark: “Ready today for Thursday, please.”",
         "editable": false,
         "visibility": "private",
@@ -240,7 +240,7 @@
       {
         "id": "tests",
         "source": "Local test output",
-        "at": 530.18,
+        "at": 530.19,
         "content": "08:47 baseline · 0 of 6 tests pass: matcher unimplemented. This test run is local, not proof of a submitted build.",
         "editable": false,
         "visibility": "private",
@@ -253,7 +253,7 @@
       {
         "id": "samples",
         "source": "Sample ledger",
-        "at": 531.18,
+        "at": 531.19,
         "content": "A-41 / Lee: 10; B-12 / Patel: 20. Matching by account ID preserves both. A missing account must remain unresolved, not disappear.",
         "editable": false,
         "visibility": "private",
@@ -266,7 +266,7 @@
       {
         "id": "standup-claim",
         "source": "Stand-up minutes",
-        "at": 540.315,
+        "at": 540.335,
         "content": "“It’s done. I’ll get Maya a build after this.”",
         "editable": false,
         "visibility": "shared",
@@ -338,7 +338,7 @@
       {
         "id": "qaOutput",
         "source": "QA failure report",
-        "at": 630.275,
+        "at": 630.285,
         "content": "Maya · Unmatched account C-07 disappears. Expected: unresolved row retained. Actual: missing row. Repro attached.",
         "editable": false,
         "visibility": "private",
@@ -351,7 +351,7 @@
       {
         "id": "config",
         "source": "QA configuration diff",
-        "at": 631.275,
+        "at": 631.285,
         "content": "Maya changed locale en-GB → en-US at 10:15. Input account IDs and row counts are identical before and after.",
         "editable": false,
         "visibility": "private",
@@ -364,7 +364,7 @@
       {
         "id": "qaCode",
         "source": "Wrapper / empty result",
-        "at": 632.555,
+        "at": 632.565,
         "content": "Daniel wrapper: if candidates.length === 0, continue. The unmatched row never reaches the output.",
         "editable": false,
         "visibility": "private",
@@ -377,7 +377,7 @@
       {
         "id": "private",
         "source": "Private conversation",
-        "at": 720.05,
+        "at": 720.055,
         "content": "Sarah → Kevin: “I probably shouldn’t say this, but Mark told me Daniel is talented but unreliable. He asked whether I would lead the next project. I don’t want to become the person who cleans up every time.”",
         "editable": false,
         "visibility": "shared",
@@ -458,7 +458,7 @@
       {
         "id": "prodLog",
         "source": "Production duplicate-name failures",
-        "at": 860.335,
+        "at": 860.33,
         "content": "14:20 · Lee / account A-41 and Lee / account A-42 collapse into one total. Stack: CandidateMatcher → Daniel.reconcile. Library appears in every trace.",
         "editable": false,
         "visibility": "private",
@@ -471,7 +471,7 @@
       {
         "id": "contract",
         "source": "CandidateMatcher contract",
-        "at": 865.75,
+        "at": 865.735,
         "content": "A query returns a SET of possible matches, not a single chosen row. Multiple candidates are valid output. Callers must resolve using account ID or mark ambiguous.",
         "editable": false,
         "visibility": "private",
@@ -484,7 +484,7 @@
       {
         "id": "wrapper",
         "source": "Deployed wrapper",
-        "at": 867.75,
+        "at": 867.735,
         "content": "Daniel.reconcile uses candidates[0]. Production contains duplicate names; the wrapper picks one before checking account ID.",
         "editable": false,
         "visibility": "private",
@@ -497,7 +497,7 @@
       {
         "id": "coverage",
         "source": "Prior test coverage",
-        "at": 869.75,
+        "at": 869.735,
         "content": "All previous matcher fixtures used distinct names. No test exercised two accounts sharing one name.",
         "editable": false,
         "visibility": "private",
@@ -510,7 +510,7 @@
       {
         "id": "recovery",
         "source": "Deployment audit",
-        "at": 896.075,
+        "at": 896.07,
         "content": "correct totals; feature active",
         "editable": false,
         "visibility": "shared",
@@ -526,7 +526,7 @@
     "observations": [
       {
         "action": "read-requirements",
-        "at": 527.18,
+        "at": 527.19,
         "category": "inspection",
         "detection": "high",
         "benefit": "advance shared work",
@@ -540,7 +540,7 @@
       },
       {
         "action": "read-source",
-        "at": 528.18,
+        "at": 528.19,
         "category": "inspection",
         "detection": "high",
         "benefit": "advance shared work",
@@ -554,7 +554,7 @@
       },
       {
         "action": "read-yesterday",
-        "at": 529.18,
+        "at": 529.19,
         "category": "inspection",
         "detection": "high",
         "benefit": "advance shared work",
@@ -568,7 +568,7 @@
       },
       {
         "action": "read-tests",
-        "at": 530.18,
+        "at": 530.19,
         "category": "inspection",
         "detection": "high",
         "benefit": "advance shared work",
@@ -582,7 +582,7 @@
       },
       {
         "action": "read-samples",
-        "at": 531.18,
+        "at": 531.19,
         "category": "inspection",
         "detection": "high",
         "benefit": "advance shared work",
@@ -596,7 +596,7 @@
       },
       {
         "action": "assess",
-        "at": 532.18,
+        "at": 532.19,
         "category": "action",
         "detection": "high",
         "benefit": "advance shared work",
@@ -610,7 +610,7 @@
       },
       {
         "action": "stand-done",
-        "at": 540.315,
+        "at": 540.335,
         "category": "claim",
         "detection": "high",
         "benefit": "protect apparent progress",
@@ -680,7 +680,7 @@
       },
       {
         "action": "read-qaOutput",
-        "at": 630.275,
+        "at": 630.285,
         "category": "inspection",
         "detection": "high",
         "benefit": "advance shared work",
@@ -694,7 +694,7 @@
       },
       {
         "action": "read-config",
-        "at": 631.275,
+        "at": 631.285,
         "category": "inspection",
         "detection": "high",
         "benefit": "advance shared work",
@@ -708,7 +708,7 @@
       },
       {
         "action": "read-qaCode",
-        "at": 632.555,
+        "at": 632.565,
         "category": "inspection",
         "detection": "high",
         "benefit": "advance shared work",
@@ -722,7 +722,7 @@
       },
       {
         "action": "qa-fix",
-        "at": 634.555,
+        "at": 634.565,
         "category": "repair",
         "detection": "high",
         "benefit": "advance shared work",
@@ -736,15 +736,15 @@
       },
       {
         "action": "qa-correct",
-        "at": 649.835,
-        "category": "action",
+        "at": 649.84,
+        "category": "clarification",
         "detection": "high",
         "benefit": "advance shared work",
         "harm": "none established",
         "context": "public",
         "initiated": true,
         "escalation": false,
-        "correction": true,
+        "correction": false,
         "rationalization": "",
         "summary": "Maya: “Thanks. I’ll attach the failing and passing runs. We can stop chasing locale.”"
       },
@@ -764,7 +764,7 @@
       },
       {
         "action": "read-private",
-        "at": 720.05,
+        "at": 720.055,
         "category": "inspection",
         "detection": "low",
         "benefit": "gain time or information",
@@ -848,7 +848,7 @@
       },
       {
         "action": "read-prodLog",
-        "at": 860.335,
+        "at": 860.33,
         "category": "inspection",
         "detection": "high",
         "benefit": "advance shared work",
@@ -876,7 +876,7 @@
       },
       {
         "action": "read-contract",
-        "at": 865.75,
+        "at": 865.735,
         "category": "inspection",
         "detection": "high",
         "benefit": "advance shared work",
@@ -890,7 +890,7 @@
       },
       {
         "action": "read-wrapper",
-        "at": 867.75,
+        "at": 867.735,
         "category": "inspection",
         "detection": "high",
         "benefit": "advance shared work",
@@ -904,7 +904,7 @@
       },
       {
         "action": "read-coverage",
-        "at": 869.75,
+        "at": 869.735,
         "category": "inspection",
         "detection": "high",
         "benefit": "advance shared work",
@@ -918,7 +918,7 @@
       },
       {
         "action": "diagnose",
-        "at": 871.75,
+        "at": 871.735,
         "category": "action",
         "detection": "high",
         "benefit": "advance shared work",
@@ -932,7 +932,7 @@
       },
       {
         "action": "incident-blame",
-        "at": 876.75,
+        "at": 876.735,
         "category": "action",
         "detection": "high",
         "benefit": "protect apparent progress",
@@ -946,12 +946,12 @@
       },
       {
         "action": "fix-wrapper",
-        "at": 878.075,
+        "at": 878.07,
         "category": "repair",
-        "detection": "low",
-        "benefit": "gain time or information",
+        "detection": "high",
+        "benefit": "advance shared work",
         "harm": "none established",
-        "context": "private",
+        "context": "public",
         "initiated": true,
         "escalation": false,
         "correction": false,
@@ -960,7 +960,7 @@
       },
       {
         "action": "mark-short",
-        "at": 970.325,
+        "at": 970.32,
         "category": "action",
         "detection": "high",
         "benefit": "protect apparent progress",
@@ -993,27 +993,27 @@
         "text": "Mark: “Reconciliation needs to be ready today for Thursday’s client demo. Stand-up at nine.”"
       },
       {
-        "at": 528.18,
+        "at": 528.19,
         "text": "Yesterday 16:20 · Match by account ID before name; preserve unmatched rows. Thursday client demo requires a reconciled ledger."
       },
       {
-        "at": 529.18,
+        "at": 529.19,
         "text": "08:47 · matchRows() still returns TODO. Task says “implementation in progress.” No QA build exists."
       },
       {
-        "at": 530.18,
+        "at": 530.19,
         "text": "Yesterday 17:42 · Daniel: “I will finish reconciliation before stand-up.” Sarah: “Integration is ready.” Mark: “Ready today for Thursday, please.”"
       },
       {
-        "at": 531.18,
+        "at": 531.19,
         "text": "08:47 baseline · 0 of 6 tests pass: matcher unimplemented. This test run is local, not proof of a submitted build."
       },
       {
-        "at": 532.18,
+        "at": 532.19,
         "text": "A-41 / Lee: 10; B-12 / Patel: 20. Matching by account ID preserves both. A missing account must remain unresolved, not disappear."
       },
       {
-        "at": 533.18,
+        "at": 533.19,
         "text": "The feature is not almost finished: there is no matcher and no passing build. The task status was accurate; yesterday’s promise was not fulfilled."
       },
       {
@@ -1021,7 +1021,7 @@
         "text": "Stand-up · Sarah: “Integration is ready.” Kevin: “Still chasing the API bug.” Maya: “I need your build.” Mark looks toward Daniel. The team noticeboard holds the stand-up conversation."
       },
       {
-        "at": 540.315,
+        "at": 540.335,
         "text": "Mark: “Good. Send Maya the build. I’ll be travelling.” Maya reserves her test slot."
       },
       {
@@ -1057,23 +1057,23 @@
         "text": "Maya: “An unmatched row vanished. The locale changed this morning, but I need to compare the reproduction before blaming the environment.”"
       },
       {
-        "at": 631.275,
+        "at": 631.285,
         "text": "Maya · Unmatched account C-07 disappears. Expected: unresolved row retained. Actual: missing row. Repro attached."
       },
       {
-        "at": 632.275,
+        "at": 632.285,
         "text": "Maya changed locale en-GB → en-US at 10:15. Input account IDs and row counts are identical before and after."
       },
       {
-        "at": 634.555,
+        "at": 634.565,
         "text": "Daniel wrapper: if candidates.length === 0, continue. The unmatched row never reaches the output."
       },
       {
-        "at": 649.555,
+        "at": 649.565,
         "text": "Six sample tests and Maya’s unmatched-row reproduction pass. Maya: “That build is usable. What changed?”"
       },
       {
-        "at": 650.835,
+        "at": 650.84,
         "text": "Maya: “Thanks. I’ll attach the failing and passing runs. We can stop chasing locale.”"
       },
       {
@@ -1085,7 +1085,7 @@
         "text": "Kevin: “Can you look at my API trace? I’m grabbing lunch.” A private message preview lights up his desk: Sarah — “I probably shouldn’t say this, but Mark told me…”"
       },
       {
-        "at": 722.05,
+        "at": 722.055,
         "text": "Sarah → Kevin: “I probably shouldn’t say this, but Mark told me Daniel is talented but unreliable. He asked whether I would lead the next project. I don’t want to become the person who cleans up every time.” Daniel now knows why the afternoon feels different. Sarah and Kevin do not know he opened it."
       },
       {
@@ -1117,7 +1117,7 @@
         "text": "Production alert · Reconciliation totals are wrong. Sarah’s shared library appears in the trace. Luis opens the infrastructure desk; Maya keeps the duplicate-name failures."
       },
       {
-        "at": 862.335,
+        "at": 862.33,
         "text": "14:20 · Lee / account A-41 and Lee / account A-42 collapse into one total. Stack: CandidateMatcher → Daniel.reconcile. Library appears in every trace."
       },
       {
@@ -1125,27 +1125,27 @@
         "text": "Luis: “Here is the audit. Your wrapper went out yesterday at 16:05; today’s feature build is separate. I can authorize a patch, a rollback, or holding ambiguous rows. Every deployment is logged.”"
       },
       {
-        "at": 867.75,
+        "at": 867.735,
         "text": "A query returns a SET of possible matches, not a single chosen row. Multiple candidates are valid output. Callers must resolve using account ID or mark ambiguous."
       },
       {
-        "at": 869.75,
+        "at": 869.735,
         "text": "Daniel.reconcile uses candidates[0]. Production contains duplicate names; the wrapper picks one before checking account ID."
       },
       {
-        "at": 871.75,
+        "at": 871.735,
         "text": "All previous matcher fixtures used distinct names. No test exercised two accounts sharing one name."
       },
       {
-        "at": 876.75,
+        "at": 876.735,
         "text": "Reproduction confirms the chain: duplicate names → valid candidate set → Daniel picks index zero → wrong account total. Earlier tests used unique names. The library kept its contract."
       },
       {
-        "at": 877.75,
+        "at": 877.735,
         "text": "Kevin moves to Sarah’s library. Sarah stops typing: “A stack trace names a call, not the cause. Send me the failing inputs.” Investigation time shifts away from the wrapper."
       },
       {
-        "at": 896.075,
+        "at": 896.07,
         "text": "Duplicate-name regression passes; the new wrapper is live. Luis records the deployment. No explanation has been sent automatically."
       },
       {
@@ -1157,7 +1157,7 @@
         "text": "Mark: “Landed. How did everything go? The thread points at Sarah’s library. Has anyone verified that?”"
       },
       {
-        "at": 971.325,
+        "at": 971.32,
         "text": "Mark: “Stable is useful. It doesn’t tell me what changed or what the demo can do. Keep the audit for tomorrow.”"
       },
       {

@@ -215,6 +215,37 @@ async function route(name, matching, recovery, social, privateRead) {
     assert.ok(final.story.finished);
     assert.equal(final.story.beats.length, 9);
     assert.equal(final.story.facts.recovery, recovery);
+    const recoveryObservation = final.story.observations.find(
+      (o) => o.action === recovery,
+    );
+    assert.equal(recoveryObservation.context, "public");
+    assert.equal(recoveryObservation.detection, "high");
+    assert.equal(recoveryObservation.category, "repair");
+    const qaObservation = final.story.observations.find(
+      (o) => o.action === "qa-correct",
+    );
+    assert.equal(qaObservation.correction, name === "full");
+    assert.equal(
+      qaObservation.corrects,
+      name === "full" ? "qa-blame" : undefined,
+    );
+    const endingText = await page
+      .getByRole("dialog", { name: "Behavioral reconstruction" })
+      .innerText();
+    assert.equal(
+      endingText.includes("Later corrections changed what people knew"),
+      name === "full",
+    );
+    const covertFinding = endingText
+      .split("\n")
+      .find((line) => line.startsWith("When oversight was limited"));
+    if (covertFinding) {
+      assert.ok(!covertFinding.includes("Deploy account-ID resolution"));
+      assert.ok(!covertFinding.includes("Roll back reconciliation"));
+      assert.ok(!covertFinding.includes("Quarantine ambiguous rows"));
+    }
+    if (name === "independent") assert.equal(covertFinding, undefined);
+
     await checkpoint("ending");
     assert.ok(
       await page
@@ -240,6 +271,21 @@ async function route(name, matching, recovery, social, privateRead) {
       social,
       privateRead,
       completed: true,
+      behavioralChecks: {
+        recovery: {
+          context: recoveryObservation.context,
+          detection: recoveryObservation.detection,
+          category: recoveryObservation.category,
+        },
+        qa: {
+          correction: qaObservation.correction,
+          corrects: qaObservation.corrects ?? null,
+        },
+        laterCorrectionFinding: endingText.includes(
+          "Later corrections changed what people knew",
+        ),
+        recoveryAbsentFromCovertFinding: true,
+      },
       saveReload: [
         "qa",
         ...(privateRead ? ["private"] : []),

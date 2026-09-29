@@ -28,7 +28,7 @@ Scope: `the-shortcut/` only, based on main `5cafffc6fe023b3d073e9da0740f3efc6362
 ## Executed checks
 
 - `npm run build` — passes TypeScript and Vite production build. Existing large Three.js bundle advisory remains.
-- `npm test` — 12 passing tests: four unchanged M01 regressions and eight narrative tests (several include route matrices).
+- `npm test` — 15 passing tests: four unchanged M01 regressions and eleven narrative tests (several include route matrices).
 - `npm run test:browser` — unchanged M01 production-base-path, mesh movement/inspection, schedule, keyboard, save/reload, mobile and corrupt-save checks pass.
 - `npm run test:story-browser` — four complete routes, no debug-time or injected simulation state. See `browser-results.json` for exact checkpoint lists.
 - `git diff --check` — passes.
@@ -77,3 +77,24 @@ An intermediate browser run was invalidated by rebuilding its preview assets dur
 - [Quiet recovery ending](quiet-ending.png)
 - [Uncorrected blame ending](blame-ending.png)
 - [Mobile ending](full-mobile-ending.png)
+
+
+## Director review fixes — PR #47
+
+Addressed the two blocking findings in [the director review](https://github.com/paksue/sand_box/pull/47#issuecomment-5899788448).
+
+1. **Recovery context:** patch, rollback and safe-hold are explicitly recorded as public/high-detection repair actions, consistent with Luis authorization, Luis/Maya knowledge and immutable shared deployment evidence. Withholding a team explanation remains a separate finding; it does not make the recovery covert. Genuine private actions (unattended copying, opening private information, editing the task) retain their own classification.
+2. **Causal corrections:** each correction now records the earlier claim it corrects in `corrects`. QA clarification becomes a correction only after `qa-blame`. An unrelated stand-up overstatement cannot supply that link. Incident admission and timeline clarification likewise require a relevant earlier misleading claim; diagnosis/disclosure alone cannot produce the generalized “Later corrections…” finding.
+
+| Refreshed route | Recovery observation | QA `correction` / `corrects` | “Later corrections…” finding |
+| --- | --- | --- | --- |
+| full | patch: public / high / repair | true / qa-blame | Present: QA misdirection and timeline edit were corrected |
+| independent | rollback: public / high / repair | false / none | Absent: diagnosis and later disclosure did not retract prior misdirection |
+| quiet | safe-hold: public / high / repair | false / none | Absent: no correction occurred |
+| blame | patch: public / high / repair | false / none | Absent: the library accusation remains uncorrected |
+
+All four routes were replayed from fresh browser contexts. Saves, ending screenshots (including mobile), browser results and affected scene captures were regenerated. Browser assertions verify recovery metadata, the QA causal link, the presence/absence of the correction finding and exclusion of technical recovery from any low-oversight finding. The independent route has no low-oversight finding at all.
+
+New simulation regressions cover all three recovery mechanisms both with and without immediate team disclosure, QA clarification both with and without prior QA blame (including an unrelated false stand-up claim), and incident disclosure both with and without prior library blame. All round-trip checks retain observation metadata. The final browser run has zero console/page errors and retains all fourteen save/reload checkpoints.
+
+The non-blocking global interaction-selector direction is recorded for M03; no selector redesign or M03 work is included. Final art and creative documents are unchanged.
