@@ -1,35 +1,54 @@
-# Quality Gates
+# Quality Gates — Fantasy Reboot
 
-No milestone advances automatically.
+## Gate A — Fantasy identity
+PASS only if the live game is unmistakably a fairy-tale graphical adventure. No office-era content may appear in normal play.
 
-## Gate A — Story
-Complete beginning/middle/end; production incident escalates earlier choices; characters have independent wants; ending reflects accumulated state; no moral lecture.
+## Gate B — Complete story
+Playable beginning, journey, dusk transformation, castle arrival, Moon Bell climax, and epilogue.
 
-## Gate B — Puzzle web
-Every major puzzle passes Fairness, Causality, Aha, Agency, Integration, Alternatives, Consequence. A blind reviewer can solve core puzzles without design notes.
+## Gate C — Puzzle quality
+P1–P6 each pass:
+Fairness, Causality, Aha, Agency, Integration, Alternatives where appropriate, Consequence.
 
-## Gate C — Graybox
-Complete workday playable start-to-finish with placeholder art, schedules, consequences, and ending.
+At least four major puzzles require an enacted inference or world action, not mere possession of flags.
 
-## Gate D — Hero visual scene
-Developer bullpen reaches target quality with strong composition, readable characters/navigation, controlled clutter, time-of-day lighting, and Sierra-inspired staging without copied assets.
+## Gate D — Schedules and changing world
+- Ysabet's absence matters.
+- Dusk changes at least three locations/opportunities.
+- Brindle sleep/wake matters.
+- Castle state changes at 21:00.
+- Missed windows fail forward.
 
-## Gate E — Character pass
-Each NPC has recognizable voice, believable schedule, plausible knowledge, and relationship continuity.
+## Gate E — Alternate routes
+At minimum:
+- 3 Mill routes;
+- 2 Crossroads routes;
+- 3 True-Path light routes;
+- 2 Moonwater routes;
+- 3 Brindle routes;
+- on-time and late castle-entry states.
 
-## Gate F — Full art/audio
-All scenes meet hero-scene language; audio reinforces time, occupancy, action, and tension.
+## Gate F — Continuity
+NPCs react only to plausible knowledge.
+Permission/ownership is remembered.
+Epilogue chronology comes from ordered events.
 
-## Gate G — Playtest
-Run boot, traversal, story/puzzle paths, save/reload, time/debug, responsive UI, screenshot review, accessibility basics, and runtime-error checks.
+## Gate G — Save robustness
+Save/reload around dusk, Ysabet's schedule, Brindle waking, castle deadline, and final bell.
+No secret unwinnable saves.
 
-## Independent critique
-Use separate passes for puzzle critic, narrative/continuity critic, visual critic, and exploit/state tester.
+## Gate H — Browser quality
+Production build, tests, no severe console errors, desktop/mobile smoke tests, pointer/keyboard parity, and correct GitHub Pages base path.
 
-## Player-experience test
-For each scene ask:
-1. Do I care?
-2. Do these people feel real?
-3. Am I doing something interesting?
-4. Would I screenshot this?
-5. Did what I did matter?
+## Gate I — Visual identity
+Representative screenshots: Mill, Cottage, Moonwell at night, Brindle Bridge, Castle/Bell Tower.
+Even provisional art must read as fantasy.
+
+## Blind-player questions
+- What were you trying to do?
+- Which location did you most want to explore?
+- Which puzzle gave you an "aha"?
+- Did dusk change how you thought about the map?
+- Which shortcut did you take?
+- What earlier choice changed something later?
+- Did anything feel like a menu workflow instead of an adventure?
