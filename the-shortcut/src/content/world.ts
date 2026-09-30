@@ -1,108 +1,22 @@
-export type Point = { x: number; z: number };
-export const objects = [
-  {
-    id: "daniel-desk",
-    name: "Daniel’s workstation",
-    x: -3,
-    z: -1.7,
-    approach: { x: -3, z: -0.45 },
-    text: "Daniel’s workstation. A monitor, keyboard and unfinished work. Source, tests, messages and task records are available here.",
-  },
-  {
-    id: "sarah-desk",
-    name: "Sarah’s workstation",
-    x: 1,
-    z: -1.7,
-    approach: { x: 1, z: -0.45 },
-    text: "Sarah’s workstation. The graybox identifies the desk independently of Sarah’s current location. Her implementation is accessible only during her coffee break.",
-  },
-  {
-    id: "noticeboard",
-    name: "Team noticeboard",
-    x: 4.4,
-    z: -2.8,
-    approach: { x: 4.2, z: -0.65 },
-    text: "The team noticeboard. Stand-up is at 09:00. Join the conversation here at nine; the rota lists office routines.",
-  },
-] as const;
-export const locations: Record<string, Point> = {
-  sarahDesk: { x: 1, z: -0.65 },
-  markDesk: { x: -4.8, z: -1 },
-  standupSarah: { x: 1.5, z: 1.8 },
-  standupMark: { x: 3, z: 1.8 },
-  coffee: { x: -4.6, z: 2.5 },
-  exit: { x: 5.2, z: 2.5 },
+export const locationIds = ['village','mill','crossroads','cottage','chapel','hollow','moonwell','bridge','castle','tower'] as const;
+export type Location = typeof locationIds[number];
+export type Point = {x:number;y:number};
+export type Hotspot = {id:string;name:string;x:number;y:number;description:string;verbs?:string[];exit?:Location};
+const h=(id:string,name:string,x:number,y:number,description:string,verbs?:string[],exit?:Location):Hotspot=>({id,name,x,y,description,verbs,exit});
+export const locations:Record<Location,{name:string;subtitle:string;hotspots:Hotspot[]}>={
+village:{name:'Vale Locksmith',subtitle:'Ardenfall • the rain has stopped',hotspots:[
+h('aldus','Aldus Reed',350,465,'The Bellkeeper rests his bandaged leg against the workshop step.',['Talk']),
+h('thread','Red thread',175,350,'A spool of locksmith’s thread: too fine to bear weight, bright enough to mark a path.',['Take']),h('mirror','Brass mirror',225,350,'A hand mirror, polished for checking the backs of locks.',['Take']),h('bottle','Blue bottle',270,350,'An empty medicine bottle with a cork.',['Take']),h('cake','Honey cake',305,350,'Supper, wrapped in a cloth. The smell could persuade a less disciplined creature.',['Take']),h('road','Washed-out road',730,350,'The royal road ends in a fresh scar of mud. Beyond the river, Castle Arden catches the last sun.'),h('exit-mill','Old mill path',900,530,'A muddy path descends toward the sound of water.',undefined,'mill')]},
+mill:{name:'The Flooded Mill',subtitle:'A road carried away by the river',hotspots:[
+h('bram','Bram Tallow',290,440,'The miller braces himself against the wheel.',['Talk']),h('wheel','Millwheel',245,335,'A storm branch locks the paddles. The capstan is coupled to this wheel.',['Pull']),h('sluice','Sluice lever',590,410,'Three notches: grain, flood, and spill. The water marks suggest spill diverts the river around the mill.',['Turn']),h('gauge','Water marks',535,355,'A carved side-channel beside the lowest mark leads away from the crossing.'),h('beam','Spare beam',440,470,'A long oak beam could span the gap, but it would slide without a line.',['Place']),h('capstan','Rope capstan',370,430,'The line is wound tight around a motionless drum.',['Pull']),h('span','Broken span',715,465,'Only the two ends of the bridge remain.',['Walk']),h('stones','River stones',775,510,'Rounded stones vanish beneath the racing water.',['Walk']),h('ferry','Ferry landing',845,550,'The ferryman’s board reads: “When the fireflies light, I cross.”',['Board']),h('exit-village','Village lane',95,545,'The workshop lies uphill.',undefined,'village')]},
+crossroads:{name:'Briar Crossroads',subtitle:'The road that is shorter on maps',hotspots:[h('oak','Boundary oak',230,310,'An immense oak, with an old courier scar in its bark. It stands apart from the slender moving trees.',['Mark']),h('stone','Courier stone',425,465,'The carving shows a sun above a road passing to the RIGHT of an ancient oak.',['Look']),h('sign','Turning signposts',550,390,'All three arms say “Castle.” Damp earth around the post is freshly disturbed.',['Look']),h('left-path','Left-hand path',170,520,'The path goes beneath younger trees.',['Walk']),h('right-path','Oak-side path',370,525,'This path passes to the right of the ancient oak.',['Walk']),h('moths','Moonmoths',650,445,'Pale moths follow an edge that the signposts ignore.',['Follow']),h('exit-cottage','Garden path',835,485,'A chimney curls above a crooked green roof.',undefined,'cottage'),h('exit-chapel','Chapel path',760,355,'A broken arch shows through the ivy.',undefined,'chapel'),h('exit-mill','River path',80,575,'The sound of water lies behind you.',undefined,'mill')]},
+cottage:{name:'Ysabet’s Cottage',subtitle:'Dusk-thyme and borrowed light',hotspots:[h('ysabet','Ysabet Reed',570,460,'A precise woman in layered green clothes sorts herbs into a basket.',['Talk']),h('door','Cottage door',460,420,'The latch is ordinary. A garden note reads: “Dusk-thyme: out at half past five; home at six.”',['Open']),h('lantern','True-Path Lantern',390,330,'A copper lantern hangs just inside the doorway. Its glass bends edges into sharp focus.',['Take']),h('coop','Empty hen coop',760,460,'Silver feathers lead toward the chapel.'),h('fireflies','Fireflies',680,525,'Small lights gather over the damp garden.',['Use']),h('exit-crossroads','Briar path',115,550,'The old oak is just beyond the garden.',undefined,'crossroads')]},
+chapel:{name:'Wayside Chapel',subtitle:'A forgotten courier’s sanctuary',hotspots:[h('mallow','Mallow',650,495,'A silver hen eyes a gap between two fallen stones.',['Approach']),h('stones-hen','Fallen stones',730,475,'Move this loose stone and the hen’s escape gap would close.',['Place']),h('mural','Moon mural',360,335,'A painted disc catches a moonbeam. Three rings point it into a well: crescent UP, half RIGHT, full DOWN. Below, an old courier opens a small door beneath a castle wall.',['Look']),h('pip','Pip the magpie',510,290,'A magpie guards a polished moon-disc. Its nest is full of shiny things.',['Talk']),h('disc','Moon-disc',540,310,'The silver disc in the nest is broad enough to catch a moonbeam.',['Take']),h('exit-crossroads','Forest path',115,550,'Beyond the broken arch lies the crossroads.',undefined,'crossroads')]},
+hollow:{name:'Whispering Hollow',subtitle:'Where even the edges lie',hotspots:[h('edge','Glamoured edge',500,420,'The path seems to fold over itself, like a ribbon reflected in crooked glass.',['Look']),h('hollow-path','Far path',810,480,'A pool of pale light lies beyond the shifting trees.',['Walk']),h('fireflies','Fireflies',270,470,'The lights keep to the true forest floor.'),h('exit-crossroads','Return path',120,560,'A familiar scarred oak shows behind you.',undefined,'crossroads')]},
+moonwell:{name:'Moonwell Glade',subtitle:'Stone remembers the shape of moonlight',hotspots:[h('socket','Reflective socket',640,375,'A round socket tilts toward the moon; something polished would fit.',['Take reflector']),h('ring-0','Crescent ring',390,410,'Four carved directions encircle this ring.',['Turn']),h('ring-1','Half-moon ring',500,420,'Its channel carries the beam sideways.',['Turn']),h('ring-2','Full-moon ring',610,445,'A final channel must send light down into the basin.',['Turn']),h('basin','Well basin',515,470,'The bowl is dry, but its surface feels cool.',['Fill']),h('flowers','Moonflowers',740,460,'White flowers face the empty sky.'),h('exit-bridge','Ravine path',870,540,'A stone bridge arches beyond the glade.',undefined,'bridge'),h('exit-hollow','Hollow path',105,560,'Whispers fade among the roots.',undefined,'hollow')]},
+bridge:{name:'Brindle’s Moss Bridge',subtitle:'An old bargain beneath an older arch',hotspots:[h('brindle','Brindle Mossback',360,470,'A vast mossy bridgekeeper lies beneath the arch.',['Talk']),h('bridge-key','Brass gate key',470,480,'A brass key hangs beside Brindle’s nest.',['Take']),h('toll-bell','Thorn-bound toll bell',680,315,'Living thorn swallows the little bell. A plaque shows a drop over a leaf.',['Ring']),h('gate','Bridge gate',775,400,'An old brass lock fastens the far gate.',['Open']),h('ledge','Ravine wall',215,455,'A faint courier mark disappears beneath ivy.',['Look']),h('cross-bridge','Bridge crossing',860,495,'The castle hill rises on the far side.',['Walk']),h('exit-moonwell','Glade path',90,550,'Moonflowers pale among the roots.',undefined,'moonwell')]},
+castle:{name:'Castle Arden',subtitle:'The last hill before the ninth bell',hotspots:[h('sella','Captain Sella Vane',660,465,'A storm-weary captain watches the approach.',['Talk']),h('main-gate','Main gate',650,350,'The gate leads to the Moon Bell stair.',['Open']),h('vines','Courtyard ivy',305,460,'Old masonry beneath the ivy differs from the main wall.',['Look']),h('postern','Old courier postern',310,440,'A sunburst keyhole is cut into a low ancient door.',['Open']),h('exit-bridge','Ravine path',100,570,'The bridge lies behind the hill.',undefined,'bridge')]},
+tower:{name:'The Moon Bell',subtitle:'Above the sleeping valley',hotspots:[h('yoke','Sunburst yoke',525,245,'The bell is held by a yoke with a sun-shaped lock.',['Turn']),h('briars','Living briars',420,435,'Thorn binds the old release mechanism.'),h('catch','Release catch',615,385,'An old bronze catch holds the yoke pin.',['Pull']),h('rope','Bell rope',720,440,'A braided pull hangs down to Mara’s height.',['Pull']),h('bell','Moon Bell',520,200,'Silver-dark metal carries the shapes of the wood and the Crown.'),h('exit-castle','Tower stair',140,565,'The stair spirals down to the gate.',undefined,'castle')]}
 };
-// Coffee interval is a provisional M01 schedule fixture, not a new story beat.
-export const schedules = {
-  sarah: [
-    { at: 0, location: "sarahDesk" },
-    { at: 540, location: "standupSarah" },
-    { at: 551, location: "sarahDesk" },
-    { at: 580, location: "coffee" },
-    { at: 590, location: "sarahDesk" },
-    { at: 1035, location: "exit" },
-  ],
-  mark: [
-    { at: 0, location: "markDesk" },
-    { at: 540, location: "standupMark" },
-    { at: 551, location: "exit" },
-  ],
-};
-export function scheduledLocation(
-  npc: keyof typeof schedules,
-  seconds: number,
-) {
-  return schedules[npc].filter((s) => s.at * 60 <= seconds).at(-1)!.location;
-}
-export function walkable(p: Point) {
-  return (
-    Number.isFinite(p.x) &&
-    Number.isFinite(p.z) &&
-    p.x >= -5.5 &&
-    p.x <= 5.5 &&
-    p.z >= -0.8 &&
-    p.z <= 3.5
-  );
-}
-
-export const extraObjects = [
-  {
-    id: "kevin-desk",
-    name: "Kevin’s workstation",
-    x: -2,
-    z: -3.4,
-    approach: { x: -1.2, z: -0.5 },
-    text: "Kevin’s API trace is open. Private notifications remain private unless opened.",
-  },
-  {
-    id: "server",
-    name: "Infrastructure desk",
-    x: 4.6,
-    z: 0,
-    approach: { x: 4.2, z: 0.9 },
-    text: "Production logs and deployment controls. Luis records every change.",
-  },
-  {
-    id: "elevator",
-    name: "Elevator",
-    x: 5.1,
-    z: 3.1,
-    approach: { x: 4.6, z: 2.8 },
-    text: "The elevator leaves at the end of the workday.",
-  },
-] as const;
-export const allObjects = [...objects, ...extraObjects];
-export const npcLocations = {
-  maya: { x: 3.1, z: -0.6 },
-  kevin: { x: -1.5, z: -0.6 },
-  luis: { x: 4.5, z: 1.3 },
-};
-export function extraSchedule(npc: "maya" | "kevin" | "luis", minute: number) {
-  if (minute >= 1035) return "away";
-  if (minute >= 540 && minute < 551) return "standup";
-  if (npc === "kevin" && minute >= 720 && minute < 750) return "lunch";
-  if (npc === "luis" && minute < 840) return "rounds";
-  if (npc === "maya" && minute >= 750 && minute < 780) return "lunch";
-  return npc === "luis" ? "infrastructure" : "desk";
-}
+export const itemNames:Record<string,string>={sun:'Sun Key',thread:'Red thread',mirror:'Brass mirror',bottle:'Blue bottle',cake:'Honey cake',lantern:'True-Path Lantern',glowjar:'Glowjar',disc:'Moon-disc',water:'Moonwater',charm:'Bridge charm',rope:'Rope scrap',hen:'Mallow',key:'Brass gate key'};
+export const itemDescriptions:Record<string,string>={sun:'A brass sunburst key. Aldus entrusted it to you. Ancient courier locks bear the same mark.',thread:'Fine red thread, suited to marking a trail rather than securing a bridge.',mirror:'A polished brass hand mirror. It catches even faint light.',bottle:'An empty blue bottle. Its cork holds tight.',cake:'Honey cake. There is enough for supper and a few crumbs.',lantern:'Ysabet’s lantern reveals edges concealed by glamour.',glowjar:'Fireflies in a blue bottle. Enough light to see the Hollow’s true ground.',disc:'An old polished disc from the courier chapel.',water:'Moonwater loosens living briar. The vial holds enough for several careful drops.',charm:'Brindle’s charm calms the old briar.',rope:'Bram’s sound rope scrap, long enough to replace a damaged pull.',hen:'Mallow is tucked under your cloak, objecting quietly.',key:'Brindle’s gate key. He might recognize it if shown.'};

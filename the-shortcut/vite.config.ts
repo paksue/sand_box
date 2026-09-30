@@ -1,2 +1,1 @@
-import { defineConfig } from "vite";
-export default defineConfig({ base: "/sand_box/the-shortcut/" });
+import {defineConfig} from 'vite';export default defineConfig({base:'/sand_box/previews/the-shortcut/'});
