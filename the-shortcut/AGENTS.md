@@ -1,68 +1,91 @@
-# AGENTS.md — The Shortcut
+# AGENTS.md — The Shortcut: The Moon Bell
 
-This directory contains a deliberately authored game. Treat the documents here as production constraints, not suggestions.
+This directory now contains an **original fantasy graphical-adventure game** inspired by the design craft of Sierra's King's Quest III–VI.
+
+## Absolute creative directive
+
+**THE SHORTCUT IS A FANTASY ADVENTURE GAME FIRST.**
+
+The workplace prototype ("The Conference") is obsolete creative content. It may remain in Git history and old evidence/review files, but it is **not** a source of story, characters, locations, puzzles, tone, UI, or art direction.
+
+Do not reskin office mechanics with medieval nouns. Build an actual fairy-tale adventure: physical places, exploration, inventory, NPC routines, magic with understandable rules, revisiting changed locations, alternate solutions, environmental clues, and consequences enacted through the world.
 
 ## Product
-- Client-side-only web game.
-- Target host: GitHub Pages from `paksue/sand_box`.
-- No backend, database, authentication, or secret runtime API keys.
-- POC playtime: 35–50 minutes.
-- One complete story: **The Conference**.
+- Title: **The Shortcut: The Moon Bell**
+- Client-side-only browser game.
+- Host: GitHub Pages in `paksue/sand_box`.
+- Target playtime: roughly 35–55 minutes for a first successful run.
+- One complete story, beginning to ending.
+- Runtime: React + TypeScript + Vite + React Three Fiber/Three.js.
+- No backend, database, authentication, or runtime secret keys.
+- Current office implementation may be refactored aggressively at the content/UI layer.
+- Preserve useful engine foundations: deterministic time, save/versioning, simulation/render separation, NPC knowledge, schedules, branch-and-fold state, browser QA.
 
-## Required working method
-1. Read `docs/VISION.md`, then the docs referenced by the milestone.
-2. Use the narrowest relevant Game Studio skill.
-3. Do not redesign the story, characters, puzzle insights, or visual target while implementing.
-4. Make reversible technical decisions independently.
-5. Keep simulation state separate from rendering.
-6. Prefer data-driven story, dialogue, schedules, interactions, and consequences.
-7. Run the build and verify the milestone against its acceptance criteria.
-8. For visual milestones, capture screenshots and compare against `docs/VISUAL_BIBLE.md` and `docs/KINGS_QUEST_REFERENCES.md`.
-9. For puzzle milestones, play blind enough to confirm that clues support the intended insight without revealing the answer.
-10. Do not proceed to a later milestone because the code merely compiles.
+## Required reading order
+1. `docs/VISION.md`
+2. `docs/WORLD.md`
+3. `docs/STORY.md`
+4. `docs/CHARACTERS.md`
+5. `docs/ITEMS_MAGIC.md`
+6. `docs/PUZZLE_DESIGN.md`
+7. `docs/PUZZLE_GRAPH.md`
+8. `docs/INTERACTION_DESIGN.md`
+9. `docs/STATE_MODEL.md`
+10. `docs/VISUAL_BIBLE.md`
+11. `docs/QUALITY_GATES.md`
+12. `docs/ONE_SHOT_BUILD.md`
 
-## Skill routing
-- Umbrella/router: `game-studio`
-- Architecture/state: `web-game-foundations`
-- React runtime: `react-three-fiber-game`
-- UI/HUD/dialogue surfaces: `game-ui-frontend`
-- Optional 3D asset preparation: `web-3d-asset-pipeline`
-- Optional authored-room/Blender lane: `build-3d-game-rooms`
-- Browser QA/playtesting: `game-playtest`
+If an older office-era document, review, test, or evidence file conflicts with these, **these fantasy-reboot documents win**.
 
-Do not mix Phaser and Three.js/R3F implementations. The approved runtime direction is React + TypeScript + Vite + React Three Fiber/Three.js.
+## Design DNA to preserve
+- KQ III: learn routines, exploit or respect absence, plan around time.
+- KQ IV: revisit a world changed by dusk/night.
+- KQ VI: alternate routes, cross-location dependencies, remembered consequences.
+- Classic Sierra: readable scenes, inventory/object logic, fairy-tale humor, danger, surprise, and strong authored composition.
+- Modern correction: no arbitrary pixel hunting, no secret unwinnable states, no parser-guessing, no unfair dead-man-walking saves.
 
-## Visual architecture: hybrid 2.5D by default
-The browser does **not** need to render the entire office as detailed realtime 3D.
-
-Default production target:
-- authored fixed-camera background plates/layers;
-- walk/depth/occlusion data aligned to those plates;
-- realtime characters;
-- realtime interactive hero props only where useful;
-- realtime atmosphere/FX such as rain, monitor glow, light shifts;
-- DOM UI for dialogue and computer surfaces.
-
-Blender is an optional offline consistency tool, not a web-build dependency. Never assume that web ChatGPT Work has access to the user's local Blender installation. If Blender is unavailable, continue with concept art, layered 2.5D assets, browser runtime geometry, and explicit Blender-ready specifications rather than blocking the milestone.
+We copy principles, never copyrighted characters, maps, dialogue, art, or puzzle solutions.
 
 ## Non-negotiable creative rules
-- Never show a morality score during play.
-- Never label choices GOOD/BAD, HONEST/DISHONEST, etc.
-- Do not turn dilemmas into obvious menu quizzes when they can be enacted through the world.
-- Dishonest behavior may succeed in the short term.
-- Honest behavior may have real cost.
-- No secret unwinnable states.
-- No giant open world, combat, crafting, platforming, skill tree, or generic SaaS dashboard UI.
-- The scene should dominate the viewport.
-- Important puzzle objects must read visually; decorative clutter must not masquerade as interaction.
-- NPCs only know what they plausibly observed or were told.
+- No office, software engineering, QA, conference, corporate dashboard, task tracker, chat app, or workplace-simulator content in the live game.
+- No morality meter.
+- No GOOD/BAD choice labels.
+- Do not turn choices into questionnaires when the player can enact them in the scene.
+- Do not build a generic RPG: no combat system, levels, crafting tree, open world, stats, loot rarity, or skill tree.
+- Do not build a programming simulator or productivity interface.
+- World interaction and exploration must dominate.
+- Important objects must be visually readable without glowing loot outlines.
+- NPCs know only what they plausibly see, hear, infer, or are told.
+- Every core puzzle needs a fair clue, an intended insight, a recoverable wrong hypothesis, and at least one satisfying world response.
 
-## Definition of done for any milestone
-A milestone is complete only when:
-- its acceptance criteria pass;
-- the game boots;
-- existing behavior still works;
-- no severe console/runtime error remains;
-- representative states were actually exercised;
-- visual work was screenshot-reviewed;
-- puzzle work was tested for fairness, causality, aha, agency, integration, alternatives, and consequence.
+## Skill routing
+- Umbrella: `game-studio`
+- Architecture/state: `web-game-foundations`
+- React/R3F: `react-three-fiber-game`
+- UI/dialogue/inventory: `game-ui-frontend`
+- Browser QA: `game-playtest`
+- Optional 3D production: `web-3d-asset-pipeline`, `build-3d-game-rooms`
+
+## Visual architecture
+Hybrid 2.5D fixed/semi-fixed camera:
+- authored or procedural storybook background plates/layers;
+- walk/depth/occlusion data;
+- realtime player/NPCs;
+- selected realtime props;
+- atmosphere/FX;
+- sparse DOM dialogue/inventory/menu UI.
+
+Blender is optional offline tooling, never a blocker.
+
+## Definition of done
+The fantasy build is done only when:
+- the entire adventure is playable start-to-finish;
+- all core puzzles are solvable without design notes;
+- alternate routes and missed windows fail forward;
+- time/world-state changes matter;
+- save/reload preserves puzzle and schedule state;
+- no office-era content appears in normal play;
+- the game is unmistakably a fantasy graphical adventure even with provisional art;
+- browser tests exercise multiple materially different routes;
+- representative screenshots are reviewed;
+- no severe console/runtime errors remain.
