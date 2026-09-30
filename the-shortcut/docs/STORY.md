@@ -1,69 +1,195 @@
-# Story Bible — The Conference
+# Story Bible — The Moon Bell
 
 ## Logline
-Daniel, a talented but unreliable software engineer, arrives at work with an important feature unfinished. Minutes before stand-up, his manager reveals he is leaving for a conference. A small opportunity to shade the truth expands across one workday into copied code, ambiguous blame, private information, editable records, and a production incident that can expose what Daniel has done—or who he chooses to become.
 
-## Dramatic spine
-### 08:47 — Arrival
-Rain outside. Quiet office. Daniel sees Mark's message: the reconciliation feature must be ready today for a client demo Thursday. Stand-up is at 09:00.
+When a storm destroys the royal road, locksmith's apprentice Mara Vale is entrusted with the Sun Key and sent through the abandoned Briar Road to Castle Arden before moonrise. The road is shorter on maps and stranger in practice: shifting signs, old bargains, a hedge-witch's routine, moonlit machinery, and a sleeping troll turn one urgent errand into a fairy-tale adventure whose later obstacles remember how Mara solved the earlier ones.
 
-Purpose: teach exploration, clock, workstation, coworkers, and the fact that Daniel is behind.
+## Opening — 15:30
 
-### 09:00 — Stand-up
-Sarah finished her integration. Kevin is chasing an API bug. Maya is waiting for Daniel's build. Mark asks whether reconciliation is done.
+Rain has stopped.
 
-The player may speak plainly, shade the truth, redirect, or overstate progress. Lines must sound plausible rather than morally labeled.
+Bellkeeper **Aldus Reed** arrives injured at Vale Locksmith, having fallen when the royal coach road collapsed. He carries the Sun Key wrapped in blue wool.
 
-### 09:11 — Mark leaves
-Mark takes a suitcase and leaves for the airport. A subtle “Rush” presentation marks Daniel recognizing reduced oversight.
+He tells Mara:
+- the bridge on the royal road is gone;
+- the key must reach the Moon Bell before the ninth evening bell;
+- the old Briar Road is still marked on a courier stone;
+- "Do not lose the key."
 
-### 09:20–10:20 — The matching problem
-Daniel discovers the implementation is harder than expected. Sarah has solved a similar problem before. She follows a routine and leaves her workstation unattended for coffee.
+He does **not** lecture about all magical rules. The player discovers those.
 
-The player can ask Sarah, solve independently, or inspect her work. These paths must differ in time cost, relationship consequence, and later evidence.
+Mara's master has gone to help with flood damage, leaving Mara as the practical choice.
 
-### ~10:30 — QA failure
-Maya tests Daniel's build and finds a serious defect. A QA configuration changed recently, giving Daniel a plausible but wrong explanation. The player can diagnose the real issue, defer investigation, or steer Maya toward the wrong hypothesis.
+Starter items available in the shop/lane:
+- Sun Key;
+- spool of red locksmith's thread;
+- small brass hand mirror;
+- empty blue medicine bottle;
+- honey cake wrapped for supper.
 
-### ~12:00 — Private information
-Kevin leaves his workstation after asking Daniel for help. A private message preview from Sarah appears: “I probably shouldn't say this, but Mark told me…”
+The player may leave without taking every optional item. Required routes must remain recoverable.
 
-If the player opens it, they learn Mark considers Daniel talented but unreliable and may give Sarah the next project lead. This information should change the emotional meaning of the afternoon without becoming mandatory.
+## Act I — The road that is not there
 
-### ~13:30 — Evidence mismatch
-The feature finally works. Daniel can notice that stand-up claims, Git history, task status, QA upload time, and chat chronology do not fully align. Some records are editable; some are not. This creates a self-investigation puzzle.
+### Old Mill
 
-### ~14:20 — Production incident
-Production reconciliation totals become wrong. Initial evidence points toward Sarah's shared library. Careful investigation reveals Daniel misunderstood the library contract in his wrapper.
+The flood has torn away most of the footbridge.
 
-This is the story's central crisis.
+Miller **Bram Tallow** is fighting a jammed millwheel. The crossing has multiple solutions:
+- help Bram free the wheel and repair enough of the bridge;
+- manipulate the sluice and use briefly exposed stones;
+- wait for dusk ferry service.
 
-Possible enacted responses include:
-- tell the team immediately;
-- fix production first, then admit;
-- quietly fix and say nothing;
-- steer investigation toward Sarah's library;
-- ask Sarah privately;
-- roll back;
-- modify task records;
-- allow another person to absorb blame.
+Helping Bram makes him remember Mara later and may provide a rope scrap/favor. The sluice is faster but requires reading the mill's water marks. Waiting costs time but avoids the repair.
 
-No single menu should summarize these as moral options.
+### Briar Crossroads
 
-### ~16:10 — Mark returns online
-Mark: “Landed. How did everything go?”
+The signposts are enchanted and can point differently after each loop.
 
-This is the convergence point. His available questions and Daniel's possible answers depend on what Mark has heard, what logs show, and what coworkers believe.
+The stable clue is the old boundary oak/courier stone.
 
-### ~17:15 — Ending
-The office empties. The game reconstructs selected facts of the day and reports behavioral patterns without issuing a moral verdict.
+Using thread/chalk/observation lets the player prove the **signs move while the fixed landmark does not**. The insight, not possession of a checklist, opens the deeper route.
 
-Final Sarah elevator beat varies: gratitude, accusation, guarded “See you tomorrow,” silence, or another line supported by state.
+After dusk, moonmoths offer a slower visual fallback, so a player is never permanently trapped.
 
-Title: THE SHORTCUT.
+## Act II — Borrowed light
 
-## Tone
-Grounded, observant, slightly tense, occasionally dryly funny. Never melodramatic. The danger is social/professional and psychological, not physical.
+### Ysabet
+
+Hedge-witch **Ysabet Reed** is not an evil witch. She knows the old road better than anyone and has her own work.
+
+The deeper Whispering Hollow cannot be crossed reliably without a way to reveal true edges.
+
+Three broad routes:
+1. Ask Ysabet. She will lend the True-Path Lantern if Mara helps recover her silver hen, **Mallow**, from the ruined chapel.
+2. Learn Ysabet leaves to gather dusk-thyme around 17:30. If the cottage is left accessible, Mara can take/borrow the lantern without permission. The game does not label this choice.
+3. After dusk, make/use a glowjar from the blue bottle and fireflies. It is less powerful but enough for the Hollow.
+
+The lantern is useful later, so stealing it is a real shortcut, not a morality token.
+
+### Ruined Chapel
+
+The chapel contains:
+- Mallow the silver hen;
+- a faded mural of a moonbeam striking a round well through a polished disc;
+- a carved old-courier door beneath a castle wall;
+- a magpie nest with a polished moon-disc / mirror-like object if needed by current item state.
+
+Mallow can be coaxed with honey cake crumbs or gently cornered using scene geometry. No pixel hunt.
+
+If the player returns her, Ysabet lends the lantern willingly and may later provide Moonwater directly.
+
+## Act III — Dusk changes the road
+
+At 18:30 the palette and world state change:
+- fireflies appear;
+- moonmoths gather;
+- moonflowers open;
+- ferry begins;
+- the Crossroads gains an environmental fallback;
+- some inscriptions become readable.
+
+This should feel like revisiting the same world in a new state, not merely new buttons.
+
+### Moonwell
+
+Before dusk, the well appears dry and dormant.
+
+After 19:00, a moonbeam reaches the glade but misses the well basin.
+
+The player uses a reflective object and the three stone moon-rings to redirect the beam.
+
+The mural at the chapel supplies the fair clue. The scene itself supplies feedback.
+
+Successful alignment yields a small amount of **Moonwater**.
+
+Alternate route: if Mara helped Ysabet and returns after dusk, Ysabet can provide one vial, letting a relationship substitute for the mechanical puzzle without making the puzzle meaningless.
+
+## Act IV — The bridgekeeper
+
+### Brindle
+
+**Brindle Mossback**, an old bridge troll, sleeps beneath his bridge until 19:15.
+
+The gate key is visible near his nest, but taking it is only one route.
+
+Routes:
+1. Before he wakes, steal/use the key and cross.
+2. Wake or meet him and help free the bridge's thorn-swallowed toll bell using Moonwater. Brindle opens the gate and gives Mara a small **bridge charm**.
+3. If Mara has the stronger True-Path Lantern, reveal the old pilgrim ledge beneath the bridge and cross without involving him.
+
+If Mara stole the key and later meets Brindle, his reaction depends on what he plausibly sees/learns. There is no omniscient accusation.
+
+## Act V — Castle under moonrise
+
+At 20:30 the moon rises. Briars become visibly active around the old road.
+
+### Castle approach
+
+Before 21:00:
+- Captain **Sella Vane** is at the gate.
+- The Sun Key plus a plausible account of Aldus's errand gets Mara inside.
+- Extra proof/favors can shorten the exchange.
+
+After 21:00:
+- the main gate is barred;
+- the old courier postern from the chapel mural becomes the primary route;
+- True-Path light or careful inspection reveals the vine-hidden outline;
+- the Sun Key opens its ancient courier lock.
+
+No late arrival is a dead end.
+
+### Moon Bell Tower
+
+The final sequence is physical:
+1. reach the bell;
+2. insert the Sun Key into the sunburst yoke;
+3. release the bell;
+4. ring it.
+
+Earlier choices change this:
+- on-time arrival: the rope is usable;
+- late arrival: living briar binds part of the mechanism;
+- Moonwater or Brindle's charm can loosen/calm the briar;
+- a rope favor from Bram can repair a damaged pull if that state was triggered;
+- the True-Path Lantern can reveal the correct old release catch.
+
+The final puzzle should reward preparation without requiring every optional reward.
+
+## Ending
+
+The Moon Bell rings across Ardenfall.
+
+The camera/view lingers over locations the player crossed as the briar settles.
+
+A short epilogue varies based on supported facts:
+- Aldus receives the returned Sun Key;
+- Bram remembers whether Mara helped or simply passed;
+- Ysabet knows whether she lent the lantern, lost it, or never met Mara;
+- Brindle reacts to help, theft, or being bypassed;
+- Sella comments on arrival timing;
+- Mara may have arrived before the ninth bell, just after, or very late.
+
+No morality score and no "good/bad ending" label.
+
+The best ending presentation is **human/fairy-tale first, audit second**: a few specific callbacks, then optional expandable "Your path" details for replay curiosity.
 
 ## Branch-and-fold policy
-Major story beats converge, but state does not reset. Earlier actions alter who trusts whom, what evidence exists, what people know, dialogue phrasing, available solutions, and ending observations. Do not create exponentially separate universes.
+
+The story reconverges at:
+- entering deeper Briarwood;
+- reaching Moonwell region;
+- crossing Brindle's ravine;
+- reaching Castle Arden;
+- ringing the Moon Bell.
+
+Persistent route state never resets. Earlier solutions change later dialogue, available shortcuts, item possession, time pressure, and final callbacks.
+
+## Failure policy
+
+No secret unwinnable states.
+
+Wrong uses give informative feedback.
+Missed timed opportunities gain alternate routes.
+Late arrival changes the castle state rather than ending the game.
+The Sun Key cannot be lost permanently.
