@@ -1,0 +1,16 @@
+import {initialState,reduce,type State,type Action} from '../src/simulation/game';
+export type Step=Action|{type:'until';minute:number};
+const a=(id:string,verb:string,item?:string):Step=>({type:'interact',id,verb,item});
+const go=(to:State['location']):Step=>({type:'travel',to});
+const until=(minute:number):Step=>({type:'until',minute});
+const oak=[a('stone','Look'),a('oak','Mark'),a('left-path','Walk'),a('sign','Look')];
+const well=[a('socket','Use','mirror'),a('ring-1','Turn'),a('ring-2','Turn'),a('ring-2','Turn'),until(1140),a('basin','Fill')];
+const final=[a('yoke','Use','sun'),a('catch','Pull'),a('rope','Pull')];
+export const routes:Record<string,Step[]>={
+Helpful:[a('thread','Take'),a('mirror','Take'),a('bottle','Take'),a('cake','Take'),go('mill'),a('bram','Talk'),a('wheel','Pull'),a('capstan','Pull'),a('beam','Place'),a('beam','Secure'),a('span','Walk'),...oak,go('cottage'),a('ysabet','Talk'),go('crossroads'),go('chapel'),a('mural','Look'),a('mallow','Use','cake'),go('crossroads'),go('cottage'),a('ysabet','Use','hen'),a('lantern','Take'),go('crossroads'),a('right-path','Walk'),a('edge','Use','lantern'),a('hollow-path','Walk'),...well,go('bridge'),until(1155),a('brindle','Talk'),a('toll-bell','Use','water'),a('cross-bridge','Walk'),a('sella','Talk'),a('main-gate','Use','sun'),...final],
+Expedient:[a('mirror','Take'),go('mill'),a('gauge','Look'),a('sluice','Turn'),a('sluice','Turn'),a('stones','Walk'),...oak,go('chapel'),a('mural','Look'),go('crossroads'),go('cottage'),a('door','Look'),a('door','Open'),until(1050),a('lantern','Take'),go('crossroads'),a('right-path','Walk'),a('edge','Use','lantern'),a('hollow-path','Walk'),...well,go('bridge'),a('bridge-key','Take'),a('gate','Use','key'),a('cross-bridge','Walk'),until(1245),a('sella','Talk'),a('main-gate','Use','sun'),a('yoke','Use','sun'),a('catch','Use','lantern'),a('catch','Pull'),a('rope','Pull')],
+Late:[a('bottle','Take'),a('mirror','Take'),go('mill'),until(1110),a('ferry','Board'),go('chapel'),a('mural','Look'),go('crossroads'),a('moths','Follow'),a('fireflies','Use','bottle'),a('edge','Use','glowjar'),a('hollow-path','Walk'),...well,go('bridge'),a('toll-bell','Use','water'),a('cross-bridge','Walk'),until(1261),a('main-gate','Open'),a('vines','Look'),a('postern','Use','sun'),a('yoke','Use','sun'),a('briars','Use','water'),a('catch','Pull'),a('rope','Pull')],
+Minimal:[go('mill'),until(1110),a('ferry','Board'),go('cottage'),a('ysabet','Talk'),go('crossroads'),go('chapel'),a('mural','Look'),a('stones-hen','Place'),a('mallow','Approach'),go('crossroads'),go('cottage'),a('ysabet','Use','hen'),a('lantern','Take'),a('ysabet','Talk'),go('crossroads'),a('moths','Follow'),a('edge','Use','lantern'),a('hollow-path','Walk'),go('bridge'),a('ledge','Use','lantern'),a('ledge','Walk'),until(1262),a('vines','Use','lantern'),a('postern','Use','sun'),a('yoke','Use','sun'),a('catch','Use','lantern'),a('catch','Pull'),a('rope','Pull')]
+};
+export function apply(s:State,step:Step){if(step.type==='until'){while(s.minute<step.minute&&!s.finished)s=reduce(s,{type:'wait',minutes:Math.min(30,step.minute-s.minute)});return s;}return reduce(s,step);}
+export function run(name:string){return routes[name].reduce(apply,initialState());}
