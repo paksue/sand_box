@@ -1,50 +1,71 @@
-# Puzzle / Dependency Graph
+# Puzzle / World Graph — The Moon Bell
 
 ```mermaid
 flowchart TD
-    A[08:47 Arrival: unfinished feature] --> B[Gather truth before stand-up]
-    B --> C[09:00 Stand-up claim]
-    C --> D[09:11 Mark leaves]
-    D --> E{Matching problem}
-    E --> E1[Ask Sarah]
-    E --> E2[Solve from docs/data]
-    E --> E3[Observe Sarah schedule]
-    E3 --> E4[Inspect unattended workstation]
-    E1 --> F[Working build]
-    E2 --> F
-    E4 --> F
-    F --> G[QA failure]
-    G --> G1[Diagnose own defect]
-    G --> G2[Follow QA-config hypothesis]
-    G --> G3[Delay/deflect]
-    G1 --> H[Midday state]
-    G2 --> H
-    G3 --> H
-    H --> I{Private message opportunity}
-    I --> I1[Leave it alone]
-    I --> I2[Read it: learn Mark doubts reliability]
-    I1 --> J[Feature completion]
-    I2 --> J
-    J --> K[Timeline/evidence contradiction]
-    K --> L[14:20 Production incident]
-    L --> M{Technical investigation}
-    M --> M1[Identify wrapper contract bug]
-    M --> M2[Stop at false library hypothesis]
-    M --> M3[Ask others / gather more evidence]
-    M1 --> N{Social response}
-    M2 --> N
-    M3 --> N
-    N --> N1[Admit]
-    N --> N2[Fix first, admit later]
-    N --> N3[Fix quietly]
-    N --> N4[Allow/steer blame]
-    N --> N5[Rollback + disclose selectively]
-    N1 --> O[16:10 Mark returns online]
-    N2 --> O
-    N3 --> O
-    N4 --> O
-    N5 --> O
-    O --> P[17:15 Behavioral reconstruction + Sarah elevator beat]
+  A[15:30 Vale Locksmith: receive Sun Key] --> B{P1 Flooded Mill}
+  B --> B1[Help Bram + repair span]
+  B --> B2[Manipulate sluice + stepping stones]
+  B --> B3[Wait for dusk ferry]
+  B1 --> C[P2 Briar Crossroads]
+  B2 --> C
+  B3 --> C
+
+  C --> C1[Mark fixed oak / expose moving signs]
+  C --> C2[Late fallback: follow moonmoths]
+  C1 --> D[Crossroads hub]
+  C2 --> D
+
+  D --> E[Ysabet Cottage]
+  D --> F[Ruined Chapel]
+
+  E --> E1[Ask/help Ysabet]
+  E --> E2[Observe schedule / take lantern]
+  E --> E3[Late glowjar alternative]
+  F --> F1[Recover Mallow]
+  F --> F2[Learn Moonwell mural + courier postern]
+  F --> F3[Optional moon-disc / magpie interaction]
+
+  E1 --> G[P3 Whispering Hollow]
+  E2 --> G
+  E3 --> G
+
+  G --> H{P4 Moonwell after dusk}
+  H --> H1[Reflect beam + align moon-rings]
+  H --> H2[Ysabet favor: receive Moonwater]
+
+  H1 --> I{P5 Brindle Bridge}
+  H2 --> I
+
+  I --> I1[Sleeping: use visible key]
+  I --> I2[Awake: free toll bell with Moonwater]
+  I --> I3[True-Path lantern reveals pilgrim ledge]
+
+  I1 --> J[Castle approach]
+  I2 --> J
+  I3 --> J
+
+  J --> K{Before 21:00?}
+  K -->|yes| K1[Main gate / Captain Sella]
+  K -->|no| K2[Old courier postern]
+
+  K1 --> L[P6 Moon Bell Tower]
+  K2 --> L
+
+  L --> M[Use Sun Key + resolve current mechanism state]
+  M --> N[Ring Moon Bell]
+  N --> O[Epilogue callbacks + optional path summary]
 ```
 
-The graph folds at major dramatic beats, but persistent state carries forward. Reconvergence must never erase meaning.
+## Structural rule
+
+The graph folds at major landmarks, but solution history remains meaningful:
+- time;
+- inventory;
+- permission;
+- favors;
+- witnessed actions;
+- NPC memories;
+- which clues were discovered;
+- world phase.
+
+No reconvergence may silently erase those.
