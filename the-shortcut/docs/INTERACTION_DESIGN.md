@@ -1,49 +1,118 @@
-# Interaction Design
+# Interaction Design — Fantasy Adventure
 
-## Principle
-Whenever possible, the player should enact a decision rather than answer a questionnaire about it.
+## Primary rule
 
-Bad: “Do you read the private message? YES / NO.”
-Better: the notification is visible; Kevin is away; the player may approach, click, back away, or do something else.
+The player interacts with the **scene**, not a global task menu.
 
-## Interaction vocabulary
-Walk, inspect/look, talk, use/open, read, operate computer, wait. Contextual actions may appear, but avoid giant radial/action menus.
+Default loop:
+1. walk;
+2. notice;
+3. click/tap or keyboard-focus a nearby visible object/person;
+4. choose a small contextual verb only when needed;
+5. see immediate world feedback.
 
-## Object contract
-Every significant interactable defines:
-- visual affordance;
-- first-look response;
-- deeper inspection;
-- available actions;
-- prerequisites;
-- state changes;
-- NPC witnesses;
-- sound/animation feedback;
-- later consequences.
+## Normal verbs
 
-## Example — Sarah's workstation
-Look: identify IDE, matching-code context, personal objects.
-Use: Daniel approaches/sits if state allows.
-Inspect screen: unlocked session only if schedule/state supports it.
-Open relevant code: grants technical knowledge/evidence.
-Copy/adapt: changes implementation-provenance state.
-Back away: valid and consequence-free.
-Sarah returns while engaged: new event based on what was visible and how long Daniel lingered.
+Look, Talk, Take, Use, Give, Open, Pull, Turn, Place, Pour, Light, Wait.
+
+Do not show all verbs at all times. A direct click can perform the obvious low-risk action (look/talk); deeper actions appear contextually.
+
+## Exploration
+
+- fixed/semi-fixed composed views;
+- click-to-move;
+- clear exits;
+- modest transition time;
+- no global "Nearby interactions" list containing the entire game;
+- no minimap required for this POC.
+
+Optional accessibility/hotspot reveal:
+- highlights only currently visible/currently present interactables;
+- uses scene-local spatial order;
+- must not reveal hidden routes, absent NPCs, or solution names.
+
+Keyboard/screen-reader path must use the same scene-local availability rules as pointer play.
+
+## Inventory
+
+Compact horizontal/vertical inventory tray on demand.
+
+Selecting an item changes cursor/prompt to "use [item] with..." until canceled.
+
+Reasonable wrong uses should get authored feedback.
+
+No inventory crafting grid. Any combination (e.g. glowjar) should happen through an obvious scene interaction or one direct item-on-item use.
 
 ## Dialogue
-Reveal character, evidence, pressure, and relationships. Avoid exposition dumps. Choices are natural utterances, not moral labels. Conversations may be interrupted by schedules/world events. NPC wording depends on knowledge state.
 
-## Movement
-Click-to-move with fixed/semi-fixed camera. Walking should be pleasant but not tedious. Scene transitions should feel cinematic and fast.
+Dialogue is brief and characterful.
 
-## Computer mode
-The workstation is a playable puzzle surface, not a fake screenshot. Apps include chat, email, task tracker, source history, code/test/log views. Records differ in editability and evidentiary weight.
+Use natural utterances only when a response choice genuinely matters. Do not present morality labels.
 
-## Feedback
-Use animation, sound, glance behavior, pauses, and world response. Avoid toast-notification spam.
+NPCs can:
+- refuse;
+- offer a task;
+- remember promises;
+- interrupt because of schedule;
+- notice visible inventory/actions.
 
-## Rush presentation
-When Daniel notices an exploitable opportunity: subtle audio shift, small visual/timing emphasis, optional internal thought. No numeric reward and no “temptation” label.
+Conversations should not solve puzzles by simply stating the answer unless player requested the third-rung hint.
+
+## Time and waiting
+
+The current time is subtle, not a dominant HUD element.
+
+"Wait" should state the next notable observable change if Mara plausibly knows it, e.g.:
+- wait until dusk;
+- wait a little while.
+
+Do not expose hidden schedules as exact optimization data unless learned from dialogue/signage.
+
+Reading inventory/journal/pause screens pauses time.
+
+## Scene-state changes
+
+Revisiting matters.
+
+Examples:
+- mill water level differs after sluice action;
+- Crossroads signs change after a loop;
+- Ysabet is absent/present;
+- moonflowers open at dusk;
+- Brindle sleeps/wakes;
+- castle gate closes at ninth bell;
+- briar growth intensifies after moonrise.
+
+These changes should be visible before they are textual.
+
+## Journal
+
+Optional lightweight journal records:
+- quest objective;
+- things Mara has personally learned;
+- optional hints requested.
+
+Do not turn it into a checklist of undiscovered puzzle steps.
+
+## Saving
+
+Autosave plus manual save.
+Restoring must preserve:
+- time;
+- location;
+- inventory;
+- world phase;
+- NPC schedules/memory;
+- puzzle state;
+- witnessed actions;
+- item locations.
 
 ## Accessibility
-Keyboard equivalents for critical interactions, readable dialogue sizing, reduced-motion support, subtitles for meaningful audio, and contrast that preserves style.
+
+- keyboard parity;
+- readable dialogue;
+- touch-friendly hotspots;
+- reduced motion;
+- subtitles for meaningful audio;
+- scene-local hotspot reveal;
+- no puzzle depends solely on color or sound.
