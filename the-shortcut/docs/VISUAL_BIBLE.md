@@ -1,84 +1,137 @@
-# Visual Bible
+# Visual Bible — The Moon Bell
 
 ## North Star
-“A lost 1993 Sierra CD-ROM adventure, beautifully remastered in 2026.”
 
-Not pixel-art parody, photorealistic office simulator, generic low-poly indie office, SaaS dashboard with a 3D background, or CRT/VHS nostalgia filter.
+**"A lost 1993 Sierra fairy-tale CD-ROM adventure, beautifully remastered in 2026."**
 
-## Default visual production architecture
-Use a **hybrid 2.5D fixed-camera pipeline**.
+The player should immediately see **fantasy**, not an office or generic 3D tech demo.
 
-The goal is authored-image quality first, realtime rendering second.
+## Reference principles
 
-Preferred scene layers:
-1. high-quality authored/painterly background plate;
-2. optional depth/occlusion/foreground layers;
-3. hidden/lightweight walk geometry and hotspot anchors;
-4. realtime Daniel/NPC characters;
-5. realtime hero props only where interaction benefits;
-6. realtime atmosphere/FX such as rain, monitor glow, light transitions;
-7. DOM UI.
+Draw from the craft of King's Quest III–VI:
+- theatrical fixed-camera rooms;
+- environment larger than protagonist;
+- strong foreground/midground/background;
+- painterly storybook detail;
+- readable exits and puzzle props;
+- whimsical-but-grounded fairy-tale architecture;
+- dramatic day-to-night palette shifts.
 
-Do not force every wall, desk, and decoration to remain fully realtime 3D if a fixed-camera rendered/art-directed plate produces a substantially better image.
+Do not copy any copyrighted KQ scene, character, castle, map, puzzle, or asset.
 
-## Camera
-- fixed or semi-fixed three-quarter cinematic views;
-- roughly 30–40° elevation as a starting language;
-- natural perspective rather than extreme isometric flattening;
-- restrained 35–50mm-equivalent lens feel;
-- camera movement only for staging, transitions, or emotional emphasis.
+## Runtime visual strategy
 
-## Composition doctrine
-Every authored view needs foreground framing, a readable player/NPC action plane, architectural depth, one dominant focal hierarchy, clear traversable space, and important interactables that read without glowing like loot.
+Hybrid 2.5D:
+1. authored/procedural background plate;
+2. optional foreground occlusion;
+3. hidden walk/depth data;
+4. realtime Mara/NPCs;
+5. selected realtime puzzle props;
+6. atmosphere particles/lighting;
+7. sparse DOM dialogue/inventory.
 
-The environment dominates the frame; characters remain readable but not oversized.
+For the one-shot build, provisional art may use:
+- layered SVG/canvas/Three geometry;
+- gradients;
+- hand-authored silhouettes;
+- simple low-poly props;
+- procedural foliage;
+- restrained textures.
 
-## Art language
-Painterly, authored, storybook-like scene treatment supported by controlled geometry where useful. Favor coherent lighting, material language, silhouette, texture, and composition over polygon count.
+It must still read unmistakably as a fairy-tale world.
 
-## Art-generation workflow
-1. Build a KQ III–VI reference board.
-2. Generate multiple concept directions.
-3. Select one approved visual North Star.
-4. Lock camera and room composition.
-5. Produce a structural scene source:
-   - Blender if available/appropriate, or
-   - browser/Three.js blockout plus explicit layout data if Blender is unavailable.
-6. Render/export a clean structural image.
-7. Refine toward the approved painterly target with controlled image editing/generation.
-8. Compare with North Star and KQ reference board.
-9. Reject drift.
-10. Export final scene layers plus masks/anchors needed by runtime.
+## Scene palette progression
 
-AI image generation is an art-direction/refinement tool, not permission to regenerate every scene independently from text.
+### Late afternoon
+Honey gold, warm stone, wet greens, silver river.
 
-## Blender lane
-Blender is optional but valuable for:
-- consistent perspective;
-- repeated camera views;
-- exact architecture;
-- character scale;
-- lighting variants;
-- depth and occlusion;
-- spatial anchors;
-- reusable structural exports.
+### Golden hour
+Amber highlights, long blue-green shadows.
 
-Blender is **not required for Milestones 01–03** and must not block web Astra work. If used later, its outputs are production assets/specifications consumed by the browser game.
+### Dusk
+Rose-violet sky, deepening forest greens, first firefly lights.
 
-## Time-of-day palette
-Morning: warm ivory, muted teal, rain-softened gold.
-Midday: cooler corporate whites, glass blues.
-Afternoon: longer shadows, warmer edges.
-After-hours: deep navy, isolated fluorescents, monitor pools, reflective rain.
+### Moonrise
+Indigo, silver-blue moonlight, pale cyan magical accents, warm window lanterns.
 
-## Hero scene
-The developer bullpen is the visual benchmark and must reach near-final quality before style propagates. Required: rain/window depth; Daniel/Sarah/Kevin readable; Sarah's workstation identifiable but not screaming “quest item”; warm/cool contrast; uncluttered navigation; foreground silhouette framing; lived-in detail without random AI clutter.
+### Late
+Deep navy, stronger silver rim light, visible briar silhouettes.
+
+## Scene composition targets
+
+### Village lane
+Workshop foreground keys/doorframe; washed road vista; distant castle.
+
+### Mill
+Large wheel as focal mechanism; diagonal river; broken crossing clearly readable.
+
+### Crossroads
+Three paths framed by crooked trunks; signposts central but not UI-like; stable oak visually distinct.
+
+### Ysabet cottage
+Storybook crooked roof, herb bundles, lantern visible but not glowing quest-item style.
+
+### Chapel
+Ivy arches, broken roof, moon mural in side wall, magpie movement.
+
+### Moonwell
+Circular composition; moonbeam becomes strong visual line after dusk.
+
+### Brindle bridge
+Bridge spans deep ravine; troll silhouette under arch; thorn-swallowed toll bell visible.
+
+### Castle approach
+Castle dominates distance; main gate and vine-hidden postern share composition without making secret obvious.
+
+### Bell tower
+Hero vista. Bell fills upper frame, Mara small below, valley and moon beyond.
+
+## Character style
+
+Painterly/stylized proportions with readable silhouettes.
+
+Mara:
+- travel cloak;
+- locksmith satchel;
+- practical boots;
+- warm red/russet accent for readability against green/blue world.
+
+Ysabet:
+- layered herbalist clothing;
+- no Halloween-witch stereotype.
+
+Brindle:
+- massive but gentle-looking moss/stone textures.
+
+Sella:
+- practical storm-duty armor, not ornate battle fantasy.
 
 ## UI
-Normal exploration shows almost no chrome: compact time/status only if needed, transient interaction prompt, dialogue only during dialogue, inventory/journal on demand. Computer mode is deliberately full-screen and convincing.
 
-## Character consistency
-Approve shared-style character sheets before final character production: front, profile, 3/4, clothing/material palette, silhouette, facial/pose language. Reuse approved references; do not independently regenerate characters from text for each scene.
+Exploration: minimal chrome.
 
-## Visual QA
-Compare focal point, character scale, depth separation, color hierarchy, path readability, interactives, clutter, HUD obstruction, and emotional time-of-day read. A technically correct scene fails if it looks like a default asset pack.
+Dialogue: lower-third or compact storybook panel.
+
+Inventory: simple illustrated/object slots.
+
+No SaaS panels, tabs, developer consoles, task lists, chat windows, or computer-app metaphors in normal play.
+
+Debug tools may remain hidden behind explicit Debug mode.
+
+## Audio direction
+
+Even if only placeholders:
+- river/mill creak;
+- forest birds and distant wood knocks;
+- cottage kettle/herb rustle;
+- dusk insects/fireflies;
+- low magical hum at Moonwell;
+- troll snore/bridge groan;
+- distant bell/castle wind;
+- final Moon Bell resonance.
+
+## Visual acceptance
+
+A screenshot with UI hidden must be recognizable as a fantasy adventure scene within one second.
+
+If a screenshot could plausibly be mistaken for an office prototype, dashboard, or generic dev graybox, it fails.
