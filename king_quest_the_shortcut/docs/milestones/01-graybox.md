@@ -1,5 +1,7 @@
 # Milestone 01 — Architecture + Graybox Skeleton
 
+> **Historical office-prototype milestone — superseded.** Retained as project history only; do not use as current game or renderer direction. See [`../README.md`](../README.md).
+
 ## Goal
 Create a client-side project that boots and proves the core architectural boundaries without attempting final art.
 

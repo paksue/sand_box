@@ -1,104 +1,49 @@
-# Technical Architecture — Fantasy Reboot
+# Technical Architecture — The Moon Bell
 
-## Deployment
-Client-side static GitHub Pages game. No runtime secrets, backend, database, or auth.
+## Current runtime
 
-## Runtime stack
-- React
-- TypeScript
-- Vite
-- React Three Fiber + Three.js
-- DOM overlays for dialogue/inventory/settings/debug
-- localStorage for save
-- GLB/glTF only when useful
+The game is a client-side React, TypeScript, and Vite application. Its current scene renderer uses a 1000×650 SVG viewBox with painted WebP environment plates, state-driven SVG props and characters, and CSS/DOM interface elements. Vale Locksmith also uses a directional Mara sprite atlas and a presentation-only movement layer. The other nine rooms use the earlier scene interaction and character presentation.
 
-## Core rule
-Simulation state is authoritative. Rendering never owns puzzle truth.
+Three.js and React Three Fiber are listed in `package.json`, but the current `src/` renderer does not use them. Describe the system that runs today; do not infer architecture from installed dependencies.
 
-## Recommended boundaries
+## Runtime boundaries
 
-```
-simulation/
-  clock
-  location/world phase
-  inventory + item provenance
-  NPC schedules
-  NPC memory/knowledge
-  puzzle state P1-P6
-  ordered event log
-  save serialization
+Simulation state is authoritative. Rendering, animation, and UI do not own puzzle truth.
 
-render/
-  scene compositor
-  camera
-  walk/depth/occlusion
-  realtime characters
-  puzzle props
-  atmosphere/lighting
-  interaction adapters
+| Area | Responsibility |
+| --- | --- |
+| `src/simulation/` | Deterministic clock and phase changes, inventory/provenance, puzzle rules P1–P6, schedules, memories, event history, save/restore. |
+| `src/content/` | Location and hotspot definitions, world content, opening-scene walk boundaries. |
+| `src/render/` | Painted plate composition, registered visual/hotspot anchors, state-driven props and actors, scene interactions. |
+| `src/ui/` | Opening-scene cursor/movement experience, dialogue, inventory, journal, menus, and accessible controls. |
+| `public/art/` | Painted environment plates, actor atlases, and authored item sprites. |
 
-ui/
-  dialogue
-  inventory
-  journal/hints
-  menus/settings
-  accessibility
-  hidden debug tools
-
-content/
-  locations
-  characters
-  schedules
-  dialogue
-  puzzle definitions
-  item definitions
-  story events
-```
+Keep presentation time separate from simulation time. A walk or action animation must not advance the puzzle clock independently of its existing reducer action.
 
 ## Scene model
-Each location defines:
-- id;
-- exits and destination;
-- walkable bounds/nav data;
-- hotspot anchors;
-- phase variants;
-- NPC presence;
-- interactable state;
-- camera/composition metadata.
 
-Travel costs time and processes phase/schedule boundaries.
+Each room has a painted composition and registered scene anchors. The renderer layers the current room plate, applicable time-of-day artwork, live props and actors, and interaction targets. Puzzle state and schedules determine which elements appear and what actions do.
 
-## Time
-Deterministic game clock from 15:30 onward.
+When adjusting art, register the clickable target to the same composition as its visible object. Preserve simulation IDs, exit behavior, walkable bounds, keyboard access, and responsive scaling. Avoid adding scene-local geometry or effects that obscure puzzle clues.
 
-Meaningful actions and travel consume authored minutes.
-Reading/menu surfaces pause time.
-Waiting advances to a known/selected observable moment.
-Crossing a boundary fires world-state changes exactly once.
+## Time and world state
 
-## Inventory
-Serializable item state with provenance/permission where relevant.
-Sun Key cannot be discarded into an unwinnable state.
+The deterministic game clock begins at 15:30. Meaningful actions and travel consume authored minutes. Reading and menus pause time. Crossing schedule and phase boundaries updates the world through the simulation; boundary events should fire once and remain consistent after save/restore.
 
-## Events
-Prefer declarative condition/effect events.
-Maintain an ordered event log for epilogue and debugging.
+## Inventory and events
 
-## Save
-New fantasy schema version. Old office saves may be invalidated cleanly rather than migrated semantically.
+Inventory is serializable and preserves item location and provenance where relevant. Important quest items cannot be lost into an unwinnable state. Ordered events support NPC knowledge and the epilogue; do not replace that history with a generic morality score.
 
-## Debug
-Hidden debug tools:
-- jump time;
-- jump location;
-- inspect inventory;
-- inspect NPC schedule/memory;
-- inspect puzzle states;
-- inspect event log;
-- force phase;
-- export state.
+## Saves
 
-Debug controls never appear as normal fantasy UI.
+The current local save schema is `the-shortcut:moon-bell:v2`, stored in browser local storage. A browser save belongs to its origin, so saves from the previous GitHub Pages origin do not automatically appear on the ChatGPT Sites origin.
 
-## Performance
-Buy visual quality through fixed-camera composition, layered plates, selective geometry, and restrained effects before adding heavy 3D complexity.
+## Hosting
+
+ChatGPT Sites serves the static Vite output from `dist/`. Asset paths must work from the Site origin. The runtime requires no backend, database, authentication, or secret key. The separate GitHub source copy is not a deployment target.
+
+## Debugging and performance
+
+Debug controls may expose time, location, inventory, schedules, puzzle state, events, or serialized state only through an explicit debug path; they must not appear as normal fantasy UI.
+
+The scenes are fixed-composition illustrated rooms. Improve readability through painting, staging, carefully registered actors/props, and restrained phase effects before introducing a new rendering engine or heavier real-time geometry.

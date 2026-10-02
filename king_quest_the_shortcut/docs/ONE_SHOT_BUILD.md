@@ -1,5 +1,7 @@
 # ONE-SHOT BUILD BRIEF — The Shortcut: The Moon Bell
 
+> **Historical conversion brief — completed and superseded.** This brief describes the earlier office-prototype-to-fantasy conversion. Do not use it as a current implementation task or renderer specification. Follow [`../AGENTS.md`](../AGENTS.md) and the active-document index in [`README.md`](README.md).
+
 ## Mission
 In one implementation pass, transform the existing office prototype into a complete playable fantasy graphical adventure.
 

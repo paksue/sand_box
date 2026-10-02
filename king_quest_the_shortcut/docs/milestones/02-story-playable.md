@@ -1,5 +1,7 @@
 # Milestone 02 — Full Story Playable in Graybox
 
+> **Historical office-prototype milestone — superseded.** Retained as project history only; its workplace story and schedule are not part of the fantasy game. See [`../README.md`](../README.md).
+
 ## Goal
 Make the complete 08:47–17:15 story playable with placeholder visuals.
 

@@ -1,23 +1,40 @@
 # The Shortcut: The Moon Bell
 
-An original client-side fantasy graphical adventure. Imported from `paksue/sand_box`, branch `sites/the-shortcut-moon-bell`, commit `a8f1cf4173613330c7746d4ef7b9aa244d01a4ad`.
+An original Sierra/King’s Quest-inspired fantasy graphical adventure. The imported simulation and story remain intact: Mara travels through ten locations, solves six connected puzzles through alternate routes, meets NPCs whose schedules and memories respond to her actions, and carries those choices into the fairy-tale ending.
 
-The deterministic simulation, P1–P6, inventory provenance, NPC memories, alternate routes, local saves and epilogue are retained. ChatGPT Sites is the live build workspace. The GitHub migration branch remains a frozen reference; this project does not push changes back there.
+## Current state
+
+The Checkpoint 4 paintings and phase artwork are integrated into the playable game. Recorded migration and route QA is summarized in [`evidence/sites/ACCEPTANCE.md`](evidence/sites/ACCEPTANCE.md). The current interface and animation work focuses on the opening Vale Locksmith scene; the other nine rooms retain their earlier controls. See [`evidence/village-v2/REVIEW.md`](evidence/village-v2/REVIEW.md) for the latest opening-screen changes and recorded checks.
+
+The ChatGPT Sites checkout is the working source and its preview remains private. The GitHub folder `paksue/sand_box/king_quest_the_shortcut` is a source-only reference copy; it is not deployed with GitHub Pages. See [`SITES_MIGRATION.md`](SITES_MIGRATION.md) for the original migration contract and its status.
 
 ## Play
 
-Click the ground to move Mara. Click an object to look, then choose a contextual action. Select an item in the Satchel and click its target. Tab/Enter/Space activate the same scene objects. I opens the Satchel; H reveals currently visible hotspots and a touch-friendly scene-object strip. Escape closes panels or cancels item use. Reading does not advance the clock. Menu contains Save, Restore and New adventure.
+In the opening village, choose Walk, Look, Hand, or Talk, then click the scene. Mara walks to people and objects before acting. Use keys 1–4 or right-click to cycle cursors; arrow keys move her. F10 reveals the compact toolbar, I opens the satchel, H reveals visible objects, Tab/Enter activate scene objects, and Escape cancels or closes. Select a satchel item to use it on a scene object.
 
-Local browser saves use the preserved `the-shortcut:moon-bell:v2` schema. A save on the old GitHub Pages origin is separate from the new Site origin.
+In the other rooms, click the ground to move; click an object to look and open any available contextual actions. I opens the satchel, H reveals visible hotspots, and Escape closes or cancels. Reading and menus pause the game clock.
+
+Saves are local to the browser and use the preserved `the-shortcut:moon-bell:v2` schema. A save from the old GitHub Pages origin is separate from a save on the Site origin.
 
 ## Develop and validate
 
-`npm ci`, `npm run dev`, `npm run build`, `npm test`.
+```sh
+npm ci
+npm run dev
+npm run build
+npm test
+```
 
-`CHROMIUM_PATH=/path/to/chromium node --import tsx tests/sites-browser.ts` runs the production browser suite with a local static server in the same process. It exercises four UI routes, schedules, save/reload, artwork loading and responsive layouts.
+The production browser suite can be run with:
 
-Paintings live in `public/art/`. State-dependent actors/props and phase lighting live in `src/render/`; `layout.ts` registers visual/hotspot anchors to each plate without changing the simulation. `evidence/sites/` contains fresh fantasy evidence.
+```sh
+CHROMIUM_PATH=/path/to/chromium node --import tsx tests/sites-browser.ts
+```
 
-## Sites hosting
+It exercises the four major route styles, schedule and save boundaries, artwork loading, and responsive layouts. For recorded results and limitations, see [`docs/QUALITY_GATES.md`](docs/QUALITY_GATES.md).
 
-`.openai/hosting.json` binds this source to the owner-private Site. Vite builds portable relative asset paths into `dist/`; Sites serves that directory as static assets. No backend, database, runtime keys or in-game accounts.
+Painted environments and actor art live in `public/art/`. `src/render/layout.ts` registers scene artwork and hotspots together. Simulation rules live under `src/simulation/`; current rendering and interface details are summarized in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). The full documentation map is [`docs/README.md`](docs/README.md).
+
+## ChatGPT Sites hosting
+
+`.openai/hosting.json` binds this source to the private Site. Vite builds portable relative asset paths into `dist/`, which Sites serves as static assets. The game has no backend, database, runtime keys, or in-game accounts.

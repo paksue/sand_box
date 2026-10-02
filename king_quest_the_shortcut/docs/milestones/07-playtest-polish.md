@@ -1,5 +1,7 @@
 # Milestone 07 — Blind Playtest + Polish
 
+> **Historical office-prototype milestone — superseded.** Its old acceptance targets describe a different game. Current acceptance criteria are in [`../QUALITY_GATES.md`](../QUALITY_GATES.md); see [`../README.md`](../README.md) for current project direction.
+
 ## Goal
 Make the POC feel complete rather than merely functional.
 

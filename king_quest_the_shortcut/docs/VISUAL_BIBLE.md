@@ -21,24 +21,17 @@ Do not copy any copyrighted KQ scene, character, castle, map, puzzle, or asset.
 
 ## Runtime visual strategy
 
-Hybrid 2.5D:
-1. authored/procedural background plate;
-2. optional foreground occlusion;
-3. hidden walk/depth data;
-4. realtime Mara/NPCs;
-5. selected realtime puzzle props;
-6. atmosphere particles/lighting;
-7. sparse DOM dialogue/inventory.
+### Current implementation
 
-For the one-shot build, provisional art may use:
-- layered SVG/canvas/Three geometry;
-- gradients;
-- hand-authored silhouettes;
-- simple low-poly props;
-- procedural foliage;
-- restrained textures.
+The game uses illustrated fixed-composition environments, not a real-time 3D room renderer:
 
-It must still read unmistakably as a fairy-tale world.
+1. Ten painted WebP room plates are integrated in `public/art/`.
+2. Eight revisitable outdoor scenes have painted night plates; Castle and Tower use their authored later-phase paintings.
+3. Registered SVG layers show state-driven objects, characters, lighting effects, and foreground occlusion over the artwork.
+4. Vale Locksmith uses Mara’s directional and action sprite atlas, perspective scale, and walk boundary. The other nine rooms retain the earlier character presentation.
+5. Dialogue, inventory, and menus use sparse DOM panels.
+
+The original migration checkpoint’s provisional-art phase is complete. Do not describe the current environments as provisional or plan a replacement renderer from the old one-shot brief. Improve composition and readability within the existing painted-plate/SVG approach unless a task explicitly approves a broader architecture change.
 
 ## Scene palette progression
 
@@ -108,7 +101,7 @@ Sella:
 
 ## UI
 
-Exploration: minimal chrome.
+Exploration: minimal chrome, with the painted scene as the focus. At Vale Locksmith, use the current Walk / Look / Hand / Talk bar, compact action cursor, and physical approach before interaction. This design currently applies to that opening screen only; the remaining rooms use the earlier contextual-action interface.
 
 Dialogue: lower-third or compact storybook panel.
 
@@ -118,9 +111,9 @@ No SaaS panels, tabs, developer consoles, task lists, chat windows, or computer-
 
 Debug tools may remain hidden behind explicit Debug mode.
 
-## Audio direction
+## Future audio direction
 
-Even if only placeholders:
+Audio is not implemented in the current playable build. The following sounds are ideas for a later pass:
 - river/mill creak;
 - forest birds and distant wood knocks;
 - cottage kettle/herb rustle;

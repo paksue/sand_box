@@ -1,5 +1,7 @@
 # Audio Direction — The Moon Bell
 
+**Status: future direction.** The current playable build does not implement music, ambience, or interaction sounds. This document describes a possible later audio pass.
+
 Audio should sell a living fairy-tale world.
 
 ## Ambient beds

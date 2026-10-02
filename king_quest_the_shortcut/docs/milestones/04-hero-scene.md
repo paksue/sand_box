@@ -1,5 +1,7 @@
 # Milestone 04 — Hero Visual Scene
 
+> **Historical office-prototype milestone — superseded.** Its developer-bullpen scene, characters, and R3F assumptions are not current direction. See [`../README.md`](../README.md).
+
 ## Goal
 Bring the developer bullpen to near-final art quality before propagating style.
 

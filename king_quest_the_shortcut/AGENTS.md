@@ -1,91 +1,46 @@
-# AGENTS.md — The Shortcut: The Moon Bell
+# Project directions — The Shortcut: The Moon Bell
 
-This directory now contains an **original fantasy graphical-adventure game** inspired by the design craft of Sierra's King's Quest III–VI.
+## Product and current focus
 
-## Absolute creative directive
+This is an original Sierra/King’s Quest-inspired fantasy graphical adventure. Preserve the imported game; do not rebuild it from scratch or replace its story and systems.
 
-**THE SHORTCUT IS A FANTASY ADVENTURE GAME FIRST.**
+- Title: **The Shortcut: The Moon Bell**.
+- The complete game has ten locations, Mara, inventory, deterministic time and world phases, NPC routines and memories, puzzles P1–P6, four major route styles, save/restore, and a fairy-tale epilogue.
+- The ten painted environments and phase artwork are integrated into the playable game.
+- The current design focus is the opening, Vale Locksmith: make it feel more like a classic PC graphical adventure through its scene composition, small animated protagonist, physical movement, and selectable action cursors.
+- That King’s Quest-inspired cursor and movement redesign currently applies to the opening screen only. Preserve the existing interaction model in the other nine locations unless a later task explicitly expands the redesign.
+- Take the craft as inspiration. Do not copy Sierra art, characters, maps, dialogue, or puzzle solutions.
 
-The workplace prototype ("The Conference") is obsolete creative content. It may remain in Git history and old evidence/review files, but it is **not** a source of story, characters, locations, puzzles, tone, UI, or art direction.
+## Source and hosting
 
-Do not reskin office mechanics with medieval nouns. Build an actual fairy-tale adventure: physical places, exploration, inventory, NPC routines, magic with understandable rules, revisiting changed locations, alternate solutions, environmental clues, and consequences enacted through the world.
+- The ChatGPT Sites checkout is the working source for the playable Site. Its preview must remain private unless the owner asks to publish it publicly.
+- The GitHub folder `paksue/sand_box/king_quest_the_shortcut` is a source copy for reference. It is not the live Site source and must not be configured for GitHub Pages deployment.
+- Do not sync to GitHub or publish the Site as part of an unrelated task. Follow the owner’s explicit instruction for each external update.
+- The game is client-side. Do not add an account system, backend, database, runtime secrets, or unrelated product features.
 
-## Product
-- Title: **The Shortcut: The Moon Bell**
-- Client-side-only browser game.
-- Host: ChatGPT Sites, owner-private during migration review. GitHub is a frozen migration reference.
-- Target playtime: roughly 35–55 minutes for a first successful run.
-- One complete story, beginning to ending.
-- Runtime: React + TypeScript + Vite + React Three Fiber/Three.js.
-- No backend, database, authentication, or runtime secret keys.
-- Current office implementation may be refactored aggressively at the content/UI layer.
-- Preserve useful engine foundations: deterministic time, save/versioning, simulation/render separation, NPC knowledge, schedules, branch-and-fold state, browser QA.
+## Read current direction
 
-## Required reading order
-1. `docs/VISION.md`
-2. `docs/WORLD.md`
-3. `docs/STORY.md`
-4. `docs/CHARACTERS.md`
-5. `docs/ITEMS_MAGIC.md`
-6. `docs/PUZZLE_DESIGN.md`
-7. `docs/PUZZLE_GRAPH.md`
-8. `docs/INTERACTION_DESIGN.md`
-9. `docs/STATE_MODEL.md`
-10. `docs/VISUAL_BIBLE.md`
-11. `docs/QUALITY_GATES.md`
-12. `docs/ONE_SHOT_BUILD.md`
+Start with [`docs/README.md`](docs/README.md), which identifies active specifications, historical records, and current evidence. Then read `README.md` and the active documents relevant to the task. For the opening-screen interaction and animation, read `docs/INTERACTION_DESIGN.md` and the latest review at `evidence/village-v2/REVIEW.md`.
 
-If an older office-era document, review, test, or evidence file conflicts with these, **these fantasy-reboot documents win**.
+Do not use office-era briefs, milestones, or reviews as implementation instructions. They are retained only as project history; the office prototype is not part of this game.
 
-## Design DNA to preserve
-- KQ III: learn routines, exploit or respect absence, plan around time.
-- KQ IV: revisit a world changed by dusk/night.
-- KQ VI: alternate routes, cross-location dependencies, remembered consequences.
-- Classic Sierra: readable scenes, inventory/object logic, fairy-tale humor, danger, surprise, and strong authored composition.
-- Modern correction: no arbitrary pixel hunting, no secret unwinnable states, no parser-guessing, no unfair dead-man-walking saves.
+## Design rules
 
-We copy principles, never copyrighted characters, maps, dialogue, art, or puzzle solutions.
+- Make exploration, physical actions, readable clues, inventory, NPC routines, magic with understandable rules, and changing locations the center of play.
+- Let the world show consequences. NPCs know only what they plausibly see, hear, infer, or are told.
+- Keep alternate solutions and fail-forward routes. Avoid arbitrary pixel hunts, parser guessing, secret unwinnable states, and unfair saves.
+- Do not add a morality meter, good/bad labels, generic RPG systems, combat, skill trees, or office/software/workplace content.
+- Keep the simulation authoritative. Rendering and animation must not own puzzle truth or advance puzzle time on their own.
+- Check whether a design statement describes a shipped feature, a planned idea, or a deferred idea before documenting it as current behavior.
 
-## Non-negotiable creative rules
-- No office, software engineering, QA, conference, corporate dashboard, task tracker, chat app, or workplace-simulator content in the live game.
-- No morality meter.
-- No GOOD/BAD choice labels.
-- Do not turn choices into questionnaires when the player can enact them in the scene.
-- Do not build a generic RPG: no combat system, levels, crafting tree, open world, stats, loot rarity, or skill tree.
-- Do not build a programming simulator or productivity interface.
-- World interaction and exploration must dominate.
-- Important objects must be visually readable without glowing loot outlines.
-- NPCs know only what they plausibly see, hear, infer, or are told.
-- Every core puzzle needs a fair clue, an intended insight, a recoverable wrong hypothesis, and at least one satisfying world response.
+## Runtime facts
 
-## Skill routing
-- Umbrella: `game-studio`
-- Architecture/state: `web-game-foundations`
-- React/R3F: `react-three-fiber-game`
-- UI/dialogue/inventory: `game-ui-frontend`
-- Browser QA: `game-playtest`
-- Optional 3D production: `web-3d-asset-pipeline`, `build-3d-game-rooms`
+- Stack: React, TypeScript, and Vite.
+- The current room renderer composes SVG scenes over painted image plates, with state-driven props, actor artwork, and CSS/DOM interface elements. The declared Three.js packages do not define the renderer’s current architecture.
+- Simulation, puzzle rules, schedules, and save state live under `src/simulation/`; room content and hotspots are in `src/content/`; scene presentation is in `src/render/`; interface code is in `src/ui/`.
+- Keep visual anchors and clickable hotspot anchors registered together. Do not change simulation IDs to reposition artwork.
+- The production Site is a static Vite build served by ChatGPT Sites. Keep asset paths portable.
 
-## Visual architecture
-Hybrid 2.5D fixed/semi-fixed camera:
-- authored or procedural storybook background plates/layers;
-- walk/depth/occlusion data;
-- realtime player/NPCs;
-- selected realtime props;
-- atmosphere/FX;
-- sparse DOM dialogue/inventory/menu UI.
+## Completion and QA
 
-Blender is optional offline tooling, never a blocker.
-
-## Definition of done
-The fantasy build is done only when:
-- the entire adventure is playable start-to-finish;
-- all core puzzles are solvable without design notes;
-- alternate routes and missed windows fail forward;
-- time/world-state changes matter;
-- save/reload preserves puzzle and schedule state;
-- no office-era content appears in normal play;
-- the game is unmistakably a fantasy graphical adventure even with provisional art;
-- browser tests exercise multiple materially different routes;
-- representative screenshots are reviewed;
-- no severe console/runtime errors remain.
+Use the acceptance criteria in `docs/QUALITY_GATES.md`. Review existing QA records before repeating checks; label results as recorded evidence or newly run checks. For changes to the game, build and test the actual affected routes, preserve save/schedule boundaries, inspect representative screenshots, and check keyboard and responsive behavior where relevant.

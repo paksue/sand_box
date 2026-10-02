@@ -1,5 +1,7 @@
 # Milestone 05 — Character + Performance Pass
 
+> **Historical office-prototype milestone — superseded.** The cast and behavior described here belong to the abandoned workplace game. See [`../README.md`](../README.md).
+
 ## Goal
 Make each NPC recognizable through writing, behavior, staging, and reaction.
 

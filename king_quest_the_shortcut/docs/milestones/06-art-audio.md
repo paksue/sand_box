@@ -1,5 +1,7 @@
 # Milestone 06 — Full Art + Audio Pass
 
+> **Historical office-prototype milestone — superseded.** Its listed locations and computer surfaces are not part of the fantasy game. See [`../README.md`](../README.md).
+
 ## Goal
 Propagate the approved hero-scene visual language to every playable location and computer surface.
 

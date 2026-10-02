@@ -169,9 +169,9 @@ The whole journey prepared the final mechanism; there is no arbitrary final ridd
 ### Consequence
 Timing and route affect epilogue and which characters/favors mattered.
 
-## Optional temptation — Ysabet's Moon-Glass Cabinet
+## Deferred idea — Ysabet's Moon-Glass Cabinet
 
-Only include if it can be implemented without bloating scope.
+This was an optional design idea and is not part of the current playable game. Do not implement it as part of routine polish; it needs an explicit scope decision.
 
 A visibly special moon-glass tool offers a powerful shortcut. The player can leave it, ask about it, or trespass/take it if access permits. It may reveal hidden paths faster but creates plausible later evidence.
 

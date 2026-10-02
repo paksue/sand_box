@@ -1,4 +1,10 @@
-# Quality Gates — Fantasy Reboot
+# Quality Gates — The Moon Bell
+
+## Recorded status
+
+The migration and the first-screen iteration have recorded passing build, simulation, route, save/schedule, browser, and visual checks. The detailed results and limits are in [`../evidence/sites/ACCEPTANCE.md`](../evidence/sites/ACCEPTANCE.md) and [`../evidence/village-v2/REVIEW.md`](../evidence/village-v2/REVIEW.md). Those reports are evidence from their recorded runs; they were not rerun during this documentation update.
+
+Owner review still includes a blind first-time human playtest and testing in other browser engines. The opening-screen review does not claim that the other nine rooms have the new cursor/movement interface.
 
 ## Gate A — Fantasy identity
 PASS only if the live game is unmistakably a fairy-tale graphical adventure. No office-era content may appear in normal play.
@@ -41,8 +47,8 @@ No secret unwinnable saves.
 Production build, tests, no severe console errors, desktop/mobile smoke tests, pointer/keyboard parity, and portable Sites asset paths.
 
 ## Gate I — Visual identity
-Representative screenshots: Mill, Cottage, Moonwell at night, Brindle Bridge, Castle/Bell Tower.
-Even provisional art must read as fantasy.
+Representative screenshots: Vale Locksmith opening, Mill, Cottage, Moonwell at night, Brindle Bridge, Castle/Bell Tower.
+The integrated paintings, actors, hotspots, and interface must read as one fantasy graphical adventure. The original provisional-art phase is complete.
 
 ## Blind-player questions
 - What were you trying to do?

@@ -1,13 +1,20 @@
 # ChatGPT Sites Migration Handoff — The Shortcut: The Moon Bell
 
+## Current status — 2026-10-02
+
+This file preserves the original migration contract. The requested import, Checkpoint 4 art integration, and Checkpoint 5 route/browser QA are recorded as complete in [`evidence/sites/ACCEPTANCE.md`](evidence/sites/ACCEPTANCE.md). The subsequent Vale Locksmith cursor, movement, and animation iteration is recorded in [`evidence/village-v2/REVIEW.md`](evidence/village-v2/REVIEW.md).
+
+The current continuation is focused on improving the classic PC adventure feel of the opening screen. That interface redesign currently applies to Vale Locksmith only. The Site preview remains private for owner testing. The separate GitHub folder `paksue/sand_box/king_quest_the_shortcut` is for source reference; it is not a GitHub Pages deployment target.
+
 ## Purpose
 
-This branch is a frozen migration snapshot of the working fantasy build at GitHub checkpoint 3.
+At the time this contract was written, the source was the working fantasy build at GitHub checkpoint 3.
 
-**Source branch:** `sites/the-shortcut-moon-bell`
-**Snapshot commit:** `4db2c60741aab4a6bbaac7ff3875fa62b8358bc6`
+**Source branch named in the original contract:** `sites/the-shortcut-moon-bell`
+**Contract snapshot commit:** `4db2c60741aab4a6bbaac7ff3875fa62b8358bc6`
+The imported source commit is recorded in [`evidence/sites/ACCEPTANCE.md`](evidence/sites/ACCEPTANCE.md).
 
-The destination is **ChatGPT Sites**. Sites should become the new live editing/preview/publishing workspace. GitHub remains a backup/reference snapshot.
+The destination is **ChatGPT Sites**. Sites is the live editing and private preview workspace. GitHub is a source/reference copy only.
 
 ## Critical instruction
 
@@ -31,6 +38,8 @@ The current build already contains:
 
 Read these before changing the game:
 - `AGENTS.md`
+- `docs/README.md`
+- `docs/ARCHITECTURE.md`
 - `docs/VISION.md`
 - `docs/WORLD.md`
 - `docs/STORY.md`
@@ -43,9 +52,9 @@ Read these before changing the game:
 - `docs/VISUAL_BIBLE.md`
 - `docs/AUDIO_DIRECTION.md`
 - `docs/QUALITY_GATES.md`
-- `docs/ONE_SHOT_BUILD.md`
+- `docs/KINGS_QUEST_REFERENCES.md`
 
-Office-era material is historical only and must not appear in the live Site.
+Office-era material is historical only. It is not current implementation guidance and must not appear in the live game.
 
 ## Sites migration goals
 
@@ -57,9 +66,9 @@ Office-era material is historical only and must not appear in the live Site.
 6. Do not add auth, backend, accounts, databases, combat, RPG systems, or unrelated features.
 7. Keep the live Site private during migration until the owner reviews it.
 
-## Visual continuation
+## Original visual continuation — Checkpoint 4 (complete)
 
-The next production priority is **Checkpoint 4: visual integration**.
+The original production priority was **Checkpoint 4: visual integration**. It is complete; the list below records the scope of that requirement.
 
 Generate and integrate painted/storybook scene art for:
 - Village / locksmith lane
@@ -86,7 +95,7 @@ Preserve:
 - afternoon/dusk/moonrise variants;
 - pointer and keyboard accessibility.
 
-## Final QA after visual integration
+## Final QA after visual integration — Checkpoint 5 (recorded complete)
 
 Exercise:
 - Helpful/Early route;
@@ -103,17 +112,15 @@ Exercise:
 - mobile layout;
 - console/runtime errors.
 
-Replace obsolete office evidence with fresh fantasy evidence.
+The recorded results are in [`evidence/sites/ACCEPTANCE.md`](evidence/sites/ACCEPTANCE.md). The later opening-screen pass has its own checks in [`evidence/village-v2/REVIEW.md`](evidence/village-v2/REVIEW.md). These are recorded results; a documentation update does not constitute a new QA run. A blind first-time human playtest and other browser engines remain owner review items.
 
 ## Publishing rule
 
 Create a private Site preview first.
 Do not publish publicly until the owner has played and approved it.
 
-## Source-of-truth transition
+## Source-of-truth and deployment boundary
 
-After migration:
-- ChatGPT Sites = live build and visual iteration workspace.
-- This GitHub branch = migration snapshot / rollback reference.
-
-Do not silently sync changes back to GitHub unless the owner explicitly asks.
+- ChatGPT Sites checkout = current working source and private preview.
+- `paksue/sand_box/king_quest_the_shortcut` = GitHub source/reference copy only; do not configure GitHub Pages.
+- Do not publish the Site publicly or update the GitHub source copy unless the owner explicitly asks.

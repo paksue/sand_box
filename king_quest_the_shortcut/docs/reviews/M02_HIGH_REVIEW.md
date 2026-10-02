@@ -1,4 +1,9 @@
+Warning: truncated output (original token count: 12305)
+Total output lines: 329
+
 # Milestone 02 independent high review
+
+> **Historical review of the abandoned office prototype.** Its findings, character names, implementation paths, and M03 prescriptions do not direct work on The Shortcut: The Moon Bell. Retained only for project history. See [`../README.md`](../README.md) for current documentation.
 
 **Decision: HOLD the design-quality gate. M02 demonstrates a completable story skeleton; it does not yet demonstrate a strong adventure game.** Proceed only to an explicitly authorized M03 redesign/puzzle pass, not final art. This review proposes changes; it does not amend approved design documents or implement them.
 
@@ -30,17 +35,19 @@ There are also verified state-order failures: disclose the cause and then blame 
 
 Read `AGENTS.md`, all requested design documents, the M02/M03 milestone specifications, `KINGS_QUEST_REFERENCES.md`, README, all story content and simulation code, interaction/render code, tests, and M02 acceptance/results. Inspected the four committed route saves and representative desktop/mobile captures. Relevant entry points:
 
+The source paths, acceptance report, browser output, and screenshots in the table refer to the separate office-prototype checkout used for this review; those files are not part of the current fantasy-game checkout.
+
 | Reference | What it establishes |
 | --- | --- |
-| [Story content](../../src/content/story.ts) | Record wording, action labels, prerequisites, costs, timed beats. |
-| [Story simulation](../../src/simulation/story.ts) | Availability, knowledge, consequences, reconstruction, objectives, hints. |
-| [Game reducer](../../src/simulation/game.ts) | Walking, wait boundaries, clock behavior, save handling. |
-| [World](../../src/content/world.ts) and [scene](../../src/render/Scene.tsx) | Spatial opportunities, schedules, placeholder staging. |
-| [Main UI](../../src/main.tsx) and [StoryPanel](../../src/ui/StoryPanel.tsx) | Global selector, visible solutions, notebook, ending. |
-| [M02 acceptance](../../evidence/milestone-02/ACCEPTANCE.md) | Implementation team's claims, limitations, prior fixes. |
-| [Browser results](../../evidence/milestone-02/browser-results.json) and [route script](../../tests/story-browser.mjs) | Four scripted browser routes and fourteen recorded save/reload checkpoints. |
-| [Arrival](../../evidence/milestone-02/full-arrival.png), [timeline](../../evidence/milestone-02/full-timeline.png), [private message](../../evidence/milestone-02/full-private.png), [recovery](../../evidence/milestone-02/full-recovery.png) | Existing visual evidence used for interaction/pacing critique. |
-| [Full ending](../../evidence/milestone-02/full-ending.png), [quiet ending](../../evidence/milestone-02/quiet-ending.png), [mobile ending](../../evidence/milestone-02/full-mobile-ending.png) | Reconstruction density and presentation. |
+| `src/content/story.ts` (review-time path) | Record wording, action labels, prerequisites, costs, timed beats. |
+| `src/simulation/story.ts` (review-time path) | Availability, knowledge, consequences, reconstruction, objectives, hints. |
+| `src/simulation/game.ts` (review-time path) | Walking, wait boundaries, clock behavior, save handling. |
+| `src/content/world.ts` and `src/render/Scene.tsx` (review-time paths) | Spatial opportunities, schedules, placeholder staging. |
+| `src/main.tsx` and `src/ui/StoryPanel.tsx` (review-time paths) | Global selector, visible solutions, notebook, ending. |
+| `evidence/milestone-02/ACCEPTANCE.md` (review-time path) | Implementation team's claims, limitations, prior fixes. |
+| `evidence/milestone-02/browser-results.json` and `tests/story-browser.mjs` (review-time paths) | Four scripted browser routes and fourteen recorded save/reload checkpoints. |
+| `evidence/milestone-02/full-arrival.png`, `full-timeline.png`, `full-private.png`, `full-recovery.png` (review-time paths) | Visual evidence used for interaction/pacing critique. |
+| `evidence/milestone-02/full-ending.png`, `full-mobile-ending.png` (review-time paths) | Reconstruction density and presentation. |
 
 Fresh verification:
 
@@ -128,78 +135,7 @@ Ratings concern the implemented experience: **Pass** = meaningful evidence; **Pa
 - **Aha:** clicking Compare supplies the conclusion. There is no uncertain estimate, misleading passing subcomponent, or distinction between “integration exists” and “matcher works” for the player to resolve.
 - **Agency:** four utterances and silence are useful; the player cannot substantiate a limited claim with a working artifact, revise an estimate, or negotiate a concrete scope/build time.
 - **Integration:** a credible opening to this story, weakened by generic records and the failure to establish yesterday's production deployment.
-- **Alternatives:** ignorance is allowed, but evidence possession does not create a meaningful informed route. A shorter diagnostic path should be valid.
-- **Consequence:** Mark's confidence changes and the claim is remembered. His “reserve the afternoon” instruction does not actually reschedule Maya; truthful admission has mainly nominal cost.
-
-**M03 prescription:** show a limited working integration and a failing required behavior. Let the player run a short demo/test and compare it with the promised acceptance condition. Stand-up can then attach that result, give an estimate, or make an unsupported claim. Put yesterday's deployed consumer and today's pending build side by side. Remove `assess` as a compulsory four-record collection gate; retain a notebook summary as optional assistance. A negotiated reduced demo scope should alter an afternoon obligation.
-
-### P2 — Sarah's matching algorithm
-
-- **Fairness:** asking and independent derivation remain after missing coffee, which is good. The schedule is explicitly printed rather than discovered. “Derive” needs two read flags, not understanding.
-- **Causality:** all three routes produce the same functional state and later QA defect. Provenance persists, but code sharing, workstation permission, and authorship are conflated.
-- **Aha:** the intended insight—stable account identity matters more than a name—is written on the action. No sample requires the player to apply it.
-- **Agency:** three routes exist; within each, Daniel completes the work automatically. There is no permission request to inspect Sarah's branch, interrupted copying decision, or response to being caught.
-- **Integration:** Sarah's expertise fits her role. Her professed competing integration work is not a real commitment. Common workplace reuse is not inherently dishonest; the specific boundary crossed must be clear.
-- **Alternatives:** costs/provenance differ, but earliest completion favors asking and all routes converge before QA. Their opportunity costs need differentiation.
-- **Consequence:** copied signatures and a late witness are recorded. Yet independent derivation still offers `credit`, awards Sarah confidence, and records “Sarah acknowledged.” A generic commit message is automatically interpreted as “Daniel only.” These are poor proxies for authorship and intent.
-
-**M03 prescription:** give the player a small ledger with repeated names and stable account identifiers. Require matching or unresolved tagging through that surface. Sarah can teach one relationship while sacrificing a named review slot; independent work consumes a longer available window; her unattended local branch offers genuinely earlier access to a useful shortcut or test fixture. Make permission, technical reuse, acknowledgment, and claimed authorship separate facts. Allow requesting the shared branch without using her workstation. Model being noticed according to presence and exposure duration, including lingering after inspection, and offer a believable response.
-
-### P3 — QA failure
-
-- **Fairness:** expected versus actual behavior is intelligible and the repro persists. Requiring the configuration record before applying a directly demonstrated empty-result fix is an arbitrary evidence gate.
-- **Causality:** an empty-candidate branch dropping rows is a coherent defect. The locale change is a plausible initial lead, but the inspection text and UI quickly discredit it. Every matching route still produces the flaw even though requirements and samples already say to preserve unmatched rows.
-- **Aha:** the action “Retain unresolved rows” reveals the repair before the player establishes where the row vanished.
-- **Agency:** the player can ask Maya to revert, defer, or apply the fix. They cannot independently rerun the same input under both locales, inspect input/output counts, or formulate a provisional hypothesis separately from assigning fault.
-- **Integration:** Maya's evidence-first voice works. `qa-defer` says “I need to finish the matcher first” even though QA failure requires a submitted build, which requires matching and commit. This line contradicts the reachable state.
-- **Alternatives:** false lead, repair, and postponement exist. The false lead always consumes exactly twelve minutes and is classified as protecting apparent progress, even if a player sincerely wants to eliminate an environmental variable.
-- **Consequence:** the diversion/correction is remembered, but Maya's retest queue and later assistance do not reflect it.
-
-**M03 prescription:** expose a controlled comparison: same row, two locales; then local and QA outputs. Let the player follow the missing row and select “retain unresolved” as an operation after seeing the result. An alternate sufficient evidence path should work without collecting config. Distinguish asking for a test from asserting Maya caused the fault. Let the wasted/recovered slot affect her availability or verification capacity. Keep the missed-row fix transferable to P6's zero/one/many candidate model.
-
-### P4 — Private message
-
-- **Fairness:** privacy and the optional window are clear; skipping it does not strand the player. The global objective advertising it turns a private temptation into an apparent assignment.
-- **Causality:** Kevin's lunch and visible preview establish opportunity. His trace-help request does not actually gate or contextualize access; Daniel can open the private thread without first helping him.
-- **Aha:** there is no deduction. That is acceptable for an interlude, but it should not count as one of six demonstrated reasoning puzzles.
-- **Agency:** reading is an enacted action and walking away is possible. After reading, the system declares how Daniel feels rather than letting the information change a practical decision.
-- **Integration:** Sarah's worry about becoming the cleanup person is relevant. The explicit gossip preview and immediately available “If Mark asks you to lead” line make the scenario feel staged for a moral test.
-- **Alternatives:** leave it alone/read are genuine actions; a normal public conversation about workload or future responsibility is missing. Ordinary career conversation is artificially locked behind illicit knowledge.
-- **Consequence:** reading unlocks `lead-talk` and `mark-lead`, but neither yields a useful operational advantage. Sarah becomes suspicious; Mark defers the discussion. This fails the doctrine's requirement that private knowledge unlock something useful enough to tempt.
-
-**M03 prescription:** treat P4 as an optional character encounter attached to legitimate API-trace help. Remove it from the mandatory objective chain. Keep the private preview local to Kevin's screen; do not make reading it the only route to a leadership discussion. The information should let the player anticipate an unannounced handover responsibility and prepare a useful artifact or negotiate ownership earlier. A slower public route to that opportunity should also exist. If a credible payoff cannot fit this POC, cut the current lead-dialogue branch rather than retaining a privacy quiz with token rewards.
-
-### P5 — Timeline contradiction
-
-- **Fairness:** audit permanence is explained clearly—so clearly that it reveals the entire intended insight before any comparison. Four records are short descriptions of record systems, not a timeline the player reconstructs.
-- **Causality:** editing one display cannot change independent records, a strong premise. But a later commit/upload alone does not disprove that work was complete earlier; genuine contradiction requires evidence of unfinished behavior or a claim about submission. The baseline source snapshot matters and must be distinguished from current source.
-- **Aha:** `compare` calculates the chronology and delivers its lesson. The player does not associate a claim with the record that supports or refutes it.
-- **Agency:** one conspicuous falsification and one correction are offered. There is no truthful selective report, partial disclosure, evidence attachment, or inquiry into who has already seen which version.
-- **Integration:** good potential for self-investigation. At 13:30 the same “different stories” prompt appears even after a truthful stand-up, or when no build was made. That can manufacture guilt or a puzzle where the history actually agrees.
-- **Alternatives:** editing, correcting, or doing nothing are possible, but the insight has only one collection route. Records inexplicably become readable only at 13:30 instead of accumulating naturally.
-- **Consequence:** the task edit and independent audit persist. The correction-before-edit exploit misreports order. No actor meaningfully benefits from or initially relies on the misleading task display, so editing is nearly all downside after its futility has been explained.
-
-**M03 prescription:** use actual event rows from the current playthrough: claim, baseline test, implementation, commit, upload, edit, acknowledgment. Let the player assemble a handover by attaching records to assertions, not answering a moral question. Mark may initially read a summary while Maya has the upload ledger; exposure should follow those channels. Preserve immutable audit history. A truthful route can confirm consistency and discover the old deployed revision's relevance rather than being forced through a contradiction. Allow correcting the latest misleading version even after an earlier correction.
-
-### P6 — Production mismatch
-
-- **Fairness:** duplicate names, candidate sets, the first-element wrapper, and missing fixtures form the best latent clue chain. However, requiring all four evidence flags rejects a correct inference with fewer clues. Recovery and safety options are easy to discover.
-- **Causality:** the local bug explanation works; the full-day causal relationship fails B1. Patch output also conflates restored production capability with completion of today's feature.
-- **Aha:** “the library returned a valid set; the caller misused it” is a worthwhile insight. Current records, action names, and automatic reproduction tell it instead of letting the player discover it.
-- **Agency:** technical/social responses are separated, a genuine strength. However, immediate warning of uncertainty is impossible: `incident-tell` requires full diagnosis and a specific confession. Accusing the library is available sooner. This artificially privileges blame over responsible provisional communication.
-- **Integration:** using P2's identity insight and P3's boundary cases could make a strong climax. Those earlier insights currently cannot change the crisis. Sarah's contract conversation grants a flag, not collaborative investigation.
-- **Alternatives:** patch, rollback, and hold have different recorded outcomes. Rollback can occur before diagnosis, correctly. But once any recovery sets `recovered`, all others are disabled: stabilize by rollback/hold and then deploy a tested fix—the obvious competent workflow—is impossible.
-- **Consequence:** rollback removes capability and hold leaves a queue, but the queue, verification work, and demo losses are not enacted. B4 makes later social consequences unreliable; Luis rescues an ignored incident only at closing without a developing escalation.
-
-**M03 prescription:** let players choose failing rows and run the library and wrapper separately; compare candidate sets and posted totals. Allow a provisional alert and containment before attribution. Split containment, diagnosis, permanent repair, backlog resolution, and verified recovery into distinct stages. Preserve mutually exclusive simultaneous deployments, not permanently exclusive recovery strategies. Make the manual queue or reduced demo a visible remaining task with an owner. Let early work change this encounter, including avoiding bad totals.
-
-## 5. Character and continuity findings
-
-| Character | What works | What currently makes them a function | Exact M03 direction |
-| --- | --- | --- | --- |
-| Daniel | Avoidance, technical competence, and public/private behavior fit the premise. | Automatically solves technical problems; opening tells him the answer; observation metadata often assigns motive regardless of knowledge. | Let the player demonstrate competence and uncertainty. Record asserted claim, evidence known, audience, and actual outcome; avoid declaring “protect apparent progress” for every diagnostic request or brief reply. |
-| Sarah | Precise contract language; ambition and fear of cleanup are coherent. | Unlimited useful help outside a ten-minute coffee break; own work never visibly suffers; gratitude takes priority over earlier grievances. | Give her one visible independent deliverable and a negotiated help commitment. Preserve mixed reactions to credit, access, accusation, repair, and privacy clues. Asking for credit cannot automatically settle unauthorized desk use. |
-| Maya | Repro-first dialogue, retained evidence, plausible initial uncertainty. | A report dispenser and fixed twelve-minute penalty; her locale suspicion persists despite a failed revert; “matcher unfinished” defer line is impossible. | Give her an actual queue and an updated hypothesis after each test. Distinguish Daniel's explanation from her independently observed result; let verification arrive through a defined message/upload channel. |
+- **Alternatives:** ignorance is allowed, but evidence possession does not create a meaningful informed route. A shorter diagnostic pat…3305 tokens truncated… channel. |
 | Kevin | Friendly API-help exchange suggests reciprocity. | Mostly supplies private information and follows a library accusation without independent work. Helping him stores warmth that does not influence later options. | Make the earlier favor produce a bounded technical/witness contribution later: e.g. he can fetch a relevant prior job log while Daniel handles containment. Let him resist being made mediator and revise a hypothesis when evidence arrives. |
 | Mark | Compact questions about status and risk fit a busy manager. | Morning admission changes a number more than his plan; all handovers receive a brief canned response; one answer locks the conversation even when he requests details. | Tie morning estimates to scope/QA commitments. Let handover attach current risks, receive a specific request, and permit follow-up. Separate thread delivery from Mark reading it during travel. Do not give a generic approving response to unverified stability. |
 | Luis | Deployment audit and procedural recovery permission are credible. | Effectively a three-minute key; access remains usable after he is gone; his rescue arrives on a clock rather than operational evidence. | Make access a legible authorization/window with a fallback. Have him announce escalation and containment based on the continuing incident. Credit his intervention and distinguish what he witnessed from what was explained. |

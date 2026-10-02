@@ -4,18 +4,31 @@
 
 The player interacts with the **scene**, not a global task menu.
 
+## Current implementation scope
+
+Vale Locksmith, the opening screen, uses a classic icon-cursor model: Walk, Look, Hand, and Talk. Mara physically approaches people and objects before talking, taking, or using an item. This is the current King’s Quest-inspired interaction pass; it is an original design, not a literal recreation of Sierra’s interface.
+
+The other nine locations retain the earlier click-to-walk, click-to-look, contextual-action model. Keep that distinction explicit in documentation and QA until those rooms receive their own interaction pass.
+
+At Vale Locksmith:
+- keys 1–4 select Walk / Look / Hand / Talk;
+- right-click cycles those cursors;
+- arrow keys move Mara; F10 opens the compact toolbar;
+- I opens the Satchel, H reveals visible objects, Tab/Enter activate scene objects, and Escape closes or cancels;
+- selecting an inventory item changes the cursor to Use, then the player targets a visible scene object;
+- walking, facing, and action poses are presentation only; puzzle time advances through simulation actions.
+
 Default loop:
 1. walk;
 2. notice;
-3. click/tap or keyboard-focus a nearby visible object/person;
-4. choose a small contextual verb only when needed;
-5. see immediate world feedback.
+3. choose a scene action and target a visible object/person;
+4. see immediate world feedback.
 
 ## Normal verbs
 
 Look, Talk, Take, Use, Give, Open, Pull, Turn, Place, Pour, Light, Wait.
 
-Do not show all verbs at all times. A direct click can perform the obvious low-risk action (look/talk); deeper actions appear contextually.
+At Vale Locksmith, show the four scene cursors in the classic toolbar. In the other rooms, keep actions contextual rather than showing every possible verb. Do not make an object interaction happen remotely: the opening-screen actions should approach the target first.
 
 ## Exploration
 

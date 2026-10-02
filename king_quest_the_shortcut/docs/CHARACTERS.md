@@ -1,5 +1,9 @@
 # Character Bible — The Moon Bell
 
+## Current implementation status
+
+This is the character-design reference; the notes below distinguish intent from current behavior where they differ. Ysabet’s schedule currently moves her between home and herb gathering at the cottage. A later visit by her to the Moonwell is deferred. Mallow is a chapel hotspot with food and scene-geometry interactions; she is not currently shown moving between visible positions. Keep those future ideas out of claims about the playable build unless they are implemented and verified.
+
 ## Mara Vale — player character
 Age: late teens / young adult.
 Role: locksmith's apprentice and occasional errand-runner.
@@ -52,7 +56,6 @@ Schedule:
 - home/garden before ~17:30;
 - gathering herbs ~17:30–18:00;
 - returns afterward;
-- may visit Moonwell later if certain state is active.
 
 Voice:
 precise, amused, a little prickly. Never cackles.
@@ -65,7 +68,7 @@ Ysabet's escaped hen.
 No speech.
 
 Behavior:
-moves between a few obvious chapel positions and reacts to food/player approach.
+reacts to food and to Mara closing the gap with a fallen stone. Visible position changes are a future presentation improvement, not current behavior.
 
 Purpose:
 physical, comic, low-stakes object/creature interaction; enables helpful lantern route.

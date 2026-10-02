@@ -63,7 +63,7 @@ Purpose:
 - first true "aha."
 
 ### L4 — Ysabet's Cottage and Herb Garden
-Crooked green-roof cottage, drying herbs, copper kettle, lantern hook, hen coop, back window, moon-glass cabinet.
+Crooked green-roof cottage, drying herbs, copper kettle, lantern hook, and hen coop. The back window and Moon-Glass Cabinet from an earlier design draft are deferred; neither is a current hotspot.
 
 Purpose:
 - NPC schedule;
