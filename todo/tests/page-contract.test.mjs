@@ -35,8 +35,8 @@ test('sort UI exposes the intended lightweight ordering model', async () => {
 test('compatibility loader points to V3 and current UI modules', async () => {
   const loader = await text('sync-v2.js');
   assert.match(loader, /import\(['"]\.\/sync-v3\.mjs\?v=/);
-  assert.match(loader, /archive-ui\.mjs\?v=20261004-1/);
-  assert.match(loader, /sort-ui\.mjs\?v=20261004-1/);
+  assert.match(loader, /archive-ui\.mjs\?v=20261004-2/);
+  assert.match(loader, /sort-ui\.mjs\?v=20261004-2/);
 });
 
 test('V3 uses provenance state and tested core', async () => {
