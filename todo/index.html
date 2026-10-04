@@ -6,33 +6,33 @@
   <meta name="theme-color" content="#f4f1e8">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Today">
-  <title>Today — To-Do List</title>
+  <meta name="apple-mobile-web-app-title" content="Tasks">
+  <title>Tasks — To-Do List</title>
   <style>
-    :root { color-scheme: light dark; --bg:#f4f1e8; --card:rgba(255,255,255,.88); --text:#17211b; --muted:#667168; --line:rgba(23,33,27,.13); --accent:#1e6b45; --accent-soft:#dff1e7; --danger:#a23d32; --warning:#8a5a00; --shadow:0 18px 45px rgba(39,48,42,.12); }
-    @media (prefers-color-scheme: dark) { :root { --bg:#111713; --card:rgba(28,37,31,.95); --text:#f1f5f2; --muted:#a7b0aa; --line:rgba(255,255,255,.12); --accent:#72d39f; --accent-soft:#173d2a; --danger:#ff9a8f; --warning:#ffd27a; --shadow:0 18px 45px rgba(0,0,0,.3); } }
+    :root { color-scheme: light dark; --bg:#f4f1e8; --card:rgba(255,255,255,.88); --text:#17211b; --muted:#667168; --line:rgba(23,33,27,.13); --accent:#1e6b45; --accent-soft:#dff1e7; --danger:#a23d32; --warning:#8a5a00; --shadow:0 12px 34px rgba(39,48,42,.09); }
+    @media (prefers-color-scheme: dark) { :root { --bg:#111713; --card:rgba(28,37,31,.95); --text:#f1f5f2; --muted:#a7b0aa; --line:rgba(255,255,255,.12); --accent:#72d39f; --accent-soft:#173d2a; --danger:#ff9a8f; --warning:#ffd27a; --shadow:0 12px 34px rgba(0,0,0,.24); } }
     * { box-sizing:border-box; }
     html { overscroll-behavior:none; }
     body { margin:0; min-height:100svh; padding:max(22px,env(safe-area-inset-top)) 8px max(30px,env(safe-area-inset-bottom)); background:radial-gradient(circle at top left,rgba(103,183,139,.18),transparent 34rem),var(--bg); color:var(--text); font-family:ui-rounded,"SF Pro Rounded","SF Pro Display",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
     body.reordering { user-select:none; -webkit-user-select:none; cursor:grabbing; }
     .app { width:min(100%,680px); margin:0 auto; }
-    header { display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin:8px 4px 18px; }
-    h1 { margin:0; font-size:clamp(2.2rem,10vw,4.5rem); line-height:.95; letter-spacing:-.06em; }
+    header { display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin:8px 4px 14px; }
+    h1 { margin:0; font-size:clamp(2.35rem,8vw,3.45rem); line-height:.96; letter-spacing:-.055em; }
     .date { margin:8px 0 0; color:var(--muted); font-weight:650; }
     .count { flex:0 0 auto; min-width:76px; padding:10px 13px; border:1px solid var(--line); border-radius:999px; background:var(--card); text-align:center; font-weight:800; box-shadow:var(--shadow); }
     .panel { overflow:hidden; border:1px solid var(--line); border-radius:24px; background:var(--card); box-shadow:var(--shadow); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); }
     .progress-track { height:7px; background:var(--line); }
     .progress-bar { height:100%; width:0; background:var(--accent); transition:width 220ms ease; }
-    .sync-bar { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:10px; padding:11px 14px; border-bottom:1px solid var(--line); background:color-mix(in srgb,var(--accent-soft) 55%,transparent); }
+    .sync-bar { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:10px; padding:10px 14px; border-top:1px solid var(--line); background:color-mix(in srgb,var(--card) 97%,var(--accent-soft)); }
     .sync-summary { min-width:0; }
-    .sync-status { display:flex; align-items:center; gap:7px; min-width:0; font-size:14px; font-weight:720; }
+    .sync-status { display:flex; align-items:center; gap:7px; min-width:0; font-size:13px; font-weight:720; }
     .sync-dot { width:9px; height:9px; flex:0 0 auto; border-radius:50%; background:var(--muted); }
     .sync-status[data-type="success"] .sync-dot { background:var(--accent); }
     .sync-status[data-type="working"] .sync-dot { background:var(--warning); animation:pulse 1s infinite alternate; }
     .sync-status[data-type="error"] .sync-dot { background:var(--danger); }
     @keyframes pulse { to { opacity:.3; } }
     .sync-message { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .sync-time { margin:3px 0 0 16px; color:var(--muted); font-size:12px; }
+    .sync-time { margin:2px 0 0 16px; color:var(--muted); font-size:11px; }
     .sync-actions { display:flex; gap:7px; }
     button { border:0; border-radius:14px; min-width:46px; min-height:46px; padding:0 15px; background:var(--accent); color:#fff; font:inherit; font-weight:800; cursor:pointer; touch-action:manipulation; }
     @media (prefers-color-scheme: dark) { button { color:#0c2115; } }
@@ -41,8 +41,8 @@
     .compact-button { min-width:auto; min-height:38px; padding:0 12px; border:1px solid var(--line); border-radius:999px; background:var(--card); color:var(--text); font-size:13px; }
     .save-sync { border-color:transparent; background:var(--accent); color:#fff; }
     @media (prefers-color-scheme: dark) { .save-sync { color:#0c2115; } }
-    .settings-button { width:38px; min-width:38px; padding:0; font-size:18px; }
-    .sync-settings { display:none; padding:15px; border-bottom:1px solid var(--line); background:color-mix(in srgb,var(--card) 88%,var(--accent-soft)); }
+    .settings-button { width:44px; min-width:44px; min-height:44px; padding:0; font-size:18px; }
+    .sync-settings { display:none; padding:15px; border-top:1px solid var(--line); background:color-mix(in srgb,var(--card) 92%,var(--accent-soft)); }
     .sync-settings.open { display:block; }
     .settings-title { margin:0 0 6px; font-size:16px; }
     .settings-copy { margin:0 0 11px; color:var(--muted); font-size:13px; line-height:1.45; }
@@ -50,23 +50,28 @@
     .token-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; }
     .token-input { width:100%; min-width:0; border:1px solid var(--line); border-radius:12px; padding:11px 12px; background:transparent; color:var(--text); font:inherit; font-size:16px; outline:none; }
     .token-input:focus { border-color:var(--accent); }
+    .sync-manual-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:0 0 12px; }
     .settings-links { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:10px; font-size:12px; }
     .settings-links a { color:var(--accent); font-weight:750; }
     .clear-token { min-height:34px; padding:0; background:transparent; color:var(--danger); }
-    form { display:flex; gap:10px; padding:16px; border-bottom:1px solid var(--line); }
+    form { display:flex; gap:9px; padding:13px 12px; border-bottom:1px solid var(--line); }
     #newTask { min-width:0; flex:1; border:1px solid var(--line); border-radius:15px; padding:14px 15px; background:transparent; color:var(--text); font:inherit; font-size:16px; outline:none; }
     #newTask:focus { border-color:var(--accent); }
     ul { list-style:none; margin:0; padding:0; }
-    .task { display:grid; grid-template-columns:42px 40px minmax(0,1fr) 42px; align-items:start; gap:4px; min-height:76px; padding:11px 12px; border-bottom:1px solid var(--line); background:transparent; transition:box-shadow 120ms ease,transform 120ms ease,background 120ms ease; }
+    .task { display:grid; grid-template-columns:44px 44px minmax(0,1fr) 44px; align-items:start; gap:2px; min-height:62px; padding:7px 10px; border-bottom:1px solid var(--line); background:transparent; transition:box-shadow 120ms ease,transform 120ms ease,background 120ms ease; }
     .task:last-child { border-bottom:0; }
     .task.dragging { position:relative; z-index:10; border-radius:14px; background:var(--accent-soft); box-shadow:0 10px 30px rgba(0,0,0,.22); transform:scale(1.02); }
-    .check { display:grid; place-items:center; width:32px; height:32px; min-width:32px; min-height:32px; margin-top:5px; padding:0; border:2px solid var(--accent); border-radius:50%; background:transparent; color:transparent; font-size:18px; }
-    .task.done .check { background:var(--accent); color:#fff; }
-    @media (prefers-color-scheme: dark) { .task.done .check { color:#0c2115; } }
-    .drag-handle { display:grid; place-items:center; width:40px; height:46px; min-width:40px; min-height:46px; padding:0; border-radius:10px; background:transparent; color:var(--muted); font-size:25px; font-weight:500; line-height:1; cursor:grab; touch-action:none; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+    .check { position:relative; display:grid; place-items:center; width:44px; height:44px; min-width:44px; min-height:44px; margin:0; padding:0; border:0; border-radius:12px; background:transparent; color:transparent; font-size:0; }
+    .check::before { content:""; width:28px; height:28px; border:2px solid var(--accent); border-radius:50%; background:transparent; transition:background 120ms ease,transform 120ms ease; }
+    .check::after { content:"✓"; position:absolute; inset:0; display:grid; place-items:center; color:#fff; font-size:17px; font-weight:850; opacity:0; }
+    .check:active::before { transform:scale(.94); }
+    .task.done .check::before { background:var(--accent); }
+    .task.done .check::after { opacity:1; }
+    @media (prefers-color-scheme: dark) { .task.done .check::after { color:#0c2115; } }
+    .drag-handle { display:grid; place-items:center; width:44px; height:44px; min-width:44px; min-height:44px; padding:0; border-radius:10px; background:transparent; color:var(--muted); font-size:23px; font-weight:500; line-height:1; cursor:grab; touch-action:none; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
     .drag-handle:active { cursor:grabbing; transform:none; }
     .drag-handle:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
-    .task-content { display:block; width:100%; min-width:0; min-height:52px; padding:5px 7px 7px; border:1px solid transparent; border-radius:11px; background:transparent; color:var(--text); text-align:left; }
+    .task-content { display:block; width:100%; min-width:0; min-height:46px; padding:4px 6px 5px; border:1px solid transparent; border-radius:11px; background:transparent; color:var(--text); text-align:left; }
     .task-content:active { transform:none; background:var(--accent-soft); }
     .task-content:focus-visible { border-color:var(--accent); outline:none; }
     .task-title { display:block; color:var(--text); font-size:17px; font-weight:760; line-height:1.3; overflow-wrap:anywhere; white-space:normal; }
@@ -80,38 +85,40 @@
     .task-title-edit:focus,.task-details-edit:focus { border-color:var(--accent); }
     .editor-actions { display:flex; justify-content:flex-end; }
     .done-editing { min-width:72px; min-height:38px; padding:0 15px; border-radius:999px; font-size:14px; }
-    .delete { width:38px; height:38px; min-width:38px; min-height:38px; margin-top:2px; padding:0; background:transparent; color:var(--muted); font-size:22px; font-weight:500; }
+    .delete { width:44px; height:44px; min-width:44px; min-height:44px; margin:0; padding:0; background:transparent; color:var(--muted); font-size:22px; font-weight:500; }
     .delete:hover { color:var(--danger); }
     .empty { padding:38px 20px; color:var(--muted); text-align:center; }
-    footer { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:14px 16px; border-top:1px solid var(--line); color:var(--muted); font-size:14px; }
+    footer { display:none; }
     .text-button { min-height:auto; min-width:auto; padding:7px 0; border-radius:0; background:transparent; color:var(--accent); }
     .text-button:disabled { opacity:.45; cursor:default; }
-    .tip { margin:14px 6px 0; color:var(--muted); font-size:13px; line-height:1.45; text-align:center; }
-    @media (max-width:500px) { .sync-bar { grid-template-columns:1fr; } .sync-actions { display:grid; grid-template-columns:1fr 1fr 38px; } .compact-button { min-height:40px; } }
-    @media (max-width:430px) { .task { grid-template-columns:40px 36px minmax(0,1fr) 38px; gap:2px; padding-left:8px; padding-right:8px; } .drag-handle { width:36px; min-width:36px; } .task-content { padding-left:5px; padding-right:5px; } }
+    .tip { margin:12px 8px 0; color:var(--muted); font-size:12px; line-height:1.45; text-align:center; }
+    @media (max-width:500px) { .compact-button { min-height:44px; } }
+    @media (max-width:430px) { .task { grid-template-columns:44px 40px minmax(0,1fr) 44px; gap:0; padding-left:6px; padding-right:6px; } .drag-handle { width:40px; min-width:40px; } .task-content { padding-left:4px; padding-right:4px; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition-duration:.01ms!important; animation-duration:.01ms!important; animation-iteration-count:1!important; } }
   </style>
 </head>
 <body>
   <main class="app">
-    <header><div><h1>Today</h1><p class="date" id="date"></p></div><div class="count" id="count" aria-live="polite">0 / 0</div></header>
-    <section class="panel" aria-label="Today's tasks">
-      <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progress"></div></div>
+    <header><div><h1>Tasks</h1><p class="date" id="date"></p></div><div class="count" id="count" aria-live="polite" hidden>0 / 0</div></header>
+    <section class="panel" aria-label="Tasks">
+      <form id="taskForm"><input id="newTask" type="text" maxlength="120" autocomplete="off" placeholder="Add a task…" aria-label="New task"><button type="submit" aria-label="Add task">Add</button></form>
+      <ul id="taskList"></ul>
+      <footer><span id="remaining">0 remaining</span><button class="text-button" id="clearCompleted" type="button">Clear completed</button></footer>
       <div class="sync-bar">
-        <div class="sync-summary"><div class="sync-status" id="syncStatus" data-type="idle" aria-live="polite"><span class="sync-dot" aria-hidden="true"></span><span class="sync-message" id="syncMessage">Local only</span></div><p class="sync-time" id="syncTime">Set a GitHub token to save across devices.</p></div>
-        <div class="sync-actions"><button class="compact-button" id="pullButton" type="button">Pull from GitHub</button><button class="compact-button save-sync" id="pushButton" type="button">Save to GitHub</button><button class="compact-button settings-button" id="settingsButton" type="button" aria-label="GitHub sync settings">⚙︎</button></div>
+        <div class="sync-summary"><div class="sync-status" id="syncStatus" data-type="idle" aria-live="polite"><span class="sync-dot" aria-hidden="true"></span><span class="sync-message" id="syncMessage">Local only</span></div><p class="sync-time" id="syncTime">GitHub sync is optional.</p></div>
+        <div class="sync-actions"><button class="compact-button settings-button" id="settingsButton" type="button" aria-label="GitHub sync settings">⚙︎</button></div>
       </div>
       <section class="sync-settings" id="syncSettings" aria-label="GitHub sync settings">
         <h2 class="settings-title">GitHub sync</h2>
         <p class="settings-copy">Create a fine-grained token limited to <strong>paksue/sand_box</strong> with <strong>Contents: read and write</strong>. Paste it here once on each device.</p>
         <p class="privacy-warning">The repository is public. Anything saved to tasks.json—including task titles and details—will be publicly readable. The token itself stays only in this browser.</p>
+        <div class="sync-manual-actions"><button class="compact-button" id="pullButton" type="button">Pull from GitHub</button><button class="compact-button save-sync" id="pushButton" type="button">Save to GitHub</button></div>
         <div class="token-row"><input class="token-input" id="tokenInput" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="github_pat_…"><button class="compact-button save-sync" id="saveTokenButton" type="button">Save token</button></div>
         <div class="settings-links"><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Create fine-grained token</a><button class="clear-token" id="clearTokenButton" type="button">Remove saved token</button></div>
       </section>
-      <form id="taskForm"><input id="newTask" type="text" maxlength="120" autocomplete="off" placeholder="Add a task…" aria-label="New task"><button type="submit" aria-label="Add task">Add</button></form>
-      <ul id="taskList"></ul>
-      <footer><span id="remaining">0 remaining</span><button class="text-button" id="clearCompleted" type="button">Clear completed</button></footer>
+      <div class="progress-track" aria-hidden="true" hidden><div class="progress-bar" id="progress"></div></div>
     </section>
-    <p class="tip">Pull from GitHub replaces this device with the shared copy. Save to GitHub merges local changes and uploads them.</p>
+    <p class="tip">Tasks stay available locally. GitHub sync and recovery controls are in Settings.</p>
   </main>
   <script>
     (() => {
@@ -168,6 +175,6 @@
       updateTokenUi();render();
     })();
   </script>
-  <script src="./sync-v2.js?v=20260814-1"></script>
+  <script src="./sync-v2.js?v=20261004-1"></script>
 </body>
 </html>
