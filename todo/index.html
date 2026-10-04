@@ -19,10 +19,7 @@
     header { display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin:8px 4px 14px; }
     h1 { margin:0; font-size:clamp(2.35rem,8vw,3.45rem); line-height:.96; letter-spacing:-.055em; }
     .date { margin:8px 0 0; color:var(--muted); font-weight:650; }
-    .count { flex:0 0 auto; min-width:76px; padding:10px 13px; border:1px solid var(--line); border-radius:999px; background:var(--card); text-align:center; font-weight:800; box-shadow:var(--shadow); }
     .panel { overflow:hidden; border:1px solid var(--line); border-radius:24px; background:var(--card); box-shadow:var(--shadow); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); }
-    .progress-track { height:7px; background:var(--line); }
-    .progress-bar { height:100%; width:0; background:var(--accent); transition:width 220ms ease; }
     .sync-bar { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:10px; padding:10px 14px; border-top:1px solid var(--line); background:color-mix(in srgb,var(--card) 97%,var(--accent-soft)); }
     .sync-summary { min-width:0; }
     .sync-status { display:flex; align-items:center; gap:7px; min-width:0; font-size:13px; font-weight:720; }
@@ -38,7 +35,7 @@
     @media (prefers-color-scheme: dark) { button { color:#0c2115; } }
     button:active { transform:scale(.98); }
     button:disabled { opacity:.48; cursor:wait; }
-    .compact-button { min-width:auto; min-height:38px; padding:0 12px; border:1px solid var(--line); border-radius:999px; background:var(--card); color:var(--text); font-size:13px; }
+    .compact-button { min-width:auto; min-height:44px; padding:0 12px; border:1px solid var(--line); border-radius:999px; background:var(--card); color:var(--text); font-size:13px; }
     .save-sync { border-color:transparent; background:var(--accent); color:#fff; }
     @media (prefers-color-scheme: dark) { .save-sync { color:#0c2115; } }
     .settings-button { width:44px; min-width:44px; min-height:44px; padding:0; font-size:18px; }
@@ -52,11 +49,13 @@
     .token-input:focus { border-color:var(--accent); }
     .sync-manual-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:0 0 12px; }
     .settings-links { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:10px; font-size:12px; }
-    .settings-links a { color:var(--accent); font-weight:750; }
-    .clear-token { min-height:34px; padding:0; background:transparent; color:var(--danger); }
+    .settings-links a { display:inline-flex;align-items:center;min-height:44px;color:var(--accent);font-weight:750; }
+    .clear-token { min-height:44px; padding:0 8px; background:transparent; color:var(--danger); }
     form { display:flex; gap:9px; padding:13px 12px; border-bottom:1px solid var(--line); }
     #newTask { min-width:0; flex:1; border:1px solid var(--line); border-radius:15px; padding:14px 15px; background:transparent; color:var(--text); font:inherit; font-size:16px; outline:none; }
     #newTask:focus { border-color:var(--accent); }
+    .add-task-button{min-width:58px;padding:0 15px;}
+    .add-task-icon{display:none;font-size:24px;line-height:1;}
     ul { list-style:none; margin:0; padding:0; }
     .task { display:grid; grid-template-columns:44px 44px minmax(0,1fr) 44px; align-items:start; gap:2px; min-height:62px; padding:7px 10px; border-bottom:1px solid var(--line); background:transparent; transition:box-shadow 120ms ease,transform 120ms ease,background 120ms ease; }
     .task:last-child { border-bottom:0; }
@@ -84,29 +83,31 @@
     .task-details-edit { min-height:74px; max-height:190px; resize:none; overflow-y:auto; font-size:15px; font-weight:520; line-height:1.4; }
     .task-title-edit:focus,.task-details-edit:focus { border-color:var(--accent); }
     .editor-actions { display:flex; justify-content:flex-end; }
-    .done-editing { min-width:72px; min-height:38px; padding:0 15px; border-radius:999px; font-size:14px; }
+    .done-editing { min-width:72px; min-height:44px; padding:0 15px; border-radius:999px; font-size:14px; }
     .delete { width:44px; height:44px; min-width:44px; min-height:44px; margin:0; padding:0; background:transparent; color:var(--muted); font-size:22px; font-weight:500; }
     .delete:hover { color:var(--danger); }
-    .empty { padding:38px 20px; color:var(--muted); text-align:center; }
+    .empty { padding:42px 22px; color:var(--muted); text-align:center; }
+    .empty-title { display:block; color:var(--text); font-size:17px; font-weight:800; }
+    .empty-copy { display:block; margin-top:6px; font-size:13px; line-height:1.45; }
     footer { display:none; }
     .text-button { min-height:auto; min-width:auto; padding:7px 0; border-radius:0; background:transparent; color:var(--accent); }
     .text-button:disabled { opacity:.45; cursor:default; }
     .tip { margin:12px 8px 0; color:var(--muted); font-size:12px; line-height:1.45; text-align:center; }
-    @media (max-width:500px) { .compact-button { min-height:44px; } }
+    @media (max-width:500px) { .add-task-button{width:46px;min-width:46px;padding:0}.add-task-label{display:none}.add-task-icon{display:inline} }
     @media (max-width:430px) { .task { grid-template-columns:44px 40px minmax(0,1fr) 44px; gap:0; padding-left:6px; padding-right:6px; } .drag-handle { width:40px; min-width:40px; } .task-content { padding-left:4px; padding-right:4px; } }
     @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition-duration:.01ms!important; animation-duration:.01ms!important; animation-iteration-count:1!important; } }
   </style>
 </head>
 <body>
   <main class="app">
-    <header><div><h1>Tasks</h1><p class="date" id="date"></p></div><div class="count" id="count" aria-live="polite" hidden>0 / 0</div></header>
+    <header><div><h1>Tasks</h1><p class="date" id="date"></p></div></header>
     <section class="panel" aria-label="Tasks">
-      <form id="taskForm"><input id="newTask" type="text" maxlength="120" autocomplete="off" placeholder="Add a task…" aria-label="New task"><button type="submit" aria-label="Add task">Add</button></form>
+      <form id="taskForm"><input id="newTask" type="text" maxlength="120" autocomplete="off" placeholder="Add a task…" aria-label="New task"><button class="add-task-button" type="submit" aria-label="Add task"><span class="add-task-label">Add</span><span class="add-task-icon" aria-hidden="true">＋</span></button></form>
       <ul id="taskList"></ul>
       <footer><span id="remaining">0 remaining</span><button class="text-button" id="clearCompleted" type="button">Clear completed</button></footer>
       <div class="sync-bar">
         <div class="sync-summary"><div class="sync-status" id="syncStatus" data-type="idle" aria-live="polite"><span class="sync-dot" aria-hidden="true"></span><span class="sync-message" id="syncMessage">Local only</span></div><p class="sync-time" id="syncTime">GitHub sync is optional.</p></div>
-        <div class="sync-actions"><button class="compact-button settings-button" id="settingsButton" type="button" aria-label="GitHub sync settings">⚙︎</button></div>
+        <div class="sync-actions"><button class="compact-button settings-button" id="settingsButton" type="button" aria-label="GitHub sync settings" aria-expanded="false">⚙︎</button></div>
       </div>
       <section class="sync-settings" id="syncSettings" aria-label="GitHub sync settings">
         <h2 class="settings-title">GitHub sync</h2>
@@ -116,7 +117,6 @@
         <div class="token-row"><input class="token-input" id="tokenInput" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="github_pat_…"><button class="compact-button save-sync" id="saveTokenButton" type="button">Save token</button></div>
         <div class="settings-links"><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Create fine-grained token</a><button class="clear-token" id="clearTokenButton" type="button">Remove saved token</button></div>
       </section>
-      <div class="progress-track" aria-hidden="true" hidden><div class="progress-bar" id="progress"></div></div>
     </section>
     <p class="tip">Tasks stay available locally. GitHub sync and recovery controls are in Settings.</p>
   </main>
@@ -126,7 +126,7 @@
       const STORAGE_KEY='paksue-today-tasks-v1',TOKEN_KEY='paksue-github-token-v1',SYNC_META_KEY='paksue-github-sync-meta-v1',GIRLS_TASK_MIGRATION_KEY='paksue-added-girls-cleanup-v1',GIRLS_TASK='Girls: clean up by ___ — session 1 room, session 2 desk';
       const REPO_OWNER='paksue',REPO_NAME='sand_box',REPO_BRANCH='main',REMOTE_PATH='todo/tasks.json',API_URL=`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${REMOTE_PATH}`;
       const defaultTasks=['Print handle','Mow lawn','Set alarm: collect 529','Print window blocker','Fix Ubuntu','Build kneeling chair','Clean sunroom',GIRLS_TASK];
-      const elements={date:document.getElementById('date'),count:document.getElementById('count'),progress:document.getElementById('progress'),form:document.getElementById('taskForm'),input:document.getElementById('newTask'),list:document.getElementById('taskList'),remaining:document.getElementById('remaining'),clear:document.getElementById('clearCompleted'),syncStatus:document.getElementById('syncStatus'),syncMessage:document.getElementById('syncMessage'),syncTime:document.getElementById('syncTime'),pull:document.getElementById('pullButton'),push:document.getElementById('pushButton'),settingsButton:document.getElementById('settingsButton'),settings:document.getElementById('syncSettings'),tokenInput:document.getElementById('tokenInput'),saveToken:document.getElementById('saveTokenButton'),clearToken:document.getElementById('clearTokenButton')};
+      const elements={date:document.getElementById('date'),form:document.getElementById('taskForm'),input:document.getElementById('newTask'),list:document.getElementById('taskList'),remaining:document.getElementById('remaining'),clear:document.getElementById('clearCompleted'),syncStatus:document.getElementById('syncStatus'),syncMessage:document.getElementById('syncMessage'),syncTime:document.getElementById('syncTime'),pull:document.getElementById('pullButton'),push:document.getElementById('pushButton'),settingsButton:document.getElementById('settingsButton'),settings:document.getElementById('syncSettings'),tokenInput:document.getElementById('tokenInput'),saveToken:document.getElementById('saveTokenButton'),clearToken:document.getElementById('clearTokenButton')};
       const makeId=()=>globalThis.crypto&&typeof globalThis.crypto.randomUUID==='function'?globalThis.crypto.randomUUID():`${Date.now()}-${Math.random().toString(16).slice(2)}`;
       const nowStamp=()=>new Date().toISOString(),stampNumber=value=>Number.isFinite(Date.parse(value||''))?Date.parse(value):0;
       let editingTaskId=null,isSyncing=false,tasks=loadTasks(),syncMeta=loadSyncMeta(),dragState=null;
@@ -137,7 +137,7 @@
       function saveSyncMeta(){localStorage.setItem(SYNC_META_KEY,JSON.stringify(syncMeta));}
       function saveTasks(){localStorage.setItem(STORAGE_KEY,JSON.stringify(tasks));}
       function visibleTasks(){return tasks.filter(task=>!task.deleted).sort((a,b)=>a.order-b.order||stampNumber(a.createdAt)-stampNumber(b.createdAt));}
-      function updateSummary(){const visible=visibleTasks(),completed=visible.filter(task=>task.done).length,total=visible.length;elements.count.textContent=`${completed} / ${total}`;elements.remaining.textContent=`${total-completed} remaining`;elements.progress.style.width=total?`${completed/total*100}%`:'0%';elements.clear.disabled=completed===0;}
+      function updateSummary(){const visible=visibleTasks(),completed=visible.filter(task=>task.done).length,total=visible.length;elements.remaining.textContent=`${total-completed} remaining`;elements.clear.disabled=completed===0;}
       function getToken(){return localStorage.getItem(TOKEN_KEY)||'';}
       function updateTokenUi(){const has=Boolean(getToken());elements.tokenInput.value='';elements.tokenInput.placeholder=has?'Token saved on this device':'github_pat_…';elements.clearToken.hidden=!has;if(!syncMeta.lastSyncAt)elements.syncTime.textContent=has?'Ready. Save to GitHub to create the first shared copy.':'Set a GitHub token to save across devices.';}
       function setSyncStatus(message,type='idle',timeText=null){elements.syncStatus.dataset.type=type;elements.syncMessage.textContent=message;if(timeText!==null)elements.syncTime.textContent=timeText;}
@@ -162,11 +162,110 @@
       function finishDrag(){if(!dragState)return;dragState.item.classList.remove('dragging');dragState=null;document.body.classList.remove('reordering');saveOrderFromDom();}
       document.addEventListener('touchmove',event=>{if(!dragState||event.touches.length!==1)return;event.preventDefault();moveDrag(event.touches[0].clientY);},{passive:false});document.addEventListener('touchend',finishDrag);document.addEventListener('touchcancel',finishDrag);document.addEventListener('mousemove',event=>{if(!dragState)return;event.preventDefault();moveDrag(event.clientY||dragState.lastClientY);});document.addEventListener('mouseup',finishDrag);window.addEventListener('blur',finishDrag);
       function autoSizeTextarea(area){area.style.height='auto';area.style.height=`${Math.min(Math.max(area.scrollHeight,74),190)}px`;}
-      function renderTask(task){const item=document.createElement('li');item.className=`task${task.done?' done':''}`;item.dataset.id=task.id;const check=document.createElement('button');check.type='button';check.className='check';check.textContent='✓';check.setAttribute('aria-label',task.done?`Mark ${task.title} incomplete`:`Mark ${task.title} complete`);check.addEventListener('click',()=>{task.done=!task.done;task.doneUpdatedAt=nowStamp();saveTasks();render();});const handle=document.createElement('button');handle.type='button';handle.className='drag-handle';handle.textContent='☰';handle.setAttribute('aria-label',`Rearrange ${task.title}. Drag, or use the up and down arrow keys.`);handle.title='Press and drag to rearrange';handle.addEventListener('keydown',event=>{if(event.key==='ArrowUp'){event.preventDefault();moveTaskByKeyboard(task.id,-1);}else if(event.key==='ArrowDown'){event.preventDefault();moveTaskByKeyboard(task.id,1);}});handle.addEventListener('touchstart',event=>{if(event.touches.length!==1)return;event.preventDefault();startDrag(item,event.touches[0].clientY);},{passive:false});handle.addEventListener('mousedown',event=>{if(event.button!==0)return;event.preventDefault();startDrag(item,event.clientY);});const remove=document.createElement('button');remove.type='button';remove.className='delete';remove.textContent='×';remove.setAttribute('aria-label',`Delete ${task.title}`);remove.addEventListener('click',()=>{task.deleted=true;task.deletedUpdatedAt=nowStamp();if(editingTaskId===task.id)editingTaskId=null;saveTasks();render();});let center;if(editingTaskId===task.id){center=document.createElement('div');center.className='task-editor';const title=document.createElement('input');title.type='text';title.className='task-title-edit';title.maxLength=120;title.value=task.title;title.autocomplete='off';title.setAttribute('aria-label','Task title');const details=document.createElement('textarea');details.className='task-details-edit';details.maxLength=600;details.value=task.details;details.placeholder='Details, deadline, or steps…';details.setAttribute('aria-label','Task details');const saveEditor=()=>{task.title=title.value.trim()||'Untitled task';task.details=details.value.trim();task.contentUpdatedAt=nowStamp();editingTaskId=null;saveTasks();render();};title.addEventListener('input',()=>{task.title=title.value.slice(0,120);task.contentUpdatedAt=nowStamp();saveTasks();});details.addEventListener('input',()=>{task.details=details.value.slice(0,600);task.contentUpdatedAt=nowStamp();autoSizeTextarea(details);saveTasks();});title.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();details.focus();}else if(event.key==='Escape'){editingTaskId=null;render();}});details.addEventListener('keydown',event=>{if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();saveEditor();}else if(event.key==='Escape'){editingTaskId=null;render();}});const actions=document.createElement('div');actions.className='editor-actions';const done=document.createElement('button');done.type='button';done.className='done-editing';done.textContent='Done';done.addEventListener('click',saveEditor);actions.append(done);center.append(title,details,actions);requestAnimationFrame(()=>{title.focus();title.setSelectionRange(title.value.length,title.value.length);autoSizeTextarea(details);});}else{center=document.createElement('button');center.type='button';center.className='task-content';center.setAttribute('aria-label',`Edit ${task.title}`);const title=document.createElement('span');title.className='task-title';title.textContent=task.title;center.append(title);if(task.details){const details=document.createElement('span');details.className='task-details';details.textContent=task.details;center.append(details);}center.addEventListener('click',()=>{editingTaskId=task.id;render();});}item.append(check,handle,center,remove);return item;}
-      function render(){elements.list.replaceChildren();const visible=visibleTasks();if(!visible.length){const empty=document.createElement('li');empty.className='empty';empty.textContent='Nothing left. Add a task when you need one.';elements.list.append(empty);}else visible.forEach(task=>elements.list.append(renderTask(task)));updateSummary();}
+      function renderTask(task){
+        const item=document.createElement('li');
+        item.className=`task${task.done?' done':''}`;
+        item.dataset.id=task.id;
+
+        const check=document.createElement('button');
+        check.type='button';
+        check.className='check';
+        check.textContent='✓';
+        check.setAttribute('aria-label',task.done?`Mark ${task.title} incomplete`:`Mark ${task.title} complete`);
+        check.addEventListener('click',()=>{task.done=!task.done;task.doneUpdatedAt=nowStamp();saveTasks();render();});
+
+        const handle=document.createElement('button');
+        handle.type='button';
+        handle.className='drag-handle';
+        handle.textContent='☰';
+        handle.setAttribute('aria-label',`Rearrange ${task.title}. Drag, or use the up and down arrow keys.`);
+        handle.title='Press and drag to rearrange';
+        handle.addEventListener('keydown',event=>{if(event.key==='ArrowUp'){event.preventDefault();moveTaskByKeyboard(task.id,-1);}else if(event.key==='ArrowDown'){event.preventDefault();moveTaskByKeyboard(task.id,1);}});
+        handle.addEventListener('touchstart',event=>{if(event.touches.length!==1)return;event.preventDefault();startDrag(item,event.touches[0].clientY);},{passive:false});
+        handle.addEventListener('mousedown',event=>{if(event.button!==0)return;event.preventDefault();startDrag(item,event.clientY);});
+
+        const remove=document.createElement('button');
+        remove.type='button';
+        remove.className='delete';
+        remove.textContent='×';
+        remove.setAttribute('aria-label',`Delete ${task.title}`);
+        remove.addEventListener('click',()=>{task.deleted=true;task.deletedUpdatedAt=nowStamp();if(editingTaskId===task.id)editingTaskId=null;saveTasks();render();});
+
+        let center;
+        if(editingTaskId===task.id){
+          center=document.createElement('div');
+          center.className='task-editor';
+
+          const title=document.createElement('input');
+          title.type='text';
+          title.className='task-title-edit';
+          title.maxLength=120;
+          title.value=task.title;
+          title.autocomplete='off';
+          title.setAttribute('aria-label','Task title');
+
+          const details=document.createElement('textarea');
+          details.className='task-details-edit';
+          details.maxLength=600;
+          details.value=task.details;
+          details.placeholder='Details, deadline, or steps…';
+          details.setAttribute('aria-label','Task details');
+
+          const cancelEditor=()=>{editingTaskId=null;render();};
+          const saveEditor=()=>{
+            const nextTitle=title.value.trim()||'Untitled task';
+            const nextDetails=details.value.trim();
+            const changed=nextTitle!==task.title||nextDetails!==task.details;
+            if(changed){
+              task.title=nextTitle;
+              task.details=nextDetails;
+              task.contentUpdatedAt=nowStamp();
+              saveTasks();
+            }
+            editingTaskId=null;
+            render();
+          };
+
+          details.addEventListener('input',()=>autoSizeTextarea(details));
+          title.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();details.focus();}else if(event.key==='Escape'){event.preventDefault();cancelEditor();}});
+          details.addEventListener('keydown',event=>{if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();saveEditor();}else if(event.key==='Escape'){event.preventDefault();cancelEditor();}});
+
+          const actions=document.createElement('div');
+          actions.className='editor-actions';
+          const done=document.createElement('button');
+          done.type='button';
+          done.className='done-editing';
+          done.textContent='Done';
+          done.addEventListener('click',saveEditor);
+          actions.append(done);
+          center.append(title,details,actions);
+
+          requestAnimationFrame(()=>{title.focus();title.setSelectionRange(title.value.length,title.value.length);autoSizeTextarea(details);});
+        }else{
+          center=document.createElement('button');
+          center.type='button';
+          center.className='task-content';
+          center.setAttribute('aria-label',`Edit ${task.title}`);
+          const title=document.createElement('span');
+          title.className='task-title';
+          title.textContent=task.title;
+          center.append(title);
+          if(task.details){
+            const details=document.createElement('span');
+            details.className='task-details';
+            details.textContent=task.details;
+            center.append(details);
+          }
+          center.addEventListener('click',()=>{editingTaskId=task.id;render();});
+        }
+
+        item.append(check,handle,center,remove);
+        return item;
+      }
+      function render(){elements.list.replaceChildren();const visible=visibleTasks();if(!visible.length){const empty=document.createElement('li');empty.className='empty';const title=document.createElement('span');title.className='empty-title';title.textContent='All clear.';const copy=document.createElement('span');copy.className='empty-copy';copy.textContent='Nothing active right now. Completed work is waiting in Archive.';empty.append(title,copy);elements.list.append(empty);}else visible.forEach(task=>elements.list.append(renderTask(task)));updateSummary();}
       elements.form.addEventListener('submit',event=>{event.preventDefault();const title=elements.input.value.trim();if(!title){elements.input.focus();return;}const stamp=nowStamp();tasks.push({id:makeId(),title,details:'',done:false,deleted:false,order:visibleTasks().length,createdAt:stamp,contentUpdatedAt:stamp,doneUpdatedAt:stamp,orderUpdatedAt:stamp,deletedUpdatedAt:''});elements.input.value='';saveTasks();render();elements.input.focus();});
       elements.clear.addEventListener('click',()=>{const stamp=nowStamp();visibleTasks().filter(task=>task.done).forEach(task=>{task.deleted=true;task.deletedUpdatedAt=stamp;});saveTasks();render();});
-      elements.settingsButton.addEventListener('click',()=>{elements.settings.classList.toggle('open');if(elements.settings.classList.contains('open'))elements.tokenInput.focus();});
+      elements.settingsButton.addEventListener('click',()=>{const open=elements.settings.classList.toggle('open');elements.settingsButton.setAttribute('aria-expanded',String(open));if(open)elements.tokenInput.focus();});
       elements.saveToken.addEventListener('click',()=>{const token=elements.tokenInput.value.trim();if(!token){setSyncStatus('Token not saved','error','Paste a GitHub fine-grained token first.');return;}localStorage.setItem(TOKEN_KEY,token);elements.tokenInput.value='';updateTokenUi();setSyncStatus('Token saved','success','It remains only in this browser. Tap Save to GitHub.');});
       elements.clearToken.addEventListener('click',()=>{localStorage.removeItem(TOKEN_KEY);updateTokenUi();setSyncStatus('Token removed','idle','This device is back to local-only mode.');});
       elements.pull.addEventListener('click',pullFromGitHub);elements.push.addEventListener('click',pushToGitHub);
@@ -175,6 +274,6 @@
       updateTokenUi();render();
     })();
   </script>
-  <script src="./sync-v2.js?v=20261004-1"></script>
+  <script src="./sync-v2.js?v=20261004-2"></script>
 </body>
 </html>

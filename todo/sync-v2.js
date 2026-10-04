@@ -18,9 +18,9 @@
     }
   }
 
-  import('./sync-v3.mjs?v=20261004-1')
-    .then(() => import('./archive-ui.mjs?v=20261004-1'))
-    .then(() => import('./sort-ui.mjs?v=20261004-1'))
+  import('./sync-v3.mjs?v=20261004-2')
+    .then(() => import('./archive-ui.mjs?v=20261004-2'))
+    .then(() => import('./sort-ui.mjs?v=20261004-2'))
     .catch(error => {
       console.error('Could not load todo app modules.', error);
       const status = document.getElementById('syncStatus');

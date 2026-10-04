@@ -27,7 +27,6 @@ import {
   let busy = false;
   let lastCheckAt = 0;
   let localSnapshot = loadTasks();
-  let syncBarVisible = true;
   let captureTimer = null;
 
   const oldPull = document.getElementById('pullButton');
@@ -42,43 +41,24 @@ import {
   const statusRow = document.getElementById('syncStatus');
   const message = document.getElementById('syncMessage');
   const detail = document.getElementById('syncTime');
-  const syncSummary = statusRow?.closest('.sync-summary');
   const syncBar = statusRow?.closest('.sync-bar');
   const list = document.getElementById('taskList');
 
-  if (syncSummary && !syncSummary.querySelector('.source-truth-label')) {
-    const label = document.createElement('div');
-    label.className = 'source-truth-label';
-    label.textContent = '☁ GitHub · source of truth';
-    syncSummary.insertBefore(label, statusRow);
-  }
-
-  const tip = document.querySelector('.tip');
-  if (tip) tip.textContent = 'GitHub is the source of truth. Only changes actually made on this device are marked unsaved.';
-
   const floating = document.createElement('button');
   floating.type = 'button';
-  floating.className = 'sync-float';
   floating.hidden = true;
-  floating.setAttribute('aria-label', 'Synchronization status');
-  document.body.append(floating);
+  floating.setAttribute('aria-hidden', 'true');
 
   const style = document.createElement('style');
   style.textContent = `
-    .source-truth-label{margin:0 0 4px 16px;color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.035em;text-transform:uppercase}
     #syncStatus[data-type="dirty"] .sync-dot,#syncStatus[data-type="remote"] .sync-dot{background:var(--warning)}
     #syncStatus[data-type="both"] .sync-dot{background:var(--danger)}
     #pushButton.needs-save{box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 24%,transparent)}
-    .sync-float{position:fixed;z-index:1000;top:max(12px,env(safe-area-inset-top));right:14px;min-width:auto;min-height:46px;padding:0 16px;border:1px solid var(--line);border-radius:999px;background:color-mix(in srgb,var(--card) 92%,transparent);color:var(--text);box-shadow:0 10px 30px rgba(0,0,0,.16);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);font-size:14px;font-weight:850;white-space:nowrap;transition:opacity .18s ease,transform .18s ease;transform-origin:top right}
-    .sync-float[data-state="dirty"]{background:color-mix(in srgb,var(--accent-soft) 88%,var(--card));color:var(--text)}
-    .sync-float[data-state="diverged"]{box-shadow:0 0 0 2px color-mix(in srgb,var(--danger) 45%,transparent),0 10px 30px rgba(0,0,0,.16)}
-    .sync-float[data-state="synced"]{width:48px;padding:0;border-radius:999px;color:var(--accent)}
-    .sync-float[hidden]{display:none}
     .sync-conflict-dialog{width:min(calc(100% - 28px),560px);max-height:80svh;border:1px solid var(--line);border-radius:22px;padding:0;background:var(--card);color:var(--text);box-shadow:0 24px 70px rgba(0,0,0,.35)}
     .sync-conflict-dialog::backdrop{background:rgba(0,0,0,.48);backdrop-filter:blur(3px)}
     .sync-conflict-box{padding:20px}.sync-conflict-box h2{margin:0 0 6px;font-size:21px}.sync-conflict-box p{line-height:1.45}
     .sync-conflict-lead{margin:0 0 16px;color:var(--muted);font-size:14px}.sync-conflict-field{margin:0 0 10px;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
-    .sync-conflict-choice{width:100%;min-height:auto;margin:0 0 10px;padding:13px 14px;border:1px solid var(--line);border-radius:14px;background:transparent;color:var(--text);text-align:left;white-space:normal}
+    .sync-conflict-choice{width:100%;min-height:44px;margin:0 0 10px;padding:13px 14px;border:1px solid var(--line);border-radius:14px;background:transparent;color:var(--text);text-align:left;white-space:normal}
     .sync-conflict-choice strong{display:block;margin-bottom:5px;color:var(--accent);font-size:12px;text-transform:uppercase}.sync-conflict-value{display:block;overflow-wrap:anywhere;white-space:pre-wrap;font-size:15px;line-height:1.4}
     .sync-conflict-counter{margin:13px 0 0;color:var(--muted);font-size:12px;text-align:center}
     @media(max-width:520px){.sync-float{top:max(10px,env(safe-area-inset-top));right:10px}}
@@ -119,16 +99,24 @@ import {
     if (detail) detail.textContent = subtext;
   }
 
-  function updateFloating(syncState) {
-    const count = pendingCount();
-    floating.dataset.state = syncState;
-    if (syncState === 'local_dirty') floating.textContent = `● ${count} ${count === 1 ? 'change' : 'changes'}  ↑ Save`;
-    else if (syncState === 'diverged') floating.textContent = `⚠ ${count} local + GitHub`;
-    else if (syncState === 'remote_ahead') floating.textContent = '↓ GitHub changed';
-    else if (syncState === 'synced') floating.textContent = '☁ ✓';
-    else if (syncState === 'offline') floating.textContent = count ? `○ ${count} offline` : '○ Offline';
-    else floating.textContent = count ? `● ${count} local` : '☁';
-    floating.hidden = syncBarVisible;
+  function updateFloating() {
+    floating.hidden = true;
+  }
+
+  function relativeSyncTime(raw) {
+    const date = new Date(raw);
+    if (!raw || Number.isNaN(date.getTime())) return 'just now';
+    const delta = Math.max(0, Date.now() - date.getTime());
+    const minute = 60 * 1000;
+    const hour = 60 * minute;
+    const day = 24 * hour;
+    if (delta < minute) return 'just now';
+    if (delta < hour) return `${Math.max(1, Math.floor(delta / minute))} min ago`;
+    if (delta < day) return `${Math.max(1, Math.floor(delta / hour))} hr ago`;
+    if (delta < 2 * day) return 'yesterday';
+    const options = {month:'short',day:'numeric'};
+    if (date.getFullYear() !== new Date().getFullYear()) options.year='numeric';
+    return new Intl.DateTimeFormat(undefined,options).format(date);
   }
 
   function updateUi() {
@@ -146,12 +134,11 @@ import {
     else if (syncState === 'diverged') setStatus('This device and GitHub both changed','both',`${count} real local ${count===1?'change':'changes'} · Save will reconcile.`);
     else if (syncState === 'local_dirty') setStatus(`${count} unsaved ${count===1?'change':'changes'}`,'dirty','These changes were made on this device and are not yet on GitHub.');
     else if (syncState === 'remote_ahead') setStatus('GitHub has newer changes','remote','No local work to protect · updating this device automatically.');
-    else if (syncState === 'offline') setStatus(count?`${count} unsaved ${count===1?'change':'changes'}`:'Working locally','both','GitHub is unavailable; local work is preserved.');
+    else if (syncState === 'offline') setStatus(count?`${count} unsaved ${count===1?'change':'changes'}`:'Offline','error','Local work is safe. GitHub is unavailable.');
     else {
-      const when = state.lastSyncedAt ? new Date(state.lastSyncedAt).toLocaleString() : 'just now';
-      setStatus('Synced with GitHub','success',`Working copy matches source of truth · ${when}`);
+      setStatus('✓ Synced','success',relativeSyncTime(state.lastSyncedAt));
     }
-    updateFloating(syncState);
+    updateFloating();
   }
 
   function setBusy(text, subtext) {
@@ -299,7 +286,7 @@ import {
         return;
       }
       updateUi();
-    }catch(error){setStatus(pendingCount()?`${pendingCount()} unsaved changes`:'Working locally','both',`GitHub check failed · ${error.message}`);updateFloating('offline');}
+    }catch(error){setStatus('Sync problem','error',`Local work is safe · ${error.message}`);updateFloating();}
   }
 
   function conflictValue(value){if(typeof value==='boolean')return value?'Yes':'No';if(value===''||value===null||value===undefined)return'(empty)';return String(value);}
@@ -337,13 +324,15 @@ import {
   floating.addEventListener('click',()=>{const count=pendingCount();if(count>0)save();else if(remoteChanged)pull();});
 
   document.addEventListener('submit',event=>{if(event.target?.id==='taskForm')captureAfterEvent('add');});
-  document.addEventListener('input',event=>{if(list?.contains(event.target))captureAfterEvent('edit');});
   document.addEventListener('click',event=>{if(event.target?.id==='clearCompleted')captureAfterEvent('clear_completed');else if(list?.contains(event.target))captureAfterEvent('task');});
-  document.addEventListener('keydown',event=>{if(list?.contains(event.target)&&(event.key==='ArrowUp'||event.key==='ArrowDown'))captureAfterEvent('reorder');});
+  document.addEventListener('keydown',event=>{
+    if(!list?.contains(event.target))return;
+    if(event.key==='ArrowUp'||event.key==='ArrowDown')captureAfterEvent('reorder');
+    else if((event.metaKey||event.ctrlKey)&&event.key==='Enter')captureAfterEvent('edit');
+  });
   document.addEventListener('touchend',()=>captureAfterEvent('reorder'));
   document.addEventListener('mouseup',()=>captureAfterEvent('reorder'));
 
-  if(syncBar&&'IntersectionObserver'in window){new IntersectionObserver(entries=>{syncBarVisible=entries[0]?.isIntersecting??true;updateUi();},{threshold:.15}).observe(syncBar);}
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkRemote();});
   window.addEventListener('pageshow',()=>checkRemote());
   window.addEventListener('online',()=>checkRemote(true));
@@ -351,6 +340,6 @@ import {
   document.getElementById('saveTokenButton')?.addEventListener('click',()=>setTimeout(()=>checkRemote(true),40));
   document.getElementById('clearTokenButton')?.addEventListener('click',()=>setTimeout(updateUi,40));
 
-  const note=sessionStorage.getItem('todo-v3-migration-note');if(note){sessionStorage.removeItem('todo-v3-migration-note');setStatus(note,'success','GitHub remains the source of truth.');setTimeout(updateUi,1800);}else updateUi();
+  const note=sessionStorage.getItem('todo-v3-migration-note');if(note){sessionStorage.removeItem('todo-v3-migration-note');setStatus(note,'success','GitHub sync is ready.');setTimeout(updateUi,1800);}else updateUi();
   checkRemote(true);
 })();
