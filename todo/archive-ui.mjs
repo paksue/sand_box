@@ -42,28 +42,28 @@ import { splitTaskBuckets, restoreTask, archiveLabel, eventStamp } from './archi
     .task-view-tab[aria-selected="true"]::after{content:"";position:absolute;left:22%;right:22%;bottom:3px;height:3px;border-radius:999px;background:var(--accent);}
     .task-view-tab[aria-selected="true"] strong{background:var(--accent-soft);color:var(--accent);}
     .archive-native-delete{display:none!important;}
-    .task-menu-button{display:grid;place-items:center;width:38px;height:38px;min-width:38px;min-height:38px;margin-top:2px;padding:0;border-radius:12px;background:transparent;color:var(--muted);font-size:22px;font-weight:800;letter-spacing:1px;}
+    .task-menu-button{display:grid;place-items:center;width:44px;height:44px;min-width:44px;min-height:44px;margin:0;padding:0;border-radius:12px;background:transparent;color:var(--muted);font-size:22px;font-weight:800;letter-spacing:1px;}
     .task-menu-button:hover,.task-menu-button:focus-visible{background:var(--accent-soft);color:var(--accent);outline:none;}
     .task-action-menu{position:fixed;z-index:1300;width:172px;padding:7px;border:1px solid var(--line);border-radius:16px;background:color-mix(in srgb,var(--card) 96%,transparent);box-shadow:0 16px 42px rgba(0,0,0,.2);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);}
     .task-action-menu button{display:flex;align-items:center;width:100%;min-height:42px;padding:0 12px;border-radius:11px;background:transparent;color:var(--text);text-align:left;font-size:14px;}
     .task-action-menu button:hover,.task-action-menu button:focus-visible{background:var(--accent-soft);outline:none;}
     .task-action-menu .archive-action{color:var(--accent);}
     .archive-group{padding:18px 16px 8px;color:var(--muted);font-size:12px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--line);}
-    .archive-row{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:start;gap:10px;min-height:78px;padding:13px 14px;border-bottom:1px solid var(--line);}
+    .archive-row{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:start;gap:8px;min-height:68px;padding:10px 12px;border-bottom:1px solid var(--line);}
     .archive-icon{display:grid;place-items:center;width:34px;height:34px;margin-top:2px;border:2px solid var(--accent);border-radius:50%;color:var(--accent);font-weight:900;}
     .archive-row.manual .archive-icon{border-radius:11px;border-color:var(--muted);color:var(--muted);font-size:16px;}
     .archive-copy{min-width:0;padding-top:1px;}
     .archive-title{font-size:16px;font-weight:760;line-height:1.3;overflow-wrap:anywhere;}
     .archive-details{margin-top:3px;color:var(--muted);font-size:13px;line-height:1.38;white-space:pre-wrap;overflow-wrap:anywhere;}
     .archive-meta{margin-top:6px;color:var(--muted);font-size:11px;font-weight:700;}
-    .restore-button{min-width:auto;min-height:38px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--accent);font-size:13px;}
+    .restore-button{min-width:auto;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--accent);font-size:13px;}
     .archive-empty{padding:44px 22px;color:var(--muted);text-align:center;line-height:1.5;}
     .task.completing-out{animation:archive-away .62s cubic-bezier(.2,.75,.25,1) forwards;transform-origin:center;}
     @keyframes archive-away{0%,55%{opacity:1;transform:translateX(0) scale(1)}100%{opacity:0;transform:translateX(18px) scale(.985)}}
     .archive-toast{position:fixed;z-index:1400;left:50%;bottom:max(22px,env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px;max-width:calc(100% - 28px);min-height:50px;padding:8px 10px 8px 16px;border:1px solid var(--line);border-radius:999px;background:color-mix(in srgb,var(--card) 96%,transparent);color:var(--text);box-shadow:0 16px 48px rgba(0,0,0,.22);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);transform:translateX(-50%);font-size:14px;font-weight:760;white-space:nowrap;}
     .archive-toast button{min-width:auto;min-height:36px;padding:0 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:13px;}
     #clearCompleted{display:none!important;}
-    @media(max-width:430px){.task-view-tabs{padding-left:8px;padding-right:8px}.archive-row{grid-template-columns:38px minmax(0,1fr) auto;padding-left:10px;padding-right:10px;gap:7px}.restore-button{padding:0 10px}.archive-toast{bottom:max(16px,env(safe-area-inset-bottom));font-size:13px}}
+    @media(max-width:430px){.task-view-tabs{padding-left:8px;padding-right:8px}.archive-row{grid-template-columns:38px minmax(0,1fr) auto;padding-left:9px;padding-right:9px;gap:6px}.restore-button{padding:0 10px}.archive-toast{bottom:max(16px,env(safe-area-inset-bottom));font-size:13px}}\n    @media(prefers-reduced-motion:reduce){.task.completing-out{animation:none!important}}
   `;
   document.head.append(style);
 
