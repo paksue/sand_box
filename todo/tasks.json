@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-10-04T12:44:11.381Z",
+  "updatedAt": "2026-10-04T19:18:43.914Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -722,13 +722,13 @@
       "title": "Car insurance Tesla",
       "details": "",
       "done": false,
-      "deleted": false,
+      "deleted": true,
       "order": 46,
       "createdAt": "2026-10-01T12:47:17.227Z",
       "contentUpdatedAt": "2026-10-01T12:47:17.227Z",
       "doneUpdatedAt": "2026-10-01T12:47:17.227Z",
       "orderUpdatedAt": "2026-10-01T12:47:17.227Z",
-      "deletedUpdatedAt": ""
+      "deletedUpdatedAt": "2026-10-04T19:18:40.566Z"
     }
   ]
 }
