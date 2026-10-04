@@ -242,7 +242,6 @@ import { splitTaskBuckets, restoreTask, archiveLabel, eventStamp } from './archi
     for (const button of tabs.querySelectorAll('.task-view-tab')) {
       button.setAttribute('aria-selected', String(button.dataset.view === view));
     }
-    form.hidden = view === 'archive';
     remaining.textContent = view === 'active' ? `${activeCount} ${activeCount === 1 ? 'task' : 'tasks'} remaining` : `${archiveCount} in archive`;
     if (clearCompleted) clearCompleted.hidden = true;
   }
@@ -332,6 +331,13 @@ import { splitTaskBuckets, restoreTask, archiveLabel, eventStamp } from './archi
     }
     if (observer) observer.observe(list, {childList:true,subtree:false});
   }
+
+  form.addEventListener('submit', () => {
+    if (view !== 'archive') return;
+    view = 'active';
+    activeNodes = null;
+    sessionStorage.setItem(VIEW_KEY, view);
+  }, true);
 
   tabs.addEventListener('click', event => {
     const button = event.target.closest('.task-view-tab');
