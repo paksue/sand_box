@@ -9,11 +9,9 @@ import { splitTaskBuckets, restoreTask, archiveLabel, eventStamp } from './archi
 
   const list = document.getElementById('taskList');
   const form = document.getElementById('taskForm');
-  const count = document.getElementById('count');
-  const progress = document.getElementById('progress');
   const remaining = document.getElementById('remaining');
   const clearCompleted = document.getElementById('clearCompleted');
-  if (!list || !form || !count || !progress || !remaining) return;
+  if (!list || !form || !remaining) return;
 
   let view = sessionStorage.getItem(VIEW_KEY) === 'archive' ? 'archive' : 'active';
   let activeNodes = null;
@@ -36,7 +34,7 @@ import { splitTaskBuckets, restoreTask, archiveLabel, eventStamp } from './archi
   const style = document.createElement('style');
   style.textContent = `
     .task-view-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:8px 12px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--card) 94%,var(--accent-soft));}
-    .task-view-tab{position:relative;display:flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:0 14px;border:0;border-radius:13px;background:transparent;color:var(--muted);font-size:14px;font-weight:800;box-shadow:none;}
+    .task-view-tab{position:relative;display:flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:0 14px;border:0;border-radius:13px;background:transparent;color:var(--muted);font-size:14px;font-weight:800;box-shadow:none;}
     .task-view-tab strong{display:grid;place-items:center;min-width:24px;height:24px;padding:0 7px;border-radius:999px;background:color-mix(in srgb,var(--line) 75%,transparent);color:inherit;font-size:12px;}
     .task-view-tab[aria-selected="true"]{background:var(--card);color:var(--text);box-shadow:0 3px 12px rgba(0,0,0,.06);}
     .task-view-tab[aria-selected="true"]::after{content:"";position:absolute;left:22%;right:22%;bottom:3px;height:3px;border-radius:999px;background:var(--accent);}
@@ -45,7 +43,7 @@ import { splitTaskBuckets, restoreTask, archiveLabel, eventStamp } from './archi
     .task-menu-button{display:grid;place-items:center;width:44px;height:44px;min-width:44px;min-height:44px;margin:0;padding:0;border-radius:12px;background:transparent;color:var(--muted);font-size:22px;font-weight:800;letter-spacing:1px;}
     .task-menu-button:hover,.task-menu-button:focus-visible{background:var(--accent-soft);color:var(--accent);outline:none;}
     .task-action-menu{position:fixed;z-index:1300;width:172px;padding:7px;border:1px solid var(--line);border-radius:16px;background:color-mix(in srgb,var(--card) 96%,transparent);box-shadow:0 16px 42px rgba(0,0,0,.2);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);}
-    .task-action-menu button{display:flex;align-items:center;width:100%;min-height:42px;padding:0 12px;border-radius:11px;background:transparent;color:var(--text);text-align:left;font-size:14px;}
+    .task-action-menu button{display:flex;align-items:center;width:100%;min-height:44px;padding:0 12px;border-radius:11px;background:transparent;color:var(--text);text-align:left;font-size:14px;}
     .task-action-menu button:hover,.task-action-menu button:focus-visible{background:var(--accent-soft);outline:none;}
     .task-action-menu .archive-action{color:var(--accent);}
     .archive-group{padding:18px 16px 8px;color:var(--muted);font-size:12px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--line);}
@@ -58,10 +56,12 @@ import { splitTaskBuckets, restoreTask, archiveLabel, eventStamp } from './archi
     .archive-meta{margin-top:6px;color:var(--muted);font-size:11px;font-weight:700;}
     .restore-button{min-width:auto;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--accent);font-size:13px;}
     .archive-empty{padding:44px 22px;color:var(--muted);text-align:center;line-height:1.5;}
+    .archive-empty-title{display:block;color:var(--text);font-size:17px;font-weight:800}
+    .archive-empty-copy{display:block;margin-top:6px;font-size:13px}
     .task.completing-out{animation:archive-away .62s cubic-bezier(.2,.75,.25,1) forwards;transform-origin:center;}
     @keyframes archive-away{0%,55%{opacity:1;transform:translateX(0) scale(1)}100%{opacity:0;transform:translateX(18px) scale(.985)}}
     .archive-toast{position:fixed;z-index:1400;left:50%;bottom:max(22px,env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px;max-width:calc(100% - 28px);min-height:50px;padding:8px 10px 8px 16px;border:1px solid var(--line);border-radius:999px;background:color-mix(in srgb,var(--card) 96%,transparent);color:var(--text);box-shadow:0 16px 48px rgba(0,0,0,.22);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);transform:translateX(-50%);font-size:14px;font-weight:760;white-space:nowrap;}
-    .archive-toast button{min-width:auto;min-height:36px;padding:0 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:13px;}
+    .archive-toast button{min-width:auto;min-height:44px;padding:0 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:13px;}
     #clearCompleted{display:none!important;}
     @media(max-width:430px){.task-view-tabs{padding-left:8px;padding-right:8px}.archive-row{grid-template-columns:38px minmax(0,1fr) auto;padding-left:9px;padding-right:9px;gap:6px}.restore-button{padding:0 10px}.archive-toast{bottom:max(16px,env(safe-area-inset-bottom));font-size:13px}}\n    @media(prefers-reduced-motion:reduce){.task.completing-out{animation:none!important}}
   `;
@@ -148,6 +148,7 @@ import { splitTaskBuckets, restoreTask, archiveLabel, eventStamp } from './archi
     const archive = document.createElement('button');
     archive.type = 'button';
     archive.className = 'archive-action';
+    archive.setAttribute('role','menuitem');
     archive.textContent = 'Archive task';
     archive.addEventListener('click', event => {
       event.stopPropagation();
@@ -155,11 +156,14 @@ import { splitTaskBuckets, restoreTask, archiveLabel, eventStamp } from './archi
       nativeDelete.click();
       showToast('Moved to Archive', () => restore(task.id));
     });
-    const cancel = document.createElement('button');
-    cancel.type = 'button';
-    cancel.textContent = 'Cancel';
-    cancel.addEventListener('click', closeMenu);
-    menu.append(archive, cancel);
+    menu.addEventListener('keydown', event => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeMenu();
+        button.focus();
+      }
+    });
+    menu.append(archive);
     document.body.append(menu);
     const rect = button.getBoundingClientRect();
     const width = 172;
@@ -167,6 +171,7 @@ import { splitTaskBuckets, restoreTask, archiveLabel, eventStamp } from './archi
     const top = Math.min(window.innerHeight - menu.offsetHeight - 10, rect.bottom + 6);
     menu.style.left = `${left}px`;
     menu.style.top = `${Math.max(10, top)}px`;
+    archive.focus();
   }
 
   function showToast(text, undo) {
@@ -238,11 +243,8 @@ import { splitTaskBuckets, restoreTask, archiveLabel, eventStamp } from './archi
       button.setAttribute('aria-selected', String(button.dataset.view === view));
     }
     form.hidden = view === 'archive';
-    count.textContent = view === 'active' ? `${activeCount} left` : `${archiveCount} archived`;
     remaining.textContent = view === 'active' ? `${activeCount} ${activeCount === 1 ? 'task' : 'tasks'} remaining` : `${archiveCount} in archive`;
     if (clearCompleted) clearCompleted.hidden = true;
-    const trackableTotal = activeCount + buckets.completed.length;
-    progress.style.width = trackableTotal ? `${buckets.completed.length / trackableTotal * 100}%` : '0%';
   }
 
   function decorateActive(buckets) {
@@ -279,7 +281,13 @@ import { splitTaskBuckets, restoreTask, archiveLabel, eventStamp } from './archi
     if (!buckets.active.length) {
       const empty = document.createElement('li');
       empty.className = 'empty';
-      empty.textContent = 'All clear. Completed work is waiting in Archive.';
+      const title = document.createElement('span');
+      title.className = 'empty-title';
+      title.textContent = 'All clear.';
+      const copy = document.createElement('span');
+      copy.className = 'empty-copy';
+      copy.textContent = 'Nothing active right now. Completed work is waiting in Archive.';
+      empty.append(title, copy);
       list.append(empty);
     }
   }
@@ -298,7 +306,13 @@ import { splitTaskBuckets, restoreTask, archiveLabel, eventStamp } from './archi
     if (!nodes.length) {
       const empty = document.createElement('li');
       empty.className = 'archive-empty';
-      empty.textContent = 'Archive is empty. Completed and manually archived tasks will appear here.';
+      const title = document.createElement('span');
+      title.className = 'archive-empty-title';
+      title.textContent = 'Archive is empty.';
+      const copy = document.createElement('span');
+      copy.className = 'archive-empty-copy';
+      copy.textContent = 'Completed and archived tasks will appear here.';
+      empty.append(title, copy);
       nodes.push(empty);
     }
     list.replaceChildren(...nodes);
