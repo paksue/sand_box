@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-10-04T19:18:43.914Z",
+  "updatedAt": "2026-10-14T22:37:54.654Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -708,12 +708,12 @@
       "id": "0b002e34-3941-4569-bb7f-d537204a8b0a",
       "title": "Today psat cough prev emma clean filter exercise list",
       "details": "Also memory palace these + iron infusion (find root causes) + mattress + window blind + sauna",
-      "done": false,
+      "done": true,
       "deleted": false,
       "order": 45,
       "createdAt": "2026-09-27T13:42:06.501Z",
       "contentUpdatedAt": "2026-10-04T12:44:07.787Z",
-      "doneUpdatedAt": "2026-09-27T13:42:06.501Z",
+      "doneUpdatedAt": "2026-10-14T22:37:34.931Z",
       "orderUpdatedAt": "2026-09-27T13:42:06.501Z",
       "deletedUpdatedAt": ""
     },
