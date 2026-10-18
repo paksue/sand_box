@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-10-17T01:11:58.299Z",
+  "updatedAt": "2026-10-18T12:59:55.976Z",
   "tasks": [
     {
       "id": "1785674520215-c5f715dda729b8",
@@ -754,6 +754,19 @@
       "contentUpdatedAt": "2026-10-17T01:11:46.677Z",
       "doneUpdatedAt": "2026-10-17T01:11:46.677Z",
       "orderUpdatedAt": "2026-10-17T01:11:46.677Z",
+      "deletedUpdatedAt": ""
+    },
+    {
+      "id": "9d229c63-51a3-4c14-a813-1cae8ba4edda",
+      "title": "Girls talks",
+      "details": "Medicine / Vaccine and metabolic health",
+      "done": false,
+      "deleted": false,
+      "order": 48,
+      "createdAt": "2026-10-18T12:59:11.867Z",
+      "contentUpdatedAt": "2026-10-18T12:59:42.470Z",
+      "doneUpdatedAt": "2026-10-18T12:59:11.867Z",
+      "orderUpdatedAt": "2026-10-18T12:59:11.867Z",
       "deletedUpdatedAt": ""
     }
   ]
