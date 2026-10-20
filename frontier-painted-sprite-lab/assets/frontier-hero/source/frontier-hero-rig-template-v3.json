@@ -1,0 +1,115 @@
+{
+  "skeleton": {
+    "hash": "frontier-hero-production-rig-template-v3-current-spine43",
+    "spine": "4.3.0",
+    "x": -210,
+    "y": -20,
+    "width": 420,
+    "height": 430,
+    "images": "./layers/"
+  },
+  "bones": [
+    {"name":"root"},
+    {"name":"horse_body","parent":"root","x":0,"y":150},
+    {"name":"chest","parent":"horse_body","x":-58,"y":18,"length":76,"rotation":8},
+    {"name":"pelvis","parent":"horse_body","x":58,"y":0,"length":62,"rotation":-4},
+    {"name":"neck","parent":"chest","x":52,"y":22,"length":88,"rotation":68},
+    {"name":"head","parent":"neck","x":78,"y":0,"length":58,"rotation":-38},
+    {"name":"front_near_upper","parent":"chest","x":20,"y":-25,"length":78,"rotation":-82},
+    {"name":"front_near_lower","parent":"front_near_upper","x":78,"y":0,"length":76,"rotation":8},
+    {"name":"front_near_hoof","parent":"front_near_lower","x":76,"y":0,"length":28,"rotation":-5},
+    {"name":"front_far_upper","parent":"chest","x":6,"y":-22,"length":76,"rotation":-88},
+    {"name":"front_far_lower","parent":"front_far_upper","x":76,"y":0,"length":74,"rotation":14},
+    {"name":"front_far_hoof","parent":"front_far_lower","x":74,"y":0,"length":27,"rotation":-8},
+    {"name":"hind_near_upper","parent":"pelvis","x":28,"y":-18,"length":82,"rotation":-102},
+    {"name":"hind_near_lower","parent":"hind_near_upper","x":82,"y":0,"length":78,"rotation":28},
+    {"name":"hind_near_hoof","parent":"hind_near_lower","x":78,"y":0,"length":30,"rotation":-14},
+    {"name":"hind_far_upper","parent":"pelvis","x":12,"y":-16,"length":80,"rotation":-96},
+    {"name":"hind_far_lower","parent":"hind_far_upper","x":80,"y":0,"length":76,"rotation":22},
+    {"name":"hind_far_hoof","parent":"hind_far_lower","x":76,"y":0,"length":29,"rotation":-12},
+    {"name":"front_near_ik","parent":"root","x":-53,"y":12},
+    {"name":"front_far_ik","parent":"root","x":-76,"y":16},
+    {"name":"hind_near_ik","parent":"root","x":91,"y":10},
+    {"name":"hind_far_ik","parent":"root","x":66,"y":14},
+    {"name":"tail_1","parent":"pelvis","x":45,"y":22,"length":70,"rotation":-8},
+    {"name":"tail_2","parent":"tail_1","x":70,"y":0,"length":74,"rotation":-6},
+    {"name":"rider_pelvis","parent":"horse_body","x":12,"y":56,"length":35,"rotation":84},
+    {"name":"rider_torso","parent":"rider_pelvis","x":35,"y":0,"length":70,"rotation":3},
+    {"name":"rider_head","parent":"rider_torso","x":70,"y":0,"length":28,"rotation":4},
+    {"name":"rider_upper_arm","parent":"rider_torso","x":48,"y":10,"length":55,"rotation":52},
+    {"name":"rider_lower_arm","parent":"rider_upper_arm","x":55,"y":0,"length":48,"rotation":10},
+    {"name":"spear","parent":"rider_lower_arm","x":48,"y":0,"length":210,"rotation":5},
+    {"name":"hair_1","parent":"rider_head","x":18,"y":8,"length":52,"rotation":168},
+    {"name":"hair_2","parent":"hair_1","x":52,"y":0,"length":54,"rotation":-8},
+    {"name":"feathers_1","parent":"rider_head","x":12,"y":18,"length":62,"rotation":130},
+    {"name":"feathers_2","parent":"feathers_1","x":62,"y":0,"length":58,"rotation":-6}
+  ],
+  "constraints": [
+    {"type":"ik","name":"front_near_leg_ik","bones":["front_near_upper","front_near_lower"],"target":"front_near_ik","mix":1,"bendPositive":true,"softness":8},
+    {"type":"ik","name":"front_far_leg_ik","bones":["front_far_upper","front_far_lower"],"target":"front_far_ik","mix":1,"bendPositive":true,"softness":8},
+    {"type":"ik","name":"hind_near_leg_ik","bones":["hind_near_upper","hind_near_lower"],"target":"hind_near_ik","mix":1,"bendPositive":false,"softness":10},
+    {"type":"ik","name":"hind_far_leg_ik","bones":["hind_far_upper","hind_far_lower"],"target":"hind_far_ik","mix":1,"bendPositive":false,"softness":10}
+  ],
+  "events": {
+    "hoof_front_contact": {},
+    "hoof_rear_contact": {},
+    "impact": {},
+    "step": {},
+    "walk_contact_near": {},
+    "walk_load_near": {},
+    "walk_passing_near": {},
+    "walk_push_near": {},
+    "walk_contact_far": {},
+    "walk_load_far": {},
+    "walk_passing_far": {},
+    "walk_push_far": {}
+  },
+  "animations": {
+    "idle_alive": {
+      "bones": {
+        "horse_body": {"translate":[{"y":0},{"time":0.8,"y":2.2},{"time":1.6,"y":0},{"time":2.4,"y":-1.3},{"time":3.2,"y":0}],"rotate":[{"angle":0},{"time":1.6,"angle":0.7},{"time":3.2,"angle":0}]},
+        "neck": {"rotate":[{"angle":0},{"time":0.9,"angle":1.7},{"time":2.1,"angle":-1.1},{"time":3.2,"angle":0}]},
+        "rider_torso": {"rotate":[{"angle":0},{"time":1.0,"angle":-0.8},{"time":2.0,"angle":0.7},{"time":3.2,"angle":0}]},
+        "tail_1": {"rotate":[{"angle":-2},{"time":0.8,"angle":4},{"time":1.8,"angle":-3},{"time":2.7,"angle":3},{"time":3.2,"angle":-2}]}
+      }
+    },
+    "walk": {
+      "bones": {
+        "horse_body": {"translate":[{"y":0},{"time":0.125,"y":2},{"time":0.25,"y":3},{"time":0.375,"y":1.4},{"time":0.5,"y":0},{"time":0.625,"y":2},{"time":0.75,"y":3},{"time":0.875,"y":1.4},{"time":1,"y":0}],"rotate":[{"angle":0},{"time":0.25,"angle":1.2},{"time":0.5,"angle":0},{"time":0.75,"angle":-1},{"time":1,"angle":0}]},
+        "front_near_ik":{"translate":[{"x":0,"y":0},{"time":0.125,"x":-4,"y":0},{"time":0.25,"x":16,"y":24},{"time":0.375,"x":40,"y":16},{"time":0.5,"x":60,"y":0},{"time":0.625,"x":48,"y":0},{"time":0.75,"x":32,"y":0},{"time":0.875,"x":16,"y":0},{"time":1,"x":0,"y":0}]},
+        "front_far_ik":{"translate":[{"x":60,"y":0},{"time":0.125,"x":48,"y":0},{"time":0.25,"x":32,"y":0},{"time":0.375,"x":16,"y":0},{"time":0.5,"x":0,"y":0},{"time":0.625,"x":-4,"y":0},{"time":0.75,"x":16,"y":24},{"time":0.875,"x":40,"y":16},{"time":1,"x":60,"y":0}]},
+        "hind_near_ik":{"translate":[{"x":56,"y":0},{"time":0.125,"x":44,"y":0},{"time":0.25,"x":28,"y":0},{"time":0.375,"x":12,"y":0},{"time":0.5,"x":0,"y":0},{"time":0.625,"x":-4,"y":0},{"time":0.75,"x":14,"y":20},{"time":0.875,"x":36,"y":14},{"time":1,"x":56,"y":0}]},
+        "hind_far_ik":{"translate":[{"x":0,"y":0},{"time":0.125,"x":-4,"y":0},{"time":0.25,"x":14,"y":20},{"time":0.375,"x":36,"y":14},{"time":0.5,"x":56,"y":0},{"time":0.625,"x":44,"y":0},{"time":0.75,"x":28,"y":0},{"time":0.875,"x":12,"y":0},{"time":1,"x":0,"y":0}]},
+        "neck":{"rotate":[{"angle":0},{"time":0.25,"angle":-2.5},{"time":0.5,"angle":0},{"time":0.75,"angle":2},{"time":1,"angle":0}]},
+        "rider_torso":{"rotate":[{"angle":0},{"time":0.31,"angle":-2},{"time":0.56,"angle":1.4},{"time":0.82,"angle":-1},{"time":1,"angle":0}]},
+        "spear":{"rotate":[{"angle":0},{"time":0.36,"angle":-2.8},{"time":0.66,"angle":2.1},{"time":1,"angle":0}]},
+        "tail_1":{"rotate":[{"angle":-4},{"time":0.25,"angle":8},{"time":0.5,"angle":-6},{"time":0.75,"angle":7},{"time":1,"angle":-4}]}
+      },
+      "events":[
+        {"time":0,"name":"walk_contact_near"},{"time":0.125,"name":"walk_load_near"},{"time":0.25,"name":"walk_passing_near"},{"time":0.375,"name":"walk_push_near"},
+        {"time":0.5,"name":"walk_contact_far"},{"time":0.625,"name":"walk_load_far"},{"time":0.75,"name":"walk_passing_far"},{"time":0.875,"name":"walk_push_far"}
+      ]
+    },
+    "land_step": {
+      "bones": {
+        "horse_body":{"translate":[{"x":0,"y":30},{"time":0.32,"x":2,"y":14},{"time":0.43,"x":4,"y":0},{"time":0.56,"x":10,"y":-17},{"time":0.72,"x":34,"y":-5},{"time":1.05,"x":62,"y":0}],"rotate":[{"angle":-4},{"time":0.43,"angle":2},{"time":0.56,"angle":6.5},{"time":0.78,"angle":1.5},{"time":1.05,"angle":0}]},
+        "front_near_ik":{"translate":[{"x":-4,"y":28},{"time":0.32,"x":0,"y":10},{"time":0.43,"x":0,"y":0},{"time":0.72,"x":0,"y":0},{"time":1.05,"x":35,"y":0}]},
+        "hind_near_ik":{"translate":[{"x":-8,"y":34},{"time":0.48,"x":-2,"y":12},{"time":0.62,"x":0,"y":0},{"time":0.82,"x":36,"y":0},{"time":1.05,"x":58,"y":0}]},
+        "neck":{"rotate":[{"angle":-5},{"time":0.43,"angle":5},{"time":0.58,"angle":10},{"time":0.82,"angle":-2},{"time":1.05,"angle":0}]},
+        "rider_torso":{"rotate":[{"angle":-2},{"time":0.48,"angle":-4},{"time":0.66,"angle":8},{"time":0.86,"angle":3},{"time":1.05,"angle":0}]},
+        "spear":{"rotate":[{"angle":0},{"time":0.58,"angle":-5},{"time":0.76,"angle":-10},{"time":0.92,"angle":6},{"time":1.05,"angle":0}]}
+      },
+      "events":[{"time":0.43,"name":"hoof_front_contact"},{"time":0.44,"name":"impact"},{"time":0.68,"name":"hoof_rear_contact"},{"time":0.78,"name":"step"}]
+    },
+    "rear_action": {
+      "bones": {
+        "horse_body":{"translate":[{"y":0},{"time":0.34,"y":34},{"time":0.72,"y":58},{"time":1.1,"y":20},{"time":1.35,"y":0}],"rotate":[{"angle":0},{"time":0.5,"angle":18},{"time":0.8,"angle":22},{"time":1.35,"angle":0}]},
+        "front_near_ik":{"translate":[{"x":0,"y":0},{"time":0.4,"x":20,"y":72},{"time":0.8,"x":10,"y":92},{"time":1.35,"x":0,"y":0}]},
+        "front_far_ik":{"translate":[{"x":0,"y":0},{"time":0.42,"x":-4,"y":66},{"time":0.82,"x":22,"y":82},{"time":1.35,"x":0,"y":0}]},
+        "neck":{"rotate":[{"angle":0},{"time":0.55,"angle":-12},{"time":0.9,"angle":-8},{"time":1.35,"angle":0}]},
+        "rider_torso":{"rotate":[{"angle":0},{"time":0.62,"angle":-9},{"time":0.94,"angle":4},{"time":1.35,"angle":0}]},
+        "spear":{"rotate":[{"angle":0},{"time":0.7,"angle":-12},{"time":1.02,"angle":6},{"time":1.35,"angle":0}]}
+      }
+    }
+  }
+}
