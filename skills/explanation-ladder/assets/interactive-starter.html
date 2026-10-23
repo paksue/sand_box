@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Interactive explanation starter</title>
+  <style>
+    :root { font-family: ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; line-height:1.55; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:light-dark(#f5f6fb,#10131b); color:light-dark(#171b2b,#eef2ff); }
+    main { width:min(860px,calc(100% - 32px)); margin:clamp(32px,8vh,84px) auto; }
+    .eyebrow { text-transform:uppercase; font-size:.75rem; letter-spacing:.15em; font-weight:800; }
+    h1 { max-width:17ch; font-size:clamp(2.15rem,6vw,4rem); letter-spacing:-.045em; line-height:1.09; margin:.2em 0; }
+    .intro { max-width:64ch; font-size:1.12rem; }
+    .stage { border:1px solid light-dark(#d7dcf0,#343b52); background:light-dark(#fff,#1c2231); border-radius:20px; padding:clamp(18px,5vw,38px); margin-top:26px; }
+    .bar { height:25px; overflow:hidden; background:light-dark(#e3e8f5,#333b52); border-radius:999px; margin:22px 0; }
+    .fill { background:linear-gradient(90deg,#2488f5,#1fb6a6); width:50%; height:100%; transition:width .24s ease; }
+    label { display:block; font-weight:700; margin:18px 0 8px; }
+    input[type=range] { display:block; width:100%; accent-color:#278dbe; min-height:36px; }
+    output { font-variant-numeric:tabular-nums; }
+    button { background:light-dark(#12213c,#d8e5ff); color:light-dark(#fff,#0d1422); border:0; padding:12px 18px; border-radius:12px; cursor:pointer; font:inherit; font-weight:700; }
+    button:focus-visible,input:focus-visible { outline:3px solid #19b2c5; outline-offset:4px; }
+    .muted { opacity:.8; }
+    @media (prefers-reduced-motion:reduce){.fill{transition:none}}
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Explore one idea</p>
+    <h1>Change the input. See the result.</h1>
+    <p class="intro">This tiny demo is a starter scaffold. Replace the model and explanation with your actual topic.</p>
+    <section class="stage" aria-label="Interactive model">
+      <p><strong>Current value:</strong> <output id="reading" for="amount">50%</output></p>
+      <div class="bar" aria-hidden="true"><div class="fill" id="fill"></div></div>
+      <label for="amount">Adjust the input</label>
+      <input id="amount" type="range" min="0" max="100" step="1" value="50">
+      <p id="explanation" aria-live="polite">Half of the available amount is selected.</p>
+      <button type="button" id="reset">Reset</button>
+      <p class="muted">The model is illustrative, not real-world data.</p>
+    </section>
+  </main>
+  <script>
+    const input = document.querySelector('#amount');
+    const output = document.querySelector('#reading');
+    const fill = document.querySelector('#fill');
+    const note = document.querySelector('#explanation');
+    function render() {
+      const amount = Number(input.value);
+      output.value = `${amount}%`;
+      fill.style.width = `${amount}%`;
+      note.textContent = amount === 50 ? 'Half of the available amount is selected.' :
+        amount < 50 ? 'Less than half is selected.' : 'More than half is selected.';
+    }
+    input.addEventListener('input', render);
+    document.querySelector('#reset').addEventListener('click', () => {input.value = '50'; render();});
+    render();
+  </script>
+</body>
+</html>
