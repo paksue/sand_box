@@ -8,7 +8,7 @@ import http from "node:http";
 import os from "node:os";
 import path from "node:path";
 import fs from "node:fs/promises";
-import {randomBytes,randomUUID,createHash,createPublicKey,verify,timingSafeEqual} from "node:crypto";
+import {randomBytes,randomInt,randomUUID,createHash,createPublicKey,verify,timingSafeEqual} from "node:crypto";
 
 const HOST="127.0.0.1";
 const PORT=42815;
@@ -20,12 +20,13 @@ const TOKEN_URL=AUTH+"/api/accounts/oauth/token";
 const DIR=path.join(os.homedir(),".orbit-ask");
 const FILE=path.join(DIR,"credentials.json");
 const SCOPE="openid profile email offline_access resource.invoke chatgpt.tokens.use.direct";
-const PAIR_CODE=String(Math.floor(100000+Math.random()*900000)).padStart(6,"0");
+const PAIR_CODE=String(randomInt(100000,1000000));
+let failedPairs=0;
+let pairLockedUntil=0;
 const PAIR_TOKEN=randomBytes(32).toString("hex");
 let credentials;
 let pending=null;
 let refreshInFlight=null;
-let signingIn=false;
 const allowedHost=(req)=>(req.headers.host||"")===HOST+":"+PORT;
 const b64=(buf)=>Buffer.from(buf).toString("base64url");
 const random=(length=32)=>b64(randomBytes(length));
@@ -65,7 +66,6 @@ function startSignIn(){
   pending={verifier,state,nonce,clientId,redirectUri,created:Date.now()};
   const params=new URLSearchParams({client_id:clientId,response_type:"code",redirect_uri:redirectUri,scope:SCOPE,resource:RESOURCE,state,nonce,code_challenge_method:"S256",code_challenge:hashed(verifier),ext_agent_host_id:credentials.hostId});
   if(registered){
-    if(credentials.profile?.id_token)params.set("id_token_hint",credentials.profile.id_token);
     if(credentials.profile?.email)params.set("login_hint",credentials.profile.email);
   }else params.set("agent_name_hint","Orbit Ask");
   return AUTH_URL+"?"+params.toString();
@@ -177,7 +177,7 @@ async function chat(req,res){
     while(true){
       const {done,value}=await reader.read();
       if(done)break;
-      buffer+=decoder.decode(value,{stream:true}).replace(/\r\n/g,"\n");
+      buffer+=decoder.decode(value,{stream:true});buffer=buffer.replace(/\r\n/g,"\n");
       let position;
       while((position=buffer.indexOf("\n\n"))>=0){
         const packet=buffer.slice(0,position);buffer=buffer.slice(position+2);
@@ -222,7 +222,13 @@ async function main(){
       if(!origin||!ORIGIN_ALLOW.has(origin))return send(res,403,{error:"Origin not allowed"});
       if(url.pathname==="/api/pair"&&req.method==="POST"){
         const body=await json(req,1000);
-        if(!equal(body.code||"",PAIR_CODE))return send(res,401,{error:"Incorrect pairing code"});
+        if(Date.now()<pairLockedUntil)return send(res,429,{error:"Too many pairing attempts; try again in a minute"});
+        if(!equal(body.code||"",PAIR_CODE)){
+          failedPairs++;
+          if(failedPairs>=8){pairLockedUntil=Date.now()+60000;failedPairs=0;}
+          return send(res,401,{error:"Incorrect pairing code"});
+        }
+        failedPairs=0;
         return send(res,200,{token:PAIR_TOKEN});
       }
       if(!permitted(req))return send(res,401,{error:"Invalid pairing token. Pair this browser again."});
