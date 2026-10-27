@@ -1,0 +1,77 @@
+name: Orbit Ask — Code & Pages verification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'chatgpt-pages-qa/**'
+      - '.github/workflows/orbit-ask-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check chatgpt-pages-qa/app.js
+          node --check chatgpt-pages-qa/companion/server.mjs
+
+      - name: Check required frontend elements
+        run: |
+          test -f chatgpt-pages-qa/index.html
+          test -f chatgpt-pages-qa/styles.css
+          grep -q 'id="composer"' chatgpt-pages-qa/index.html
+          grep -q 'id="signIn"' chatgpt-pages-qa/index.html
+          grep -q 'chatgpt.tokens.use.direct' chatgpt-pages-qa/companion/server.mjs
+          grep -q 'store:false,stream:true' chatgpt-pages-qa/companion/server.mjs
+
+      - name: Smoke-test local companion without credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          node chatgpt-pages-qa/companion/server.mjs > /tmp/orbit-companion.log 2>&1 &
+          PID=$!
+          trap 'kill "$PID" 2>/dev/null || true' EXIT
+          for i in {1..20}; do
+            if curl -fsS --max-time 2 http://127.0.0.1:42815/health >/tmp/orbit-health.json; then break; fi
+            sleep 1
+          done
+          grep -q '"ok":true' /tmp/orbit-health.json
+          # An unpaired browser cannot query ChatGPT account state.
+          HTTP_CODE=$(curl -s -o /tmp/orbit-unauthorized.json -w '%{http_code}' \
+            -H 'Origin: https://paksue.github.io' \
+            http://127.0.0.1:42815/api/status)
+          test "$HTTP_CODE" = '401'
+          # A foreign origin must be blocked, even with credentials.
+          HTTP_CODE=$(curl -s -o /tmp/orbit-forbidden.json -w '%{http_code}' \
+            -H 'Origin: https://evil.example' \
+            http://127.0.0.1:42815/api/status)
+          test "$HTTP_CODE" = '403'
+
+      - name: Check live Pages path (best effort)
+        continue-on-error: true
+        shell: bash
+        run: |
+          URL='https://paksue.github.io/sand_box/chatgpt-pages-qa/'
+          for i in {1..15}; do
+            if curl -fsSL --max-time 10 "$URL" | grep -q 'Where curiosity'; then
+              echo "Orbit Ask is live at $URL"
+              exit 0
+            fi
+            sleep 6
+          done
+          echo 'Pages not verified. Check Settings → Pages (main, root).'
+          exit 1
