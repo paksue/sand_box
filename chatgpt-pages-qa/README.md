@@ -10,7 +10,7 @@ A polished, responsive open-source question-and-answer app for **GitHub Pages**,
 
 ## What this does
 
-- A fast, responsive conversation UI with animated hero, prompt starters, model picker, copy, searchable-by-title conversation list (visually), delete and export.
+- A fast, responsive conversation UI with animated hero, prompt starters, model picker, copy, conversation sidebar, delete and export.
 - Persists chat text in your **own browser's localStorage**; no GitHub storage of personal conversations.
 - Asks real models only after sign-in and optional plan-sharing consent.
 - Uses OpenAI's **documented open-source Sign in with ChatGPT OAuth flow**, **not** reverse-engineered ChatGPT endpoints.
