@@ -37,8 +37,7 @@
   }
   function inlineMd(input) {
     let x=safe(input);
-    x=x.replace(/&grave;/g,"&#96;");
-    x=x.replace(/&#96;([^&#\n]+)&#96;/g,"<code>$1</code>");
+    x=x.replace(/\x60([^\x60\n]+)\x60/g,"<code>$1</code>");
     x=x.replace(/\*\*([^*\n]+)\*\*/g,"<strong>$1</strong>");
     return x;
   }
