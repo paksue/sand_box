@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#090b16">
+  <meta name="description" content="Orbit Ask — a private, open-source Q&A studio hosted on GitHub Pages.">
+  <title>Orbit Ask — Your ideas, in motion.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <div class="grain"></div>
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="./" aria-label="Orbit Ask home"><span class="brand-icon"><span></span></span><span>ORBIT<span class="brand-soft">ASK</span></span></a>
+      <button class="new-btn" id="newChat"><span class="plus">＋</span> New conversation <span class="key-hint">N</span></button>
+      <div class="sidebar-heading">YOUR SPACE <button class="icon-button" id="exportAll" title="Export conversations" aria-label="Export all conversations">↗</button></div>
+      <div class="chat-list" id="chatList" aria-label="Saved conversations"></div>
+      <div class="sidebar-bottom">
+        <div class="connection-mini"><span class="status-dot" id="sidebarDot"></span><div><strong id="sidebarStatus">Companion offline</strong><small id="sidebarSubstatus">Connect to enable AI</small></div></div>
+        <button class="settings-btn" id="openSettings"><span>⚙</span> Connection & settings <span>↗</span></button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="left-top"><button class="menu-btn" id="menuButton" aria-label="Toggle conversations">☰</button><span class="crumb">Workspace</span><span class="crumb-separator">/</span><strong id="activeChatTitle">New conversation</strong></div>
+        <div class="right-top"><span class="privacy-label"><span class="privacy-lock">◆</span> LOCAL FIRST</span><button class="model-button" id="modelToggle"><span class="model-glow"></span><span id="selectedModel">Choose a model</span><span class="chevron">⌄</span></button>
+          <div class="model-menu" id="modelMenu" hidden></div>
+        </div>
+      </header>
+      <section class="thread" id="thread">
+        <div class="welcome" id="welcome">
+          <div class="orb-stage"><div class="orb-halo"></div><div class="orb"><div class="orb-core"></div><div class="orb-lines"></div></div><div class="orb-satellite satellite-a"></div><div class="orb-satellite satellite-b"></div></div>
+          <div class="eyebrow"><span class="eyebrow-pip"></span> YOUR INTELLIGENCE WORKSPACE</div>
+          <h1>Where curiosity<br><em>meets clarity.</em></h1>
+          <p class="hero-copy">Ask anything. Explore deeper. Build on every answer.<br class="desktop-only"> An elegant space for your next big question.</p>
+          <div class="suggestions" id="suggestions">
+            <button class="suggestion" data-prompt="Explain transformers in AI using an intuitive analogy, then give the technical explanation."><span class="suggest-icon purple">◈</span><span><b>Understand something</b><small>Make a complex idea click</small></span><span class="suggest-arrow">↗</span></button>
+            <button class="suggestion" data-prompt="Help me brainstorm five creative software projects I could build in a weekend."><span class="suggest-icon blue">✧</span><span><b>Explore an idea</b><small>Find your next inspiration</small></span><span class="suggest-arrow">↗</span></button>
+            <button class="suggestion" data-prompt="Compare three practical ways to learn a difficult technical skill effectively."><span class="suggest-icon pink">▣</span><span><b>Think it through</b><small>Compare options thoughtfully</small></span><span class="suggest-arrow">↗</span></button>
+          </div>
+        </div>
+        <div class="messages" id="messages" aria-live="polite"></div>
+      </section>
+      <div class="composer-wrap">
+        <div class="notice" id="notice" hidden></div>
+        <form class="composer" id="composer">
+          <label class="sr-only" for="prompt">Ask Orbit anything</label>
+          <textarea id="prompt" rows="1" maxlength="10000" placeholder="Ask anything, or share an idea..." autocomplete="off"></textarea>
+          <div class="composer-footer"><div class="composer-meta"><span class="sparkle">✳</span><span id="composerMode">Private, local conversation history</span></div><div class="composer-actions"><span class="enter-hint">↵ to send</span><button class="send-button" id="send" type="submit" aria-label="Send message">↑</button></div></div>
+        </form>
+        <p class="footnote">Orbit Ask is independent of chatgpt.com conversations. Verify important answers.</p>
+      </div>
+    </main>
+  </div>
+  <div class="scrim" id="scrim" hidden></div>
+  <dialog id="settingsDialog">
+    <div class="dialog-head"><div><span class="dialog-overline">CONFIGURATION</span><h2>Connect your intelligence</h2></div><button class="close-btn" id="closeSettings" aria-label="Close settings">×</button></div>
+    <p class="dialog-copy">Orbit runs on GitHub Pages. AI requests are handled by a companion on your own computer, which keeps your ChatGPT tokens out of this website.</p>
+    <div class="setup-card">
+      <div class="setup-title"><span class="setup-number">01</span><div><strong>Start the local companion</strong><small>Windows, macOS, or Linux — requires Node.js 22+</small></div></div>
+      <div class="command"><code>cd companion &amp;&amp; node server.mjs</code><button id="copyCommand" title="Copy command">Copy</button></div>
+      <a href="https://github.com/paksue/sand_box/tree/main/chatgpt-pages-qa/companion" target="_blank" rel="noopener">Get the companion files ↗</a>
+    </div>
+    <div class="setup-card">
+      <div class="setup-title"><span class="setup-number">02</span><div><strong>Pair this browser</strong><small>Enter the 6-digit code shown in the companion terminal</small></div></div>
+      <div class="pair-row"><input id="pairCode" type="text" placeholder="000000" inputmode="numeric" maxlength="6" autocomplete="one-time-code"><button class="primary-btn" id="pairButton">Pair</button></div>
+      <div class="setup-feedback" id="pairFeedback"></div>
+    </div>
+    <div class="setup-card">
+      <div class="setup-title"><span class="setup-number">03</span><div><strong>Authorize ChatGPT plan usage</strong><small>Sign in and approve optional plan access</small></div></div>
+      <button class="signin-btn" id="signIn" disabled><span class="signin-mark">◉</span> Continue with ChatGPT <span>↗</span></button>
+      <div class="account-detail" id="accountDetail">Connect your companion first.</div>
+    </div>
+    <div class="settings-actions"><a href="https://chatgpt.com/#settings/Usage" target="_blank" rel="noopener">Manage plan usage ↗</a><button id="exportData">Export chats</button><button id="clearData">Delete local chats</button></div>
+    <div class="legal">The open-source authorization flow is intended for eligible locally hosted apps. Connection and model availability depend on your account and current OpenAI support. Safari and mobile browsers may block local HTTP companion access.</div>
+  </dialog>
+  <div class="toast" role="status" id="toast" aria-live="polite"></div>
+</body>
+</html>
