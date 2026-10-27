@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090e1b"><meta name="description" content="An offline interactive atlas of AI concepts: attention, embeddings, training, sampling, retrieval, and diffusion.">
+<title>Neural Atlas — An Interactive Field Guide to AI</title>
+<style>
+:root{color-scheme:dark;--bg:#090e1b;--surface:#10182a;--surface2:#151f34;--surface3:#1d2a43;--stroke:#293751;--text:#edf3ff;--muted:#94a8c6;--dim:#667b98;--violet:#a49cff;--cyan:#69deeb;--mint:#60dfaf;--amber:#ffd088;--coral:#ff9f9e;--radius:18px;--glow:rgba(123,111,255,.18)}
+*{box-sizing:border-box} html{scroll-behavior:smooth;overflow-x:clip} body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow-x:hidden} button,input,select{font:inherit} button{cursor:pointer} button:disabled{opacity:.42;cursor:not-allowed} a{color:var(--cyan)} a:hover{text-decoration-color:var(--mint)} :focus-visible{outline:2px solid var(--cyan);outline-offset:3px} ::selection{background:#746fea88;color:#fff}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background:radial-gradient(ellipse 650px 500px at 68% -15%,#443f9440,transparent 75%),radial-gradient(ellipse 700px 600px at 105% 75%,#045d7650,transparent 85%)}
+[hidden]{display:none!important}.shell{display:grid;grid-template-columns:252px minmax(0,1fr);min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;overflow:auto;border-right:1px solid var(--stroke);padding:29px 19px;display:flex;flex-direction:column;gap:31px;background:#0b1120f2;z-index:30}.brand{display:flex;align-items:center;gap:12px;padding:1px 8px}.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#b3aaff,#5d7aff);display:grid;place-items:center;color:#090e1b;font-weight:900;box-shadow:0 8px 30px #756aff44;font-size:22px}.brand b{display:block;letter-spacing:.11em;font-size:13px}.brand small{display:block;color:var(--dim);letter-spacing:.13em;font-size:10px;text-transform:uppercase}.navgroup-label,.eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-weight:750;color:var(--dim)}.navgroup-label{margin:0 13px 12px}.nav-list{display:grid;gap:6px}.nav-btn{border:0;width:100%;display:flex;align-items:center;gap:12px;text-align:left;background:transparent;color:var(--muted);padding:12px 13px;border-radius:11px;font-size:13px;font-weight:650;transition:.18s}.nav-btn:hover{background:var(--surface2);color:var(--text)}.nav-btn.active{color:#f4f3ff;background:linear-gradient(90deg,#45407966,#29274733);box-shadow:inset 3px 0 var(--violet)}.nav-icon{width:20px;display:inline-grid;place-items:center;font-size:17px}.side-bottom{margin-top:auto}.progress-panel{background:linear-gradient(145deg,#1b2541,#101929);border:1px solid var(--stroke);border-radius:15px;padding:17px}.progress-panel .row2{margin:9px 0}.barline{height:6px;background:#27334b;border-radius:100px;overflow:hidden}.barfill{height:100%;width:0;background:linear-gradient(90deg,var(--violet),var(--mint));transition:width .3s}.side-mini{font-size:11px;color:var(--dim);margin-top:10px}.main{min-width:0}.topbar{height:76px;position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 clamp(20px,4vw,60px);border-bottom:1px solid #26344caa;background:#0a1020de;backdrop-filter:blur(17px)}.top-left{display:flex;align-items:center;gap:13px;min-width:0}.top-title{font-weight:750;letter-spacing:-.015em;white-space:nowrap}.top-sep{color:#3d4b64}.top-sub{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.right-actions{display:flex;gap:9px;align-items:center}.pill{border-radius:100px;padding:6px 12px;border:1px solid var(--stroke);font-size:11px;color:var(--muted);font-weight:650;white-space:nowrap}.green-dot{display:inline-block;border-radius:50%;width:6px;height:6px;background:var(--mint);box-shadow:0 0 14px var(--mint);margin-right:6px}.menu-btn{display:none!important}.page{display:none;max-width:1530px;margin:0 auto;padding:clamp(22px,4vw,57px) clamp(20px,4vw,60px) 80px;animation:appear .22s ease both}.page.active{display:block}@keyframes appear{from{opacity:.3;transform:translateY(6px)}to{opacity:1;transform:none}}
+h1,h2,h3,p{margin-top:0} h1{font-size:clamp(42px,5.7vw,75px);line-height:1.075;letter-spacing:-.06em;font-weight:780;margin:15px 0 23px}h2{font-size:clamp(27px,3vw,39px);line-height:1.2;letter-spacing:-.04em;margin:9px 0 12px}h3{font-size:18px;letter-spacing:-.018em;margin-bottom:9px}.subtitle{color:var(--muted);max-width:690px;font-size:16px;line-height:1.75}.muted{color:var(--muted)}.small{font-size:12px}.tiny{font-size:11px}.gradient-text{background:linear-gradient(110deg,#f8fcff 6%,#b9b1ff 55%,#6cdfdd);-webkit-background-clip:text;background-clip:text;color:transparent}.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 19px;border-radius:11px;border:1px solid var(--stroke);background:var(--surface2);color:var(--text);font-size:13px;font-weight:750;transition:transform .17s,background .17s,border .17s;text-decoration:none}.button:hover:not(:disabled){transform:translateY(-1px);background:#22314c;border-color:#556587}.button.primary{color:#0d1324;background:linear-gradient(110deg,#b3a8ff,#83e9e4);border-color:transparent}.button.primary:hover{background:linear-gradient(110deg,#cac2ff,#a1f0ef)}.button.sm{padding:8px 12px;border-radius:9px;font-size:12px}.button.ghost{background:transparent}.button.active{background:#373958;color:#fff;border-color:#827cce}.btnrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.chip{display:inline-flex;align-items:center;gap:7px;border:1px solid #46526b;background:#242e49a8;color:#c5c7ff;padding:6px 11px;font-size:11px;font-weight:700;border-radius:100px}.card{background:linear-gradient(156deg,#141d31,#10192a);border:1px solid var(--stroke);border-radius:var(--radius);padding:25px;min-width:0}.card.soft{background:#101929}.overline{font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:var(--violet);font-weight:800}.sectionhead{margin:60px 0 21px;display:flex;justify-content:space-between;align-items:end;gap:20px}.sectionhead p{margin:5px 0 0;color:var(--muted);font-size:13px}.statline{display:flex;gap:24px;flex-wrap:wrap;margin-top:31px}.statline b{font-size:25px;font-variant-numeric:tabular-nums}.statline span{font-size:11px;color:var(--dim);display:block;margin-top:-4px}.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.9fr);gap:35px;align-items:center;padding-top:9px}.hero-visual{min-height:345px;position:relative;isolation:isolate;border:1px solid #48527b;background:radial-gradient(circle at 50% 48%,#52429c38,#101a32 49%,#0f192b 86%);border-radius:25px;overflow:hidden;box-shadow:0 30px 100px #0005}.hero-visual:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#7384a810 1px,transparent 1px),linear-gradient(90deg,#7384a810 1px,transparent 1px);background-size:31px 31px;mask-image:radial-gradient(ellipse,#000,transparent 80%)}.hero-visual svg{width:100%;height:100%;position:absolute;inset:0}.visual-footer{position:absolute;bottom:18px;left:20px;right:20px;display:flex;justify-content:space-between;font-size:11px;color:#b9c9eb}.visual-top{position:absolute;top:18px;left:20px;color:#c8d0fa;font-size:10px;letter-spacing:.13em;font-weight:750}.orb{filter:drop-shadow(0 0 10px #9690ff80)}.pulse-line{stroke-dasharray:8 9;animation:dash 14s linear infinite}@keyframes dash{to{stroke-dashoffset:-500}}@media (prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+.flowgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.flowstep{background:var(--surface);border:1px solid var(--stroke);border-radius:14px;padding:18px 13px 17px;min-height:135px;text-align:left;color:var(--text);position:relative}.flowstep:not(:last-child):after{content:'→';position:absolute;right:-13px;top:42%;color:var(--mint);z-index:1;background:var(--bg);border-radius:20px;padding:0 2px}.flowstep.active{border-color:var(--violet);background:#252541;box-shadow:0 0 0 2px #8d82ff22}.step-num{font-size:10px;color:var(--dim);font-weight:750}.flowstep strong{display:block;font-size:15px;margin:12px 0 5px}.flowstep small{color:var(--muted);line-height:1.5;font-size:11px}.inspect{border:1px solid #45416e;background:linear-gradient(110deg,#211d3c,#142039);border-radius:14px;padding:18px 22px;margin-top:13px;display:grid;grid-template-columns:190px 1fr;align-items:center;gap:17px}.inspect strong{color:#d0c9ff;font-size:15px}.inspect p{margin:0;color:#c3cee7;font-size:13px}.labcards{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.lab-card{position:relative;overflow:hidden;min-height:221px;text-align:left;color:var(--text);border:1px solid var(--stroke);border-radius:17px;background:linear-gradient(135deg,#151e33,#131a2e);padding:22px;transition:transform .2s,border-color .2s}.lab-card:hover{transform:translateY(-3px);border-color:#8a86bb}.lab-card .num{font-size:11px;letter-spacing:.16em;color:var(--muted);font-weight:750}.lab-card h3{font-size:20px;margin:26px 0 7px}.lab-card p{font-size:12px;color:var(--muted);max-width:240px;margin-bottom:0}.lab-art{position:absolute;right:8px;top:12px;font-size:72px;opacity:.15;filter:blur(.15px);transform:rotate(-11deg)}.lab-card .arrow{position:absolute;right:20px;bottom:18px;color:var(--mint);font-size:20px}.mosaic{display:grid;grid-template-columns:1.2fr .8fr;gap:17px}.callout{border-left:3px solid var(--cyan);background:#1a2940;border-radius:0 9px 9px 0;padding:12px 15px;color:#c9d9ef;font-size:12px}.callout strong{color:var(--text)}
+/* Labs */
+.lab-tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:thin}.lab-tab{white-space:nowrap;border:1px solid var(--stroke);border-radius:12px;padding:11px 14px;background:#151e30;color:var(--muted);font-size:12px;font-weight:750}.lab-tab.active{color:#0b1120;border-color:transparent;background:linear-gradient(120deg,var(--violet),var(--cyan))}.lab-panel{display:none;margin-top:17px}.lab-panel.active{display:block}.lab-intro{display:flex;justify-content:space-between;gap:20px;align-items:start;margin-bottom:21px}.lab-intro p{max-width:790px;color:var(--muted);font-size:13px;margin-bottom:0}.labgrid{display:grid;grid-template-columns:minmax(0,1.38fr) minmax(260px,.7fr);gap:17px}.controlblock{margin-bottom:22px}.controlblock label{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px;font-weight:700;margin-bottom:9px}.controlblock output{color:var(--cyan);font-size:12px;font-variant-numeric:tabular-nums}input[type=range]{width:100%;accent-color:var(--violet);height:6px;cursor:pointer} input[type=text],input[type=search]{background:#0e1728;color:var(--text);border:1px solid var(--stroke);border-radius:12px;padding:12px 14px;width:100%;outline:none}input[type=text]:focus,input[type=search]:focus{border-color:var(--violet)}.selector{display:flex;gap:7px;flex-wrap:wrap}.selector .button{min-width:48px}.lab-note{font-size:12px;line-height:1.7;color:var(--muted)}.metricgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:13px 0}.metric{background:#0b1425;border:1px solid var(--stroke);padding:13px;border-radius:12px}.metric label{display:block;color:var(--dim);font-size:10px;letter-spacing:.08em;text-transform:uppercase}.metric strong{display:block;font-size:22px;font-variant-numeric:tabular-nums;margin-top:3px}.subheading{font-size:11px;letter-spacing:.14em;font-weight:800;color:var(--dim);text-transform:uppercase;margin:4px 0 14px}.tokens{display:flex;gap:7px;flex-wrap:wrap;margin:20px 0}.token{padding:10px 11px;border:1px solid var(--stroke);border-radius:10px;background:#1d2940;color:#d3dff3;font-size:13px}.token.active{background:#403c73;color:#fff;border-color:#9990f9}.attention-heatmap{display:grid;grid-template-columns:46px repeat(9,minmax(0,1fr));gap:3px;overflow-x:auto;min-width:490px}.heatlabel{display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);min-height:25px;overflow:hidden}.heatcell{height:32px;min-width:20px;border:1px solid transparent;border-radius:5px;cursor:pointer;transition:background .15s}.heatcell.active{outline:2px solid #fff;outline-offset:-2px}.heatwrap{overflow:auto;padding:4px}.score-list{display:grid;gap:10px}.score-row{display:grid;grid-template-columns:68px 1fr 40px;gap:10px;align-items:center;color:var(--muted);font-size:12px}.score-bar{height:8px;background:#1f2e48;border-radius:10px;overflow:hidden}.score-bar i{display:block;height:100%;background:linear-gradient(90deg,#817dff,#6ee9d5);border-radius:10px;transition:width .25s}.plot-svg{width:100%;height:auto;display:block}.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:11px;color:var(--muted)}.legend b{width:8px;height:8px;display:inline-block;border-radius:50%;margin-right:5px}.neighbor{display:grid;grid-template-columns:90px 1fr 45px;align-items:center;gap:10px;font-size:12px;color:var(--muted);margin:11px 0}.pointtag{cursor:pointer}.pointtag circle{transition:r .2s}.pointtag:hover circle{r:10}.smalltag{display:inline-block;border:1px solid var(--stroke);padding:4px 8px;border-radius:7px;color:var(--muted);font-size:10px}.lossline{stroke:var(--mint)}.charts-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.chartbox{background:#0b1425;border:1px solid var(--stroke);border-radius:13px;padding:10px;min-width:0}.chartbox b{display:block;color:var(--muted);font-size:11px;margin:0 0 5px 4px}.bars{display:grid;gap:13px}.probrow{display:grid;grid-template-columns:104px minmax(0,1fr) 47px;gap:12px;align-items:center;font-size:12px}.probrow .pw{display:flex;align-items:center;justify-content:space-between;gap:5px}.probrow .probtrack{height:13px;background:#243149;border-radius:4px;overflow:hidden}.probrow .probfill{height:100%;width:0;background:linear-gradient(90deg,#9a90ff,#65e0d9);transition:width .2s}.probrow.excluded{opacity:.35}.sample-box{padding:17px;background:#1c2540;border:1px solid #484369;border-radius:12px;margin-top:16px;color:#f4f5ff;font-size:20px;line-height:1.5}.nodeflow{display:flex;flex-wrap:wrap;gap:5px;align-items:stretch}.node{border-radius:11px;border:1px solid #455475;background:#1b2942;padding:15px 13px;min-width:95px;flex:1;font-size:12px;text-align:center}.node b{display:block;font-size:13px}.node small{display:block;color:var(--muted);margin-top:5px}.node.active{background:#373666;border-color:#9a92ee}.flow-arrow{align-self:center;color:var(--mint);font-size:16px}.diffusion-layout{display:flex;align-items:center;gap:22px;justify-content:center;flex-wrap:wrap}.diffusion-layout canvas{width:min(100%,280px);height:auto;aspect-ratio:1;background:#0d1224;border:1px solid #54627b;border-radius:15px;image-rendering:auto}.quiz-answers{display:grid;gap:11px;margin-top:22px}.answer{display:flex;text-align:left;gap:13px;align-items:center;padding:15px 19px;color:var(--text);background:#131e33;border:1px solid var(--stroke);border-radius:12px}.answer:hover:not(:disabled){border-color:#8283b6;background:#1c2b44}.answer.correct{background:#124a414a;border-color:var(--mint)}.answer.wrong{background:#69333a55;border-color:var(--coral)}.answer .letter{border:1px solid var(--stroke);width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-weight:800;font-size:11px;flex-shrink:0}.quiz-feedback{padding:16px;border-left:3px solid var(--mint);background:#122a33;border-radius:3px 10px 10px 3px;margin:17px 0;color:#d6f4ed;display:none}.quiz-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px;margin-bottom:25px}
+/* Glossary */
+.gloss-controls{display:flex;gap:12px;margin:24px 0 14px}.gloss-controls input{flex:1}.filterstrip{display:flex;gap:7px;overflow:auto;padding:7px 2px 15px;scrollbar-width:thin}.filterbtn{white-space:nowrap;border:1px solid var(--stroke);background:#121b2d;border-radius:100px;padding:7px 13px;color:var(--muted);font-size:11px;font-weight:700}.filterbtn.active{background:#35315c;border-color:#a59bff;color:#f7f5ff}.termcount{font-size:12px;color:var(--dim);margin:5px 0 15px}.term-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.term{border:1px solid var(--stroke);background:#10192b;border-radius:13px;padding:17px 18px;min-height:116px;display:flex;flex-direction:column;gap:9px;cursor:pointer}.term:hover{border-color:#6c7b9d}.term-top{display:flex;gap:9px;justify-content:space-between;align-items:start}.term h3{font-size:15px;margin:0}.term p{font-size:12px;line-height:1.6;color:var(--muted);margin:0}.term .category{font-size:10px;letter-spacing:.05em;color:var(--dim);margin-top:auto}.star{background:transparent;color:#7385a4;border:none;padding:0 3px;font-size:20px;line-height:1}.star.saved{color:var(--amber)}.term.expanded{background:#1a2540;border-color:#6b69ac}.term-detail{margin-top:1px;padding-top:11px;border-top:1px solid #41506a;color:#b7c8e2;font-size:12px;display:none}.term.expanded .term-detail{display:block}.term-empty{border:1px dashed var(--stroke);color:var(--muted);padding:32px;text-align:center;border-radius:13px;grid-column:1/-1}.research-list{display:grid;gap:10px}.paper{display:grid;grid-template-columns:55px 1fr auto;gap:18px;align-items:center;border:1px solid var(--stroke);border-radius:13px;background:#111b2e;padding:16px 21px;text-decoration:none;color:var(--text)}.paper:hover{border-color:#8f89c7;background:#1a2640}.paper-year{color:var(--violet);font-weight:850;font-size:17px}.paper b{font-size:14px;display:block}.paper p{margin:4px 0 0;color:var(--muted);font-size:12px}.paper-arrow{color:var(--mint);font-size:23px}.footnote{font-size:11px;color:var(--dim);line-height:1.7}
+@media(max-width:1120px){.shell{grid-template-columns:210px minmax(0,1fr)}.sidebar{padding:24px 13px}.hero{grid-template-columns:1fr}.hero-visual{min-height:290px}.labgrid{grid-template-columns:1fr}.labcards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.shell{display:block}.sidebar{position:fixed;top:0;left:0;width:270px;height:100dvh;transform:translateX(-101%);transition:transform .25s;box-shadow:15px 0 70px #0007}.sidebar.open{transform:translateX(0)}.menu-btn{display:inline-flex!important}.topbar{height:66px;padding:0 18px}.top-sub,.top-sep{display:none}.top-title{font-size:14px}.right-actions .pill:last-child{display:none}.page{padding:30px 18px 75px}.hero{gap:27px}.hero-visual{min-height:245px}.flowgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.flowstep:not(:last-child):after{display:none}.flowstep:last-child{grid-column:1/-1}.inspect{grid-template-columns:1fr;gap:6px}.labcards{grid-template-columns:1fr}.lab-card{min-height:165px}.lab-card h3{margin:20px 0 5px}.mosaic,.term-grid{grid-template-columns:1fr}.charts-2{grid-template-columns:1fr}.paper{grid-template-columns:39px 1fr auto;gap:10px;padding:14px}.sectionhead{margin-top:42px;flex-wrap:wrap}.gloss-controls{flex-wrap:wrap}.statline{gap:16px}.hero h1{font-size:49px}.lab-intro{display:block}.lab-intro .pill{display:inline-block;margin-top:12px}}@media(max-width:375px){.hero h1{font-size:39px}.topbar .pill{display:none}.probrow{grid-template-columns:80px 1fr 36px;gap:7px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar" id="sidebar" aria-label="Main navigation">
+ <div class="brand"><div class="logo">✳</div><div><b>NEURAL ATLAS</b><small>The interactive field guide</small></div></div>
+ <div><div class="navgroup-label">Explore</div><nav class="nav-list" aria-label="Sections">
+   <button class="nav-btn active" data-page="home"><span class="nav-icon">◈</span> Overview</button>
+   <button class="nav-btn" data-page="labs"><span class="nav-icon">⌘</span> Interactive labs</button>
+   <button class="nav-btn" data-page="glossary"><span class="nav-icon">▤</span> AI glossary</button>
+   <button class="nav-btn" data-page="quiz"><span class="nav-icon">◇</span> Knowledge check</button>
+   <button class="nav-btn" data-page="research"><span class="nav-icon">≋</span> Research library</button>
+ </nav></div>
+ <div class="side-bottom"><div class="progress-panel"><div class="overline">YOUR EXPLORATION</div><div class="row2" style="display:flex;align-items:baseline;justify-content:space-between"><strong id="visit-count">0 / 6 labs</strong><small class="muted" id="stars-count">0 saved</small></div><div class="barline"><div class="barfill" id="visit-bar"></div></div><div class="side-mini">Mark labs as explored by opening them. Saved terms stay on this device when storage is available.</div></div><div class="side-mini" style="padding:18px 8px 0">Version 1.0 · 100% offline · No sign-in</div></div>
+</aside>
+<main class="main">
+<header class="topbar"><div class="top-left"><button class="button sm ghost menu-btn" id="menu-btn" aria-label="Open navigation">☰</button><span class="top-title">Neural Atlas</span><span class="top-sep">/</span><span class="top-sub" id="crumb">An interactive field guide</span></div><div class="right-actions"><span class="pill"><span class="green-dot"></span>Offline ready</span><span class="pill">Made to understand, not memorize</span></div></header>
+
+<section class="page active" id="page-home">
+<div class="hero"><div><span class="chip"><span class="green-dot"></span> VISUAL AI EXPLAINER · V1.0</span><h1>AI isn't magic.<br><span class="gradient-text">It's a system.</span></h1><p class="subtitle">Go from mysterious buzzwords to working intuition. Explore the machinery behind AI through hands-on experiments, clear definitions, and research you can inspect.</p><div class="btnrow" style="margin-top:28px"><button class="button primary" data-goto="labs">Enter the labs <span>↗</span></button><button class="button" data-goto="glossary">Browse the dictionary →</button></div><div class="statline"><div><b id="hero-termcount">180+</b><span>concepts explained</span></div><div><b>06</b><span>live experiments</span></div><div><b>14</b><span>primary research papers</span></div></div></div>
+<div class="hero-visual" aria-label="Decorative network of connected processing nodes"><div class="visual-top">INSIDE THE MACHINE / SYSTEM VIEW</div><svg viewBox="0 0 440 330" role="img" aria-label="Information flows between interconnected layers of nodes">
+ <defs><linearGradient id="netG" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a49cff"/><stop offset="1" stop-color="#64e2d8"/></linearGradient><radialGradient id="orbG"><stop stop-color="#c4b8ff"/><stop offset="1" stop-color="#8675f8"/></radialGradient></defs>
+ <g fill="none" stroke="url(#netG)" stroke-opacity=".4" stroke-width="1.2" class="pulse-line">
+ <path d="M50 165L158 67L284 92L388 164M50 165L160 158L285 164L388 164M50 165L160 253L285 244L388 164M158 67L285 164M158 253L284 92M160 158L285 244M158 67L285 244M160 253L284 92"/>
+ </g><g stroke="#a398ff" stroke-opacity=".18"><circle cx="216" cy="162" r="109" fill="none"/><circle cx="216" cy="162" r="137" fill="none" stroke-dasharray="3 12"/></g>
+ <g class="orb"><circle cx="50" cy="165" r="13" fill="url(#orbG)"/><circle cx="158" cy="67" r="12" fill="#837fff"/><circle cx="160" cy="158" r="20" fill="url(#orbG)"/><circle cx="160" cy="253" r="12" fill="#837fff"/><circle cx="284" cy="92" r="15" fill="#6adfd9"/><circle cx="285" cy="164" r="23" fill="#9a8cfa"/><circle cx="285" cy="244" r="12" fill="#6adfd9"/><circle cx="388" cy="164" r="13" fill="#69ddd5"/></g>
+ <g fill="#d5e3ff" font-size="10" font-weight="700" text-anchor="middle"><text x="50" y="194">INPUT</text><text x="160" y="289">LAYERS</text><text x="285" y="208">ATTENTION</text><text x="389" y="194">OUTPUT</text></g>
+ </svg><div class="visual-footer"><span>01 / REPRESENT → TRANSFORM → PREDICT</span><span>● ● ●</span></div></div></div>
+<div class="sectionhead"><div><div class="overline">01 / A mental model</div><h2>Follow one question through an AI.</h2><p>Click any stage to see what is happening inside.</p></div></div>
+<div class="flowgrid" id="pipeline"></div><div class="inspect" id="pipe-info" aria-live="polite"></div>
+<div class="sectionhead"><div><div class="overline">02 / Interactive learning</div><h2>Six experiments. Zero setup.</h2><p>Change inputs, predict what happens, and see the result.</p></div><span class="pill">Real controls · illustrative models</span></div>
+<div class="labcards" id="lab-cards"></div>
+<div class="sectionhead"><div><div class="overline">03 / The important distinction</div><h2>Three different ways an AI gets better.</h2></div></div>
+<div class="mosaic"><div class="card"><div class="overline">Remember this</div><h3 style="font-size:24px;margin-top:10px">Training changes weights.<br>RAG changes context.<br>Agents take actions.</h3><p class="muted small">These approaches work together, but solve different problems. Learning the difference is one of the fastest ways to make sense of AI products and architecture.</p><button class="button sm" onclick="openLab('retrieval')">Explore the comparison →</button></div><div class="card"><div class="overline">The explanation ladder</div><p class="small muted" style="margin-top:12px">Start with clear writing. Use diagrams when relationships are hard to follow. Use interactive models when changing an input reveals the idea. Keep every simplification honest.</p><div class="callout"><strong>Scientific honesty:</strong> Model weights and attention values in these labs are intentionally simplified. This website does not run a real LLM.</div></div></div>
+</section>
+
+<section class="page" id="page-labs">
+<div class="eyebrow">INTERACTIVE WORKBENCH / LEARN BY EXPERIMENTING</div><h2 style="margin-top:15px">Open the black box.</h2><p class="subtitle">Each lab isolates one idea that real AI systems use. The numbers are small enough that you can see cause and effect. Experiments are conceptual demonstrations unless stated otherwise.</p>
+<div class="lab-tabs" role="tablist" aria-label="Interactive experiments" id="lab-tabs"></div>
+<div class="lab-panel" id="lab-attention" role="tabpanel">
+ <div class="lab-intro"><div><div class="overline">EXPERIMENT 01 / TRANSFORMERS</div><h2>Who listens to whom?</h2><p>Attention assigns weights to information at different token positions. Click a query token, then inspect the weighted connections to other tokens. The matrix is a hand-designed teaching example, <strong>not</strong> weights extracted from a trained LLM.</p></div><span class="pill">Attention matrix</span></div>
+ <div class="labgrid"><div class="card"><div class="subheading">Select a token · rows attend to columns</div><div class="tokens" id="att-tokens"></div><div class="heatwrap"><div id="att-matrix" class="attention-heatmap" aria-label="Illustrative attention matrix"></div></div><div class="legend" style="margin-top:16px"><span>Low weight <span style="display:inline-block;width:74px;height:8px;border-radius:10px;background:linear-gradient(90deg,#1b2842,#8e83ff,#68e3d6);vertical-align:middle;margin:0 5px"></span> High weight</span><span>Highlight = selected query row</span></div></div>
+ <div class="card soft"><div class="subheading">Inspector</div><div class="controlblock"><label for="att-sharp">Attention sharpness <output id="att-sharp-val">1.0×</output></label><input type="range" id="att-sharp" min="0.4" max="3" step="0.1" value="1"></div><p id="att-summary" class="lab-note"></p><div class="subheading">Largest attention weights</div><div id="att-scores" class="score-list"></div><div class="callout" style="margin-top:23px"><strong>What to notice:</strong> attention mixes information from positions. Many heads and layers can learn different patterns. High attention alone does not prove a semantic explanation.</div><p class="footnote" style="margin-top:17px">Research: <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1706.03762">Attention Is All You Need ↗</a></p></div></div>
+</div>
+<div class="lab-panel" id="lab-latent" role="tabpanel">
+ <div class="lab-intro"><div><div class="overline">EXPERIMENT 02 / REPRESENTATIONS</div><h2>What does meaning look like as numbers?</h2><p>Explore a fabricated two-dimensional embedding space. Choose a concept and move the slider to change how examples are organized. Nearby examples have more similar coordinates; real learned embeddings have many more dimensions.</p></div><span class="pill">Interactive feature space</span></div>
+ <div class="labgrid"><div class="card"><div class="btnrow" style="justify-content:space-between;margin-bottom:11px"><div class="selector" id="latent-domains"></div><span class="smalltag">SELECT ANY POINT</span></div><svg class="plot-svg" id="latent-plot" viewBox="0 0 620 435" role="img" aria-label="Conceptual two-dimensional scatter plot"></svg><div class="legend"><span><b style="background:#a69bff"></b> Cluster A</span><span><b style="background:#65dfd5"></b> Cluster B</span><span><b style="background:#ffd088"></b> Cluster C</span></div></div>
+ <div class="card soft"><div class="subheading">Reshape the representation</div><div class="controlblock"><label for="latent-mix">Group by <output id="latent-mix-val">Meaning</output></label><input type="range" id="latent-mix" min="0" max="100" step="1" value="0"></div><div class="metricgrid"><div class="metric"><label>Selected vector</label><strong id="latent-selected" style="font-size:17px">cat</strong></div><div class="metric"><label>Dimensions shown</label><strong>2D</strong></div></div><div class="subheading">Closest neighbors (toy distance)</div><div id="latent-neighbors"></div><p class="lab-note">This demo uses intentionally invented coordinates. Distances show the concept of similarity; they are not measurements from a production embedding model.</p><div class="callout"><strong>Key idea:</strong> an embedding is a vector. A latent space is a space of learned internal variables. These overlap in some systems, but they are not identical terms.</div></div></div>
+</div>
+<div class="lab-panel" id="lab-training" role="tabpanel">
+ <div class="lab-intro"><div><div class="overline">EXPERIMENT 03 / LEARNING</div><h2>Watch a weight learn.</h2><p>A one-parameter model predicts y = w × x. Training moves the weight toward values that reduce squared error. Change the learning rate, then watch gradient descent converge, bounce, or diverge.</p></div><span class="pill">Actual gradient-descent calculations</span></div>
+ <div class="labgrid"><div class="card"><div class="charts-2"><div class="chartbox"><b>Prediction vs. target data</b><svg id="train-fit" class="plot-svg" viewBox="0 0 325 282" role="img" aria-label="Fitted line against target data"></svg></div><div class="chartbox"><b>Loss landscape: error vs. weight</b><svg id="train-loss" class="plot-svg" viewBox="0 0 325 282" role="img" aria-label="Loss curve and optimizer progress"></svg></div></div><div class="callout" style="margin-top:14px">The target is <strong>y = 2x</strong>. The learner begins with a wrong weight. Each step uses the exact gradient of mean squared error for this tiny dataset.</div></div>
+ <div class="card soft"><div class="subheading">Your training controls</div><div class="controlblock"><label for="train-lr">Learning rate <output id="train-lr-val">0.06</output></label><input type="range" id="train-lr" min="0.005" max="0.22" step="0.005" value="0.06"></div><div class="btnrow"><button class="button primary sm" id="train-one">Step ×1</button><button class="button sm" id="train-ten">Step ×10</button><button class="button sm" id="train-play">▶ Auto train</button><button class="button sm ghost" id="train-reset">↻ Reset</button></div><div class="metricgrid"><div class="metric"><label>Current weight</label><strong id="train-weight">0.350</strong></div><div class="metric"><label>Mean squared error</label><strong id="train-error">20.419</strong></div><div class="metric"><label>Gradient</label><strong id="train-grad">−24.750</strong></div><div class="metric"><label>Training steps</label><strong id="train-steps">0</strong></div></div><p class="lab-note" id="train-status"></p><div class="callout"><strong>Key idea:</strong> training updates parameters. Inference uses the resulting parameters without running this training process.</div></div></div>
+</div>
+<div class="lab-panel" id="lab-sampling" role="tabpanel">
+ <div class="lab-intro"><div><div class="overline">EXPERIMENT 04 / NEXT-TOKEN PREDICTION</div><h2>Why isn't every answer identical?</h2><p>A model produces scores for possible next tokens. Temperature and sampling filters transform those scores into a selection distribution. Try changing the controls, then sample an answer.</p></div><span class="pill">Actual softmax + sampling</span></div>
+ <div class="labgrid"><div class="card"><div class="subheading">Prompt: “The future of AI is ...”</div><div id="sample-bars" class="bars" style="margin-top:26px"></div><div class="sample-box">The future of AI is <strong id="sample-word" style="color:var(--mint)">…</strong></div><div class="btnrow" style="margin-top:15px"><button class="button primary sm" id="sample-one">✦ Generate token</button><button class="button sm" id="sample-many">Sample 100×</button><button class="button sm ghost" id="sample-reset">Reset</button></div><p class="tiny muted" id="sample-history" style="margin-top:12px">Run a sample to see what the distribution produces.</p></div>
+ <div class="card soft"><div class="subheading">Adjust the decoder</div><div class="controlblock"><label for="sample-temp">Temperature <output id="sample-temp-val">1.0</output></label><input type="range" id="sample-temp" min="0.2" max="2.5" step="0.1" value="1"></div><div class="controlblock"><label for="sample-k">Top-K candidates <output id="sample-k-val">6</output></label><input type="range" id="sample-k" min="1" max="6" step="1" value="6"></div><div class="controlblock"><label for="sample-p">Top-P threshold <output id="sample-p-val">1.00</output></label><input type="range" id="sample-p" min="0.3" max="1" step="0.05" value="1"></div><div class="metricgrid"><div class="metric"><label>Eligible tokens</label><strong id="sample-eligible">6</strong></div><div class="metric"><label>Entropy (bits)</label><strong id="sample-entropy">0</strong></div></div><p class="lab-note">This demonstration starts with fixed, invented logits. Top-K is applied first, then Top-P to the probability distribution over remaining candidates. The last probabilities are normalized before sampling.</p><div class="callout"><strong>What to notice:</strong> lower temperature concentrates probabilities. It does not make a model more truthful; it only changes how candidates are selected.</div></div></div>
+</div>
+<div class="lab-panel" id="lab-retrieval" role="tabpanel">
+ <div class="lab-intro"><div><div class="overline">EXPERIMENT 05 / AI SYSTEM DESIGN</div><h2>RAG, fine-tuning, or an agent?</h2><p>Imagine an AI assistant answering questions about your codebase. Choose an approach to see what changes and how information moves. These mechanisms can be combined in one system.</p></div><span class="pill">Architecture comparison</span></div>
+ <div class="selector" id="rag-select" style="margin:20px 0"></div><div class="labgrid"><div class="card"><div class="subheading">Processing pipeline</div><div class="nodeflow" id="rag-flow"></div><div style="margin-top:23px" class="btnrow"><button id="rag-prev" class="button sm">← Previous</button><button id="rag-next" class="button primary sm">Next step →</button><span id="rag-stage" class="small muted"></span></div><div class="callout" style="margin-top:17px" id="rag-step-desc"></div></div><div class="card soft"><div class="subheading">Architecture inspector</div><h3 id="rag-title" style="font-size:25px">Retrieval-Augmented Generation</h3><p id="rag-desc" class="muted small"></p><div class="metricgrid"><div class="metric"><label>Updates model weights?</label><strong style="font-size:15px" id="rag-weights">No</strong></div><div class="metric"><label>Can access live files?</label><strong style="font-size:15px" id="rag-files">Yes</strong></div></div><p id="rag-use" class="lab-note"></p><p class="footnote"><a href="https://arxiv.org/abs/2005.11401" target="_blank" rel="noopener">Original RAG research ↗</a></p></div></div>
+</div>
+<div class="lab-panel" id="lab-diffusion" role="tabpanel">
+ <div class="lab-intro"><div><div class="overline">EXPERIMENT 06 / IMAGE GENERATION</div><h2>From noise toward structure.</h2><p>Diffusion models learn to reverse a noise process. Move through a conceptual denoising timeline and observe a picture emerge. This animation is a blend toward an authored target image, <strong>not</strong> an actual learned diffusion sampler.</p></div><span class="pill">Denoising analogy</span></div>
+ <div class="labgrid"><div class="card"><div class="diffusion-layout"><div><div class="subheading">Conceptual noisy input → image</div><canvas id="diff-canvas" width="320" height="320" aria-label="Denoising illustration of a ringed planet"></canvas></div><div style="max-width:180px"><div class="overline">Observe</div><h3 style="font-size:27px">Noise →<br><span style="color:var(--mint)">Structure</span></h3><p class="lab-note">This toy interpolates between random pixels and a preset picture. A trained diffusion system instead uses a learned prediction at each step.</p></div></div></div><div class="card soft"><div class="subheading">Control the denoising</div><div class="controlblock"><label for="diff-progress">Steps completed <output id="diff-progress-val">0%</output></label><input type="range" id="diff-progress" min="0" max="100" value="0"></div><div class="btnrow"><button class="button primary sm" id="diff-play">▶ Animate</button><button class="button sm" id="diff-new">New noise</button><button class="button sm ghost" id="diff-reset">↻ Reset</button></div><div class="metricgrid"><div class="metric"><label>Noise level (toy)</label><strong id="diff-noise">100%</strong></div><div class="metric"><label>Target visibility</label><strong id="diff-signal">0%</strong></div></div><div class="callout"><strong>Reality check:</strong> the actual mathematical model predicts noise or a related quantity from noisy samples, under conditioning and a schedule. It does not simply uncover a fully stored hidden picture.</div><p class="footnote" style="margin-top:15px"><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2112.10752">Latent Diffusion Models ↗</a></p></div></div>
+</div>
+</section>
+
+<section class="page" id="page-glossary"><div class="eyebrow">REFERENCE DESK / SEARCH THE CONCEPTS</div><h2 style="margin-top:15px">The AI dictionary.</h2><p class="subtitle">Plain-language definitions across machine learning, neural networks, representation learning, architecture, agents, and more. Search by name or meaning. Click any concept for a mental model.</p><div class="gloss-controls"><input id="gloss-search" type="search" placeholder="Search a concept… e.g. attention, vector, training, agent" aria-label="Search AI terms"><button class="button sm" id="gloss-saved">☆ Saved only</button></div><div class="filterstrip" id="gloss-filters" aria-label="Filter concepts by category"></div><div class="termcount" id="gloss-count"></div><div class="term-grid" id="term-grid"></div><div class="btnrow" style="justify-content:center;margin-top:25px"><button class="button" id="gloss-more" hidden>Show 36 more ↓</button></div></section>
+
+<section class="page" id="page-quiz"><div class="eyebrow">ACTIVE RECALL / KNOWLEDGE CHECK</div><h2 style="margin-top:15px">Can you explain it?</h2><p class="subtitle">A short quiz that tests the distinctions behind the jargon, not just memorized acronyms. Every answer includes an explanation.</p><div class="card" style="max-width:780px;margin-top:28px" id="quiz-box"><div class="quiz-top"><span id="quiz-step">QUESTION 01 / 12</span><span id="quiz-score">0 correct</span></div><div class="barline" style="margin-bottom:26px"><div class="barfill" id="quiz-bar"></div></div><h3 style="font-size:23px" id="quiz-question"></h3><div class="quiz-answers" id="quiz-answers"></div><div class="quiz-feedback" id="quiz-feedback" role="status"></div><div class="btnrow" style="justify-content:space-between;margin-top:22px"><button class="button sm ghost" id="quiz-restart">↻ Restart</button><button class="button primary" id="quiz-next" disabled>Next question →</button></div></div></section>
+
+<section class="page" id="page-research"><div class="eyebrow">THE PRIMARY SOURCES / RESEARCH LITERATURE</div><h2 style="margin-top:15px">Where the ideas came from.</h2><p class="subtitle">The papers and textbooks that established major concepts. These links open original research, not simplified marketing summaries. Read the abstract first, then explore the mathematics as your intuition improves.</p><div class="research-list" id="papers" style="margin-top:29px"></div><div class="card" style="margin-top:21px"><div class="overline">A note on how to learn</div><h3 style="margin-top:10px">Plain language → diagram → experiment → original paper</h3><p class="muted small" style="max-width:810px">This resource follows the Explanation Ladder approach: one precise idea at a time, a diagram when it helps, a working interaction when cause and effect matters, and the original literature for verification. All visual simulations are labeled as teaching models.</p></div></section>
+</main></div>
+<script>
+'use strict';
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const escapeHTML = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const readSaved=(key,otherwise)=>{try{const v=localStorage.getItem(key);return v?JSON.parse(v):otherwise}catch(_){return otherwise}}, writeSaved=(key,val)=>{try{localStorage.setItem(key,JSON.stringify(val))}catch(_){}};
+let visited=new Set(readSaved('atlas:visited',[])), saved=new Set(readSaved('atlas:saved',[]));
+const labels={home:'An interactive field guide',labs:'Interactive labs',glossary:'AI dictionary',quiz:'Knowledge check',research:'Research library'};
+function goto(page){if(!labels[page])return;$$('.page').forEach(el=>el.classList.toggle('active',el.id==='page-'+page));$$('.nav-btn').forEach(el=>{const yes=el.dataset.page===page;el.classList.toggle('active',yes);if(yes)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current')});$('#crumb').textContent=labels[page];$('#sidebar').classList.remove('open');window.scrollTo({top:0,behavior:'instant'});if(page==='glossary')renderGlossary();if(page==='quiz')renderQuiz();if(page==='labs'){if(!$('.lab-panel.active')){ $('#lab-attention').classList.add('active');visited.add('attention');writeSaved('atlas:visited',[...visited]);updateProgress()}renderAttention();renderLatent();renderTraining()} }
+$$('[data-page]').forEach(b=>b.addEventListener('click',()=>goto(b.dataset.page)));$$('[data-goto]').forEach(b=>b.addEventListener('click',()=>goto(b.dataset.goto)));$('#menu-btn').onclick=()=>$('#sidebar').classList.toggle('open');
+function updateProgress(){ $('#visit-count').textContent=visited.size+' / 6 labs';$('#visit-bar').style.width=(visited.size/6*100)+'%';$('#stars-count').textContent=saved.size+' saved';}
+const labDefs=[['attention','Attention explorer','Discover what parts of a sentence can influence each token.','◎'],['latent','Embedding space','See how abstract concepts can become geometry.','✧'],['training','Training dynamics','Watch gradient descent move a weight toward a solution.','〽'],['sampling','Token sampler','Control randomness in next-token predictions.','◌'],['retrieval','RAG vs. fine-tuning','Compare knowledge retrieval, learning, and acting.','⌘'],['diffusion','Diffusion studio','See a conceptual transition from noise to image.','◍']];
+$('#lab-cards').innerHTML=labDefs.map((x,i)=>`<button class="lab-card" data-openlab="${x[0]}"><span class="num">LAB 0${i+1} / INTERACTIVE</span><span class="lab-art" aria-hidden="true">${x[3]}</span><h3>${x[1]}</h3><p>${x[2]}</p><span class="arrow">↗</span></button>`).join('');
+$('#lab-tabs').innerHTML=labDefs.map((x,i)=>`<button class="lab-tab${i===0?' active':''}" role="tab" aria-selected="${i===0}" data-openlab="${x[0]}">${String(i+1).padStart(2,'0')} · ${x[1]}</button>`).join('');
+function openLab(name){if(!labDefs.some(a=>a[0]===name))return;goto('labs');$$('.lab-panel').forEach(x=>x.classList.toggle('active',x.id==='lab-'+name));$$('.lab-tab').forEach(x=>{const yes=x.dataset.openlab===name;x.classList.toggle('active',yes);x.setAttribute('aria-selected',yes)});visited.add(name);writeSaved('atlas:visited',[...visited]);updateProgress();stopTimers();if(name==='attention')renderAttention();if(name==='latent')renderLatent();if(name==='training')renderTraining();if(name==='sampling')renderSampling();if(name==='retrieval')renderRag();if(name==='diffusion')renderDiffusion();}
+$$('[data-openlab]').forEach(b=>b.addEventListener('click',()=>openLab(b.dataset.openlab)));
+const stages=[['Your input','A question, image, or instructions enters the system.','A prompt is the immediate information you provide. A production system may also supply instructions, earlier messages, and retrieved documents.'],['Tokens','Text becomes smaller pieces.','A tokenizer maps text chunks to numeric token IDs. A token can be a word, a word piece, punctuation, or another encoding unit.'],['Embeddings','Numbers represent each input piece.','Embedding tables and other layers turn IDs and input features into vectors that the network can transform.'],['Transformer','Attention and layers mix information.','Transformer blocks use learned transformations, including attention, to compute context-dependent representations.'],['Prediction','Scores become output probabilities.','An autoregressive model produces scores (logits) for candidate next tokens. A decoding algorithm selects an output.']];
+$('#pipeline').innerHTML=stages.map((s,i)=>`<button class="flowstep${i===0?' active':''}" data-stage="${i}"><span class="step-num">STAGE ${String(i+1).padStart(2,'0')}</span><strong>${s[0]}</strong><small>${s[1]}</small></button>`).join('');
+function chooseStage(i){$$('.flowstep').forEach((b,j)=>b.classList.toggle('active',i===j));$('#pipe-info').innerHTML=`<strong>0${i+1} / ${stages[i][0]}</strong><p>${stages[i][2]}</p>`;}$$('.flowstep').forEach(b=>b.onclick=()=>chooseStage(+b.dataset.stage));chooseStage(0);
+let trainTimer=null,diffTimer=null;function stopTimers(){if(trainTimer){clearInterval(trainTimer);trainTimer=null;$('#train-play').textContent='▶ Auto train'}if(diffTimer){clearInterval(diffTimer);diffTimer=null;$('#diff-play').textContent='▶ Animate'}}
+/* LAB 01 ATTENTION -- hand designed weights are normalized with softmax */
+const attWords=['The','robot','found','a','socket','because','it','needed','power'];
+const attLinks={0:{1:2},1:{1:3,2:2,6:2},2:{1:3,4:3},3:{4:3},4:{2:2,4:2,8:1},5:{2:1,7:2},6:{1:4.0,6:1.0,7:2.2},7:{6:3.6,8:3.0,1:2},8:{7:3.0,4:1.7}};
+let attFocus=6;
+function getAttWeights(i){const sharp=+$('#att-sharp').value,raw=attWords.map((w,j)=>-Math.abs(i-j)*.18+(attLinks[i]?.[j]||0));const v=raw.map(x=>Math.exp(x*sharp)),total=v.reduce((a,b)=>a+b,0);return v.map(x=>x/total)}
+function renderAttention(){const sharp=+$('#att-sharp').value;$('#att-sharp-val').textContent=sharp.toFixed(1)+'×';$('#att-tokens').innerHTML=attWords.map((t,i)=>`<button class="token${attFocus===i?' active':''}" data-att="${i}" aria-pressed="${attFocus===i}">${t}</button>`).join('');$$('[data-att]').forEach(b=>b.onclick=()=>{attFocus=+b.dataset.att;renderAttention()});let html='<span class="heatlabel"></span>'+attWords.map(w=>`<span class="heatlabel">${escapeHTML(w.slice(0,5))}</span>`).join('');for(let i=0;i<attWords.length;i++){html+=`<span class="heatlabel">${escapeHTML(attWords[i].slice(0,6))}</span>`;getAttWeights(i).forEach((v,j)=>{const opacity=.13+.87*Math.min(1,v/.65);html+=`<button class="heatcell${i===attFocus&&j===getAttWeights(i).indexOf(Math.max(...getAttWeights(i)))?' active':''}" style="background:rgba(117,206,227,${opacity.toFixed(3)})" title="${escapeHTML(attWords[i])} → ${escapeHTML(attWords[j])}: ${(v*100).toFixed(1)}%" aria-label="${escapeHTML(attWords[i])} attends to ${escapeHTML(attWords[j])}, ${(v*100).toFixed(1)} percent" data-heatrow="${i}"></button>`});}$('#att-matrix').innerHTML=html;$$('[data-heatrow]').forEach(b=>b.onclick=()=>{attFocus=+b.dataset.heatrow;renderAttention()});let weights=getAttWeights(attFocus);let pairs=weights.map((v,i)=>({v,name:attWords[i]})).sort((a,b)=>b.v-a.v).slice(0,5);$('#att-scores').innerHTML=pairs.map(x=>`<div class="score-row"><span>${x.name}</span><div class="score-bar"><i style="width:${Math.round(x.v*100)}%"></i></div><span>${(x.v*100).toFixed(1)}%</span></div>`).join('');$('#att-summary').innerHTML=`The token <strong style="color:var(--violet)">“${attWords[attFocus]}”</strong> puts the greatest illustrative weight on <strong style="color:var(--cyan)">“${pairs[0].name}”</strong> (${(pairs[0].v*100).toFixed(1)}%). Select another row to compare.`;}
+$('#att-sharp').addEventListener('input',renderAttention);
+/* LAB 02 LATENT SPACE - handcrafted 2D positions */
+const latentData={animals:[['Cat',21,25,12,50,0],['Kitten',25,22,14,54,0],['Tiger',28,37,68,37,0],['Dog',38,30,23,57,0],['Wolf',41,38,40,48,0],['Mouse',14,53,11,22,1],['Hamster',19,58,13,27,1],['Eagle',76,22,80,26,2],['Sparrow',70,31,64,17,2],['Plane',85,75,88,78,2]],technology:[['Transformer',28,26,75,45,0],['Attention',25,35,64,32,0],['Embedding',43,29,62,62,0],['Tokenizer',48,39,31,32,0],['RAG',78,26,26,71,1],['Search',82,35,18,78,1],['Agent',70,43,38,58,1],['Training',22,73,56,19,2],['Gradient',28,80,47,14,2],['Optimizer',37,76,42,26,2]]};let latentDomain='animals',latentSel='Cat';
+function renderLatent(){let mix=+$('#latent-mix').value/100;$('#latent-mix-val').textContent=mix<.15?'Meaning':mix>.85?'Other features':`${Math.round(mix*100)}% alternate`;$('#latent-domains').innerHTML=Object.keys(latentData).map(d=>`<button class="button sm${latentDomain===d?' active':''}" data-domain="${d}">${d==='animals'?'Animals':'AI concepts'}</button>`).join('');$$('[data-domain]').forEach(b=>b.onclick=()=>{latentDomain=b.dataset.domain;latentSel=latentData[latentDomain][0][0];renderLatent()});const dat=latentData[latentDomain].map(a=>({name:a[0],x:a[1]*(1-mix)+a[3]*mix,y:a[2]*(1-mix)+a[4]*mix,c:a[5]}));const sel=dat.find(a=>a.name===latentSel)||dat[0],col=['#a69bff','#65dfd5','#ffd088'];let svg='<defs><pattern id="plotGrid" width="51" height="51" patternUnits="userSpaceOnUse"><path d="M 51 0 L 0 0 0 51" fill="none" stroke="#344460" stroke-width="1" opacity=".46"/></pattern></defs><rect x="52" y="14" width="544" height="372" rx="12" fill="#0c1627"/><rect x="52" y="14" width="544" height="372" rx="12" fill="url(#plotGrid)"/>';
+for(let i=0;i<5;i++)svg+=`<text x="${65+i*130}" y="406" font-size="10" fill="#7589a6">${i*25}</text>`;svg+='<text x="324" y="427" fill="#91a6c3" text-anchor="middle" font-size="12">Conceptual feature X →</text><text x="15" y="207" fill="#91a6c3" text-anchor="middle" font-size="12" transform="rotate(-90 15 207)">Conceptual feature Y →</text>';
+const xx=d=>65+d.x*5.2, yy=d=>371-d.y*3.35;
+svg+=`<circle cx="${xx(sel)}" cy="${yy(sel)}" r="31" fill="none" stroke="#e9e7ff" stroke-dasharray="4 5" stroke-opacity=".45"/>`;
+dat.forEach(d=>{if(d.name!==sel)svg+=`<line x1="${xx(sel)}" y1="${yy(sel)}" x2="${xx(d)}" y2="${yy(d)}" stroke="#b6abfa" stroke-width="1" stroke-opacity=".18"/>`});
+dat.forEach(d=>{const is=d.name===sel;svg+=`<g class="pointtag" role="button" tabindex="0" data-point="${escapeHTML(d.name)}" aria-label="Select ${escapeHTML(d.name)}"><circle cx="${xx(d)}" cy="${yy(d)}" r="${is?10:7}" fill="${col[d.c]}" stroke="${is?'#fff':'#0a1429'}" stroke-width="2"/><text x="${xx(d)+11}" y="${yy(d)-10}" fill="${is?'#fff':'#bdcce4'}" font-weight="${is?'750':'500'}" font-size="12">${escapeHTML(d.name)}</text></g>`});$('#latent-plot').innerHTML=svg;$$('[data-point]').forEach(g=>{const run=()=>{latentSel=g.dataset.point;renderLatent()};g.addEventListener('click',run);g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();run()}})});$('#latent-selected').textContent=sel.name;
+const neighbors=dat.filter(d=>d.name!==sel.name).map(d=>({...d,dist:Math.hypot(d.x-sel.x,d.y-sel.y)})).sort((a,b)=>a.dist-b.dist).slice(0,5);$('#latent-neighbors').innerHTML=neighbors.map(d=>`<div class="neighbor"><span>${escapeHTML(d.name)}</span><div class="score-bar"><i style="width:${Math.max(2,100-d.dist).toFixed(1)}%"></i></div><span>${d.dist.toFixed(1)}</span></div>`).join('')+'<p class="tiny muted">Bar = a stylized closeness score · number = 2D distance</p>'}
+$('#latent-mix').addEventListener('input',renderLatent);
+/* LAB 03 TRAINING */
+const train={w:.35,steps:0,trail:[.35]}; const targetXs=[1,2,3,4],xxT=x=>37+x*55,yyT=y=>247-y*21;
+function errorFor(w){return 7.5*(w-2)**2}function gradFor(w){return 15*(w-2)}
+function trainStep(n){for(let i=0;i<n;i++){const rate=+$('#train-lr').value;const next=train.w-rate*gradFor(train.w);if(!Number.isFinite(next)||Math.abs(next)>1000000)break;train.w=next;train.steps++;train.trail.push(train.w);if(train.trail.length>300)train.trail.shift()}renderTraining()}
+const plotGrid=`<g stroke="#263952" stroke-width="1">${[0,1,2,3,4].map(i=>`<line x1="37" y1="${247-i*44}" x2="303" y2="${247-i*44}"/>`).join('')}</g>`;
+function renderTraining(){const w=train.w,loss=errorFor(w),grad=gradFor(w);$('#train-lr-val').textContent=(+$('#train-lr').value).toFixed(3);$('#train-weight').textContent=Math.abs(w)<999?w.toFixed(3):w.toExponential(2);$('#train-error').textContent=loss<9999?loss.toFixed(3):loss.toExponential(2);$('#train-grad').textContent=Math.abs(grad)<999?grad.toFixed(3):grad.toExponential(2);$('#train-steps').textContent=train.steps;$('#train-status').textContent=loss<.0001?'✓ Converged closely to the target weight.':loss>300?'⚠ Large updates have driven the model far from the target. Reduce learning rate or reset.':(train.steps===0?'Press Step ×1 and watch the model line and loss change.':'Watch how the line approaches the targets as loss falls.');
+let fit=`${plotGrid}<path d="M37 247 L303 247" stroke="#50647c" fill="none"/><path d="M37 247 L37 21" stroke="#50647c" fill="none"/>`;
+fit+=`<path d="M${xxT(0)} ${yyT(0)} L${xxT(4.5)} ${yyT(9)}" stroke="#7f7ba5" stroke-dasharray="4 7" stroke-width="2" fill="none"/>`;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));fit+=`<path d="M${xxT(0)} ${yyT(0)} L${xxT(4.5)} ${clamp(yyT(4.5*w),-10000,10000)}" stroke="#63e7c2" stroke-width="3" fill="none" clip-path="url(#fitclip)"/><defs><clipPath id="fitclip"><rect x="37" y="17" width="266" height="230"/></clipPath></defs>`;targetXs.forEach(x=>fit+=`<circle cx="${xxT(x)}" cy="${yyT(2*x)}" r="5" fill="#a89dff" stroke="#e2dcff" stroke-width="1"/>`);fit+='<g fill="#7389a9" font-size="10"><text x="39" y="268">0</text><text x="273" y="268">x →</text><text x="10" y="26">y</text></g>';$('#train-fit').innerHTML=fit;
+const lo=-.2,hi=4.2,lossX=v=>37+(v-lo)/(hi-lo)*266,lossY=v=>247-Math.min(1,v/38)*221;let lossSvg=`${plotGrid}<path d="M37 247 L303 247" stroke="#51647d" fill="none"/>`;let path='';for(let i=0;i<150;i++){let u=lo+(hi-lo)*i/149;path+=(i?'L':'M')+lossX(u).toFixed(2)+' '+lossY(errorFor(u)).toFixed(2)+' '};lossSvg+=`<path d="${path}" stroke="#9c93ff" stroke-width="3" fill="none"/>`;
+const trailPts=train.trail.filter(v=>v>=lo&&v<=hi).map(v=>`${lossX(v)},${lossY(errorFor(v))}`).join(' ');lossSvg+=`<polyline points="${trailPts}" stroke="#67d9d3" stroke-width="1.7" fill="none" opacity=".7"/>`;if(w>=lo&&w<=hi)lossSvg+=`<circle cx="${lossX(w)}" cy="${lossY(loss)}" r="7" fill="#ffd088" stroke="#fff3d9" stroke-width="1.5"/>`;lossSvg+=`<g fill="#7589a8" font-size="10"><text x="35" y="268">${lo}</text><text x="151" y="268">2.0</text><text x="277" y="268">${hi}</text><text x="12" y="24">loss</text><text x="266" y="281">weight →</text></g>`;$('#train-loss').innerHTML=lossSvg;}
+$('#train-one').onclick=()=>trainStep(1);$('#train-ten').onclick=()=>trainStep(10);$('#train-reset').onclick=()=>{stopTimers();train.w=.35;train.steps=0;train.trail=[.35];renderTraining()};$('#train-lr').addEventListener('input',renderTraining);$('#train-play').onclick=()=>{if(trainTimer){stopTimers();return}trainTimer=setInterval(()=>{trainStep(1);if(Math.abs(train.w)>100000)stopTimers()},200);$('#train-play').textContent='Ⅱ Pause'};
+/* LAB 04 SAMPLING */
+const sampleTokens=['exciting','uncertain','collaborative','complex','bright','strange'],logits=[2.8,2.1,1.45,1.25,.6,-.4];let sampleCounts=Array(6).fill(0),sampleN=0,latestDist=[];
+function getDistribution(){const t=+$('#sample-temp').value,k=+$('#sample-k').value,p=+$('#sample-p').value;let idx=logits.map((_,i)=>i).sort((a,b)=>logits[b]-logits[a]).slice(0,k);let raw=idx.map(i=>Math.exp((logits[i]-Math.max(...logits))/t));let z=raw.reduce((a,b)=>a+b,0);let ds=idx.map((i,j)=>({i,p:raw[j]/z})).sort((a,b)=>b.p-a.p),sum=0,eligible=[];for(const x of ds){if(sum<p||eligible.length===0){eligible.push(x);sum+=x.p}}const output=Array(6).fill(0);const z2=eligible.reduce((s,x)=>s+x.p,0);eligible.forEach(x=>output[x.i]=x.p/z2);return output}
+function renderSampling(){const t=+$('#sample-temp').value,k=+$('#sample-k').value,p=+$('#sample-p').value;$('#sample-temp-val').textContent=t.toFixed(1);$('#sample-k-val').textContent=k;$('#sample-p-val').textContent=p.toFixed(2);latestDist=getDistribution();const entropy=-latestDist.reduce((v,x)=>v+(x>0?x*Math.log2(x):0),0);$('#sample-eligible').textContent=latestDist.filter(x=>x>0).length;$('#sample-entropy').textContent=entropy.toFixed(2);$('#sample-bars').innerHTML=sampleTokens.map((w,i)=>`<div class="probrow${latestDist[i]===0?' excluded':''}"><span>${w}</span><div class="probtrack"><div class="probfill" style="width:${(latestDist[i]*100).toFixed(2)}%"></div></div><span>${(latestDist[i]*100).toFixed(1)}%</span></div>`).join('');if(sampleN){$('#sample-history').textContent=`${sampleN} samples · `+sampleTokens.map((x,i)=>`${x}: ${sampleCounts[i]}`).join(' · ')}}
+function sampleOnce(){let r=Math.random();for(let i=0;i<latestDist.length;i++){r-=latestDist[i];if(r<=0||i===latestDist.length-1){sampleCounts[i]++;sampleN++;return i}}return 0}
+$('#sample-one').onclick=()=>{$('#sample-word').textContent=sampleTokens[sampleOnce()]+'.';renderSampling()};$('#sample-many').onclick=()=>{for(let i=0;i<100;i++)sampleOnce();$('#sample-word').textContent=sampleTokens[sampleCounts.indexOf(Math.max(...sampleCounts))]+'.';renderSampling()};$('#sample-reset').onclick=()=>{sampleN=0;sampleCounts=Array(6).fill(0);$('#sample-word').textContent='…';$('#sample-history').textContent='Run a sample to see what the distribution produces.';renderSampling()};['sample-temp','sample-k','sample-p'].forEach(id=>$('#'+id).addEventListener('input',renderSampling));
+/* LAB 05 SYSTEMS */
+const strategies={rag:{title:'Retrieval-Augmented Generation',desc:'Retrieve relevant external content and place it in the model’s input context. The model may then use that evidence to answer.',weights:'No',files:'Yes, if connected',use:'Use it when knowledge changes often or when answers should reference source documents. Retrieval quality and permissions matter.',steps:[['Question','Ask about a repo'],['Retrieve','Search code/docs'],['Context','Insert relevant snippets'],['LLM','Generate with evidence'],['Answer','Show source-linked answer']]},fine:{title:'Fine-tuning',desc:'Run additional training to update model parameters using examples of the behavior you want.',weights:'Yes',files:'Not inherently',use:'Use it when you need consistent behavior or specialization. Fine-tuning is usually not the best substitute for searching rapidly changing facts.',steps:[['Examples','Prepare training pairs'],['Training','Compute loss / gradients'],['Weights','Update parameters'],['Deploy','Use updated model'],['Response','Specialized behavior']]},agent:{title:'Tool-Using AI Agent',desc:'An orchestration system gives the model tools and a loop for making decisions, executing operations, and checking results.',weights:'No, typically',files:'With tools',use:'Use it for multi-step tasks that require actions, such as editing code and running tests. Grant the least necessary permissions.',steps:[['Goal','Find a bug'],['Plan','Choose next action'],['Tool','Inspect/edit source'],['Feedback','Run tests / inspect'],['Repeat','Finish or revise']]}};let currentStrategy='rag',ragIndex=0;
+$('#rag-select').innerHTML=[['rag','RAG'],['fine','Fine-tuning'],['agent','Agent']].map(x=>`<button class="button${currentStrategy===x[0]?' active':''}" data-strategy="${x[0]}">${x[1]}</button>`).join('');$$('[data-strategy]').forEach(b=>b.onclick=()=>{currentStrategy=b.dataset.strategy;ragIndex=0;renderRag()});
+function renderRag(){let s=strategies[currentStrategy];$$('[data-strategy]').forEach(b=>b.classList.toggle('active',b.dataset.strategy===currentStrategy));$('#rag-title').textContent=s.title;$('#rag-desc').textContent=s.desc;$('#rag-weights').textContent=s.weights;$('#rag-files').textContent=s.files;$('#rag-use').textContent=s.use;$('#rag-flow').innerHTML=s.steps.map((n,i)=>`${i?'<span class="flow-arrow">→</span>':''}<div class="node${i===ragIndex?' active':''}"><b>${n[0]}</b><small>${n[1]}</small></div>`).join('');$('#rag-stage').textContent='Step '+(ragIndex+1)+' of '+s.steps.length;$('#rag-step-desc').innerHTML=`<strong>${s.steps[ragIndex][0]}:</strong> ${s.steps[ragIndex][1]}.`;$('#rag-prev').disabled=ragIndex===0;$('#rag-next').textContent=ragIndex===s.steps.length-1?'↻ Replay':'Next step →';}
+$('#rag-prev').onclick=()=>{ragIndex=Math.max(0,ragIndex-1);renderRag()};$('#rag-next').onclick=()=>{ragIndex=(ragIndex+1)%strategies[currentStrategy].steps.length;renderRag()};
+/* LAB 06 NOISE VISUAL — deliberately toy blend */
+const diffCanvas=$('#diff-canvas'),ctx=diffCanvas.getContext('2d',{willReadFrequently:true});const S=320;let noisePixels=new Uint8ClampedArray(S*S*4);const cleanCanvas=document.createElement('canvas');cleanCanvas.width=cleanCanvas.height=S;const clean=cleanCanvas.getContext('2d');
+function makeTarget(){let g=clean.createLinearGradient(0,0,S,S);g.addColorStop(0,'#08152a');g.addColorStop(1,'#212749');clean.fillStyle=g;clean.fillRect(0,0,S,S);for(let i=0;i<75;i++){let x=(i*131+17)%S,y=(i*71+43)%S;clean.fillStyle=i%6===0?'#d8f5ff':'#6e86ad';clean.fillRect(x,y,i%5===0?2:1,i%5===0?2:1)}clean.save();clean.translate(160,166);clean.rotate(-.42);clean.strokeStyle='#9fbaf1';clean.lineWidth=13;clean.beginPath();clean.ellipse(0,0,115,39,0,0,Math.PI*2);clean.stroke();clean.lineWidth=4;clean.strokeStyle='#dbd7ff';clean.beginPath();clean.ellipse(0,0,113,38,0,Math.PI*1.07,Math.PI*2.03);clean.stroke();clean.restore();let pg=clean.createRadialGradient(133,131,10,162,169,73);pg.addColorStop(0,'#d2d0ff');pg.addColorStop(.52,'#806de0');pg.addColorStop(1,'#283d88');clean.fillStyle=pg;clean.beginPath();clean.arc(160,166,68,0,Math.PI*2);clean.fill();clean.save();clean.translate(160,166);clean.rotate(-.42);clean.lineWidth=10;clean.strokeStyle='#e4d7ff';clean.beginPath();clean.ellipse(0,0,115,39,0,0,Math.PI);clean.stroke();clean.restore()}
+function newNoise(){for(let i=0;i<noisePixels.length;i+=4){const a=Math.floor(Math.random()*256);noisePixels[i]=a;noisePixels[i+1]=(a+Math.random()*65)|0;noisePixels[i+2]=Math.min(255,a+65);noisePixels[i+3]=255}}
+function renderDiffusion(){const t=+$('#diff-progress').value/100;$('#diff-progress-val').textContent=Math.round(t*100)+'%';$('#diff-noise').textContent=Math.round((1-t)*100)+'%';$('#diff-signal').textContent=Math.round(t*100)+'%';const goal=clean.getImageData(0,0,S,S),out=ctx.createImageData(S,S);for(let i=0;i<out.data.length;i+=4){let noise=(1-t)**1.45;for(let k=0;k<3;k++)out.data[i+k]=goal.data[i+k]*(1-noise)+noisePixels[i+k]*noise;out.data[i+3]=255}ctx.putImageData(out,0,0)}
+$('#diff-progress').addEventListener('input',()=>{if(diffTimer)stopTimers();renderDiffusion()});$('#diff-new').onclick=()=>{newNoise();renderDiffusion()};$('#diff-reset').onclick=()=>{stopTimers();$('#diff-progress').value=0;renderDiffusion()};$('#diff-play').onclick=()=>{if(diffTimer){stopTimers();return}if(+$('#diff-progress').value>=100)$('#diff-progress').value=0;diffTimer=setInterval(()=>{let n=+$('#diff-progress').value+2;$('#diff-progress').value=Math.min(100,n);renderDiffusion();if(n>=100)stopTimers()},55);$('#diff-play').textContent='Ⅱ Pause'};makeTarget();newNoise();
+/* AI GLOSSARY — selected, accurate short definitions. One concept per row. */
+const GLOSSARY_GROUPS=[
+['AI foundations',`Artificial Intelligence (AI)|Computer systems that perform tasks associated with intelligence.
+Machine Learning (ML)|Learning statistical patterns from data to make predictions or decisions.
+Deep Learning|Machine learning using neural networks with many processing layers.
+Neural Network|A trainable system of interconnected mathematical operations.
+Generative AI|Models that generate new text, images, audio, code, or other data.
+Large Language Model (LLM)|A neural network trained to predict and process language sequences.
+Foundation Model|A broadly trained model that can be adapted to many tasks.
+Transformer|A neural-network architecture that uses attention to combine information across positions.
+GPT|Generative Pre-trained Transformer; commonly an autoregressive transformer language model.
+Multimodal AI|AI that can process multiple data types, such as text and images.
+Narrow AI|AI specialized for a limited set of tasks.
+AGI|Artificial General Intelligence; a debated concept of broad, flexible machine intelligence.
+ASI|Artificial Superintelligence; hypothetical intelligence exceeding human capabilities broadly.
+Symbolic AI|AI based on explicit symbols, rules, and logical inference.
+Neuro-symbolic AI|Systems that combine trainable neural networks with symbolic methods.
+Model Architecture|The layout of components that determines how data moves through a model.
+Discriminative Model|A model that predicts labels or boundaries from given data.
+Generative Model|A model that represents or learns how data can be generated.`],
+['Mathematics & representation',`Scalar|A single numerical value.
+Vector|An ordered list of numbers, often representing a point or features.
+Matrix|A two-dimensional table of numbers.
+Tensor|A multidimensional array used for numerical computation.
+Dimension|One coordinate in a mathematical representation.
+Embedding|A learned numerical representation of an item or its features.
+Embedding Space|A vector space in which representations can be compared.
+Latent Space|A space of hidden variables or internal model representations.
+Latent Variable|An unobserved variable used to model patterns in data.
+Representation Learning|Learning useful encodings rather than specifying every feature by hand.
+Feature|An input property or learned characteristic useful for prediction.
+Feature Space|A coordinate space defined by a set of features.
+Manifold|A lower-dimensional geometric structure within a larger space.
+Semantic Similarity|Similarity based on meaning or relationships.
+Cosine Similarity|The cosine of the angle between vectors; compares direction.
+Dot Product|A multiplication-and-sum operation used to compare or combine vectors.
+Projection|Transforming representations into another space or subspace.
+Dimensionality Reduction|Reducing the number of coordinates while preserving useful structure.
+PCA|Principal Component Analysis; a linear dimensionality-reduction technique.
+Disentanglement|Learning representations that separate different underlying factors.
+Probability Distribution|A mathematical assignment of probabilities to possible outcomes.
+Softmax|Converts a vector of scores into nonnegative values that sum to one.
+Entropy|A measure of uncertainty in a probability distribution.
+Euclidean Distance|Straight-line distance between points in a coordinate space.
+Linear Algebra|The mathematics of vectors, matrices, and linear transformations.
+Gradient|How quickly a quantity changes as its inputs change.
+Jacobian|A matrix of partial derivatives for a vector-valued function.`],
+['Learning & optimization',`Training|Updating model parameters to reduce an objective on examples.
+Inference|Using a trained model to compute predictions or outputs.
+Dataset|A collection of examples used for learning or evaluation.
+Training Corpus|Text or other material used as a training collection.
+Label|The desired or observed answer associated with a data example.
+Supervised Learning|Learning from examples paired with targets.
+Unsupervised Learning|Learning patterns without supplied target labels.
+Self-Supervised Learning|Creating prediction targets from the data itself.
+Reinforcement Learning (RL)|Learning action policies based on rewards or feedback.
+Pretraining|Large-scale initial training to learn general patterns.
+Fine-Tuning|Additional training to adapt an already trained model.
+Transfer Learning|Reusing learned knowledge in a different task.
+Continual Learning|Adapting to new information or tasks over time.
+Curriculum Learning|Ordering training examples to influence learning.
+Synthetic Data|Artificially generated examples used in training or evaluation.
+Parameter|A learned numeric value that affects model behavior.
+Weight|A trainable multiplier in a neural computation.
+Bias Parameter|An adjustable additive offset in a model calculation.
+Hyperparameter|A training or architecture setting selected outside parameter learning.
+Loss Function|A formula that measures prediction error or undesirable behavior.
+Backpropagation|An efficient method for computing gradients through many network operations.
+Gradient Descent|Updating parameters in directions that reduce loss.
+Optimizer|An algorithm that uses gradients or other information to adjust parameters.
+Adam|A widely used optimization algorithm with adaptive update sizes.
+Learning Rate|The scale of each training update.
+Epoch|One pass through a specified training dataset.
+Batch|A group of examples processed together.
+Batch Size|The number of examples in one batch.
+Regularization|Methods that discourage overfitting or otherwise constrain learning.
+Overfitting|Performing well on training cases but poorly on new examples.
+Underfitting|Failing to learn useful structure even from training data.
+Generalization|Performing well on new, unseen examples.
+Data Leakage|Using information during training or evaluation that should have been unavailable.
+Checkpoint|A saved state of model parameters and possibly optimizer state.
+Distillation|Teaching a smaller model to mimic a stronger teacher or system.
+Catastrophic Forgetting|Losing earlier learned capabilities after additional training.`],
+['Network architectures',`Artificial Neuron|A trainable unit that combines inputs and applies a function.
+Layer|A stage in a neural network's computations.
+Hidden Layer|An internal neural-network layer between input and output.
+MLP|Multilayer Perceptron; a stack of learned affine transformations and nonlinearities.
+Activation Function|A function that makes a neural computation nonlinear.
+ReLU|An activation that outputs the input when positive, otherwise zero.
+GELU|A smooth activation commonly used in transformer networks.
+Residual Connection|A path that adds an earlier representation to a later one.
+Layer Normalization|Normalization that stabilizes values within model representations.
+Dropout|Randomly dropping components during training to reduce overfitting.
+Encoder|A model component that maps inputs into learned representations.
+Decoder|A model component that generates or reconstructs outputs.
+Encoder–Decoder|An architecture that transforms an encoded input into an output.
+CNN|Convolutional Neural Network; an architecture for spatially structured data.
+RNN|Recurrent Neural Network; sequential computation with a recurrent internal state.
+LSTM|Long Short-Term Memory; a gated recurrent network.
+Autoencoder|A system trained to encode inputs and reconstruct them.
+VAE|Variational Autoencoder; learns probabilistic representations for generation.
+GAN|Generative Adversarial Network; trains a generator against a discriminator.
+Mixture of Experts (MoE)|A design that routes inputs through selected expert networks.
+Router|A component that selects experts or processing paths.
+State Space Model (SSM)|A sequence model that updates a mathematical internal state.
+Mamba|A selective state-space sequence-model architecture.
+Diffusion Transformer (DiT)|A transformer used as a denoising backbone in diffusion models.`],
+['Transformer internals',`Token|A unit of a model's input or output sequence, often a word fragment.
+Tokenizer|A component mapping text to and from token identifiers.
+Tokenization|Converting a text sequence into tokens.
+BPE|Byte Pair Encoding; a common method for learning text subword units.
+Token Embedding|A learned vector assigned to an input token identity.
+Positional Encoding|Information that represents positions or position relationships.
+RoPE|Rotary Position Embedding; a rotation-based method for relative positions.
+Attention|A mechanism that weights information at different sequence positions.
+Self-Attention|Attention between positions of the same sequence.
+Cross-Attention|Attention between representations from different sequences.
+Multi-Head Attention|Multiple attention computations using different learned projections.
+Attention Head|One set of learned attention projections and its weighting operation.
+Query (Q)|A projection representing what information a position seeks.
+Key (K)|A projection used for relevance matching against queries.
+Value (V)|A projection of information that attention weights combine.
+Causal Mask|A rule preventing an autoregressive model from looking at future positions.
+Attention Mask|A specification of which positions may attend to which others.
+Feed-Forward Network|A learned transformation applied to each token position.
+Residual Stream|The sequence of representations passed through transformer blocks.
+Context Window|The maximum input/output sequence span a model can handle in context.
+Logits|Unnormalized scores assigned to possible outputs.
+KV Cache|Saved attention keys and values for more efficient subsequent decoding.
+FlashAttention|An efficient implementation of exact attention with reduced memory traffic.
+Grouped-Query Attention (GQA)|An attention design where query heads share key/value heads.
+Multi-Head Latent Attention (MLA)|An attention design using compressed key/value representations.
+Attention Sink|A position that attracts substantial attention despite limited semantic role.
+Transformer Block|A repeated unit containing attention, transformations, and residual paths.`],
+['Generation & prompting',`Autoregressive Model|A model generating each new item conditional on preceding items.
+Next-Token Prediction|Predicting a probability distribution over possible next tokens.
+Decoding|Turning model output distributions into a generated sequence.
+Greedy Decoding|Choosing the highest-probability candidate at each generation step.
+Sampling|Drawing an output from a candidate probability distribution.
+Temperature|A parameter that reshapes the concentration of output probabilities.
+Top-K Sampling|Restricting token choices to the K highest-ranked candidates.
+Top-P Sampling|Retaining a smallest high-probability set whose cumulative mass reaches p.
+Beam Search|Tracking several candidate output sequences at once.
+Random Seed|A value used to initialize a pseudorandom process.
+Prompt|The input or instructions provided to a model.
+System Prompt|Higher-priority instructions governing model behavior in some AI applications.
+Zero-Shot Prompting|Requesting a task without examples in the prompt.
+Few-Shot Prompting|Providing examples in the prompt to guide behavior.
+In-Context Learning|Adapting behavior from prompt context without updating model parameters.
+Chain-of-Thought (CoT)|Intermediate reasoning steps used to approach a problem.
+Reasoning Model|A model designed or trained for more deliberate multi-step problem solving.
+Test-Time Compute|Computation spent generating or checking answers after training.
+Self-Consistency|Comparing multiple generated solution paths for agreement.
+Structured Output|Model output constrained to a schema, such as JSON.
+Hallucination|A generated claim unsupported by available evidence or incorrect.
+Speculative Decoding|Using draft predictions and verification to speed generation.
+Context Engineering|Choosing and organizing the information placed into a model's context.
+System Message|A message supplying higher-priority operating instructions in some chat systems.`],
+['Search, RAG & knowledge',`RAG|Retrieval-Augmented Generation; supplementing generation with retrieved information.
+Retrieval|Finding relevant material in a collection or source.
+Vector Database|Storage and search technology optimized for numerical embeddings.
+Semantic Search|Searching by learned meaning-based similarity.
+Keyword Search|Finding content using exact terms or lexical matching.
+Hybrid Search|Combining lexical and semantic search approaches.
+Vector Index|A structure that helps search numerical vectors efficiently.
+ANN Search|Approximate Nearest Neighbor; fast search for similar vectors.
+Chunking|Splitting documents into smaller retrieval or processing units.
+Reranking|Rescoring search results to improve their ordering.
+Grounding|Connecting model responses to evidence, observations, or source data.
+Knowledge Graph|A structured collection of entities and their relationships.
+Long-Term Memory|Information a system can retrieve across separate interactions.
+Episodic Memory|Stored information about events or past interactions.
+Parametric Knowledge|Information learned implicitly in the numerical model parameters.
+Non-Parametric Memory|Knowledge stored externally, such as in documents or indexes.
+Retrieval Recall|The fraction of relevant items found by retrieval.
+Citation Grounding|Associating statements with specific supporting evidence.`],
+['Alignment & safety',`Alignment|Steering a system toward intended goals, values, and constraints.
+Instruction Tuning|Training on examples to improve instruction following.
+SFT|Supervised Fine-Tuning; updating weights using target responses.
+RLHF|Reinforcement Learning from Human Feedback; optimizing with human preference signals.
+DPO|Direct Preference Optimization; learning preferences directly from comparison data.
+PPO|Proximal Policy Optimization; a reinforcement-learning algorithm.
+Reward Model|A model estimating how desirable a response or action is.
+Preference Data|Examples comparing outputs to indicate which are preferred.
+Constitutional AI|Model-training methods guided by an explicit set of principles.
+Guardrails|Checks and constraints intended to limit unsafe or unwanted actions.
+Red Teaming|Deliberate adversarial testing to uncover failures.
+Prompt Injection|Untrusted content attempting to redirect an AI system's instructions.
+Jailbreak|An attempt to bypass safety or instruction constraints.
+Adversarial Example|Input crafted to provoke incorrect model behavior.
+Mechanistic Interpretability|Studying learned circuits and features inside a network.
+Sparse Autoencoder (SAE)|A model learning sparse features from activations for analysis.
+Reward Hacking|Optimizing a reward signal while missing the actual intended goal.
+Model Unlearning|Methods intended to remove selected information's influence from a model.
+AI Governance|Rules, institutions, and practices for directing AI development and use.
+Human Oversight|Human review or approval of AI decisions or actions.`],
+['Agents & tools',`AI Agent|A system using an AI model to decide or perform actions toward a goal.
+Agentic AI|AI systems with workflow autonomy and tool interaction.
+Tool Calling|Requesting execution of a defined tool by another system.
+Function Calling|An AI requesting a structured invocation of a software function.
+MCP|Model Context Protocol; a standard for AI tools and context integrations.
+Connector|An integration providing access to an external service or source.
+Orchestration|Coordinating model invocations, state, tools, and workflow steps.
+Planning|Selecting possible steps or actions to meet an objective.
+ReAct|A framework interleaving reasoning and external actions.
+Multi-Agent System|Multiple software agents cooperating or otherwise interacting.
+Agent Handoff|Passing control or a task between agents.
+Human-in-the-Loop|A workflow that incorporates human input or approval.
+Agent Memory|Stored information an agent can use across task steps.
+Sandbox|An isolated environment with limited execution permissions.
+Trace|A record of actions, observations, and other system events.
+AI Skill|Reusable instructions or workflows for a recurring class of tasks.
+Workflow|An ordered or conditional process of tasks and actions.
+Tool Permissions|Limits on which operations an agent can perform.
+Observability|Collecting traces, metrics, and logs about system behavior.`],
+['Image, audio & robotics',`Diffusion Model|A generative system trained to reverse a progressive noising process.
+Latent Diffusion|Performing diffusion in a compressed representation space.
+Denoising|Estimating or removing noise from data or a representation.
+Noise Schedule|A specification of how noise levels vary during diffusion.
+Image Generation|Creating pictures through learned generative models.
+CLIP|Contrastive Language–Image Pretraining; learns matched text/image representations.
+Contrastive Learning|Learning representations using similarity and dissimilarity relationships.
+Vision Transformer (ViT)|A transformer architecture applied to visual input.
+Computer Vision|Methods for extracting information from images and video.
+Object Detection|Locating and classifying objects in images.
+Segmentation|Assigning labels or boundaries to regions or pixels.
+OCR|Optical Character Recognition; identifying text in images.
+ASR|Automatic Speech Recognition; mapping speech audio to words.
+TTS|Text-to-Speech; converting text into spoken audio.
+Speech Synthesis|Generating human-like spoken audio.
+Text-to-Video|Producing moving images conditioned on text.
+World Model|A model that predicts the dynamics or consequences of actions in an environment.
+VLA|Vision-Language-Action; combining perception and language with action prediction.
+Robotics Policy|A rule or learned model choosing actions for a robot.
+3D Gaussian Splatting|A technique for reconstructing and rendering 3D scenes with Gaussian primitives.
+Flow Matching|A training method for continuous generative transformations.
+Multimodal Embedding|A representation relating information across modalities.`],
+['Hardware & efficiency',`GPU|A processor designed for highly parallel arithmetic workloads.
+TPU|A specialized accelerator for machine-learning operations.
+VRAM|Memory on a graphics device used for weights and intermediate computation.
+FLOPs|Floating-point operations; a measure of computational work.
+Compute Budget|The available amount of computational resources.
+Scaling Laws|Empirical trends relating performance to compute, data, and model size.
+Chinchilla Scaling|Research on compute-efficient tradeoffs between model size and data.
+Latency|The elapsed time between a request and its result.
+Throughput|The quantity of work completed per unit time.
+Tokens per Second|How quickly a language model generates tokens.
+Prefill|Processing the initial input prompt before autoregressive generation.
+Decode Phase|Producing successive generated tokens.
+Quantization|Representing model numbers with lower numerical precision.
+FP16 / BF16|Two 16-bit floating-point number formats.
+FP8|An eight-bit floating-point numerical representation.
+INT4|A four-bit integer representation used in some quantized models.
+LoRA|Low-Rank Adaptation; fine-tuning small learned matrices beside base weights.
+QLoRA|Parameter-efficient training using a quantized base model and LoRA adapters.
+PEFT|Parameter-Efficient Fine-Tuning; changing relatively few trainable values.
+Pruning|Removing weights or components from a model.
+Model Parallelism|Splitting one model's computational work across devices.
+Data Parallelism|Processing different training examples across multiple devices.
+Distributed Training|Training a model with several interconnected computing devices.
+Open Weights|Making trained model parameters available, with license restrictions as applicable.
+On-Device AI|Running AI inference on local hardware rather than a remote server.`],
+['Evaluation & research',`Benchmark|A standardized set of tasks for comparing system performance.
+Evaluation (Eval)|Testing performance against specified criteria.
+Training Set|Examples used to fit model parameters.
+Validation Set|Examples used for model selection and development decisions.
+Test Set|Held-out examples for assessing generalization after development.
+Accuracy|The fraction of predictions that are correct.
+Precision|Among predicted positives, the fraction that truly are positive.
+Recall|Among actual positives, the fraction detected by the model.
+F1 Score|The harmonic mean of precision and recall.
+Perplexity|A sequence-prediction metric based on likelihood.
+Calibration|Agreement between predicted confidence and observed correctness.
+Robustness|Maintaining performance under changing or difficult conditions.
+Distribution Shift|Changes in the statistical properties of incoming data.
+Out-of-Distribution (OOD)|Input data meaningfully different from a model's training distribution.
+Data Contamination|Improper overlap between evaluation materials and training data.
+Bias|A systematic error or tendency in data or model outputs.
+Ablation Study|Testing a component's contribution by removing or changing it.
+Interpretability|The ability to understand aspects of model behavior or operation.
+Explainability|Techniques for making model behavior understandable to people.
+Emergent Behavior|A capability or pattern that appears under certain scales or conditions.
+Reproducibility|Recreating reported results under documented conditions.
+Safety Evaluation|Testing whether model behavior meets specified safety requirements.
+Capability Evaluation|Measuring task ability on a defined collection of challenges.`]
+];
+const glossary=GLOSSARY_GROUPS.flatMap(([category,lines])=>lines.split('\n').map(line=>{const k=line.indexOf('|');return {category,term:line.slice(0,k),definition:line.slice(k+1)}}));
+const CONCEPT_DETAILS={
+'Transformer':'A transformer does not rely on a dictionary of grammar rules. It repeatedly updates vector representations through attention and learned transformations. Try selecting a token in the attention lab.',
+'Latent Space':'Think of a coordinate system whose axes represent learned, often unnamed factors. A point is a representation, not a literal stored picture or idea.',
+'Embedding':'A text fragment, image, or other item can be mapped to an array of numbers. Similarity measures can compare those arrays; this helps search and clustering.',
+'Token':'A tokenizer may split “unbelievable” into smaller pieces. A token is not reliably one English word, so token counts differ from word counts.',
+'Attention':'A selected token forms a query; other tokens supply keys and values. Similarity scores produce weights used to combine the values. Different heads can learn different patterns.',
+'Self-Attention':'The same sequence supplies queries, keys, and values. Under causal masking, generation at a position cannot inspect tokens that have not yet been generated.',
+'Query (Q)':'A learned linear projection creates a query vector for a position. Query/key comparisons contribute to scores that become attention weights.',
+'Key (K)':'Each key is compared against a query. A large query-key compatibility score generally raises attention weight after normalization and masking.',
+'Value (V)':'Attention is not merely selecting which word to look at; it uses the attention weights to compute a weighted sum of value vectors.',
+'Neural Network':'Imagine a large function with adjustable numerical knobs. Training chooses the settings; inference uses the function with those settings.',
+'Parameter':'Parameters are numbers such as weights or biases. During conventional training, gradient-based optimization changes these numbers.',
+'Training':'In training, an optimizer changes model parameters using an objective computed from examples. Open the training lab and take one gradient step.',
+'Inference':'Inference runs the learned operations without normal training updates. It can be expensive even though it does not retrain the model for each answer.',
+'Fine-Tuning':'Fine-tuning updates parameters of an existing model. It is especially useful for behavior or style consistency, but a knowledge base may be better for rapidly changing facts.',
+'RAG':'RAG finds relevant documents or database records and places them into context for generation. RAG can improve grounding, but inaccurate retrieval can still cause errors.',
+'MCP':'Model Context Protocol defines how compatible AI applications connect to external tools and data sources. It is an integration protocol, not a neural-network architecture.',
+'AI Agent':'An agent is a system around a model. It may maintain state, call tools, review results, repeat actions, and ask for approval before sensitive operations.',
+'Temperature':'Temperature changes the shape of a token distribution. At a low value, high-scoring tokens dominate. At higher values, more alternatives become possible.',
+'Softmax':'Given scores z, softmax assigns probability exp(zᵢ) / Σexp(zⱼ). The result sums to one. For numerical stability, implementations subtract the maximum logit first.',
+'Gradient Descent':'A small learning rate typically takes small steps downhill on the loss curve. An excessively large rate can overshoot and even diverge.',
+'Backpropagation':'Backpropagation applies the chain rule to propagate loss gradients backward through computations. An optimizer then uses those gradients to update parameters.',
+'Loss Function':'A loss is the measurement the training process attempts to reduce. Choosing the wrong loss can optimize the wrong behavior.',
+'Hallucination':'Fluent output is not evidence. Models can generate confident incorrect statements. Grounding and evaluation are important, but neither guarantees perfect accuracy.',
+'Context Window':'A model is limited by the amount of information supplied in its active context. External memory and retrieval systems can supply selected older information.',
+'Mixture of Experts (MoE)':'A router selects which expert networks process a token. Not every expert must execute for every token, though the overall model can have many parameters.',
+'Diffusion Model':'A trained denoising model estimates how to move from a noisy sample toward the data distribution. It is more complex than simply revealing a predetermined picture.',
+'Latent Diffusion':'Images can be encoded into a smaller latent representation. A model denoises in that compressed representation, then decodes to image space.',
+'Overfitting':'A model can memorize peculiarities of training examples. Held-out validation and test examples reveal whether it learned patterns that transfer.',
+'Quantization':'Fewer bits save memory and can speed inference on compatible hardware. Very aggressive quantization can also hurt accuracy.',
+'LoRA':'Instead of changing every original weight, LoRA learns small low-rank matrices whose contribution is added to selected model operations.',
+'Prompt Injection':'An untrusted document might say “ignore previous instructions.” A secure agent must treat that document as data, not as instructions with authority.',
+'Chain-of-Thought (CoT)':'Intermediate reasoning can help solve multi-step tasks. Displayed explanations are not necessarily a faithful record of all internal model computation.',
+'Next-Token Prediction':'An autoregressive language model predicts one next token distribution at a time. Repeated selection forms a response, with context updated after each token.',
+'KV Cache':'During generation, previously computed keys and values can be reused. This avoids recalculating much of the same attention computation for every next token.',
+'Open Weights':'Open-weights models let people inspect or run trained parameter files. “Open weights” does not automatically mean open training data, open code, or unrestricted licensing.'
+};
+const labMapping={ 'Transformer':'attention','Attention':'attention','Self-Attention':'attention','Token':'attention','Key (K)':'attention','Value (V)':'attention','Query (Q)':'attention','Latent Space':'latent','Embedding':'latent','Cosine Similarity':'latent','Vector':'latent','Representation Learning':'latent','Training':'training','Learning Rate':'training','Gradient Descent':'training','Parameter':'training','Loss Function':'training','Backpropagation':'training','Temperature':'sampling','Softmax':'sampling','Top-K Sampling':'sampling','Top-P Sampling':'sampling','Next-Token Prediction':'sampling','RAG':'retrieval','Fine-Tuning':'retrieval','AI Agent':'retrieval','MCP':'retrieval','Diffusion Model':'diffusion','Latent Diffusion':'diffusion'};
+let selectedCategory='All concepts',showSaved=false,glossLimit=36,expandedTerms=new Set();
+function initGlossary(){const counts=new Map(GLOSSARY_GROUPS.map(([cat,lines])=>[cat,lines.split('\n').length]));const cats=['All concepts',...counts.keys()];$('#gloss-filters').innerHTML=cats.map(c=>`<button class="filterbtn${c===selectedCategory?' active':''}" data-category="${escapeHTML(c)}">${escapeHTML(c)} <span style="opacity:.65">${c==='All concepts'?glossary.length:counts.get(c)}</span></button>`).join('');$$('[data-category]').forEach(b=>b.onclick=()=>{selectedCategory=b.dataset.category;glossLimit=36;renderGlossary()});}
+function renderGlossary(){initGlossary();const q=$('#gloss-search').value.trim().toLocaleLowerCase();const matching=glossary.filter(g=>(selectedCategory==='All concepts'||g.category===selectedCategory)&&(!showSaved||saved.has(g.term))&&(!q||(g.term+' '+g.definition+' '+g.category).toLowerCase().includes(q)));$('#gloss-count').textContent=`Showing ${Math.min(glossLimit,matching.length)} of ${matching.length} concepts · ${glossary.length} in the atlas`;$('#hero-termcount').textContent=glossary.length;$('#gloss-saved').textContent=showSaved?'★ Saved only':'☆ Saved only';$('#gloss-saved').classList.toggle('active',showSaved);const displayed=matching.slice(0,glossLimit);$('#term-grid').innerHTML=displayed.length?displayed.map(g=>{const detail=CONCEPT_DETAILS[g.term]||`This concept is part of ${g.category.toLowerCase()}. Explore connected entries to understand how it fits into a complete AI system.`;return `<article class="term${expandedTerms.has(g.term)?' expanded':''}" tabindex="0" role="button" aria-expanded="${expandedTerms.has(g.term)}" data-term="${escapeHTML(g.term)}"><div class="term-top"><h3>${escapeHTML(g.term)}</h3><button class="star${saved.has(g.term)?' saved':''}" data-star="${escapeHTML(g.term)}" title="Save ${escapeHTML(g.term)}" aria-label="${saved.has(g.term)?'Unsave':'Save'} ${escapeHTML(g.term)}">${saved.has(g.term)?'★':'☆'}</button></div><p>${escapeHTML(g.definition)}</p><span class="category">${escapeHTML(g.category)}</span><div class="term-detail"><strong style="color:var(--violet)">Mental model</strong><div style="margin:6px 0 12px">${escapeHTML(detail)}</div>${labMapping[g.term]?`<button class="button sm" data-term-lab="${labMapping[g.term]}">Try in lab →</button>`:''}</div></article>`}).join(''):'<div class="term-empty">No matching concepts. Try a broader search or turn off Saved only.</div>';
+$('#gloss-more').hidden=matching.length<=glossLimit;
+$$('[data-term]').forEach(el=>{const toggle=()=>{if(expandedTerms.has(el.dataset.term))expandedTerms.delete(el.dataset.term);else expandedTerms.add(el.dataset.term);el.classList.toggle('expanded');el.setAttribute('aria-expanded',el.classList.contains('expanded'));};el.addEventListener('click',e=>{if(e.target.closest('button'))return;toggle()});el.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.target.closest('button')){e.preventDefault();toggle()}})});
+$$('[data-star]').forEach(b=>b.onclick=e=>{e.stopPropagation();const name=b.dataset.star;if(saved.has(name))saved.delete(name);else saved.add(name);writeSaved('atlas:saved',[...saved]);updateProgress();renderGlossary()});$$('[data-term-lab]').forEach(b=>b.onclick=e=>{e.stopPropagation();openLab(b.dataset.termLab)});}
+$('#gloss-search').addEventListener('input',()=>{glossLimit=36;renderGlossary()});$('#gloss-saved').onclick=()=>{showSaved=!showSaved;glossLimit=36;renderGlossary()};$('#gloss-more').onclick=()=>{glossLimit+=36;renderGlossary()};
+/* QUIZ: core distinctions plus actionable feedback */
+const QUESTIONS=[
+['What does model training normally change?',['The font on screen','Learned numerical parameters','The model’s current prompt only','A search engine’s index'],1,'Training updates weights and other parameters to reduce a learning objective.'],
+['Which description best fits an embedding?',['A human-readable explanation','A numeric representation of an item','A database backup file','An output sampling algorithm'],1,'An embedding maps an item to vector coordinates useful for downstream comparisons or processing.'],
+['What makes a transformer distinctive?',['Only reading one word at a time','Attention-based processing of sequence positions','Always using a web browser','Never using matrix multiplications'],1,'Transformers use attention to combine information across positions, plus learned layers and residual connections.'],
+['In self-attention, what supplies queries, keys, and values?',['Only an outside search index','The same input sequence','Only human feedback','The validation dataset'],1,'Self-attention forms Q, K, and V projections from positions in the same sequence.'],
+['A very high learning rate can…',['Guarantee convergence','Make training overshoot or diverge','Turn inference into retrieval','Always make the model smaller'],1,'Oversized gradient steps can jump across the optimum and become unstable.'],
+['Which technique adds fresh document content without changing a model’s learned weights?',['RAG','Pretraining','SFT','LoRA fine-tuning'],0,'Retrieval adds source material to a model’s context. It does not itself require weight updates.'],
+['A tool-using agent is best described as…',['Just a larger neural network','A system that coordinates a model, tools, and workflow state','A synonym for tokenization','A specific GPU'],1,'Agents surround the model with an action loop, tool permissions, and often memory or planning.'],
+['What does decreasing sampling temperature usually do?',['Flattens all token probabilities','Concentrates probability on high-scoring candidates','Increases the context window','Updates model weights'],1,'Lower temperature makes already high-scoring outputs relatively more likely.'],
+['Why is latent space not just a picture of words?',['Its coordinates are internal and often hard to interpret','It contains only English labels','It is always two-dimensional','It never uses numeric vectors'],0,'Learned spaces can have many dimensions with no direct human interpretation.'],
+['What is the KV cache for?',['Saving model weights during training','Reusing prior attention keys and values during decoding','Storing the internet','Ranking documents by keywords'],1,'Caching keys and values avoids repeated calculation of earlier context during autoregressive inference.'],
+['What is a hallucination?',['A faster GPU kernel','An unsupported or incorrect generated claim','An embedding with three dimensions','A normal training batch'],1,'Models can produce confident but incorrect content; evidence and evaluation matter.'],
+['What best distinguishes diffusion from an ordinary noise-removal filter?',['A diffusion model learns a generative denoising process','Diffusion always uses zero training data','Diffusion can only classify pictures','Diffusion is only a prompt-engineering technique'],0,'Diffusion generation learns how to reverse a noising process, enabling new samples from learned distributions.']
+];
+let qi=0,qScore=0,qChosen=null;
+function renderQuiz(){const q=QUESTIONS[qi];$('#quiz-step').textContent=`QUESTION ${String(qi+1).padStart(2,'0')} / ${QUESTIONS.length}`;$('#quiz-score').textContent=qScore+' correct';$('#quiz-bar').style.width=`${(qi+(qChosen!==null?1:0))/QUESTIONS.length*100}%`;$('#quiz-question').textContent=q[0];$('#quiz-answers').innerHTML=q[1].map((a,i)=>`<button class="answer${qChosen!==null?(i===q[2]?' correct':i===qChosen?' wrong':''):''}" data-answer="${i}" ${qChosen!==null?'disabled':''}><span class="letter">${'ABCD'[i]}</span><span>${escapeHTML(a)}</span></button>`).join('');$$('[data-answer]').forEach(b=>b.onclick=()=>{if(qChosen!==null)return;qChosen=+b.dataset.answer;if(qChosen===q[2])qScore++;renderQuiz()});const feed=$('#quiz-feedback');feed.style.display=qChosen===null?'none':'block';if(qChosen!==null)feed.innerHTML=`<strong>${qChosen===q[2]?'✓ Correct':'Not quite — '+escapeHTML(q[1][q[2]])+' is the right choice.'}</strong><div style="margin-top:7px">${escapeHTML(q[3])}</div>`;$('#quiz-next').disabled=qChosen===null;$('#quiz-next').textContent=qi===QUESTIONS.length-1?'See your result →':'Next question →';}
+$('#quiz-next').onclick=()=>{if(qChosen===null)return;if(qi===QUESTIONS.length-1){const score=qScore;$('#quiz-box').innerHTML=`<div style="text-align:center;padding:25px 10px"><div class="overline">CHALLENGE COMPLETE</div><h2 style="font-size:55px;color:var(--mint);margin:13px 0">${score} / ${QUESTIONS.length}</h2><h3>${score===QUESTIONS.length?'You understand the machinery.':score>=9?'Strong fundamentals.':'Keep experimenting.'}</h3><p class="muted">${score===QUESTIONS.length?'All core distinctions correct.':`You answered ${score} out of ${QUESTIONS.length} correctly. Revisit the labs and try again.`}</p><div class="btnrow" style="justify-content:center"><button class="button primary" id="final-restart">↻ Try again</button><button class="button" id="final-labs">Explore labs →</button></div></div>`;$('#final-restart').onclick=()=>{qi=0;qScore=0;qChosen=null;window.location.reload()};$('#final-labs').onclick=()=>openLab('attention');return}qi++;qChosen=null;renderQuiz()};$('#quiz-restart').onclick=()=>{qi=0;qScore=0;qChosen=null;renderQuiz()};
+/* RESEARCH: official papers where possible */
+const PAPER_LIST=[
+[2013,'Representation Learning: A Review and New Perspectives','Bengio, Courville & Vincent · Why learned representations matter','https://arxiv.org/abs/1206.5538'],
+[2014,'Adam: A Method for Stochastic Optimization','Kingma & Ba · Practical neural-network optimization','https://arxiv.org/abs/1412.6980'],
+[2017,'Attention Is All You Need','Vaswani et al. · Original transformer architecture','https://arxiv.org/abs/1706.03762'],
+[2018,'BERT: Pre-training of Deep Bidirectional Transformers','Devlin et al. · Encoder-style transformer pretraining','https://arxiv.org/abs/1810.04805'],
+[2020,'Scaling Laws for Neural Language Models','Kaplan et al. · Model size, data, and compute relationships','https://arxiv.org/abs/2001.08361'],
+[2020,'Language Models are Few-Shot Learners','Brown et al. · In-context learning with GPT-3','https://arxiv.org/abs/2005.14165'],
+[2020,'Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks','Lewis et al. · Connecting parametric models to retrieval','https://arxiv.org/abs/2005.11401'],
+[2020,'Denoising Diffusion Probabilistic Models','Ho, Jain & Abbeel · Generative denoising models','https://arxiv.org/abs/2006.11239'],
+[2021,'Learning Transferable Visual Models From Natural Language Supervision','Radford et al. · CLIP and multimodal representations','https://arxiv.org/abs/2103.00020'],
+[2021,'LoRA: Low-Rank Adaptation of Large Language Models','Hu et al. · Parameter-efficient adaptation','https://arxiv.org/abs/2106.09685'],
+[2022,'Training language models to follow instructions with human feedback','Ouyang et al. · InstructGPT and RLHF','https://arxiv.org/abs/2203.02155'],
+[2022,'Training Compute-Optimal Large Language Models','Hoffmann et al. · Chinchilla scaling','https://arxiv.org/abs/2203.15556'],
+[2022,'High-Resolution Image Synthesis with Latent Diffusion Models','Rombach et al. · Latent diffusion','https://arxiv.org/abs/2112.10752'],
+[2023,'Direct Preference Optimization','Rafailov et al. · Preference tuning without standard RLHF complexity','https://arxiv.org/abs/2305.18290']
+];
+$('#papers').innerHTML=PAPER_LIST.map(([year,title,desc,url])=>`<a class="paper" href="${url}" target="_blank" rel="noopener noreferrer"><span class="paper-year">${year}</span><div><b>${escapeHTML(title)}</b><p>${escapeHTML(desc)}</p></div><span class="paper-arrow">↗</span></a>`).join('');
+/* Initialize; deterministic sections render without remote dependencies */
+updateProgress();renderGlossary();renderQuiz();renderAttention();renderLatent();renderTraining();renderSampling();renderRag();renderDiffusion();
+openLab; /* exported global for button calls */
+</script>
+</body></html>
