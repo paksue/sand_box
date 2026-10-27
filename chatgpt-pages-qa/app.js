@@ -4,7 +4,7 @@
   const STORAGE = "orbit-ask-chats-v1";
   const ACTIVE = "orbit-ask-active-v1";
   const $ = (id) => document.getElementById(id);
-  const state = { chats: [], active: null, sessionToken: sessionStorage.getItem("orbit-session") || "", connected: false, models: [], model: "", busy: false };
+  const state = { chats: [], active: null, email: "", sessionToken: sessionStorage.getItem("orbit-session") || "", connected: false, models: [], model: "", busy: false };
   const safe = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
   const uuid = () => crypto.randomUUID();
   const readStorage = () => { try { return JSON.parse(localStorage.getItem(STORAGE) || "[]"); } catch { return []; } };
@@ -27,12 +27,12 @@
     $("chatList").replaceChildren();
     if (!state.chats.length) { const e=document.createElement("p"); e.className="empty-sidebar"; e.textContent="Your conversations will appear here."; $("chatList").append(e); }
     for (const chat of state.chats) {
-      const item=document.createElement("button"); item.type="button"; item.className="chat-item"+(chat.id === state.active ? " active" : "");
+      const item=document.createElement("div"); item.setAttribute("role","button");item.tabIndex=0; item.className="chat-item"+(chat.id === state.active ? " active" : "");
       const icon=document.createElement("span"); icon.className="chat-glyph";icon.textContent="◇";
       const name=document.createElement("span"); name.className="chat-name";name.textContent=chat.title;
       const del=document.createElement("button");del.className="chat-delete";del.textContent="×";del.title="Delete conversation";del.setAttribute("aria-label","Delete "+chat.title);
       del.addEventListener("click",e=>{e.stopPropagation();deleteChat(chat.id);});
-      item.append(icon,name,del);item.addEventListener("click",()=>setActive(chat.id));$("chatList").append(item);
+      item.append(icon,name,del);item.addEventListener("click",()=>setActive(chat.id));item.addEventListener("keydown",e=>{if(e.target===item&&(e.key==="Enter"||e.key===" ")){e.preventDefault();setActive(chat.id);}});$("chatList").append(item);
     }
   }
   function inlineMd(input) {
@@ -87,7 +87,7 @@
     $("composerMode").textContent=state.connected?"Using your authorized ChatGPT plan":"Private, local conversation history";
     $("selectedModel").textContent=state.model ? (state.models.find(m=>m.slug===state.model)?.display_name || state.model) : "Choose a model";
     $("signIn").disabled=!state.sessionToken;
-    $("accountDetail").textContent=state.connected?"Plan usage enabled. Models available: "+state.models.length+".":state.sessionToken?"Companion paired. Continue with ChatGPT to authorize use of your plan.":"Connect your companion first.";
+    $("accountDetail").textContent=state.connected?"Authorized as "+(state.email||"ChatGPT user")+". Plan usage enabled. Models available: "+state.models.length+".":state.sessionToken?"Companion paired. Continue with ChatGPT to authorize use of your plan.":"Connect your companion first.";
     $("send").disabled=state.busy;
   }
   async function call(path, opts={}) {
@@ -101,6 +101,7 @@
     if(!state.sessionToken){state.connected=false;updateStatus();return;}
     try {
       const info=await call("/api/status");
+      state.email=info.email||"";
       state.connected=Boolean(info.connected && info.sharing);
       if(state.connected){
         state.models=await call("/api/models").then(x=>x.models||[]);
