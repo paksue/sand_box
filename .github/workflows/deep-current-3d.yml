@@ -1,0 +1,71 @@
+name: Deep Current Cinematic 3D — Build, Test, Publish
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'deep-current-3d/**'
+      - '.github/workflows/deep-current-3d.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: deep-current-3d-publish
+  cancel-in-progress: true
+jobs:
+  build-test-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install packages and build typed production bundle
+        working-directory: deep-current-3d
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+      - name: Install Playwright Chromium
+        working-directory: deep-current-3d
+        run: npx playwright install --with-deps chromium
+      - name: Run actual WebGL desktop and phone interaction tests
+        working-directory: deep-current-3d
+        run: |
+          mkdir -p artifacts
+          npx playwright test
+        env:
+          CI: 'true'
+      - name: Upload visual QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deep-current-3d-visual-evidence
+          path: |
+            deep-current-3d/artifacts/
+            deep-current-3d/test-results/
+          if-no-files-found: ignore
+      - name: Publish Vite bundle into existing GitHub Pages site
+        run: |
+          rm -rf previews/deep-current-3d
+          mkdir -p previews/deep-current-3d
+          cp -a deep-current-3d/dist/. previews/deep-current-3d/
+          touch previews/deep-current-3d/.nojekyll
+          test -f previews/deep-current-3d/index.html
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add previews/deep-current-3d
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish tested Deep Current cinematic 3D build'
+            git push origin HEAD:main
+          fi
+      - name: Verify live web entrypoint
+        run: |
+          URL='https://paksue.github.io/sand_box/previews/deep-current-3d/'
+          for i in {1..28}; do
+            if curl -fsSL --max-time 15 "$URL" -o "$RUNNER_TEMP/site.html" && grep -q 'Deep Current' "$RUNNER_TEMP/site.html"; then
+              echo "Live cinematic 3D game published: $URL"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo 'Published site did not become available within verification window.'
+          exit 1
