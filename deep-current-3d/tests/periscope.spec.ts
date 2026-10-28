@@ -14,10 +14,12 @@ test('launch opens a real animated Three.js periscope with 2-axis controls',asyn
  const nextFrame=await canvas.screenshot();
  expect(Buffer.compare(initialFrame,nextFrame)).not.toBe(0);
  const before=await page.locator('.scope-bearing').innerText();
+ const pitchBefore=await page.locator('.scope-pitch').innerText();
  const r=await canvas.boundingBox();expect(r).not.toBeNull();
  if(r){await page.mouse.move(r.x+r.width*.5,r.y+r.height*.5);await page.mouse.down();await page.mouse.move(r.x+r.width*.65,r.y+r.height*.4,{steps:5});await page.mouse.up();}
  const after=await page.locator('.scope-bearing').innerText();
  expect(after).not.toBe(before);
+ expect(await page.locator('.scope-pitch').innerText()).not.toBe(pitchBefore);
  await page.screenshot({path:'artifacts/periscope-aimed.png',fullPage:true});
  await page.getByRole('button',{name:/LOWER/}).click();
  await expect(page.getByText(/MOVING|SUBMERGED/).first()).toBeVisible();
