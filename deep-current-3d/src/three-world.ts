@@ -13,11 +13,11 @@ const waterFragment=[
  'float wv(vec2 p){return sin(p.x*.021+p.y*.011+uTime*1.14)*.55+sin(p.y*.035-p.x*.009-uTime*.86)*.35+sin((p.x+p.y)*.092+uTime*2.05)*.10;}',
  'void main(){vec2 p=vWorld.xz;float e=.25;vec3 n=normalize(vec3((wv(p-vec2(e,0.))-wv(p+vec2(e,0.)))/(e*2.),1.,(wv(p-vec2(0.,e))-wv(p+vec2(0.,e)))/(e*2.)));',
  'vec3 toEye=normalize(uEye-vWorld);vec3 sun=normalize(uSun);float ndl=max(0.,dot(n,sun));',
- 'float glint=pow(max(0.,dot(reflect(-sun,n),toEye)),56.)*1.9+pow(max(0.,dot(reflect(-sun,n),toEye)),230.)*2.4;',
+ 'float glint=pow(max(0.,dot(reflect(-sun,n),toEye)),56.)*.22+pow(max(0.,dot(reflect(-sun,n),toEye)),230.)*.14;',
  'float fresnel=pow(1.-max(0.,dot(n,toEye)),2.);float deep=.18+.08*sin(p.x*.014+p.y*.022+uTime*.4);',
- 'vec3 dark=mix(vec3(.012,.055,.086),vec3(.038,.14,.19),clamp(ndl*.5+deep,0.,1.));',
- 'vec3 col=mix(dark,vec3(.13,.24,.29),fresnel*.56);col+=vec3(1.,.55,.31)*glint*(1.-uNight*.72);',
- 'float foam=smoothstep(.75,1.1,abs(vWave))*.07;float fine=sin(p.x*.17+uTime*2.1)*sin(p.y*.13-uTime*1.4);col+=vec3(.26,.43,.48)*foam+vec3(.055,.091,.10)*max(0.,fine)*(.40+ndl);',
+ 'vec3 dark=mix(vec3(.045,.125,.19),vec3(.085,.215,.27),clamp(ndl*.5+deep,0.,1.));',
+ 'vec3 col=mix(dark,vec3(.18,.31,.35),fresnel*.38);col+=vec3(.88,.55,.34)*glint*(1.-uNight*.72);',
+ 'float foam=smoothstep(.74,1.1,abs(vWave))*.10;float fine=sin(p.x*.17+uTime*2.1)*sin(p.y*.13-uTime*1.4);float finer=sin(p.x*.44-uTime*3.)*sin(p.y*.37+uTime*2.2);col+=vec3(.25,.42,.44)*foam+vec3(.08,.14,.16)*max(0.,fine)*(.55+ndl)+vec3(.036,.06,.071)*max(0.,finer);',
  'float dist=distance(vWorld.xz,uEye.xz);float fog=1.-exp(-dist*.00028);',
  'col=mix(col,mix(vec3(.39,.40,.42),vec3(.16,.27,.35),uNight),fog*.65);',
  'col=mix(col,col*.33,uNight*.68);gl_FragColor=vec4(col,1.);}'
@@ -35,7 +35,7 @@ const skyFragment=[
  'float cloudMask=smoothstep(.40,.73,cloud*.8+wisps*.2)*(.84-.50*smoothstep(.30,.82,h));',
  'vec3 cloudTone=mix(vec3(.36,.37,.43),vec3(.12,.16,.26),smoothstep(.07,.72,h));',
  'sky=mix(sky,cloudTone,cloudMask*.68);',
- 'float glow=pow(sd,18.);float halo=pow(sd,230.);float disc=smoothstep(.99972,.99990,sd);',
+ 'float glow=pow(sd,18.);float halo=pow(sd,350.);float disc=smoothstep(.99993,.999983,sd);',
  'sky+=vec3(.92,.46,.27)*glow*.18+vec3(1.,.64,.41)*halo*.48+vec3(1.,.81,.60)*disc*.70;',
  'vec3 night=mix(vec3(.038,.067,.11),vec3(.006,.015,.035),smoothstep(.0,.75,h));',
  'sky=mix(sky,night,uNight*.96);gl_FragColor=vec4(sky,1.);}'
@@ -119,6 +119,7 @@ export class OceanWorld{
  readonly scene=new THREE.Scene();readonly camera=new THREE.PerspectiveCamera(16,1,.15,10000);
  readonly renderer:THREE.WebGLRenderer;
  private water:THREE.Mesh;
+ private nearWater:THREE.Mesh;
  private sky:THREE.Mesh;
  private ships=new Map<string,ShipView>();
  private splashes=new Map<number,THREE.Group>();
@@ -144,7 +145,10 @@ export class OceanWorld{
   this.waterUniforms={uTime:{value:0},uEye:{value:new THREE.Vector3()},uSun:{value:this.sun},uNight:{value:0}};
   const waterGeometry=new THREE.PlaneGeometry(10000,10000,180,180);
   waterGeometry.rotateX(-Math.PI/2); // World-space XZ plane BEFORE vertex-wave displacement.
-  this.water=new THREE.Mesh(waterGeometry,new THREE.ShaderMaterial({uniforms:this.waterUniforms,vertexShader:waterVertex,fragmentShader:waterFragment,side:THREE.DoubleSide,depthWrite:true}));this.water.frustumCulled=false;this.scene.add(this.water);
+  const waterMaterial=new THREE.ShaderMaterial({uniforms:this.waterUniforms,vertexShader:waterVertex,fragmentShader:waterFragment,side:THREE.DoubleSide,depthWrite:true});
+  this.water=new THREE.Mesh(waterGeometry,waterMaterial);this.water.frustumCulled=false;this.scene.add(this.water);
+  const nearGeometry=new THREE.PlaneGeometry(1300,1300,200,200);nearGeometry.rotateX(-Math.PI/2);
+  this.nearWater=new THREE.Mesh(nearGeometry,waterMaterial);this.nearWater.frustumCulled=false;this.scene.add(this.nearWater);
   this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(container);this.resize();
  }
  private resize(){const w=this.container.clientWidth,h=this.container.clientHeight;if(w<2||h<2||(w===this.lastW&&h===this.lastH))return;
@@ -202,6 +206,7 @@ export class OceanWorld{
   this.camera.fov=clamp(26/p.zoom,4.33,26);this.camera.updateProjectionMatrix();
   this.sky.position.set(p.x,0,p.z);
   this.water.position.set(p.x,0,p.z);
+  this.nearWater.position.set(p.x,.025,p.z);
   this.waterUniforms.uEye.value.copy(this.camera.position);
   this.syncShips(g);this.syncImpacts(g);
   this.resize();this.renderer.render(this.scene,this.camera);
@@ -209,7 +214,7 @@ export class OceanWorld{
  dispose(){
   this.observer.disconnect();this.renderer.dispose();
   this.renderer.domElement.remove();
-  this.water.geometry.dispose();(this.water.material as THREE.Material).dispose();this.sky.geometry.dispose();(this.sky.material as THREE.Material).dispose();
+  this.water.geometry.dispose();this.nearWater.geometry.dispose();(this.water.material as THREE.Material).dispose();this.sky.geometry.dispose();(this.sky.material as THREE.Material).dispose();
   for(const v of this.ships.values()){v.group.traverse(obj=>{if(obj instanceof THREE.Mesh){obj.geometry.dispose();const materials=Array.isArray(obj.material)?obj.material:[obj.material];materials.forEach(m=>m.dispose())}});v.wake.geometry.dispose();(v.wake.material as THREE.Material).dispose()}
  }
 }
