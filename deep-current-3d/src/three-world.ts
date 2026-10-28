@@ -17,25 +17,28 @@ const waterFragment=[
  'float fresnel=pow(1.-max(0.,dot(n,toEye)),2.);float deep=.18+.08*sin(p.x*.014+p.y*.022+uTime*.4);',
  'vec3 dark=mix(vec3(.012,.055,.086),vec3(.038,.14,.19),clamp(ndl*.5+deep,0.,1.));',
  'vec3 col=mix(dark,vec3(.13,.24,.29),fresnel*.56);col+=vec3(1.,.55,.31)*glint*(1.-uNight*.72);',
- 'float foam=smoothstep(.75,1.1,abs(vWave))*.07;col+=vec3(.26,.43,.48)*foam;',
+ 'float foam=smoothstep(.75,1.1,abs(vWave))*.07;float fine=sin(p.x*.17+uTime*2.1)*sin(p.y*.13-uTime*1.4);col+=vec3(.26,.43,.48)*foam+vec3(.055,.091,.10)*max(0.,fine)*(.40+ndl);',
  'float dist=distance(vWorld.xz,uEye.xz);float fog=1.-exp(-dist*.00028);',
- 'col=mix(col,mix(vec3(.56,.50,.48),vec3(.16,.27,.35),uNight),fog*.72);',
+ 'col=mix(col,mix(vec3(.39,.40,.42),vec3(.16,.27,.35),uNight),fog*.65);',
  'col=mix(col,col*.33,uNight*.68);gl_FragColor=vec4(col,1.);}'
 ].join('\n');
 const skyVertex='varying vec3 vDir;void main(){vDir=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}';
 const skyFragment=[
- 'precision highp float;varying vec3 vDir;uniform vec3 uSun;uniform float uNight;',
- 'float noise(vec2 p){return sin(p.x*4.1+sin(p.y*2.8))*sin(p.y*3.8+cos(p.x*3.2));}',
- 'void main(){vec3 d=normalize(vDir);float h=clamp(d.y*2.,0.,1.);',
- 'vec3 horizon=mix(vec3(.84,.48,.32),vec3(.44,.54,.62),smoothstep(.03,.60,d.y));',
- 'vec3 zenith=vec3(.055,.12,.22);vec3 sky=mix(horizon,zenith,smoothstep(.12,.96,d.y));',
- 'float cloud=noise(d.xz*9.+d.y*4.)*.5+noise(d.xz*24.)*.25+noise(d.xz*53.)*.12;',
- 'float cloudBand=smoothstep(.12,.35,cloud)*(.6-smoothstep(.36,.88,d.y)*.35);',
- 'sky=mix(sky,vec3(.14,.18,.25),cloudBand*.65);',
- 'float s=dot(d,normalize(uSun));float sun=pow(max(0.,s),4500.);float halo=pow(max(0.,s),34.);',
- 'sky+=vec3(1.,.58,.31)*halo*.65+vec3(1.,.82,.59)*sun*1.3;',
- 'vec3 night= mix(vec3(.025,.048,.078),vec3(.006,.015,.032),h);',
- 'sky=mix(sky,night,uNight);gl_FragColor=vec4(sky,1.);}'
+ 'precision highp float; varying vec3 vDir; uniform vec3 uSun; uniform float uNight;',
+ 'float hash21(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
+ 'float noise21(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash21(i),hash21(i+vec2(1.,0.)),f.x),mix(hash21(i+vec2(0.,1.)),hash21(i+1.),f.x),f.y);}',
+ 'float fbm(vec2 p){float a=.5,n=0.;for(int i=0;i<5;i++){n+=noise21(p)*a;p=p*2.05+4.17;a*=.5;}return n;}',
+ 'void main(){vec3 d=normalize(vDir);vec3 sunDir=normalize(uSun);float sd=max(dot(d,sunDir),0.);float h=clamp(d.y,0.,1.);',
+ 'vec3 horizon=vec3(.52,.48,.50);vec3 midday=vec3(.20,.31,.43);vec3 zenith=vec3(.055,.105,.195);',
+ 'vec3 sky=mix(horizon,midday,smoothstep(.015,.26,h));sky=mix(sky,zenith,smoothstep(.18,.9,h));',
+ 'float cloud=fbm(d.xz*17.+vec2(d.y*3.,d.y*7.));float wisps=fbm(d.xz*43.+vec2(d.y*13.,0.));',
+ 'float cloudMask=smoothstep(.40,.73,cloud*.8+wisps*.2)*(.84-.50*smoothstep(.30,.82,h));',
+ 'vec3 cloudTone=mix(vec3(.36,.37,.43),vec3(.12,.16,.26),smoothstep(.07,.72,h));',
+ 'sky=mix(sky,cloudTone,cloudMask*.68);',
+ 'float glow=pow(sd,18.);float halo=pow(sd,230.);float disc=smoothstep(.99972,.99990,sd);',
+ 'sky+=vec3(.92,.46,.27)*glow*.18+vec3(1.,.64,.41)*halo*.48+vec3(1.,.81,.60)*disc*.70;',
+ 'vec3 night=mix(vec3(.038,.067,.11),vec3(.006,.015,.035),smoothstep(.0,.75,h));',
+ 'sky=mix(sky,night,uNight*.96);gl_FragColor=vec4(sky,1.);}'
 ].join('\n');
 
 function mat(color:number,metalness=.15,roughness=.78){return new THREE.MeshStandardMaterial({color,metalness,roughness,flatShading:false})}
