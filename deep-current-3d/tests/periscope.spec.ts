@@ -1,0 +1,41 @@
+import {test,expect} from '@playwright/test';
+test('launch opens a real animated Three.js periscope with 2-axis controls',async({page})=>{
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('/');
+ await page.getByRole('button',{name:/BEGIN PATROL/i}).click();
+ await page.getByRole('button',{name:/LAUNCH PATROL/i}).click();
+ await expect(page.getByText('OPTICAL PERISCOPE',{exact:false})).toBeVisible();
+ const canvas=page.locator('.webgl-host canvas');
+ await expect(canvas).toHaveCount(1);
+ await expect(page.locator('.render-error')).toHaveCount(0);
+ const before=await page.locator('.scope-bearing').innerText();
+ const r=await canvas.boundingBox();expect(r).not.toBeNull();
+ if(r){await page.mouse.move(r.x+r.width*.5,r.y+r.height*.5);await page.mouse.down();await page.mouse.move(r.x+r.width*.65,r.y+r.height*.4,{steps:5});await page.mouse.up();}
+ const after=await page.locator('.scope-bearing').innerText();
+ expect(after).not.toBe(before);
+ await page.screenshot({path:'artifacts/periscope-desktop.png',fullPage:true});
+ await page.getByRole('button',{name:/LOWER/}).click();
+ await expect(page.getByText(/MOVING|SUBMERGED/).first()).toBeVisible();
+ await page.waitForTimeout(550);
+ await page.getByRole('button',{name:/RAISE/}).click();
+ await page.getByRole('button',{name:/TACTICAL MAP/}).click();
+ await expect(page.getByText('CONTACT PLOT')).toBeVisible();
+ await page.getByRole('button',{name:/HYDROPHONES/}).click();
+ await expect(page.getByText('HYDROPHONE ARRAY / PASSIVE')).toBeVisible();
+ await page.getByRole('button',{name:/PERISCOPE/}).first().click();
+ await page.getByRole('button',{name:/FIRE TORPEDO/}).click();
+ await expect(page.getByText(/TORPEDO AWAY/)).toBeVisible();
+ expect(errors).toEqual([]);
+});
+test('touch viewport stays inside phone without horizontal overflow',async({browser})=>{
+ const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+ const page=await context.newPage();await page.goto('/');
+ await page.getByRole('button',{name:/BEGIN PATROL/}).click();
+ await page.getByRole('button',{name:/LAUNCH PATROL/}).click();
+ await expect(page.locator('.webgl-host canvas')).toHaveCount(1);
+ await expect(page.locator('.render-error')).toHaveCount(0);
+ const viewport=await page.locator('.view-frame').boundingBox();
+ expect(viewport?.width||9999).toBeLessThanOrEqual(391);
+ await page.screenshot({path:'artifacts/periscope-mobile.png',fullPage:true});
+ await context.close();
+});
