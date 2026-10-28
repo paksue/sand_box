@@ -1,14 +1,13 @@
 import React,{useEffect,useRef,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {OceanWorld} from './three-world';
-import {MISSIONS,startMission,tick,execute,contacts,bearing,range,fmtDeg,clock,clamp,norm} from './simulation';
+import {MISSIONS,startMission,tick,execute,contacts,bearing,range,fmtDeg,clock} from './simulation';
 import type {Action,Game,Ship} from './simulation';
 import './style.css';
 
 const SAVE_KEY='deep-current-3d-save-v1';
 function save(g:Game){try{localStorage.setItem(SAVE_KEY,JSON.stringify(g))}catch{/* unavailable */}}
 function load():Game|null{try{const o=JSON.parse(localStorage.getItem(SAVE_KEY)||'null') as Game|null;return o?.player&&o.ships&&o.mission?o:null}catch{return null}}
-function Tone(){return null}
 function Icon({name}:{name:'scope'|'map'|'sonar'|'damage'}){
  if(name==='scope')return <span className="station-symbol">⊕</span>;
  if(name==='map')return <span className="station-symbol">⌖</span>;
@@ -21,7 +20,7 @@ function App(){
  const [game,setGame]=useState<Game|null>(null);
  const [error,setError]=useState('');
  const [sound,setSound]=useState(true);
- const [revision,setRevision]=useState(0);
+ const [,setRevision]=useState(0);
  const gameRef=useRef<Game|null>(null);
  const viewport=useRef<HTMLDivElement|null>(null);
  const world=useRef<OceanWorld|null>(null);
@@ -117,7 +116,6 @@ function App(){
  function wheel(e:React.WheelEvent<HTMLDivElement>){if(!g||g.station!=='scope')return;execute(g,{type:'ZOOM',value:g.player.zoom+(e.deltaY<0?.3:-.3)});setRevision(x=>x+1)}
  const selected:Ship|null=g?.ships.find(s=>s.id===g.selectedShip&&!s.sunk)||null;
  const sight=g?contacts(g):[];
- const near=sight[0];
  const rangeYd=selected&&g?Math.round(range(g.player,selected)/.9144):0;
  const bearingDisplay=selected&&g?fmtDeg(bearing(g.player,selected)):'---';
  const p=g?.player;
