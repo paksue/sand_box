@@ -110,9 +110,24 @@ function createWake():THREE.LineSegments{
  const m=new THREE.LineBasicMaterial({color:0xb6d0cc,transparent:true,opacity:.55,depthWrite:false});
  return new THREE.LineSegments(g,m);
 }
+let smokeTexture:THREE.CanvasTexture|null=null;
 function makeSmoke():THREE.Group{
- const group=new THREE.Group();const sm=new THREE.MeshBasicMaterial({color:0x243039,transparent:true,opacity:.15,depthWrite:false});
- for(let i=0;i<8;i++){const m=new THREE.Mesh(new THREE.SphereGeometry(1,8,6),sm.clone());m.scale.setScalar(2+i*.5);group.add(m)}return group;
+ // A soft original procedurally generated smoke texture, not a chain of solid geometry balls.
+ if(!smokeTexture){
+  const canvas=document.createElement('canvas');canvas.width=128;canvas.height=128;
+  const ctx=canvas.getContext('2d')!;
+  const grad=ctx.createRadialGradient(64,64,5,64,64,64);
+  grad.addColorStop(0,'rgba(55,65,70,.65)');grad.addColorStop(.32,'rgba(48,59,66,.36)');
+  grad.addColorStop(.69,'rgba(52,61,67,.11)');grad.addColorStop(1,'rgba(40,50,59,0)');
+  ctx.fillStyle=grad;ctx.fillRect(0,0,128,128);
+  smokeTexture=new THREE.CanvasTexture(canvas);
+ }
+ const group=new THREE.Group();
+ for(let i=0;i<10;i++){
+  const m=new THREE.Sprite(new THREE.SpriteMaterial({map:smokeTexture,transparent:true,opacity:.48,depthWrite:false,color:0x9ba1a0}));
+  m.scale.set(9,9,9);group.add(m);
+ }
+ return group;
 }
 
 export class OceanWorld{
