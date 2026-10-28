@@ -139,8 +139,9 @@ export class OceanWorld{
   this.sky=new THREE.Mesh(new THREE.SphereGeometry(7800,40,22),new THREE.ShaderMaterial({uniforms:this.skyUniforms,vertexShader:skyVertex,fragmentShader:skyFragment,side:THREE.BackSide,depthWrite:false,fog:false}));
   this.sky.frustumCulled=false;this.scene.add(this.sky);
   this.waterUniforms={uTime:{value:0},uEye:{value:new THREE.Vector3()},uSun:{value:this.sun},uNight:{value:0}};
-  this.water=new THREE.Mesh(new THREE.PlaneGeometry(10000,10000,180,180),new THREE.ShaderMaterial({uniforms:this.waterUniforms,vertexShader:waterVertex,fragmentShader:waterFragment,side:THREE.DoubleSide,depthWrite:true}));
-  this.water.rotation.x=-Math.PI/2;this.water.frustumCulled=false;this.scene.add(this.water);
+  const waterGeometry=new THREE.PlaneGeometry(10000,10000,180,180);
+  waterGeometry.rotateX(-Math.PI/2); // World-space XZ plane BEFORE vertex-wave displacement.
+  this.water=new THREE.Mesh(waterGeometry,new THREE.ShaderMaterial({uniforms:this.waterUniforms,vertexShader:waterVertex,fragmentShader:waterFragment,side:THREE.DoubleSide,depthWrite:true}));this.water.frustumCulled=false;this.scene.add(this.water);
   this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(container);this.resize();
  }
  private resize(){const w=this.container.clientWidth,h=this.container.clientHeight;if(w<2||h<2||(w===this.lastW&&h===this.lastH))return;
