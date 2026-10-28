@@ -27,7 +27,7 @@ export function startMission(id:string='first-light',seed=19430312):Game{
  const mission=MISSIONS.find(m=>m.id===id)||MISSIONS[0];
  const p:Player={x:0,z:0,heading:75,orderedHeading:75,speed:3.5,orderedSpeed:3.5,depth:45,orderedDepth:45,hull:100,battery:98,torpedoes:12,tubes:[0,0,0,0],quiet:false,mast:1,mastTarget:1,scopeYaw:75,scopePitch:0,zoom:2,gyro:0,selectedTube:0};
  const ships:Ship[]=[];
- for(let i=0;i<3;i++){ships.push({id:'M'+(i+1),name:['AKAGI MARU','HOKUTO MARU','SHINSEI MARU'][i],kind:'merchant',x:1730+i*520,z:-460+(i%2)*165,heading:270,speed:9.2+i*.45,length:[146,131,167][i],health:100,tonnage:[6800,5300,7900][i],sunk:false,search:0,cooldown:0,wake:0})}
+ for(let i=0;i<3;i++){ships.push({id:'M'+(i+1),name:['AKAGI MARU','HOKUTO MARU','SHINSEI MARU'][i],kind:'merchant',x:1730+i*520,z:-460+(i%2)*165,heading:0,speed:9.2+i*.45,length:[146,131,167][i],health:100,tonnage:[6800,5300,7900][i],sunk:false,search:0,cooldown:0,wake:0})}
  ships.push({id:'E1',name:'ESCORT ONE',kind:'escort',x:2450,z:-930,heading:250,speed:15,length:107,health:100,tonnage:1650,sunk:false,search:0,cooldown:24,wake:0});
  if(mission.escortSkill>=1)ships.push({id:'E2',name:'ESCORT TWO',kind:'escort',x:1550,z:-1450,heading:235,speed:16,length:100,health:100,tonnage:1650,sunk:false,search:0,cooldown:30,wake:0});
  return {player:p,ships,weapons:[],impacts:[],mission,elapsed:0,clockMinutes:mission.time==='01:16'?76:mission.time==='06:04'?364:342,paused:false,speedFactor:1,status:'running',tonnage:0,shots:0,hits:0,alerts:0,logs:['CONVOY REPORTED. MAKE READY FOR ACTION.'],seed,nextId:1,selectedShip:'M1',station:'scope',missionEnded:false,rng:seed};
