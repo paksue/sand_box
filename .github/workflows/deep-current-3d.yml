@@ -43,6 +43,17 @@ jobs:
             deep-current-3d/artifacts/
             deep-current-3d/test-results/
           if-no-files-found: ignore
+      - name: Bundle complete editable source without dependencies
+        run: |
+          zip -qr deep-current-3d-source.zip deep-current-3d \
+            -x 'deep-current-3d/node_modules/*' 'deep-current-3d/dist/*' \
+               'deep-current-3d/artifacts/*' 'deep-current-3d/test-results/*'
+      - name: Upload source project
+        uses: actions/upload-artifact@v4
+        with:
+          name: deep-current-3d-source
+          path: deep-current-3d-source.zip
+          if-no-files-found: error
       - name: Publish Vite bundle into existing GitHub Pages site
         run: |
           rm -rf previews/deep-current-3d
