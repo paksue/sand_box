@@ -18,7 +18,7 @@ jobs:
         run: |
           URL="https://paksue.github.io/sand_box/previews/deep-current/"
           for i in {1..40}; do
-            if curl -fsSL --max-time 15 "$URL" | grep -q 'id="start-button"'; then
+            if curl -fsSL --max-time 15 "$URL" -o "$RUNNER_TEMP/deep-current.html" && grep -q 'id="start-button"' "$RUNNER_TEMP/deep-current.html"; then
               echo "Live Deep Current entrypoint verified: $URL"
               exit 0
             fi
