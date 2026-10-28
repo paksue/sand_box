@@ -25,7 +25,7 @@ function random(g:Game){let x=g.rng|0;x^=x<<13;x^=x>>>17;x^=x<<5;g.rng=x;return 
 export function log(g:Game,message:string){g.logs.unshift(message);g.logs.length=Math.min(12,g.logs.length)}
 export function startMission(id:string='first-light',seed=19430312):Game{
  const mission=MISSIONS.find(m=>m.id===id)||MISSIONS[0];
- const p:Player={x:0,z:0,heading:75,orderedHeading:75,speed:3.5,orderedSpeed:3.5,depth:45,orderedDepth:45,hull:100,battery:98,torpedoes:12,tubes:[0,0,0,0],quiet:false,mast:1,mastTarget:1,scopeYaw:75,scopePitch:0,zoom:2,gyro:0,selectedTube:0};
+ const p:Player={x:0,z:0,heading:75,orderedHeading:75,speed:3.5,orderedSpeed:3.5,depth:45,orderedDepth:45,hull:100,battery:98,torpedoes:12,tubes:[0,0,0,0],quiet:false,mast:1,mastTarget:1,scopeYaw:75,scopePitch:0,zoom:3.2,gyro:0,selectedTube:0};
  const ships:Ship[]=[];
  for(let i=0;i<3;i++){ships.push({id:'M'+(i+1),name:['AKAGI MARU','HOKUTO MARU','SHINSEI MARU'][i],kind:'merchant',x:1730+i*520,z:-460+(i%2)*165,heading:0,speed:9.2+i*.45,length:[146,131,167][i],health:100,tonnage:[6800,5300,7900][i],sunk:false,search:0,cooldown:0,wake:0})}
  ships.push({id:'E1',name:'ESCORT ONE',kind:'escort',x:2450,z:-930,heading:250,speed:15,length:107,health:100,tonnage:1650,sunk:false,search:0,cooldown:24,wake:0});
