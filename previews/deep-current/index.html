@@ -11,6 +11,61 @@
 
 /* Rendered by default in sandboxed or no-JavaScript previews. */
 .runtime-warning{max-width:540px;margin:18px 0 4px;border:1px solid #d1a16b;background:rgba(13,26,33,.93);padding:14px 18px;color:#f0d5b2;font:13px/1.6 "Courier New",monospace}.runtime-warning strong{display:block;color:#f7b99e;margin-bottom:3px}.runtime-warning code{font-weight:700;color:#ffe6ad}.js-ready #runtime-warning{display:none}
+/* Mobile field console: all stations, weapon controls and the viewport remain accessible. */
+@media (max-width:850px) {
+  html,body,#app {width:100%;max-width:100%;margin:0;overflow-x:hidden}
+  .game {width:100%;min-width:0;max-width:100%;height:auto;min-height:100vh;overflow:visible;padding:8px;gap:9px;border:0}
+  .topbar {height:48px;flex:0 0 48px;padding:0 6px;gap:8px}
+  .brand-title {font-size:20px}.brand-subtitle{font-size:7px;letter-spacing:.28em}
+  .top-center {display:none}.top-clock {gap:8px;font-size:10px}
+  .main-grid {display:flex;flex-direction:column;gap:10px;min-height:0;flex:none}
+  .left-console,.right-console{padding:10px;min-height:0;overflow:visible}
+  .left-console .left-spacer,.left-console .info-line,.left-console .panel-rule{display:none}
+  .left-console>.panel-caption{font-size:10px}
+  .stations {display:flex;flex-direction:row;overflow-x:auto;max-width:100%;gap:6px;margin:8px 0 10px;padding-bottom:6px;scrollbar-width:thin}
+  .station {flex:0 0 auto;min-width:116px;width:auto;min-height:43px;padding:8px 10px;font-size:10px;white-space:nowrap}
+  .station-num{font-size:10px}.station kbd{display:none}
+  .left-console>.panel-caption:nth-last-of-type(1){margin-top:2px}
+  .left-console #quiet {margin:6px 6px 0 0;display:inline-block;max-width:110px}
+  .left-console #help-open {margin:6px 0 0;max-width:200px}
+  .viewport-holder {height:clamp(255px,68vw,440px);min-height:255px;flex:0 0 auto;width:100%;overflow:hidden;border:5px solid #1c2427;border-radius:14px}
+  .viewport-holder canvas{position:absolute;inset:0;width:100%;height:100%}
+  .viewport-label {top:11px;left:11px;right:11px;font-size:9px}
+  .viewport-controls {left:10px;right:10px;bottom:10px;font-size:10px}
+  .scope-buttons button{font-size:15px;min-width:45px;min-height:38px}
+  .right-console{display:grid;grid-template-columns:1fr 1fr;column-gap:12px;row-gap:3px}
+  .right-console>.panel-caption,.right-console>.panel-rule,.right-console>.bearing-disc,.right-console>.tube-row,.right-console>.ready-strip,.right-console>.right-buttons{grid-column:1/-1}
+  .right-console>.panel-rule{margin:6px 0}
+  .right-console>.info-block{margin:6px 0}
+  .right-console>.info-two{grid-column:1/-1}
+  .right-console .bearing-disc{width:108px;margin:6px auto}
+  .right-console .tube-row{justify-content:center;gap:18px;margin:8px 0}
+  .right-console .tube{width:35px;height:35px}
+  .right-console .right-buttons{display:flex;flex-direction:row;gap:8px}
+  .right-console .right-buttons button{flex:1}
+  .right-console .info-line{margin:5px 0}
+  .bottom-console{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;min-height:0;flex:none;padding:8px}
+  .bottom-item{padding:8px;min-width:0;border-right:0;border-bottom:1px solid #3f4d4e}
+  .bottom-item:first-child{padding-left:8px}
+  .bottom-item .panel-caption{font-size:10px}
+  .bottom-item .value-row{font-size:11px;flex-wrap:wrap;gap:4px}
+  .bottom-item .value-row strong{font-size:12px}
+  .value-adjust button{min-height:34px;min-width:32px}
+  .fire-block {grid-column:1/-1;padding:8px}
+  .fire-button{min-height:65px;padding:14px;font-size:25px}
+  .game-foot{display:none}
+  .toast {left:12px;right:12px;bottom:60px;transform:none;white-space:normal;font-size:11px}
+  .modal-screen{padding:12px}
+  .briefing-card,.result-card,.help-card{padding:20px 15px}
+  .mission-list{grid-template-columns:1fr;gap:8px;margin:18px 0}
+  .mission-card{min-height:0;gap:5px;padding:12px}
+  .mission-title{font-size:20px}
+  .brief-row{flex-direction:column;gap:12px;align-items:stretch}
+  .difficulty{flex:auto}
+  .brief-actions{flex-wrap:wrap;gap:10px}
+  .brief-actions button{flex:1;min-height:46px}
+  .help-grid{grid-template-columns:1fr}
+}
 </style></head>
 <body><div id="app">
   <section id="front" class="front" aria-label="Main menu"><div class="front-scene"></div><div class="front-tint"></div><div class="front-content"><div class="eyebrow">AN ORIGINAL SUBMARINE COMMAND EXPERIENCE</div><h1>DEEP<br><span>CURRENT</span></h1><div class="wordmark-line"><i></i><b>PACIFIC PATROL</b><i></i></div><p class="front-description">The ocean keeps its secrets. Your instruments tell only part of the story.</p><div class="front-actions"><button class="primary big" id="start-button">BEGIN PATROL <span>→</span></button><button class="ghost big" id="continue-button" hidden>CONTINUE SAVED PATROL</button></div><p id="runtime-warning" class="runtime-warning" role="alert"><strong>GAME SCRIPT NOT RUNNING.</strong> This preview may block JavaScript. Download the game ZIP, extract it, and open <code>play.html</code> in a full browser. On a phone, a hosted website is needed if the file preview blocks scripts.</p><div class="menu-details"><span>◈ SINGLE-PLAYER</span><span>◈ TACTICAL SIMULATION</span><span>◈ BUILT FOR THE BROWSER</span><span id="career-summary">◈ CAPTAIN’S RECORD · NEW COMMAND</span></div><div class="front-foot">A FICTIONAL WWII-ERA NAVAL GAME · ORIGINAL DESIGN & CODE</div></div></section>
