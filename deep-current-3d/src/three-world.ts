@@ -4,13 +4,13 @@ import {RAD,clamp} from './simulation';
 
 /** True WebGL scene — one cinematic renderer for sea, ships, optics, sun and wakes. */
 const waterVertex=[
- 'uniform float uTime; varying vec3 vWorld; varying float vWave;',
- 'float wave(vec2 p){return sin(p.x*.021+p.y*.011+uTime*1.14)*.55+sin(p.y*.035-p.x*.009-uTime*.86)*.35+sin((p.x+p.y)*.092+uTime*2.05)*.10;}',
+ 'uniform float uTime;uniform vec3 uEye; varying vec3 vWorld; varying float vWave;',
+ 'float wave(vec2 p){float far=sin(p.x*.017+p.y*.014+uTime*.89)*.46+sin(p.x*.009-p.y*.032-uTime*.91)*.32;float near=sin((p.x+p.y*.7)*.15+uTime*2.)*.19+sin(p.x*.38-p.y*.27+uTime*3.5)*.055;return far+near*(1.-smoothstep(130.,700.,length(p-uEye.xz)));}',
  'void main(){vec3 p=position;p.y+=wave(p.xz);vec4 w=modelMatrix*vec4(p,1.);vWorld=w.xyz;vWave=p.y;gl_Position=projectionMatrix*viewMatrix*w;}'
 ].join('\n');
 const waterFragment=[
  'precision highp float; uniform float uTime; uniform vec3 uEye; uniform vec3 uSun; uniform float uNight; varying vec3 vWorld; varying float vWave;',
- 'float wv(vec2 p){return sin(p.x*.021+p.y*.011+uTime*1.14)*.55+sin(p.y*.035-p.x*.009-uTime*.86)*.35+sin((p.x+p.y)*.092+uTime*2.05)*.10;}',
+ 'float wv(vec2 p){float far=sin(p.x*.017+p.y*.014+uTime*.89)*.46+sin(p.x*.009-p.y*.032-uTime*.91)*.32;float near=sin((p.x+p.y*.7)*.15+uTime*2.)*.19+sin(p.x*.38-p.y*.27+uTime*3.5)*.055;return far+near*(1.-smoothstep(130.,700.,length(p-uEye.xz)));}',
  'void main(){vec2 p=vWorld.xz;float e=.25;vec3 n=normalize(vec3((wv(p-vec2(e,0.))-wv(p+vec2(e,0.)))/(e*2.),1.,(wv(p-vec2(0.,e))-wv(p+vec2(0.,e)))/(e*2.)));',
  'vec3 toEye=normalize(uEye-vWorld);vec3 sun=normalize(uSun);float ndl=max(0.,dot(n,sun));',
  'float glint=pow(max(0.,dot(reflect(-sun,n),toEye)),56.)*.22+pow(max(0.,dot(reflect(-sun,n),toEye)),230.)*.14;',
@@ -32,7 +32,7 @@ const skyFragment=[
  'vec3 horizon=vec3(.52,.48,.50);vec3 midday=vec3(.20,.31,.43);vec3 zenith=vec3(.055,.105,.195);',
  'vec3 sky=mix(horizon,midday,smoothstep(.015,.26,h));sky=mix(sky,zenith,smoothstep(.18,.9,h));',
  'float cloud=fbm(d.xz*17.+vec2(d.y*3.,d.y*7.));float wisps=fbm(d.xz*43.+vec2(d.y*13.,0.));',
- 'float cloudMask=smoothstep(.40,.73,cloud*.8+wisps*.2)*(.84-.50*smoothstep(.30,.82,h));',
+ 'float cloudMask=smoothstep(.39,.64,cloud*.8+wisps*.2)*(.84-.50*smoothstep(.30,.82,h));',
  'vec3 cloudTone=mix(vec3(.36,.37,.43),vec3(.12,.16,.26),smoothstep(.07,.72,h));',
  'sky=mix(sky,cloudTone,cloudMask*.68);',
  'float glow=pow(sd,18.);float halo=pow(sd,350.);float disc=smoothstep(.99993,.999983,sd);',
@@ -138,7 +138,7 @@ export class OceanWorld{
  private sky:THREE.Mesh;
  private ships=new Map<string,ShipView>();
  private splashes=new Map<number,THREE.Group>();
- private sun=new THREE.Vector3(.94,.075,-.32).normalize();
+ private sun=new THREE.Vector3(.94,.012,-.32).normalize();
  private lastW=0;private lastH=0;private observer:ResizeObserver;private time=0;
  private waterUniforms:{uTime:{value:number};uEye:{value:THREE.Vector3};uSun:{value:THREE.Vector3};uNight:{value:number}};
  private skyUniforms:{uSun:{value:THREE.Vector3};uNight:{value:number}};
