@@ -1,0 +1,28 @@
+name: Verify Deep Current Pages
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'previews/deep-current/**'
+      - '.github/workflows/deep-current-pages-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify playable HTML is live on GitHub Pages
+        shell: bash
+        run: |
+          URL="https://paksue.github.io/sand_box/previews/deep-current/"
+          for i in {1..40}; do
+            if curl -fsSL --max-time 15 "$URL" | grep -q 'id="start-button"'; then
+              echo "Live Deep Current entrypoint verified: $URL"
+              exit 0
+            fi
+            sleep 7
+          done
+          echo "Unable to verify Pages; check Pages settings for main branch / root."
+          exit 1
