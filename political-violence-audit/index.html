@@ -89,7 +89,7 @@ footer{padding:40px 0 65px;color:#aeb9b8;font-size:13px}.footerline{display:flex
 </div></section>
 
 <section class="section" id="data"><div class="wrap">
- <div class="sectionHead"><div><span class="kicker">02 / Interactive evidence lab</span><h2>Change the lens.<br>Change the story.</h2><p class="sub">Select a dataset. Each comparison has its own denominator, time window and definition; do not combine them into one partisan “score.”</p></div><span class="num">03 datasets</span></div>
+ <div class="sectionHead"><div><span class="kicker">02 / Interactive evidence lab</span><h2>Change the lens.<br>Change the story.</h2><p class="sub">Select a dataset. Each comparison has its own denominator, time window and definition; do not combine them into one partisan “score.”</p></div><span class="num">03 datasets + independent survey check</span></div>
  <div class="lab">
   <div class="seg" role="group" aria-label="Choose comparison">
    <button class="lens" data-lens="partisan" aria-pressed="true">2025 partisan attacks</button>
@@ -105,7 +105,7 @@ footer{padding:40px 0 65px;color:#aeb9b8;font-size:13px}.footerline{display:flex
   <div class="stat accent"><span class="tag">2022 peer-reviewed critique</span><br><strong>18.5% → 2.9%</strong><p>The median estimate of support for partisan violence fell substantially after changes addressing ambiguity and disengaged respondents across separate experimental studies.</p><p class="micro">Not a correction factor to apply mechanically to Pape's 2026 survey. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8944847/" target="_blank" rel="noopener">Westwood et al., PNAS ↗</a></p></div>
   <div class="stat cyan"><span class="tag">2020–21 ACLED protest records</span><br><strong>94%</strong><p>Approximately 94% of pro-BLM demonstrations were classified as peaceful. Six percent had violence, clashes or destruction; the data do not assign responsibility for every incident.</p><p class="micro"><a href="https://acleddata.com/report/year-racial-justice-protests-key-trends-demonstrations-supporting-blm-movement" target="_blank" rel="noopener">ACLED report ↗</a></p></div>
  </div>
- <p class="micro" style="margin-top:20px">The strongest test compares completed assaults, attempted attacks, deaths, injuries, property damage and motives over identical intervals. These records do not supply one exhaustive all-violence tally. Raw comparisons also require the analysts' ideological coding to be scrutinized.</p>
+ <div class="note" style="margin-top:19px"><strong>Independent 2026 countercheck:</strong> A September UC Davis preprint (not yet peer reviewed) reported that 51 of 53 tracked measures of attitudes toward political violence decreased from mid-2025 to mid-2026; personal willingness to engage in violence was generally low. Its question set and samples differ from Pape's. <a href="https://cvp.ucdavis.edu/research/preprint-decreased-support-political-violence-united-states-mid-2026" target="_blank" rel="noopener">Read the UC Davis summary ↗</a></div><p class="micro" style="margin-top:20px">The strongest test compares completed assaults, attempted attacks, deaths, injuries, property damage and motives over identical intervals. These records do not supply one exhaustive all-violence tally. Raw comparisons also require the analysts' ideological coding to be scrutinized.</p>
 </div></section>
 
 <section class="section" id="audit"><div class="wrap">
@@ -227,7 +227,15 @@ var references={
  CSIS25:'https://www.csis.org/analysis/left-wing-terrorism-and-political-violence-united-states-what-data-tells-us',
  CSIS26:'https://csis-website-prod.s3.amazonaws.com/s3fs-public/2026-05/260522_Palmer_Threat_Assessment.pdf',
  PNAS:'https://pmc.ncbi.nlm.nih.gov/articles/PMC8944847/',
- WINT:'https://pmc.ncbi.nlm.nih.gov/articles/PMC11748602/',
+ WINT:'https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0355678',
+ WINTPRE:'https://cvp.ucdavis.edu/research/preprint-decreased-support-political-violence-united-states-mid-2026',
+ KR:'https://cis.org/Krikorian/Excerpt-Immigration-Enforcement-Needs-Youre-Fired',
+ VA:'https://cis.org/Testimony/Restoring-Immigration-Enforcement-America',
+ SC:'https://www.washingtonexaminer.com/op-eds/4686883/ice-shock-gloves-controversy/',
+ LO:'https://crimeresearch.org/',
+ MC:'https://www.nationalreview.com/author/andrew-c-mccarthy/',
+ SH:'https://www.dailywire.com/news/the-lefts-permission-structures-for-violence',
+ KN:'https://www.judiciary.senate.gov/committee-activity/hearings/politically-violent-attacks-a-threat-to-our-constitutional-order',
  FBI:'https://www.fbi.gov/investigate/cyber/alerts/2025/individuals-target-tesla-vehicles-and-dealerships-nationwide-with-arson-gunfire-and-vandalism',
  DOJ:'https://www.justice.gov/usao-nv/pr/nevada-man-pleads-guilty-arson-tesla-collision-center-las-vegas',
  NYT:'https://www.nytimes.com/2026/10/28/us/politics/alaska-dan-sullivan-conspiracy-peltola.html',
@@ -282,17 +290,17 @@ var experts=[
  {n:'Clayton Nall',cat:'methods',sub:'UC Santa Barbara • political science',angle:'Coauthor of the same study; a correction to broad claims derived from ambiguous poll items.',status:'Published methodological challenge',src:'PNAS'},
  {n:'Daniel Byman',cat:'incidents',sub:'CSIS • terrorism research',angle:'Documented the recent left-wing rise, while explicitly noting historically higher right-wing counts.',status:'Important nuance, not one-sided corroboration',src:'CSIS25'},
  {n:'Riley McCabe',cat:'incidents',sub:'CSIS • terrorism research',angle:'Coauthor of the changing attack-trends analysis; separates attacks from survey attitudes.',status:'Important nuance, not direct Pape rebuttal',src:'CSIS25'},
- {n:'John Lott',cat:'incidents',sub:'Crime Prevention Research Center',angle:'Argues that left-associated violence and enforcement disparities warrant more attention.',status:'Interpretive viewpoint; independently assess datasets',src:''},
- {n:'Garen Wintemute',cat:'incidents',sub:'UC Davis • violence research',angle:'His independent survey findings do not establish general left-wing dominance; they are countervailing evidence.',status:'Contrary evidence, not an ally of this thesis',src:'WINT'},
- {n:'Andrew C. McCarthy',cat:'law',sub:'Former federal prosecutor • commentary',angle:'Challenges aspects of politicized prosecutions and disputes over legal enforcement authority.',status:'Law-and-prosecution analysis; no direct episode rebuttal',src:''},
+ {n:'John Lott',cat:'incidents',sub:'Crime Prevention Research Center',angle:'Argues that left-associated violence and enforcement disparities warrant more attention; his crime research is not a matched political-terrorism dataset.',status:'Interpretive viewpoint; independently assess datasets',src:'LO'},
+ {n:'Garen Wintemute',cat:'incidents',sub:'UC Davis • violence research',angle:'A 2026 peer-reviewed paper finds no higher Republican personal willingness than Democratic willingness to commit violence, while certain attitudes were more common among Republicans. A separate preprint found 2026 declines in violence attitudes.',status:'Contrary evidence to any one-sided claim',src:'WINT'},
+ {n:'Andrew C. McCarthy',cat:'law',sub:'Former federal prosecutor • commentary',angle:'Challenges politicized prosecutions across parties; has criticized both Democratic prosecutions and Trump DOJ lawfare.',status:'Law-and-prosecution analysis; no direct episode rebuttal',src:'MC'},
  {n:'John Yoo',cat:'law',sub:'UC Berkeley • constitutional law',angle:'Defends executive enforcement powers and questions some injunction practices.',status:'Constitutional interpretation; contested',src:'CRS'},
  {n:'Josh Blackman',cat:'law',sub:'South Texas College of Law',angle:'Raises specific questions about politically timed judicial retirement decisions and judicial accountability.',status:'Published critique; motive not adjudicated',src:'BLACK'},
- {n:'Mark Krikorian',cat:'enforcement',sub:'Center for Immigration Studies',angle:'Supports sustained immigration enforcement; policy disagreements are not inherently violent advocacy.',status:'Policy perspective, not violence dataset',src:''},
- {n:'Jessica Vaughan',cat:'enforcement',sub:'Center for Immigration Studies',angle:'Analyzes ICE cooperation, detainers and enforcement options rather than assuming all force is illegitimate.',status:'Operational advocacy, not Pape rebuttal',src:''},
- {n:'Scott Mechkowski',cat:'enforcement',sub:'Former ICE deputy field office director',angle:'Offers field-level accounts of enforcement obstacles and officer-safety concerns.',status:'Practitioner perspective; independently verify incidents',src:''},
+ {n:'Mark Krikorian',cat:'enforcement',sub:'Center for Immigration Studies',angle:'Argues that workplace and administrative enforcement can reduce unauthorized migration without relying exclusively on confrontational raids.',status:'Specific policy perspective, not violence dataset',src:'KR'},
+ {n:'Jessica Vaughan',cat:'enforcement',sub:'Center for Immigration Studies',angle:'Her January 2025 House testimony proposes specific statutory and administrative immigration enforcement reforms.',status:'Operational advocacy, not Pape rebuttal',src:'VA'},
+ {n:'Scott Mechkowski',cat:'enforcement',sub:'Former ICE deputy field office director',angle:'Former enforcement trainer contrasts reasonable hands-on arrests with unnecessary harm and describes operational safeguards.',status:'Practitioner perspective; not an independent prevalence study',src:'SC'},
  {n:'Matt Walsh',cat:'commentary',sub:'The Daily Wire • host',angle:'Emphasizes left-associated attacks, antifa/riot violence and threats to conservatives.',status:'Explicit asymmetry argument; not a complete national census',src:'WALSH'},
- {n:'Ben Shapiro',cat:'commentary',sub:'The Daily Wire • host',angle:'Argues that normalization of inflammatory political rhetoric can create permission for violence.',status:'Commentary and causal hypothesis, not matched data',src:''},
- {n:'Michael Knowles',cat:'commentary',sub:'The Daily Wire • host',angle:'Highlights political intimidation and attacks on conservative speakers.',status:'Public advocacy, not an academic frequency study',src:'WALSH'}
+ {n:'Ben Shapiro',cat:'commentary',sub:'The Daily Wire • host',angle:'His April 2026 essay argues that inflammatory rhetoric can create permission for violence; the causal premise is not a quantified comparative study.',status:'Commentary and causal hypothesis, not matched data',src:'SH'},
+ {n:'Michael Knowles',cat:'commentary',sub:'The Daily Wire • host',angle:'Testified at an October 2025 Senate Judiciary hearing on attacks and intimidation aimed at conservative speakers.',status:'First-person testimony, not a national frequency study',src:'KN'}
 ];
 var selected='all';
 function drawExperts(){var q=$('#expertSearch').value.toLowerCase(),d=experts.filter(function(x){return(selected==='all'||x.cat===selected)&&(x.n+' '+x.angle+' '+x.sub).toLowerCase().includes(q)});$('#expertCards').innerHTML=d.map(function(x){return '<article class="expert"><div class="kindline">'+safe(x.cat)+'</div><h3>'+safe(x.n)+'</h3><div class="micro">'+safe(x.sub)+'</div><p style="margin-top:12px">'+safe(x.angle)+'</p><p class="caution">'+safe(x.status)+'</p>'+(x.src?ref(x.src):'<span class="micro">No verified direct source in this edition</span>')+'</article>'}).join('');$('#expertCount').textContent='Showing '+d.length+' of 17 people. A source link supports an identified publication or relevant work, not a direct response to Pape.'}
@@ -313,7 +321,15 @@ var sources=[
  ['CSIS26','CSIS, Global Terrorism Threat Assessment 2026','May 2026 • PDF pp. 11–12'],
  ['CSIS25','Byman & McCabe, left-wing terrorism trends','25 Sep 2025 • methods and context'],
  ['PNAS','Westwood et al., survey-error experiments','PNAS 2022 • peer reviewed'],
- ['WINT','Wintemute et al., political violence attitudes','Peer-reviewed survey • contrary evidence'],
+ ['WINT','Wintemute et al., party and violence attitudes','2026 • peer-reviewed, contrary evidence'],
+ ['WINTPRE','UC Davis, mid-2026 decline in attitudes','Sep 2026 • preprint, not peer reviewed'],
+ ['KR','Mark Krikorian, immigration enforcement choices','May 2026 • policy argument'],
+ ['VA','Jessica Vaughan, House immigration testimony','Jan 2025 • congressional testimony'],
+ ['SC','Scott Mechkowski, nonlethal enforcement','Aug 2026 • practitioner perspective'],
+ ['LO','John Lott, crime research archive','Researcher archive; not direct rebuttal'],
+ ['MC','Andrew McCarthy, legal column archive','Commentary; critiques both parties'],
+ ['SH','Ben Shapiro, permission structures','Apr 2026 • opinion'],
+ ['KN','Michael Knowles, Senate testimony','Oct 2025 • sworn hearing record'],
  ['ACLED','ACLED, BLM demonstration analysis','Event dataset • 2020–21'],
  ['FBI','FBI, Tesla attacks warning','21 Mar 2025 • agency alert'],
  ['DOJ','DOJ, Tesla arson guilty plea','24 Feb 2026 • criminal case'],
