@@ -707,7 +707,7 @@ const places={
  drop:{address:'55 Margin Street, Salem, MA 01970',search:'55 Margin Street, Salem, Massachusetts',label:'Drop-off: 55–79 Margin St',type:'drop'},
  pickup:{address:'108 Jefferson Avenue, Salem, MA 01970',search:'108 Jefferson Avenue, Salem, Massachusetts',label:'Pickup parking: 108 Jefferson Ave',type:'pickup'},
  show:{address:'Washington Street and Federal Street, Salem, MA',search:'Washington Street and Federal Street, Salem, Massachusetts',label:'Drone show: Washington St reference',type:'show'},
- emergency:{address:'95 Margin Street, Salem, MA 01970',search:'95 Margin Street, Salem, Massachusetts',label:'Police: 95 Margin St',type:'emergency',coordinate:[42.51569444,-70.89661111]}
+ emergency:{address:'95 Margin Street, Salem, MA 01970',search:'95 Margin Street, Salem, Massachusetts',label:'Meet Dad: Police HQ 95 Margin St',type:'emergency',coordinate:[42.51569444,-70.89661111]}
 };
 const mapsLink=(dest,mode='driving',src='')=>{const url=new URL('https://maps.apple.com/directions');if(src) url.searchParams.set('source',src);url.searchParams.set('destination',dest);url.searchParams.set('mode',mode);return url.toString()};
 function setLink(id,href){document.getElementById(id).href=href}
