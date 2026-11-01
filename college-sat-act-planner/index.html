@@ -99,8 +99,8 @@ var shared=[
 {id:'f03',title:'Ask Hanover High counseling about school SAT dates and prep',due:'2026-11-13',category:'School',detail:'Ask whether SAT School Day testing, local bootcamps, or discount tutoring programs are planned for 2026–27.'},
 {id:'f04',title:'Review free and paid tutoring options',due:'2026-11-22',category:'Tutoring',detail:'Compare official Bluebook, Khan Academy, Schoolhouse, local tutors and a structured course. Get rates and refund policies before paying.'},
 {id:'f05',title:'Identify target colleges and their testing policies',due:'2027-01-15',category:'College',detail:'Record each college’s test-required/test-optional policy and applicable scholarship score thresholds.'},
-{id:'f06',title:'Confirm the two selected test dates for each girl',due:'2027-01-31',category:'Registration',detail:'Suggested SAT attempts: March 6 and June 5, 2027. They may choose ACT dates instead after diagnostics.'},
-{id:'f07',title:'Register early for first chosen test (per girl)',due:'2027-02-05',category:'Registration',detail:'SAT March 6 regular deadline Feb 19; ACT February 27 regular deadline Jan 22. Check whichever exam/date was chosen and individual availability.'},
+{id:'f06',title:'Confirm the two selected test dates for each girl',due:'2027-01-10',category:'Registration',detail:'Suggested SAT attempts: March 6 and June 5, 2027. They may choose ACT dates instead after diagnostics.'},
+{id:'f07',title:'Register early for first chosen test (per girl)',due:'2027-01-12',category:'Registration',detail:'SAT March 6 regular deadline Feb 19; ACT February 27 regular deadline Jan 22. Check whichever exam/date was chosen and individual availability.'},
 {id:'f08',title:'Verify device, IDs, test center and test-day setup',due:'2027-02-20',category:'Logistics',detail:'Digital SAT requires an approved device and advance Bluebook setup; ACT has its own photo and admission requirements.'},
 {id:'f09',title:'Register for second attempt before cutoff',due:'2027-05-01',category:'Registration',detail:'June 5 SAT regular cutoff May 21. June 12 ACT regular cutoff May 7. Register earlier than the deadline if possible.'},
 {id:'f10',title:'Review first exam results and adjust the study plan',due:'2027-04-01',category:'Score review',detail:'Compare section performance to targets and redirect practice toward highest-impact weaknesses.'}
@@ -113,7 +113,7 @@ var personal=[
 {id:'p05',title:'Create a recurring weekly prep schedule',due:'2026-11-15',category:'Routine',detail:'Start at 30 min Tuesday Math, 30 min Thursday English, 60 min Saturday practice, 60 min Sunday review.'},
 {id:'p06',title:'Begin an error log and review it each week',due:'2026-11-29',category:'Practice',detail:'Save mistakes by concept, question type and explanation. Review before every timed practice session.'},
 {id:'p07',title:'Try a free bootcamp before buying a course',due:'2027-01-10',category:'Tutoring',detail:'Schoolhouse SAT bootcamp and Khan Academy are useful first checks. Switch to ACT-specific prep if ACT wins.'},
-{id:'p08',title:'Confirm and register for first selected exam',due:'2027-01-22',category:'Registration',detail:'Be careful: Feb 27 ACT regular registration closes Jan 22; Mar 6 SAT regular registration closes Feb 19.'},
+{id:'p08',title:'Confirm and register for first selected exam',due:'2027-01-12',category:'Registration',detail:'Be careful: Feb 27 ACT regular registration closes Jan 22; Mar 6 SAT regular registration closes Feb 19.'},
 {id:'p09',title:'Schedule a full-length practice exam every 3–4 weeks',due:'2027-01-15',category:'Practice',detail:'Add calendar blocks through your own calendar; review missed questions and pacing afterward.'},
 {id:'p10',title:'Prepare for second exam using first score report',due:'2027-04-15',category:'Retake',detail:'Focus on weak areas; register for June or another suitable date before the deadline.'}
 ];
@@ -123,6 +123,7 @@ function normalize(){if(!data||typeof data!=='object')data={};['shared','notes']
 var view='overview',taskFilter='all',examFilter='all';
 function $(id){return document.getElementById(id)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function localISO(){var d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
 function day(d){return new Date(d+'T12:00:00')}
 function fmt(d,style){return day(d).toLocaleDateString('en-US',style||{month:'short',day:'numeric',year:'numeric'})}
 function spanDays(d){var a=day(d),b=new Date();b.setHours(12,0,0,0);return Math.ceil((a-b)/86400000)}
@@ -155,9 +156,9 @@ document.addEventListener('click',function(e){var go=e.target.closest('[data-go]
 document.addEventListener('change',function(e){if(e.target.matches('[data-task-toggle]')){setDone(e.target.dataset.owner,e.target.dataset.taskToggle,e.target.checked);return}if(e.target.matches('[data-score-owner]')){var field=e.target.dataset.scoreField,owner=e.target.dataset.scoreOwner,value=e.target.value;if(field==='sat'&&value&&(Number(value)<400||Number(value)>1600)){alert('SAT scores range from 400 to 1600.');return}if(field==='act'&&value&&(Number(value)<1||Number(value)>36)){alert('ACT composite scores range from 1 to 36.');return}data[owner][field]=value;save();if(field==='exam')renderOverview();return}if(e.target.id==='import-file'){var f=e.target.files[0];if(!f)return;f.text().then(function(txt){try{var raw=JSON.parse(txt),d=raw.data||raw;if(!d||!d.emma||!d.angelina||!Array.isArray(d.logs)||!Array.isArray(d.custom))throw Error('Invalid Launchpad backup');if(!confirm('Replace this device’s current tracker data with the imported backup?'))return;data=d;normalize();save();render();$('import-message').textContent='Backup restored successfully.'}catch(err){$('import-message').textContent='Could not import: '+err.message}});e.target.value=''}});
 document.addEventListener('input',function(e){if(e.target.matches('[data-task-note]')){data.notes[e.target.dataset.taskNote]=e.target.value;save()}if(e.target.matches('[data-score-owner]')&&e.target.dataset.scoreField==='target'){data[e.target.dataset.scoreOwner].target=e.target.value;save()}});
 $('add-task').addEventListener('submit',function(e){e.preventDefault();var title=$('custom-title').value.trim();if(!title)return;var owner=$('custom-owner').value;data.custom.push({id:'custom-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),title:title,due:$('custom-due').value,detail:$('custom-note').value.trim(),category:'Custom',owner:owner,custom:true});save();this.reset();renderTasks();renderOverview()});
-$('log-study').addEventListener('submit',function(e){e.preventDefault();var minutes=Number($('study-minutes').value);if(!(minutes>=1&&minutes<=600))return;data.logs.push({id:'log-'+Date.now(),person:$('study-person').value,subject:$('study-subject').value,minutes:minutes,date:$('study-date').value,note:$('study-note').value.trim()});save();this.reset();$('study-date').value=new Date().toLocaleDateString('en-CA');renderOverview();renderStudy()});
+$('log-study').addEventListener('submit',function(e){e.preventDefault();var minutes=Number($('study-minutes').value);if(!(minutes>=1&&minutes<=600))return;data.logs.push({id:'log-'+Date.now(),person:$('study-person').value,subject:$('study-subject').value,minutes:minutes,date:$('study-date').value,note:$('study-note').value.trim()});save();this.reset();$('study-date').value=localISO();renderOverview();renderStudy()});
 $('reset-data').addEventListener('click',function(){if(confirm('Really erase all progress on this browser? Export a backup first!')){data=JSON.parse(JSON.stringify(initial));save();render();goto('overview')}});
-$('study-date').value=new Date().toLocaleDateString('en-CA');render();
+$('study-date').value=localISO();render();
 })();
 </script>
 </body></html>
