@@ -19,10 +19,10 @@ const INFO={
  watercurrent:{label:"Conductive strike",title:"Water Current",symbols:"⚡",watch:"A modified pipe delivers medium electricity. The actual in-game chance and duration are governed by game mechanics."},
  loadout:{label:"Combat readiness",title:"Four-slot loadout",symbols:"Ⅰ Ⅱ Ⅲ Ⅳ",watch:"Configure fast switching between melee, bow, backup and a spare specialty weapon."}
 };
-const BABYLON_SRC="https://cdn.jsdelivr.net/npm/babylonjs@8.0.0/babylon.min.js";
+const BABYLON_SOURCES=["https://cdn.jsdelivr.net/npm/babylonjs@8.0.0/babylon.min.js","https://cdnjs.cloudflare.com/ajax/libs/babylonjs/8.0.0/babylon.min.js"];
 let activeStop=null,loadPromise=null;
 function escape(s){return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;")}
-function loadBabylon(){if(window.BABYLON)return Promise.resolve(window.BABYLON);if(loadPromise)return loadPromise;loadPromise=new Promise((resolve,reject)=>{const s=document.createElement("script");s.src=BABYLON_SRC;s.async=true;s.crossOrigin="anonymous";s.onload=()=>window.BABYLON?resolve(window.BABYLON):reject(new Error("3D engine did not initialize"));s.onerror=()=>reject(new Error("The 3D engine could not load from the CDN"));document.head.appendChild(s)}).catch(e=>{loadPromise=null;throw e});return loadPromise}
+function loadBabylon(){if(window.BABYLON)return Promise.resolve(window.BABYLON);if(loadPromise)return loadPromise;loadPromise=new Promise((resolve,reject)=>{let idx=0;function tryNext(){if(idx>=BABYLON_SOURCES.length){reject(new Error("3D engine unavailable. Check your connection or content blockers."));return;}const tag=document.createElement("script");tag.src=BABYLON_SOURCES[idx++];tag.async=true;tag.crossOrigin="anonymous";tag.onload=()=>window.BABYLON?resolve(window.BABYLON):tryNext();tag.onerror=()=>tryNext();document.head.appendChild(tag)}tryNext()}).catch(e=>{loadPromise=null;throw e});return loadPromise}
 function youtubeLink(v){return "https://www.youtube.com/watch?v="+v.id+(v.start?"&t="+v.start+"s":"")}
 function embedURL(v){const q=new URLSearchParams({rel:"0",playsinline:"1",modestbranding:"1",start:String(v.start||0)});if(v.end)q.set("end",String(v.end));return "https://www.youtube-nocookie.com/embed/"+v.id+"?"+q.toString()}
 function stop(){if(activeStop){try{activeStop()}catch(e){}activeStop=null}}
@@ -47,7 +47,7 @@ function mount(id,root,context){
  };
  const showErr=(reason)=>{const stage=root.querySelector("#wlActiveStage");if(stage)stage.innerHTML='<div class="wl-error"><strong>Unable to show this demonstration.</strong><span>'+escape(reason)+'</span>'+(clip?'<a href="'+youtubeLink(clip)+'" class="wl-plainlink" target="_blank" rel="noopener">Watch the original on YouTube ↗</a>':'<button class="wl-action" type="button" data-try>Try again</button>')+'</div>';const retry=root.querySelector("[data-try]");if(retry)retry.onclick=play3D};
  function playVideo(){const stage=root.querySelector("#wlActiveStage");if(!stage)return;stage.innerHTML='<iframe title="'+escape(clip.title)+'" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="'+embedURL(clip)+'" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';playing=true;activeStop=()=>{const f=stage.querySelector("iframe");if(f)f.src="about:blank"};}
- async function play3D(){const stage=root.querySelector("#wlActiveStage");if(!stage)return;const stillCurrent=()=>root.isConnected&&root.querySelector("#wlActiveStage")===stage&&mode==="scene"&&!disposed;
+ async function play3D(){disposed=false;const stage=root.querySelector("#wlActiveStage");if(!stage)return;const stillCurrent=()=>root.isConnected&&root.querySelector("#wlActiveStage")===stage&&mode==="scene"&&!disposed;
  stage.innerHTML='<div class="wl-loader"><span class="wl-spinner"></span>Preparing GPU demonstration…</div>';
  try{await loadBabylon();if(!stillCurrent())return;
  if(!window.Harran3D||typeof window.Harran3D.create!=="function")throw new Error("3D scene module not installed");
