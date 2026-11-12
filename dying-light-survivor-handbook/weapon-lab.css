@@ -1,0 +1,51 @@
+/* Weapon Lab: responsive, click-to-play authentic footage & GPU showcases. No SVG art. */
+.lab-mount{margin:18px 24px 17px}
+.weapon-lab{background:#15231f;color:#e9e3cf;border:1px solid #77806a;box-shadow:0 9px 24px #151b1636;overflow:hidden}
+.wl-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:17px 18px 13px;background:linear-gradient(120deg,#27382e,#172821);border-bottom:1px solid #3c4c3e}
+.wl-eyebrow{display:block;color:#ddbd7e;letter-spacing:1.7px;font:800 10px ui-monospace,Consolas,monospace;margin-bottom:3px}
+.wl-head h3{font:600 26px/1.15 Georgia,serif;margin:0;color:#f6e7bb;letter-spacing:-.4px}
+.wl-label{align-self:center;white-space:nowrap;border:1px solid #7b8c68;color:#c3cfae;padding:6px 9px;font:800 9px ui-monospace,monospace;letter-spacing:1px}
+.wl-switch{display:flex;gap:0;background:#101e18;padding:8px 12px;border-bottom:1px solid #3f5142}
+.wl-switch button{border:1px solid transparent;background:transparent;color:#aab9a7;font:800 11px ui-monospace,Consolas,monospace;padding:9px 11px;flex:1;max-width:230px}
+.wl-switch button[aria-selected="true"]{background:#e4ca91;color:#263729;border-color:#f2d6a1}
+.wl-switch button:hover:not([aria-selected="true"]){color:#fff;background:#344537}
+.wl-stage{background:radial-gradient(ellipse at 56% 35%,#425146 0,#15211c 58%,#091611 100%);aspect-ratio:16/8.6;position:relative;overflow:hidden;min-height:228px}
+.wl-stage::before{content:"";pointer-events:none;position:absolute;inset:0;opacity:.15;background:linear-gradient(0deg,transparent 0 45%,#eac4891a 48%,transparent 50%,transparent 96%,#eac48922 97%);background-size:100% 47px;z-index:2}
+.wl-preview{position:absolute;inset:0;display:grid;place-items:center;text-align:center;overflow:hidden}
+.wl-preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(.78) contrast(1.09);opacity:.62;transform:scale(1.02);transition:transform .6s,opacity .3s}
+.wl-preview:hover img{transform:scale(1.06);opacity:.78}
+.wl-preview:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#09130fdc,transparent 35%,#0d1b15bb)}
+.wl-load{position:relative;z-index:3;display:flex;align-items:center;flex-direction:column;gap:10px;border:0;background:none;color:#fff;text-align:center;max-width:300px;padding:20px;cursor:pointer}
+.wl-load-icon{border:2px solid #f1ddb4;background:#111f17c7;color:#fff;border-radius:50%;width:77px;height:77px;display:grid;place-items:center;font-size:25px;box-shadow:0 0 0 9px #182c2196,0 10px 28px #0009;transition:transform .25s}
+.wl-load:hover .wl-load-icon{transform:scale(1.12)}
+.wl-load-title{font:600 24px Georgia,serif;text-shadow:0 2px 4px #000}
+.wl-load-sub{font:700 11px/1.5 ui-monospace,monospace;letter-spacing:1px;color:#f1daaf}
+.wl-stage iframe,.wl-stage canvas{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;z-index:4}
+.wl-stage canvas{touch-action:pan-y;outline:none}
+.wl-stage .wl-loader{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;background:#15251f;color:#eecb8b;font:800 12px ui-monospace,monospace}
+.wl-spinner{border:3px solid #455a42;border-top-color:#dfc188;width:31px;height:31px;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.wl-poster-3d{height:100%;width:100%;display:flex;align-items:center;justify-content:center;position:absolute;inset:0;color:#e2ce99;background:radial-gradient(circle at 50% 32%,#576447 0,#172a22 53%,#101b16 85%)}
+.wl-poster-3d:before{content:"";position:absolute;inset:24px;border:1px solid #aec28a3c;box-shadow:inset 0 0 90px #0005}
+.wl-poster-3d:after{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,transparent 0 59px,#d9c7970d 60px 61px),repeating-linear-gradient(0deg,transparent 0 59px,#d9c7970d 60px 61px);transform:perspective(450px) rotateX(27deg) scale(1.18);pointer-events:none}
+.wl-poster-orbit{position:absolute;width:150px;height:150px;border:1px solid #ddd5a35e;border-radius:50%;box-shadow:0 0 0 24px #d9cb8510,0 0 0 48px #d9cb8509;transform:rotateX(61deg) rotateZ(-20deg)}
+.wl-poster-marker{font:600 clamp(26px,5vw,48px) Georgia,serif;letter-spacing:1px;text-shadow:0 5px 22px #000;position:relative;z-index:1}
+.wl-foot{padding:13px 17px 16px;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;align-items:start}
+.wl-watch{flex:1;min-width:180px}
+.wl-watch b{display:block;font:900 10px ui-monospace,monospace;letter-spacing:1.3px;color:#e9cc98;margin-bottom:6px}
+.wl-watch p{font-size:12px;line-height:1.55;color:#c1c9b8;margin:0}
+.wl-watch small{display:block;font-size:11px;color:#91a090;margin-top:7px}
+.wl-actions{display:flex;gap:7px;flex-wrap:wrap}
+.wl-action{border:1px solid #6d8168;background:#2f4435;color:#e8e4d3;padding:8px 11px;font:800 11px ui-monospace,monospace}
+.wl-action:hover{background:#425846}
+.wl-action.primary{background:#d8bc83;border-color:#e4ca94;color:#24372b}
+.wl-action:disabled{opacity:.55;cursor:default}
+.wl-plainlink{color:#e9cd95;text-underline-offset:3px;font-size:11px;font-weight:800}
+.wl-status{font-size:11px;color:#c9d4bd;padding:8px 17px;border-top:1px solid #47584a;background:#23342b;display:flex;justify-content:space-between;gap:10px}
+.wl-status code{font:700 10px ui-monospace,monospace;color:#d7bb84}
+.wl-error{position:absolute;z-index:6;inset:0;background:#1d2820;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;gap:12px;color:#ead9b9;font-size:13px}
+.wl-caption{background:#e8e0c6;color:#65705b;padding:7px 13px;font:700 10px/1.4 ui-monospace,monospace;letter-spacing:.3px}
+.wl-hidden{display:none!important}
+@media(max-width:760px){.lab-mount{margin:12px 13px}.wl-head{padding:13px}.wl-head h3{font-size:21px}.wl-label{font-size:8px;padding:5px}.wl-stage{aspect-ratio:16/10;min-height:205px}.wl-switch button{font-size:10px;padding:8px 5px}.wl-preview img{object-position:center}.wl-foot{padding:13px}.wl-status{font-size:10px}.wl-load-icon{width:59px;height:59px}.wl-load-title{font-size:20px}.wl-caption{font-size:9px}.wl-poster-marker{font-size:25px}}
+@media print{.weapon-lab{border:1px solid #222;box-shadow:none}.wl-head,.wl-switch,.wl-foot,.wl-status{background:white;color:#111}.wl-head h3{color:#111}.wl-stage{display:none}}
+@media(prefers-reduced-motion:reduce){.wl-preview img,.wl-load-icon{transition:none}.wl-spinner{animation:none}}
