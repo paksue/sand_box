@@ -156,7 +156,7 @@ function create(canvas,type){
  let glowLayer=null,pipeline=null;
  try{glowLayer=new B.GlowLayer("emissive bloom",scene,{blurKernelSize:32});glowLayer.intensity=.45}catch(e){}
  try{pipeline=new B.DefaultRenderingPipeline("filmic",true,scene,[camera]);pipeline.samples=2;pipeline.fxaaEnabled=true;pipeline.bloomEnabled=true;pipeline.bloomThreshold=.62;pipeline.bloomWeight=.18;pipeline.bloomKernel=32;pipeline.imageProcessing.toneMappingEnabled=true;pipeline.imageProcessing.toneMappingType=B.ImageProcessingConfiguration.TONEMAPPING_ACES;pipeline.imageProcessing.exposure=1.12;pipeline.imageProcessing.contrast=1.17}catch(e){}
- let isPaused=false,elapsed=0,latest=performance.now(),released=false,usingOrbit=false,lastArc=0;
+ let isPaused=false,elapsed=0,latest=performance.now(),released=false,usingOrbit=false,lastArc=0,visible=true;
  const pointerHandler=()=>{usingOrbit=true};
  canvas.addEventListener("pointerdown",pointerHandler);
  function drawArc(t){
@@ -187,17 +187,19 @@ function create(canvas,type){
   if(type==="medkits"&&mark){const scale=1.0+Math.max(0,Math.sin(t*2.3))*.32;mark.scaling.set(scale,scale,scale);mark.material.alpha=.03+Math.abs(Math.sin(t*1.4))*.10;fxLight.diffuse=new B.Color3(.20,1,.67);fxLight.intensity=Math.abs(Math.sin(t*1.5))*9}
   if(type==="lockpicks"&&mark){mark.rotation.z=Math.sin(t*2.2)*.22;}
  }
- function loop(){if(released)return;const now=performance.now();animate(now);if(!document.hidden)scene.render()}
+ function loop(){if(released)return;const now=performance.now();if(document.hidden||!visible||canvas.offsetParent===null){latest=now;return;}animate(now);scene.render()}
  engine.runRenderLoop(loop);
  const onResize=()=>{if(!released)engine.resize()};
  const observer=typeof ResizeObserver!=="undefined"?new ResizeObserver(onResize):null;
  if(observer)observer.observe(canvas);else window.addEventListener("resize",onResize);
  const visibility=()=>{latest=performance.now()};
  document.addEventListener("visibilitychange",visibility);
+ const viewport=typeof IntersectionObserver!=="undefined"?new IntersectionObserver(entries=>{visible=!!entries[0]?.isIntersecting;latest=performance.now()},{threshold:0.01}):null;
+ if(viewport)viewport.observe(canvas);
  return{
   replay(){elapsed=0;isPaused=false;latest=performance.now();},
   togglePause(){isPaused=!isPaused;latest=performance.now();if(sparks)sparks.emitRate=isPaused?0:200;return isPaused},
-  dispose(){if(released)return;released=true;engine.stopRenderLoop();canvas.removeEventListener("pointerdown",pointerHandler);document.removeEventListener("visibilitychange",visibility);if(observer)observer.disconnect();else window.removeEventListener("resize",onResize);try{scene.dispose()}catch(e){}try{engine.dispose()}catch(e){}}
+  dispose(){if(released)return;released=true;engine.stopRenderLoop();canvas.removeEventListener("pointerdown",pointerHandler);document.removeEventListener("visibilitychange",visibility);if(observer)observer.disconnect();else window.removeEventListener("resize",onResize);if(viewport)viewport.disconnect();try{scene.dispose()}catch(e){}try{engine.dispose()}catch(e){}}
  };
 }
 window.Harran3D={create};
