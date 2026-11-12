@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#17211d">
+<meta name="description" content="A personal, interactive Dying Light 1 field handbook: focused weapon builds, crafting recipes, skill priorities, and a saved supply ledger.">
+<title>Harran Field Manual | Dying Light Loadout Lab</title>
+<link rel="stylesheet" href="./style.css">
+<script defer src="./app.js"></script>
+</head>
+<body>
+<div class="topline"><span>H A R R A N <i></i> QUARANTINE ZONE</span><span>UNOFFICIAL SURVIVOR'S NOTEBOOK <b>№ 001</b></span></div>
+<div class="page">
+<header class="masthead">
+ <div class="brandlock"><span class="crosshair" aria-hidden="true">✣</span><span>HARRAN <strong>FIELD MANUAL</strong></span></div>
+ <div class="mast-right"><span class="smallcap">CASE FILE</span><b>CRANE / LOADOUT 01</b><span class="smallcap">LOCAL SAVE • PRIVATE</span></div>
+</header>
+<section class="cover" aria-label="Field guide cover">
+ <div class="cover-copy">
+  <p class="eyebrow"><span class="live-dot"></span> SURVIVOR REFERENCE / UPDATED FOR YOUR INVENTORY</p>
+  <h1>Make every<br><em>scrap count.</em></h1>
+  <p class="cover-sub">Not a 100-page walkthrough. One clear objective, the exact buttons to press, what materials it costs, and what you gain.</p>
+  <div class="cover-tags"><span>PC • KEYBOARD + MOUSE</span><span>EARLY GAME</span><span>ESSENTIALS DLC</span></div>
+  <div class="cover-actions"><button id="resumeBtn" class="button ink-button">Continue next action <span>↗</span></button><span id="savedNote">Your field notes save in this browser</span></div>
+ </div>
+ <div class="cover-art">
+  <svg viewBox="0 0 520 340" role="img" aria-label="Original illustrated Harran skyline, a burning club and an arrow over rooftops" preserveAspectRatio="xMidYMid slice">
+   <defs><linearGradient id="sky" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#a77c56"/><stop offset="1" stop-color="#d8c69a"/></linearGradient><pattern id="gridpat" width="22" height="22" patternUnits="userSpaceOnUse"><path d="M22 0H0V22" fill="none" stroke="#413b2b" stroke-opacity=".09"/></pattern></defs>
+   <rect width="520" height="340" fill="url(#sky)"/><rect width="520" height="340" fill="url(#gridpat)"/>
+   <circle cx="362" cy="91" r="74" fill="#f8d49d" opacity=".85"/><circle cx="362" cy="91" r="92" stroke="#4b4633" stroke-opacity=".20" stroke-dasharray="3 7" fill="none"/>
+   <g fill="#7e745a" opacity=".7"><path d="M0 240V158h53v82h18V123h43v117h21V178h50v62h18V107h46v133h13v-87h63v87h26V126h41v114h30V176h40v64h38V90h42v150Z"/><path d="M4 236h512v100H0z"/></g>
+   <g fill="#313d35"><path d="M0 273v-45h42v-37h58v82h21v-90h63v90h24v-112h72v112h20v-75h40v75h33v-98h61v98h24v-37h65v93H0z"/></g>
+   <g fill="#1b2a26"><path d="M0 303h88v-63h44v63h30v-84h67v84h32v-48h87v48h27v-87h97v87h58v37H0z"/></g>
+   <g stroke="#b6a881" stroke-width="3" opacity=".55"><path d="M39 290v-21m15 21v-21m96 34v-62m14 62v-62m104 62v-30m16 30v-30m112 30v-65m14 65v-65"/></g>
+   <path d="M55 232L200 172" stroke="#eed9aa" stroke-width="2" stroke-dasharray="6 8" opacity=".6"/>
+   <g transform="translate(248 63) rotate(-23)"><path d="M0 27H158" stroke="#28342b" stroke-width="7" stroke-linecap="round"/><path d="M159 27l-20-14m20 14l-20 14" stroke="#28342b" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M12 27L0 13M24 27L12 13M12 27L0 41M24 27L12 41" stroke="#28342b" stroke-width="4"/></g>
+   <g transform="translate(91 108) rotate(18)"><rect x="42" y="8" width="14" height="115" rx="5" fill="#252c28" stroke="#efc383" stroke-width="2"/><path d="M35 20L49 0l13 20" fill="#d47f36"/><path d="M40 18L49 8l8 10" fill="#ffe4a2"/><path d="M20 17l-10 13m56-9l12 9" stroke="#e8ae5b" stroke-width="3"/></g>
+   <g fill="none" stroke="#28372e" opacity=".65"><circle cx="420" cy="237" r="40"/><path d="M380 237h80M420 197v80"/></g>
+   <g fill="#dfd4ad" font-size="10" letter-spacing="2" font-family="monospace"><text x="22" y="328">SECTOR 01 / ROOFTOPS</text></g>
+  </svg>
+  <div class="art-stamp">SURVIVE<br>THE NIGHT <span>✦</span></div>
+ </div>
+</section>
+<section class="dashline" aria-label="Progress summary">
+ <div><span class="micro">FIELD PROGRESS</span><b id="progressFraction">0 / 8</b><div class="progressTrack"><div id="progressFill"></div></div></div>
+ <div><span class="micro">CURRENT CHAPTER</span><strong id="currentMission">The Night Club</strong></div>
+ <div><span class="micro">METAL PARTS LEFT</span><strong id="metalQuick">8</strong></div>
+ <div class="dash-status"><span class="stamp">✳</span><span>NO ACCOUNT<br>NO CLOUD SYNC</span></div>
+</section>
+<nav class="tabbar" aria-label="Manual sections">
+ <button class="tab active" data-tab="workbench" aria-selected="true"><span>01</span> Workbench</button>
+ <button class="tab" data-tab="supplies" aria-selected="false"><span>02</span> Pack ledger</button>
+ <button class="tab" data-tab="skills" aria-selected="false"><span>03</span> Skill path</button>
+ <button class="tab" data-tab="library" aria-selected="false"><span>04</span> Blueprint library</button>
+ <button class="tab" data-tab="about" aria-selected="false"><span>05</span> About & backups</button>
+</nav>
+<main>
+<section class="view active" id="tab-workbench" aria-labelledby="workbenchTitle">
+ <div class="section-intro"><div><span class="micro gold">YOUR ACTIVE FIELD ASSIGNMENT</span><h2 id="workbenchTitle">Build something useful.</h2><p>Choose a mission on the left. One build is expanded at a time.</p></div><div class="quicktip">TIP <kbd>I</kbd> Inventory <kbd>Q</kbd> Survivor Sense <kbd>U</kbd> Skills</div></div>
+ <div class="work-grid"><aside class="mission-rail"><div class="rail-label">BUILD CHAPTERS <small id="missionCount">8 TOTAL</small></div><div id="missionList"></div><div class="rail-foot">✓ Completed chapters stay checked.<br>Nothing is deducted until you press <b>Record craft</b>.</div></aside><article id="missionDetail" class="dossier"></article></div>
+</section>
+<section class="view" id="tab-supplies" aria-label="Your backpack ledger">
+ <div class="section-intro"><div><span class="micro gold">RESOURCE INTELLIGENCE</span><h2>Pack ledger.</h2><p>Pre-filled from your screenshots. Edit as you pick up supplies; completed crafts are deducted automatically.</p></div></div>
+ <div class="ledger-stats" id="ledgerStats"></div>
+ <div class="two-col"><div class="paper-card"><div class="card-heading"><span class="micro">STARTING AMOUNTS + NEW LOOT</span><h3>What you have found</h3></div><div id="supplyInputs" class="supply-grid"></div><p class="tiny muted">These are totals before subtracting the crafts recorded in this guide. Add newly found items here; the calculated balance is below.</p></div>
+ <div class="paper-card"><div class="card-heading"><span class="micro">LIVE BALANCE</span><h3>Available for your next build</h3></div><div id="supplyBalances" class="balance-list"></div><div id="shortageNote" class="note"></div></div></div>
+</section>
+<section class="view" id="tab-skills" aria-label="Skill progression">
+ <div class="section-intro"><div><span class="micro gold">SURVIVOR TRAINING</span><h2>Level your character.</h2><p>Combat stats matter, but surviving, looting, and escaping often matter more early on.</p></div></div>
+ <div class="skill-overview"><div class="skill-diagram"><div class="node power">⚔ <small>POWER</small></div><div class="node survivor">✚ <small>SURVIVOR</small></div><div class="node agility">↗ <small>AGILITY</small></div><div class="line l1"></div><div class="line l2"></div><div class="line l3"></div></div><div><span class="micro gold">HOW XP WORKS</span><h3>Three paths. Three kinds of XP.</h3><p><b>Survivor:</b> quests, airdrops, and helping people.<br><b>Agility:</b> climbing, running and parkour.<br><b>Power:</b> fighting infected.</p><p>Press <kbd>U</kbd> to review and spend available skill points. Track the recommendations below as you unlock them.</p></div></div>
+ <div class="skillcards" id="skillCards"></div>
+</section>
+<section class="view" id="tab-library" aria-label="Blueprint reference">
+ <div class="section-intro"><div><span class="micro gold">THE ARMORY INDEX</span><h2>Blueprint library.</h2><p>Only the things visible in your screenshots, grouped into simple decisions.</p></div><label class="searchbox">⌕ <input id="blueprintSearch" type="search" placeholder="Find a weapon or blueprint" aria-label="Search blueprint library"></label></div>
+ <div class="filterbar" id="libraryFilters"></div><div id="blueprintCards" class="library-grid"></div>
+</section>
+<section class="view" id="tab-about" aria-label="Edition and backups">
+ <div class="section-intro"><div><span class="micro gold">FIELD ARCHIVE</span><h2>Your edition & saved notes.</h2><p>What's included, how to back up your checkmarks, and where the recipes come from.</p></div></div>
+ <div class="two-col"><div class="paper-card"><div class="card-heading"><span class="micro">STEAM PACKAGE</span><h3>Essentials Edition</h3></div><p>Your screenshots show bundles included with <strong>Dying Light Essentials Edition</strong>: base game plus 10 DLC items. These give you real crafting blueprints and challenges, not just the 2025 free graphics update.</p><div class="rule"></div><p><strong>Included:</strong> Bozak Horde; Cuisine & Cargo; Ultimate Survivor; 5th and 10th Anniversary; Harran Ranger; Gun Psycho; Volatile Hunter; Retrowave; Shu Warrior.</p><p><strong>Not included:</strong> <em>The Following</em> and <em>Hellraid</em> expansions (in Definitive).</p><p class="tiny">Confirm exact ownership in Steam → Dying Light → Properties → DLC. Some themed weapons still need a base firearm or special parts.</p><a class="textlink" href="https://store.steampowered.com/sub/1345940/" target="_blank" rel="noopener">View official Steam package ↗</a></div>
+ <div class="paper-card"><div class="card-heading"><span class="micro">SAVE & RESTORE</span><h3>Keep your field journal</h3></div><p>Progress saves automatically in this browser's local storage. The same Pages URL on another phone or PC starts separately until you import a backup.</p><div class="actionstack"><button class="button dark-button" id="exportBtn">↓ Export progress (.json)</button><button class="button outline-button" id="importBtn">↑ Import progress</button><button class="button warning-button" id="resetBtn">↺ Reset all progress</button></div><input hidden type="file" accept="application/json,.json" id="importFile"><div class="note">No login, server database or third-party tracker. Your inventory and checkmarks stay on this device unless you export them.</div></div></div>
+ <div class="paper-card source-card"><div class="card-heading"><span class="micro">RESEARCH NOTES</span><h3>Reference & design inspiration</h3></div><p>Recipes and effects verified against community-maintained <a href="https://dyinglight.wiki.gg/wiki/Night_Club" target="_blank" rel="noopener">Night Club</a>, <a href="https://dyinglight.wiki.gg/wiki/Metal_Parts" target="_blank" rel="noopener">Metal Parts</a> and <a href="https://dyinglight.wiki.gg/wiki/Medkit" target="_blank" rel="noopener">Medkit</a> pages. Your in-game blueprint is always final if a patch or difficulty changes a cost.</p><p>UX patterns adapted conceptually from <a href="https://mapgenie.io/dying-light" target="_blank" rel="noopener">Map Genie</a> (progress), <a href="https://mobalytics.gg/" target="_blank" rel="noopener">Mobalytics</a> (focused build advice), and <a href="https://www.zeldadungeon.net/breath-of-the-wild-interactive-map" target="_blank" rel="noopener">Zelda Dungeon</a> (discoverable guides). Original vector art; no official game artwork included.</p><p class="tiny">Unofficial fan companion. Not endorsed by Techland.</p></div>
+</section>
+</main>
+<footer><span>HARRAN FIELD MANUAL — LOADOUT LAB</span><span>KEEP MOVING. STAY IN THE LIGHT.</span><button id="printBtn" class="footerprint">Print field notes ↗</button></footer>
+</div>
+<div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
+</body>
+</html>
