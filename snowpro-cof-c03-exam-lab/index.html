@@ -19,6 +19,53 @@
 .summary{background:linear-gradient(120deg,#123849,#13263b);border:1px solid #316178;border-radius:21px;padding:27px;margin:0 0 21px}.summary-num{font-size:58px;letter-spacing:-2px;font-weight:850;line-height:1}.summary-meta{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.summary-meta .pill{font-size:11px}.qnav{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px;margin:16px 0}.qnav button{padding:9px 0;font-size:11px;font-weight:800;color:#b2c8da;background:#162d43;border:1px solid #2d4861;border-radius:8px}.qnav button:hover{border-color:var(--cyan)}.qnav button.answered{background:#194e50;color:#c1ffef;border-color:#236f65}.qnav button.active{outline:2px solid var(--cyan);outline-offset:1px}.qnav button.flagged{box-shadow:inset 0 -3px 0 var(--orange)}.qnav button.pending{background:#2b313f;color:#d6c2ae}.stats{display:grid;gap:10px}.progress-check{display:flex;justify-content:space-between;gap:12px;color:#d0e4ef;font-size:13px;border-bottom:1px solid #2b465b;padding:9px 0}.progress-check:last-child{border:0}.metric-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid #233c52;color:#ccddeb;font-size:12px}.metric-row:last-child{border:0}.metric-row b{color:var(--cyan)}.baseline{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:15px;color:var(--muted);font-size:12px}.baseline strong{color:#ebf5ff}.footer{color:#68869d;font-size:11px;margin-top:30px}.notice{background:#2e2a22;border:1px solid #715d39;color:#e7cda4;border-radius:12px;padding:12px;font-size:12px}.hide{display:none!important}
 @media(max-width:1050px){:root{--sidebar:215px}.topbar{padding:0 29px}.content{padding:30px 30px 100px}.cols{grid-template-columns:1fr}.kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:720px){.app{display:block}.sidebar{position:fixed;bottom:0;top:auto;height:68px;width:100%;z-index:100;padding:7px 9px;background:#0b1c2df5;border-right:0;border-top:1px solid var(--border);display:block}.sidebar .brand,.sidebar .side-caption,.sidebar .side-bottom{display:none}.nav{display:flex;align-items:center;justify-content:space-around;gap:1px;height:100%}.nav-btn{flex-direction:column;padding:6px 8px;min-width:55px;gap:3px;justify-content:center;text-align:center;font-size:9px;border-radius:9px}.nav-btn svg{height:19px;width:19px}.nav-btn.active{box-shadow:inset 0 2px 0 #67d7ed}.topbar{height:60px;padding:0 19px}.date-badge{display:none}.content{padding:26px 15px 106px}.kpi-grid{gap:9px}.kpi{padding:15px}.kpi-num{font-size:24px}.hero{padding:23px 20px}.hero h2{font-size:24px}.mode-grid{grid-template-columns:1fr}.mode-card{min-height:unset}.question-title{font-size:18px}.question-body{padding:21px 16px}.question-foot{padding:14px}.teach{padding:20px 16px}.choice{padding:12px 10px;gap:9px}.choice-num{width:25px;height:25px}.qnav{grid-template-columns:repeat(8,minmax(0,1fr))}.h1{letter-spacing:-.9px}.section-title{font-size:18px}.panel{padding:17px}.top-initial{width:27px;height:27px}.summary{padding:22px}.summary-num{font-size:47px}}
+
+/* Accessibility update: comfortable default reading size. All original exam storage keys unchanged. */
+body{font-size:17px;line-height:1.58}
+.brand-name{font-size:19px}.brand-sub,.side-caption{font-size:13px}.nav-btn{font-size:16px;padding:13px}
+.save-status,.side-note,.top-left,.date-badge{font-size:14px}.top-left .eyebrow{font-size:13px!important}
+.eyebrow{font-size:13px}.h1{font-size:clamp(32px,3.4vw,46px)}.lead{font-size:18px}
+.section-title{font-size:24px}.small{font-size:15px}.xs{font-size:14px}.pill{font-size:13px}
+.btn{font-size:16px;padding:13px 18px;min-height:43px}.btn.small,.question-tools .btn{font-size:14px}
+.kpi-label,.kpi-help{font-size:14px}.kpi-num{font-size:32px}
+.panel-header h3{font-size:19px}.domain-name,.study-note,.history-table td{font-size:15px}.history-meta{font-size:14px}
+.hero h2{font-size:31px}.mode-card h3{font-size:23px}.mode-card p{font-size:16px}
+.review-item-title,.field,.empty{font-size:16px}.review-item-sub{font-size:14px}
+.question-count,.timer{font-size:15px}.question-title{font-size:27px;line-height:1.46}
+.answer-help{font-size:15px}.choice{font-size:18px;line-height:1.58;padding:17px 17px}
+.choice-num{font-size:15px;width:30px;height:30px}.conf{font-size:14px}
+.q-notes{font-size:16px}.teach h3{font-size:20px}.verdict{font-size:18px}
+.teach p{font-size:17px;line-height:1.72}.teach-choice{font-size:16px;line-height:1.7}
+.hintbox,.learnlist li{font-size:16px}.source-links a{font-size:15px}
+.summary-meta .pill,.qnav button{font-size:14px}.progress-check{font-size:16px}
+.metric-row,.baseline,.notice{font-size:15px}.footer{font-size:14px}
+.text-size-btn{background:#153b51;border:1px solid #41738b;border-radius:10px;color:#d6f4fc;font-size:14px;font-weight:750;white-space:nowrap;padding:9px 11px;cursor:pointer}
+.text-size-btn:hover{background:#235672}.text-size-btn:focus-visible{outline:3px solid #9ce9ff;outline-offset:2px}
+html.font-extra body{font-size:19px}
+html.font-extra .lead{font-size:20px}
+html.font-extra .question-title{font-size:30px}
+html.font-extra .choice{font-size:21px}
+html.font-extra .teach p{font-size:19px}
+html.font-extra .teach-choice,html.font-extra .learnlist li,html.font-extra .hintbox{font-size:18px}
+html.font-extra .source-links a,html.font-extra .domain-name,html.font-extra .review-item-title{font-size:17px}
+html.font-extra .small,html.font-extra .nav-btn{font-size:17px}
+html.font-extra .btn{font-size:18px}
+html.font-extra .btn.small,html.font-extra .question-tools .btn{font-size:16px}
+html.font-extra .pill,html.font-extra .xs{font-size:15px}
+@media(max-width:720px){
+  .nav-btn{font-size:12px;padding:5px 4px}
+  .question-title{font-size:23px}
+  .choice{font-size:17px;padding:15px 12px}
+  .question-body{padding:23px 17px}
+  .teach{padding:22px 17px}
+  .section-title{font-size:22px}
+  .top-left .eyebrow{display:none}
+  .text-size-btn{font-size:12px;padding:8px 9px}
+  html.font-extra .question-title{font-size:26px}
+  html.font-extra .choice{font-size:19px}
+  html.font-extra .nav-btn{font-size:13px}
+}
+
 @media print{body{background:white!important;color:#111!important}.sidebar,.topbar,.no-print,.btn,.footer{display:none!important}.app{display:block}.content{max-width:100%;padding:0}.view{display:none!important}#reportView{display:block!important}.panel,.summary{background:white!important;color:#111!important;border:1px solid #aaa!important;box-shadow:none}.panel *, .summary *, .muted{color:#111!important}.track{background:#eee!important}.track>div{background:#666!important}.h1{color:#111!important}.review-item{color:#111;background:white;border-color:#bbb}.pill{color:#222!important}}
 </style>
 </head>
@@ -35,7 +82,7 @@
     </nav></div>
     <div class="side-bottom"><div class="save-status"><span id="saveDot" class="save-dot"></span><span id="saveText">Local autosave ready</span></div><div class="side-note">No account, no server. Progress saves in this browser after every choice, answer and note.</div></div>
   </aside>
-  <main class="main"><header class="topbar no-print"><div class="top-left"><span class="eyebrow" style="font-size:10px;letter-spacing:1.2px">SNOWFLAKE CERTIFICATION</span><span> / </span><span id="crumb">Dashboard</span></div><div class="top-right"><span class="date-badge">100 QUESTIONS · COF-C03</span><div class="top-initial">SP</div></div></header>
+  <main class="main"><header class="topbar no-print"><div class="top-left"><span class="eyebrow" style="font-size:10px;letter-spacing:1.2px">SNOWFLAKE CERTIFICATION</span><span> / </span><span id="crumb">Dashboard</span></div><div class="top-right"><button class="text-size-btn" id="textSizeButton" type="button" aria-pressed="false" title="Enlarge the app text">A+ Bigger text</button><span class="date-badge">100 QUESTIONS · COF-C03</span><div class="top-initial">SP</div></div></header>
    <div class="content">
     <section class="view active" id="dashboardView">
      <span class="eyebrow">Exam-ready preparation</span><h1 class="h1">Know the difference.<br/>Choose the best answer.</h1>
@@ -256,5 +303,15 @@ window.addEventListener('storage',e=>{if(e.key===STORAGE_KEY){db=load();render()
 window.addEventListener('beforeunload',()=>{ /* All changes are saved synchronously on interaction. */ });
 render();syncTimer();
 
+</script>
+
+<script>
+/* Separate reading preference: never rewrites saved exam attempts. */
+(()=>{const key='snowpro-cof-c03-reading-size';const button=document.getElementById('textSizeButton');if(!button)return;
+let extra=false;try{extra=localStorage.getItem(key)==='extra';}catch(_){}
+function show(){document.documentElement.classList.toggle('font-extra',extra);button.textContent=extra?'A− Standard text':'A+ Bigger text';button.setAttribute('aria-pressed',String(extra));button.title=extra?'Return to comfortable text size':'Make all study text larger';}
+button.addEventListener('click',()=>{extra=!extra;try{localStorage.setItem(key,extra?'extra':'standard');}catch(_){}show();});
+window.addEventListener('storage',e=>{if(e.key===key){extra=e.newValue==='extra';show();}});
+show();})();
 </script>
 </body></html>
