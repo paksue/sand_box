@@ -87,23 +87,6 @@
       "updatedAt": "2026-08-28T09:15:46-04:00"
     },
     {
-      "id": "deep-current",
-      "title": "Deep Current",
-      "description": "New SandBox app. Add a description in catalog/project-metadata.json.",
-      "category": "other",
-      "tags": [
-        "new"
-      ],
-      "glyph": "✳",
-      "theme": "slate",
-      "featured": false,
-      "url": "https://paksue.github.io/sand_box/previews/deep-current/",
-      "source": "https://github.com/paksue/sand_box/tree/main/previews/deep-current",
-      "kind": "preview",
-      "variants": [],
-      "updatedAt": "2026-10-27T21:23:17-04:00"
-    },
-    {
       "id": "deep-current-3d",
       "title": "Deep Current 3D",
       "description": "Cinematic submarine simulation and exploration.",
@@ -128,6 +111,26 @@
         }
       ],
       "updatedAt": "2026-10-28T03:10:19Z"
+    },
+    {
+      "id": "deep-current",
+      "title": "Deep Current: Pacific Patrol",
+      "description": "Original cinematic submarine command and naval patrol game.",
+      "category": "games",
+      "tags": [
+        "submarine",
+        "naval",
+        "simulation",
+        "classic"
+      ],
+      "glyph": "⚓",
+      "theme": "ocean",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/previews/deep-current/",
+      "source": "https://github.com/paksue/sand_box/tree/main/previews/deep-current",
+      "kind": "preview",
+      "variants": [],
+      "updatedAt": "2026-10-27T21:23:17-04:00"
     },
     {
       "id": "food_guide",
