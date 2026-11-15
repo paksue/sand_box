@@ -11,7 +11,7 @@ const $ = function (s) { return document.querySelector(s); };
 const esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
 const fmt = function (n) { return String(n).padStart(2,"0"); };
 const dateKey = function (d) { d = d || new Date(); return [d.getFullYear(),fmt(d.getMonth()+1),fmt(d.getDate())].join("-"); };
-const def = { current:0, rate:.88, kana:true, romaji:false, english:true, voice:"", favorite:[], learned:{}, reviews:{}, activity:[], reviewMode:"listen", lastRoute:"home" };
+const def = { current:0, rate:.88, kana:true, romaji:false, english:true, voice:"", narrator:"warm", favorite:[], learned:{}, reviews:{}, activity:[], reviewMode:"listen", lastRoute:"home" };
 function loadState() {
   try { const raw = JSON.parse(localStorage.getItem(KEY) || "{}"); return normalize(raw); }
   catch (_) { return normalize({}); }
@@ -25,7 +25,7 @@ function normalize(x) {
   r.reviews = r.reviews && typeof r.reviews==="object" && !Array.isArray(r.reviews) ? r.reviews : {};
   r.activity = Array.isArray(r.activity) ? r.activity.filter(function(d){return typeof d==="string" && /^\d{4}-\d\d-\d\d$/.test(d);}).slice(-500) : [];
   r.kana = r.kana!==false; r.romaji = !!r.romaji; r.english = r.english!==false;
-  r.voice = typeof r.voice==="string" ? r.voice : ""; r.reviewMode = r.reviewMode==="speak" ? "speak":"listen";
+  r.voice = typeof r.voice==="string" ? r.voice : ""; r.narrator = r.narrator==="natural"?"natural":"warm"; r.reviewMode = r.reviewMode==="speak" ? "speak":"listen";
   return r;
 }
 let state=loadState(), route="home", search="", selectedUnit="all", libraryFilter="all";
@@ -118,7 +118,7 @@ function studio(){
     (state.english?'<div class="phrase-translation">'+esc(p.en)+'</div>':'<button class="hidden-text" data-action="toggle-english">Translation hidden — tap to reveal</button>')+'</div>'+
     '<div class="player-bottom"><div class="seek-controls"><div class="segmented" aria-label="Playback speed">'+[.7,.85,1,1.15].map(function(n){return '<button data-rate="'+n+'" class="'+(Math.abs(state.rate-n)<.04?"selected":"")+'">'+n+'×</button>';}).join("")+'</div><label class="toggle"><input type="checkbox" data-pref="kana" '+(state.kana?"checked":"")+'> Kana</label><label class="toggle"><input type="checkbox" data-pref="romaji" '+(state.romaji?"checked":"")+'> Romaji</label><label class="toggle"><input type="checkbox" data-pref="english" '+(state.english?"checked":"")+'> English</label></div>'+
     glyphwave()+'<div class="transport"><button class="button" data-action="slow" title="Play slowly">↘ Slow</button><button class="play-circle" data-action="play" aria-label="Hear this Japanese phrase">▶</button><button class="button" data-action="repeat" title="Hear three times">⟲ 3×</button><button class="button" data-action="play-unit" title="Play all phrases in this chapter">▤ Unit</button><button class="button" data-action="stop" title="Stop">■</button></div>'+
-    '<div class="transport-label" id="audio-status">'+(hasAudio?"Your imported reference recording":"Japanese device voice · "+state.rate+"× speed")+'</div></div>'+
+    '<div class="transport-label" id="audio-status">'+(hasAudio?"Your imported reference recording":selectedVoiceInfo().label+" · "+state.rate+"× speed")+'</div></div>'+
     '<div class="player-nav"><button class="button button-sm" data-action="previous" '+(state.current===0?"disabled":"")+'>← Previous</button><span>'+fmt(state.current+1)+' / '+fmt(P.length)+'</span><button class="button button-sm" data-action="next" '+(state.current===P.length-1?"disabled":"")+'>Next →</button></div></div>'+
     '<div class="side-panel"><section class="card panel-section"><div class="oneline"><span class="mini-heading">SPEAKING BOOTH</span><span class="pill muted" id="rec-flag">'+(recording?'<span class="recording-light"></span> Recording':"PRIVATE MIC")+'</span></div><h3>Make it your voice.</h3><p>Listen first. Record your imitation, then play both back-to-back.</p><div class="mic-visual"><canvas width="640" height="90" id="mic-canvas" aria-label="Microphone level"></canvas></div><div class="status-text" id="mic-status">'+(recording?"Recording… tap Stop when finished.":"No recording sent to any server.")+'</div><div class="take-actions"><button class="button '+(recording?"button-danger":"button-primary")+'" data-action="record">'+(recording?"■ Stop recording":"● Record my voice")+'</button><button class="button" data-action="compare" '+(!lastTake||lastTakePhrase!==p.id?"disabled":"")+'>♫ Compare</button></div>'+
     (lastTake&&lastTakePhrase===p.id?'<audio class="audio-take" src="'+esc(lastTake.url)+'" controls preload="metadata"></audio><div class="take-actions"><button class="button button-sm" data-action="download-take">↓ Save my recording</button></div>':'')+
@@ -169,17 +169,47 @@ function progress(){
     '<div class="progress-grid"><section class="card"><div class="unit-progress">'+U.map(function(u,i){return '<div class="statbar"><div class="statbar-top"><span>'+fmt(i+1)+' · '+esc(u.name)+'</span><strong>'+unitKnown(i)+' / '+unitTotal(i)+'</strong></div><div class="bar-track"><div class="bar-fill" style="width:'+percent(unitKnown(i),unitTotal(i))+'%"></div></div></div>';}).join("")+'</div></section>'+
     '<section class="card"><span class="mini-heading">YOUR PRACTICE HABIT</span><h3 style="font-size:28px;margin-bottom:15px">'+streak()+' day streak</h3><p>'+state.activity.length+' distinct practice days tracked in this browser.</p><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:20px 0 17px">'+Array.from({length:28},function(_,i){const d=new Date();d.setDate(d.getDate()-(27-i));const yes=state.activity.includes(dateKey(d));return '<div title="'+dateKey(d)+'" style="height:24px;border-radius:5px;background:'+(yes?"#c8a676":"#34463a")+'"></div>';}).join("")+'</div><p class="hint">Each golden block represents a day with a marked practice session or completed review. This is not a microphone accuracy score.</p><div class="separator"></div><span class="mini-heading">PRACTICE GOAL</span><p>12 minutes a day: 2 review, 3 listen, 3 shadow, 2 read, 2 recall.</p></section></div>'+
     '<div class="section-bar"><div><span class="section-eyebrow">SOUND & READING</span><h2>Your studio preferences</h2></div></div>'+
-    '<div class="progress-grid"><section class="card"><div class="settings-row"><div><strong>Japanese speaking voice</strong><small>Installed voices vary by device. Japanese voices are preferred.</small></div><select id="voice-select" class="select" aria-label="Japanese voice selection"><option value="">Default Japanese voice</option></select></div>'+
+    '<div class="progress-grid"><section class="card"><div class="settings-row"><div><strong>Japanese male narrator</strong><small>Automatically uses Otoya or another recognized male Japanese voice, if available.</small></div><select id="voice-select" class="select" aria-label="Japanese narrator selection"><option value="">Auto-select male Japanese voice</option></select></div><div id="male-voice-status" class="info-box" role="status" style="margin:9px 0 13px">Checking installed Japanese voices…</div><div class="settings-row"><div><strong>Narration character</strong><small>Warm & unhurried is a little deeper; natural preserves ordinary pitch.</small></div><select class="select" id="narrator-select"><option value="warm">Warm & unhurried</option><option value="natural">Natural pronunciation</option></select></div>'+
     '<div class="settings-row"><div><strong>Audio playback speed</strong><small>Also adjustable inside each phrase</small></div><select class="select" id="rate-select"><option value=".7" '+(state.rate===.7?"selected":"")+'>0.70× Slow</option><option value=".85" '+(state.rate===.85||state.rate===.88?"selected":"")+'>0.85× Learning</option><option value="1" '+(state.rate===1?"selected":"")+'>1.00× Natural</option><option value="1.15" '+(state.rate===1.15?"selected":"")+'>1.15× Fast</option></select></div>'+
     '<div class="settings-row"><div><strong>Sound check</strong><small>Hear a short Japanese voice sample</small></div><button class="button button-sm" data-action="test-voice">▶ Test audio</button></div><div class="info-box" style="margin-top:16px">If you hear nothing, increase your volume and try another Japanese system voice. On iPhone, Japanese voices may need to be installed in iOS accessibility speech settings. Recording requires microphone permission and HTTPS.</div></section>'+
     '<section class="card"><span class="mini-heading">OWN YOUR LEARNING DATA</span><h3>Local & private</h3><p>Progress, saved phrases and spaced reviews remain in this browser’s storage. Your microphone recordings are not uploaded. Added reference clips are stored in this device’s IndexedDB.</p><div class="settings-actions"><button class="button button-primary" data-action="export">↓ Export progress</button><label class="button" for="import-progress">↑ Import progress</label><input type="file" accept="application/json,.json" id="import-progress" hidden><button class="button button-danger" data-action="reset">Reset progress</button></div><p class="hint" style="margin-top:15px">Progress does not automatically synchronize between iPhone and desktop. Export a backup to transfer it. Imported reference audio clips and voice recordings are not included in the JSON backup.</p><div class="separator"></div><span class="mini-heading">ACKNOWLEDGMENTS</span><p>Independent Japanese lessons inspired by the atmosphere of Midnight Diner, unaffiliated with its creators or distributors. One brief quoted line is used for language study; all other practice sentences are original.</p><p><a class="link" href="https://www.netflix.com/title/80113541" target="_blank" rel="noopener">Watch the original series ↗</a> · <a class="link" href="https://www.gavo.t.u-tokyo.ac.jp/ojad/eng/pages/home" target="_blank" rel="noopener">Study pronunciation with OJAD ↗</a></p></section></div>';
 }
+/* Web Speech exposes name/language but no gender. Heuristic male-name selection. */
+const MALE_JA_NAMES=["otoya","hattori","daichi","masaru","naoki","keita","takumi","ichiro","akira","haruto","koji","kenji","hiroshi","yuma","shinji","nobu","kazuki","takeru"];
+function isJapaneseVoice(v){return /^ja(?:-|$)/i.test(String(v.lang||""));}
+function isLikelyMaleJapanese(v){
+  if(!isJapaneseVoice(v))return false;
+  const name=(String(v.name||"")+" "+String(v.voiceURI||"")).toLowerCase();
+  return MALE_JA_NAMES.some(function(n){return new RegExp("(^|[^a-z])"+n+"($|[^a-z])").test(name);});
+}
+function bestMaleVoice(list){
+  const males=list.filter(isLikelyMaleJapanese);
+  return males.sort(function(a,b){
+    const rank=function(v){const name=(v.name+" "+v.voiceURI).toLowerCase();const i=MALE_JA_NAMES.findIndex(function(n){return new RegExp("(^|[^a-z])"+n+"($|[^a-z])").test(name);});return i<0?100:i;};
+    return rank(a)-rank(b);
+  })[0]||null;
+}
+function selectedVoiceInfo(){
+  const list=window.speechSynthesis?window.speechSynthesis.getVoices():[];
+  const choice=state.voice?list.find(function(v){return v.voiceURI===state.voice&&isJapaneseVoice(v);}):null;
+  const preferred=bestMaleVoice(list);
+  const voice=choice||(state.voice?null:preferred)||list.find(isJapaneseVoice)||null;
+  const male=!!voice&&isLikelyMaleJapanese(voice);
+  return {voice:voice,male:male,missingRequested:!!state.voice&&!choice,
+    label:voice?(voice.name+(male?" · male Japanese":" · gender unverified")):"No Japanese voice found"};
+}
 function hydrateVoices(){
   const sel=$("#voice-select"); if(!sel)return;
   voices=window.speechSynthesis?window.speechSynthesis.getVoices():[];
-  const japanese=voices.filter(function(v){return /^ja\b|^ja-/i.test(v.lang);});
-  sel.innerHTML='<option value="">Automatic Japanese voice</option>'+japanese.map(function(v){return '<option value="'+esc(v.voiceURI)+'" '+(state.voice===v.voiceURI?"selected":"")+'>'+esc(v.name)+' ('+esc(v.lang)+')</option>';}).join("");
-  if(!japanese.length)sel.innerHTML+='<option disabled>No Japanese voices found yet</option>';
+  const japanese=voices.filter(isJapaneseVoice).sort(function(a,b){return Number(isLikelyMaleJapanese(b))-Number(isLikelyMaleJapanese(a))||a.name.localeCompare(b.name);});
+  sel.innerHTML='<option value="" '+(!state.voice?"selected":"")+'>Auto-select male Japanese voice</option>'+
+    japanese.map(function(v){return '<option value="'+esc(v.voiceURI)+'" '+(state.voice===v.voiceURI?"selected":"")+'>'+esc(v.name)+(isLikelyMaleJapanese(v)?" · male":"")+' ('+esc(v.lang)+')</option>';}).join("");
+  if(state.voice&&!japanese.some(function(v){return v.voiceURI===state.voice;}))sel.innerHTML+='<option value="'+esc(state.voice)+'" selected>Previously chosen voice unavailable</option>';
+  if(!japanese.length)sel.innerHTML+='<option disabled>No Japanese voices exposed by browser</option>';
+  const info=selectedVoiceInfo(),status=$("#male-voice-status");
+  if(status)status.innerHTML=info.male?'<span class="privacy-dot"></span>Selected: '+esc(info.voice.name)+' · likely male Japanese':
+    '<strong>Male Japanese voice not detected.</strong> '+(info.missingRequested?"Your saved voice is unavailable here. Select Auto or another Japanese voice. ":"")+"For iPhone, download Otoya in Settings → Accessibility → Read & Speak → Voices → Japanese, then reopen Safari.";
+  const style=$("#narrator-select");if(style)style.value=state.narrator;
 }
 function stopSound(){
   ttsSession++;isSpeaking=false;
@@ -194,13 +224,13 @@ function speakTTS(text,session,rate){
     if(!window.speechSynthesis||!window.SpeechSynthesisUtterance){toast("Speech synthesis is unavailable in this browser.");resolve(false);return;}
     const synth=window.speechSynthesis;try{synth.cancel();}catch(_){}
     const u=new SpeechSynthesisUtterance(text);
-    u.lang="ja-JP";u.rate=rate||state.rate;u.pitch=1;u.volume=1;
-    const list=synth.getVoices();
-    const voice=list.find(function(v){return state.voice&&v.voiceURI===state.voice;})||list.find(function(v){return /^ja\b|^ja-/i.test(v.lang);});
+    u.lang="ja-JP";u.rate=rate||state.rate;u.pitch=state.narrator==="warm"?.92:1;u.volume=1;
+    const picked=selectedVoiceInfo(),voice=picked.voice;
     if(voice)u.voice=voice;
+    if(!picked.male)toast((picked.missingRequested?"Chosen voice unavailable. ":"")+"No recognized male Japanese voice installed. Try installing Otoya.");
     let settled=false;
     const finish=function(ok){if(settled)return;settled=true;clearTimeout(failsafe);if(session===ttsSession)showWave(false,ok?"Finished · tap Play to repeat":"Could not play Japanese speech");resolve(ok);};
-    u.onstart=function(){if(session===ttsSession)showWave(true,"Speaking Japanese · "+Number(rate||state.rate).toFixed(2)+"×");};
+    u.onstart=function(){if(session===ttsSession)showWave(true,(picked.male?"Male Japanese voice":"Japanese device voice")+" · "+(voice?voice.name:"default")+" · "+Number(rate||state.rate).toFixed(2)+"×");};
     u.onend=function(){finish(true);};u.onerror=function(){finish(false);};
     const failsafe=setTimeout(function(){finish(false);},22000);
     try{synth.speak(u);}catch(e){finish(false);}
@@ -344,7 +374,8 @@ document.addEventListener("change",function(e){
   if(el.id==="unit-filter"){selectedUnit=el.value;render();return;}
   if(el.id==="library-filter"){libraryFilter=el.value;render();return;}
   if(el.dataset.pref){state[el.dataset.pref]=el.checked;save();render();return;}
-  if(el.id==="voice-select"){state.voice=el.value;save();toast("Voice preference saved.");return;}
+  if(el.id==="voice-select"){state.voice=el.value;save();hydrateVoices();toast("Narrator voice preference saved.");return;}
+  if(el.id==="narrator-select"){state.narrator=el.value==="natural"?"natural":"warm";save();toast("Narration style saved.");return;}
   if(el.id==="rate-select"){state.rate=Number(el.value);save();return;}
   if(el.id==="import-progress"&&el.files[0]){importProgress(el.files[0]);return;}
   if(el.id==="reference-file"&&el.files[0]){if(!el.files[0].type.startsWith("audio/")){toast("Please choose an audio file.");return;}saveClip(P[state.current].id,el.files[0]);return;}
