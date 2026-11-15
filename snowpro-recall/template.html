@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#091723">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SnowPro Recall">
+<meta name="description" content="A beautiful private, offline-friendly SnowPro Core COF-C03 flashcard memory lab with spaced repetition.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>SnowPro Recall — Memory Lab</title>
+<style>/*STYLE*/</style>
+</head>
+<body>
+<div class="ambient a1" aria-hidden="true"></div><div class="ambient a2" aria-hidden="true"></div>
+<div class="app-shell">
+ <aside class="desktop-nav"><div class="brand"><span class="brand-mark">✳</span><span><b>SnowPro<span class="brand-light">Recall</span></b><small>MEMORY LAB · COF-C03</small></span></div><div class="nav-slot" id="desktopNav"></div><div class="nav-note"><span class="live-dot"></span> Private · Autosaved locally</div></aside>
+ <div class="main-column">
+  <header class="topbar"><div class="mobile-brand"><span class="brand-mark">✳</span><span>SnowPro<b>Recall</b></span></div><div class="desktop-greeting"><span class="mini-eyebrow">YOUR PERSONAL MEMORY LAB</span><b>Learn more. Forget less.</b></div><div class="header-actions"><span class="save-indicator" id="savedIndicator"><i></i><span>Saved</span></span><button class="icon-btn" data-action="settings" aria-label="Open settings" title="Settings"><span aria-hidden="true" style="font-size:20px;line-height:1">⚙</span></button></div></header>
+  <main id="view" tabindex="-1"></main>
+ </div>
+ <nav class="bottom-nav" id="bottomNav" aria-label="Primary navigation"></nav>
+</div>
+<div id="layer" class="layer-root" aria-live="polite"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script>const CARD_BANK=/*BANK*/;</script>
+<script>/*APP*/</script>
+</body>
+</html>
