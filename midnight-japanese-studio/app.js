@@ -189,9 +189,12 @@ function progress(){
     '<div class="progress-grid"><section class="card"><div class="unit-progress">'+U.map(function(u,i){return '<div class="statbar"><div class="statbar-top"><span>'+fmt(i+1)+' · '+esc(u.name)+'</span><strong>'+unitKnown(i)+' / '+unitTotal(i)+'</strong></div><div class="bar-track"><div class="bar-fill" style="width:'+percent(unitKnown(i),unitTotal(i))+'%"></div></div></div>';}).join("")+'</div></section>'+
     '<section class="card"><span class="mini-heading">YOUR PRACTICE HABIT</span><h3 style="font-size:28px;margin-bottom:15px">'+streak()+' day streak</h3><p>'+state.activity.length+' distinct practice days tracked in this browser.</p><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:20px 0 17px">'+Array.from({length:28},function(_,i){const d=new Date();d.setDate(d.getDate()-(27-i));const yes=state.activity.includes(dateKey(d));return '<div title="'+dateKey(d)+'" style="height:24px;border-radius:5px;background:'+(yes?"#c8a676":"#34463a")+'"></div>';}).join("")+'</div><p class="hint">Each golden block represents a day with a marked practice session or completed review. This is not a microphone accuracy score.</p><div class="separator"></div><span class="mini-heading">PRACTICE GOAL</span><p>12 minutes a day: 2 review, 3 listen, 3 shadow, 2 read, 2 recall.</p></section></div>'+
     '<div class="section-bar"><div><span class="section-eyebrow">SOUND & READING</span><h2>Your studio preferences</h2></div></div>'+
-    '<div class="progress-grid"><section class="card"><div class="settings-row"><div><strong>Audio source</strong><small>Pre-generated male Japanese MP3s bypass Safari voice limitations.</small></div><select class="select" id="audio-source-select"><option value="recorded" '+(state.audioSource==="recorded"?"selected":"")+'>Recorded male voice (recommended)</option><option value="device" '+(state.audioSource==="device"?"selected":"")+'>iPhone / browser voices</option></select></div><div class="info-box" id="male-recording-status" style="margin:9px 0 13px">'+(bundledLoaded?'<span class="privacy-dot"></span> Male Japanese recordings available for '+Object.keys(bundledAudio).length+' phrases.':'Male recording package is not available yet. Choose browser voices temporarily or check again below. <button class="text-button" data-action="reload-male">↻ Check for male audio</button>')+'</div><div class="settings-row"><div><strong>Japanese system narrator</strong><small>Automatically uses Otoya or another recognized male Japanese voice, if available.</small></div><select id="voice-select" class="select" aria-label="Japanese narrator selection"><option value="">Auto-select male Japanese voice</option></select></div><div id="male-voice-status" class="info-box" role="status" style="margin:9px 0 13px">Checking installed Japanese voices…</div><div class="settings-row"><div><strong>Narration character</strong><small>Warm & unhurried is a little deeper; natural preserves ordinary pitch.</small></div><select class="select" id="narrator-select"><option value="warm">Warm & unhurried</option><option value="natural">Natural pronunciation</option></select></div>'+
+    '<div class="progress-grid"><section class="card"><div class="settings-row"><div><strong>Audio source</strong><small>Pre-generated male Japanese MP3s bypass Safari voice limitations.</small></div><select class="select" id="audio-source-select"><option value="recorded" '+(state.audioSource==="recorded"?"selected":"")+'>Recorded male MP3 (recommended)</option><option value="device" '+(state.audioSource==="device"?"selected":"")+'>iPhone system voice</option></select></div><div class="info-box" id="male-recording-status" style="margin:9px 0 13px">'+(bundledLoaded?'<span class="privacy-dot"></span> Male Japanese recordings available for '+Object.keys(bundledAudio).length+' phrases.':'Male recording package is not available yet. Choose browser voices temporarily or check again below. <button class="text-button" data-action="reload-male">↻ Check for male audio</button>')+'</div>'+
+    (state.audioSource==="device" ?
+      '<div class="settings-row"><div><strong>Japanese system narrator</strong><small>This setting only applies to browser voices, not recorded male MP3s.</small></div><select id="voice-select" class="select" aria-label="Japanese system voice"><option value="">Automatic Japanese voice</option></select></div><div id="male-voice-status" class="info-box" role="status" style="margin:9px 0 13px">Checking voices exposed to Safari…</div><div class="settings-row"><div><strong>System voice character</strong><small>Warm lowers the system speech pitch; it does not alter the recorded male MP3.</small></div><select class="select" id="narrator-select"><option value="warm">Warm & unhurried</option><option value="natural">Natural pronunciation</option></select></div>' :
+      '<div class="info-box" style="margin:9px 0 13px"><strong>Recorded male narration is selected.</strong> Safari\'s system voices are not used. The recordings have a fixed vocal style; adjust the playback speed below.</div>')+
     '<div class="settings-row"><div><strong>Audio playback speed</strong><small>Also adjustable inside each phrase</small></div><select class="select" id="rate-select"><option value=".7" '+(state.rate===.7?"selected":"")+'>0.70× Slow</option><option value=".85" '+(state.rate===.85||state.rate===.88?"selected":"")+'>0.85× Learning</option><option value="1" '+(state.rate===1?"selected":"")+'>1.00× Natural</option><option value="1.15" '+(state.rate===1.15?"selected":"")+'>1.15× Fast</option></select></div>'+
-    '<div class="settings-row"><div><strong>Sound check</strong><small>Hear a short Japanese voice sample</small></div><button class="button button-sm" data-action="test-voice">▶ Test audio</button></div><div class="info-box" style="margin-top:16px">If you hear nothing, increase your volume and try another Japanese system voice. On iPhone, Japanese voices may need to be installed in iOS accessibility speech settings. Recording requires microphone permission and HTTPS.</div></section>'+
+    '<div class="settings-row"><div><strong>Sound check</strong><small>Tests your currently selected audio source.</small></div><button class="button button-sm" data-action="test-voice">▶ Test selected audio</button></div><div class="hint" id="audio-test-status" role="status" style="margin:5px 0 10px">'+(state.audioSource==="recorded"?"Ready to hear the recorded male narrator.":"Ready to test the Japanese system voice.")+'</div><div class="info-box" style="margin-top:16px">'+(state.audioSource==="recorded"?"Male MP3s play from GitHub Pages without needing Otoya or other iPhone system voices.":"Safari may not expose the system voice you installed. If silent, select Recorded male MP3 above.")+' Recording your own voice requires microphone permission and HTTPS.</div></section>'+
     '<section class="card"><span class="mini-heading">OWN YOUR LEARNING DATA</span><h3>Local & private</h3><p>Progress, saved phrases and spaced reviews remain in this browser’s storage. Your microphone recordings are not uploaded. Added reference clips are stored in this device’s IndexedDB.</p><div class="settings-actions"><button class="button button-primary" data-action="export">↓ Export progress</button><label class="button" for="import-progress">↑ Import progress</label><input type="file" accept="application/json,.json" id="import-progress" hidden><button class="button button-danger" data-action="reset">Reset progress</button></div><p class="hint" style="margin-top:15px">Progress does not automatically synchronize between iPhone and desktop. Export a backup to transfer it. Imported reference audio clips and voice recordings are not included in the JSON backup.</p><div class="separator"></div><span class="mini-heading">ACKNOWLEDGMENTS</span><p>Independent Japanese lessons inspired by the atmosphere of Midnight Diner, unaffiliated with its creators or distributors. One brief quoted line is used for language study; all other practice sentences are original.</p><p><a class="link" href="https://www.netflix.com/title/80113541" target="_blank" rel="noopener">Watch the original series ↗</a> · <a class="link" href="https://www.gavo.t.u-tokyo.ac.jp/ojad/eng/pages/home" target="_blank" rel="noopener">Study pronunciation with OJAD ↗</a></p></section></div>';
 }
 /* Web Speech exposes name/language but no gender. Heuristic male-name selection. */
@@ -374,7 +377,35 @@ function handleAction(a,element){
   if(a==="toggle-english"){state.english=true;save();render();return;}
   if(a==="review-play"){stopSound();const due=dueList()[0];if(due)playReference(P.indexOf(due),state.rate,ttsSession);return;}
   if(a==="reveal"){revealed=true;render();return;}
-  if(a==="test-voice"){stopSound();speakTTS("こんばんは。日本語を練習しましょう。",ttsSession,state.rate);return;}
+  if(a==="test-voice"){
+    stopSound();
+    const status=$("#audio-test-status");
+    if(state.audioSource==="recorded"){
+      const src=bundledAudio[P[0].id];
+      if(!src){
+        if(status)status.textContent="Male MP3 audio is not loaded. Try Check for male audio or refresh the page.";
+        toast("The recorded male voice has not loaded.");
+        return;
+      }
+      if(status)status.textContent="Playing recorded Japanese male voice…";
+      const session=ttsSession;
+      playFile({url:src},session,state.rate).then(function(ok){
+        if(session!==ttsSession)return;
+        const el=$("#audio-test-status");
+        if(el)el.textContent=ok?"Male Japanese MP3 played successfully.":"The male MP3 could not play. Check volume and network connection.";
+        if(!ok)toast("MP3 playback failed. Check volume and connection.");
+      });
+    }else{
+      if(status)status.textContent="Playing Japanese system voice…";
+      const session=ttsSession;
+      speakTTS("こんばんは。日本語を練習しましょう。",session,state.rate).then(function(ok){
+        if(session!==ttsSession)return;
+        const el=$("#audio-test-status");
+        if(el)el.textContent=ok?"System voice played successfully.":"Safari could not play the system voice. Choose Recorded male MP3 instead.";
+      });
+    }
+    return;
+  }
   if(a==="reload-male"){loadBundledNarration();toast("Checking for published male audio…");return;}
   if(a==="export"){exportProgress();return;}
   if(a==="reset"){askReset();return;}
@@ -403,7 +434,7 @@ document.addEventListener("change",function(e){
   if(el.id==="library-filter"){libraryFilter=el.value;render();return;}
   if(el.dataset.pref){state[el.dataset.pref]=el.checked;save();render();return;}
   if(el.id==="voice-select"){state.voice=el.value;save();hydrateVoices();toast("Narrator voice preference saved.");return;}
-  if(el.id==="audio-source-select"){state.audioSource=el.value==="device"?"device":"recorded";save();render();toast(state.audioSource==="recorded"?"Recorded male narrator selected":"System Japanese voice selected");return;}
+  if(el.id==="audio-source-select"){stopSound();state.audioSource=el.value==="device"?"device":"recorded";save();render();toast(state.audioSource==="recorded"?"Recorded male narrator selected":"System Japanese voice selected");return;}
   if(el.id==="narrator-select"){state.narrator=el.value==="natural"?"natural":"warm";save();toast("Narration style saved.");return;}
   if(el.id==="rate-select"){state.rate=Number(el.value);save();return;}
   if(el.id==="import-progress"&&el.files[0]){importProgress(el.files[0]);return;}
