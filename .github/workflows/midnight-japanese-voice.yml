@@ -72,5 +72,7 @@ jobs:
             echo "No generated voice changes"
           else
             git commit -m "Publish original Japanese male narration MP3s [skip ci]"
+            git fetch origin main
+            git rebase origin/main
             git push origin HEAD:main
           fi
