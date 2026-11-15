@@ -1,5 +1,5 @@
 /* Offline shell for Midnight Japanese. Scope is limited to this folder. */
-const CACHE="midnight-japanese-shell-2026-11-14-v1";
+const CACHE="midnight-japanese-shell-2026-11-14-v2";
 const CORE=["./","./index.html","./styles.css","./data.js","./app.js","./manifest.webmanifest","./icon.svg"];
 self.addEventListener("install",event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));});
 self.addEventListener("activate",event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith("midnight-japanese-shell-")&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});
