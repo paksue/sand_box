@@ -212,7 +212,7 @@ function playFile(file,session,rate){
     let done=false;
     const finish=function(ok){if(done)return;done=true;audio.onended=null;audio.onerror=null;if(session===ttsSession){showWave(false,ok?"Finished":"Audio could not play");if(activeSound===audio)activeSound=null;}resolve(ok);};
     audio.onplay=function(){if(session===ttsSession)showWave(true,"Your reference audio · "+audio.playbackRate.toFixed(2)+"×");};
-    audio.onended=function(){finish(true);};audio.onerror=function(){finish(false);};
+    audio.onended=function(){finish(true);};audio.onerror=function(){finish(false);};audio.onpause=function(){if(!audio.ended)finish(false);};
     audio.play().catch(function(){toast("Audio playback was blocked. Tap Play again.");finish(false);});
   });
 }
@@ -221,7 +221,7 @@ async function playReference(index,rate,session){
   return file?playFile(file,session,rate):speakTTS(p.jp,session,rate);
 }
 async function playOne(times,forceSlow){
-  stopSound();const session=ttsSession;const index=state.current;const rate=forceSlow?.7:state.rate;
+  stopSound();const session=ttsSession;const index=state.current;const rate=forceSlow ? 0.7 : state.rate;
   for(let i=0;i<times;i++){if(session!==ttsSession)break;const ok=await playReference(index,rate,session);if(!ok||session!==ttsSession)break;if(i<times-1)await new Promise(function(r){setTimeout(r,420);});}
 }
 async function playUnit(unitIndex){
