@@ -8,7 +8,7 @@ const content=JSON.parse(fs.readFileSync(METADATA,"utf8"));
 const aliases=content.aliases||{}, metadata=content.projects||{};
 const omitted=new Set(["assets","catalog","scripts","previews",".git",".github","node_modules","skills","tests","docs"]);
 function humanize(x){return x.replace(/[-_]/g," ").replace(/\b\w/g,y=>y.toUpperCase());}
-function directory(pathname){return fs.existsSync(path.join(ROOT,pathname,"index.html"));}
+function directory(pathname){const file=path.join(ROOT,pathname,"index.html");return fs.existsSync(file)&&fs.statSync(file).isFile()&&fs.statSync(file).size>0;}
 function listFolders(pathname){
   const root=path.join(ROOT,pathname);
   if(!fs.existsSync(root))return[];
