@@ -1,49 +1,35 @@
-# SnowPro Recall — COF-C03 Mobile Flashcards
+# SnowPro Recall — 405-card COF-C03 & historical study library
 
-A portrait-first, private, installable web app for SnowPro Core study.
+Live app: https://paksue.github.io/sand_box/snowpro-recall/
 
-## Use it
+## Current release (November 2026)
+- **405 original flashcards**: 371 current COF-C03, 34 optional historical COF-C01/COF-C02.
+- All **19 published COF-C03 objective identifiers** (July 8, 2026 guide) represented by dedicated questions. This is objective representation, not a claim to know every live exam question.
+- Five exam domains: 86 Architecture, 74 Governance, 95 Loading, 96 Performance/SQL, 54 Collaboration (historical included).
+- Coverage map, historical filter, linked question-source directory, official Snowflake docs and original SQL/scenario explanations.
+- 2/5/10-minute reviews, Exam Sprint, typed SQL, ratings, notes, bookmarks, FSRS-style scheduling and offline PWA shell.
+- Existing sp001–sp162 identifiers and localStorage key are unchanged. Progress remains compatible.
+- Historical cards are excluded from normal current-exam daily reviews unless explicitly selected.
 
-**GitHub Pages:** https://paksue.github.io/sand_box/snowpro-recall/
+## Important
+Snowflake does not release its complete exam-question pool. The app does **not** contain every real historical/current exam question, or unauthorized exam dumps. Older questions may be outdated. Use the official current certification outline to prioritize.
 
-**iPhone:** Open in Safari, tap Share → Add to Home Screen. On Android Chrome, use Install app.
+Your original 100-question practice exam is available separately:
+https://paksue.github.io/sand_box/snowpro-cof-c03-exam-lab/
 
-## What is included
+## Editing / building
+`cards.json` is the source of truth for all card text. **Do not regenerate it from an older 162-card script.**
+`app.js`, `style.css` and `template.html` are the front-end sources. Run `python build.py` to rebuild the standalone `index.html` with `cards.json`.
+`make_cards.py` validates the JSON data only.
+The full source bundle including original expanded card authorship script is provided with the release ZIP.
 
-- 162 *original* compact flashcards with short answers, explanations, SQL examples, exam traps, related concepts, and Snowflake documentation links.
-- Five exam domains: 31 Architecture/AI, 28 Governance, 40 Loading, 42 Performance/SQL (including string functions), 21 Collaboration.
-- 2-, 5- and 10-minute sessions; due/new mix, exam sprint, SQL typing practice, domain decks, search and filters.
-- 3D CSS card flips, touch/keyboard interaction, Again/Hard/Good/Easy review ratings, subtle optional haptics, reduced-motion support.
-- Default FSRS-6 memory parameters with short-step review safeguards and a configurable recall target. The scheduler estimates review intervals; it is not personalized by optimization on a user's history.
-- Immediate browser `localStorage` persistence for session position, ratings, notes, bookmarks and settings.
-- Progress insights including history, domain learning, 21-day activity map and weak-card prioritization.
-- JSON backup export and import for moving between browsers or restoring progress.
-- Offline-first progressive web app shell with a service worker. Once visited online, the built-in cards are readable offline; external Snowflake documentation links require internet.
-
-## Important storage note
-
-GitHub Pages does **not** store your ratings. All data stays in the browser's storage area for that exact site origin. Using the local HTML file, another domain, another device, or private browsing does not reuse the same storage. Export a backup from Settings if you need to transfer or retain progress before clearing browser data.
-
-## Files
-
-- `index.html`: standalone complete web app and card data (no runtime libraries).
-- `manifest.webmanifest`: PWA install metadata.
-- `service-worker.js`: offline cache for the app shell.
-- `icon.svg`: brand icon.
-- `cards.json`: editable source deck.
-- `make_cards.py`, `template.html`, `style.css`, `app.js`, `build.py`: source and repeatable build.
-
-To rebuild locally:
-
-```bash
-python make_cards.py
-python build.py
-```
+## Saving
+All ratings and notes are saved to localStorage on this exact website origin, after each interaction; they are not synchronized across devices. Export JSON from Settings regularly.
 
 ## References
+- Snowflake official COF-C03 July 2026 Exam Study Guide: https://learn.snowflake.com/en/certifications/snowpro-core-c03/
+- Official SnowPro Practice Exams: https://learn.snowflake.com/en/certifications/snowpro-practice-exams/
+- Snowflake core preparation: https://learn.snowflake.com/en/courses/OD-COREPREP/
+- Snowflake docs for each card.
 
-- Official Snowflake COF-C03 Exam Study Guide (July 2026), provided by user.
-- Snowflake SQL and features documentation linked within each card.
-- FSRS-6 published algorithm: https://github.com/open-spaced-repetition/awesome-fsrs/wiki/The-Algorithm
-
-This is an independent educational study tool and not an official Snowflake product or official exam score predictor. Cards are original summaries and should be checked against current documentation when product behavior changes.
+Independent educational study app, not affiliated with Snowflake.
