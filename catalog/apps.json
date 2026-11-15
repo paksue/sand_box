@@ -1,133 +1,107 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-15",
-  "source": "initial-repository-inventory",
+  "source": "repository-discovery",
   "apps": [
     {
-      "id": "the-rule",
-      "title": "The Rule",
-      "description": "An interactive world of choices, consequences and reasoning.",
-      "category": "research",
+      "id": "ai-concepts-explorer",
+      "title": "AI Concepts Explorer",
+      "description": "Discover artificial intelligence concepts through interactive learning.",
+      "category": "learning",
       "tags": [
-        "logic",
-        "interactive",
-        "ideas"
+        "ai",
+        "machine learning",
+        "technology"
       ],
-      "glyph": "⚖",
+      "glyph": "✧",
       "theme": "violet",
-      "url": "https://paksue.github.io/sand_box/the-rule/",
-      "source": "https://github.com/paksue/sand_box/tree/main/the-rule",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/ai-concepts-explorer/",
+      "source": "https://github.com/paksue/sand_box/tree/main/ai-concepts-explorer",
       "kind": "app",
-      "variants": []
+      "variants": [],
+      "updatedAt": "2026-10-26T22:58:41-04:00"
     },
     {
-      "id": "tag-arena",
-      "title": "Tag Arena",
-      "description": "Fast-paced interactive tag arena prototype.",
-      "category": "games",
-      "tags": [
-        "arcade",
-        "multiplayer",
-        "prototype"
-      ],
-      "glyph": "⚡",
-      "theme": "orange",
-      "url": "https://paksue.github.io/sand_box/previews/tag-arena/",
-      "source": "https://github.com/paksue/sand_box/tree/main/tag-arena",
-      "kind": "preview",
-      "variants": [
-        {
-          "label": "Source entry",
-          "url": "https://paksue.github.io/sand_box/tag-arena/",
-          "kind": "source"
-        }
-      ]
-    },
-    {
-      "id": "watchdeck",
-      "title": "Watchdeck",
-      "description": "A personal watch console and organized viewing dashboard.",
+      "id": "camera-safety-notifier",
+      "title": "Camera Safety Notifier",
+      "description": "Camera safety notification project and preview.",
       "category": "tools",
       "tags": [
-        "watch",
-        "monitor",
-        "dashboard"
+        "camera",
+        "privacy",
+        "monitoring"
+      ],
+      "glyph": "📷",
+      "theme": "slate",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/previews/camera-safety-notifier/",
+      "source": "https://github.com/paksue/sand_box/tree/main/camera-safety-notifier",
+      "kind": "preview",
+      "variants": [
+        {
+          "label": "Source entry",
+          "url": "https://paksue.github.io/sand_box/camera-safety-notifier/client/",
+          "kind": "app"
+        }
+      ],
+      "updatedAt": "2026-09-23T20:27:49-04:00"
+    },
+    {
+      "id": "cochrane-integrity-atlas",
+      "title": "Cochrane Integrity Atlas",
+      "description": "Explore evidence quality, research methods and integrity.",
+      "category": "research",
+      "tags": [
+        "cochrane",
+        "science",
+        "medical",
+        "studies"
       ],
       "glyph": "◉",
-      "theme": "ink",
-      "url": "https://paksue.github.io/sand_box/watchdeck/",
-      "source": "https://github.com/paksue/sand_box/tree/main/watchdeck",
+      "theme": "teal",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/cochrane-integrity-atlas/",
+      "source": "https://github.com/paksue/sand_box/tree/main/cochrane-integrity-atlas",
       "kind": "app",
-      "variants": []
+      "variants": [],
+      "updatedAt": "2026-10-27T20:31:38-04:00"
     },
     {
-      "id": "rc-explorer",
-      "title": "RC Explorer",
-      "description": "Discover and explore tiny radio-controlled adventures.",
-      "category": "games",
-      "tags": [
-        "rc",
-        "exploration",
-        "interactive"
-      ],
-      "glyph": "🚙",
-      "theme": "lime",
-      "url": "https://paksue.github.io/sand_box/previews/rc-explorer/",
-      "source": "https://github.com/paksue/sand_box/tree/main/rc-explorer",
-      "kind": "preview",
-      "variants": [
-        {
-          "label": "Source entry",
-          "url": "https://paksue.github.io/sand_box/rc-explorer/",
-          "kind": "source"
-        }
-      ]
-    },
-    {
-      "id": "the-shortcut",
-      "title": "The Shortcut",
-      "description": "A compact interactive adventure and game prototype.",
-      "category": "games",
-      "tags": [
-        "adventure",
-        "story",
-        "interactive"
-      ],
-      "glyph": "🗺",
-      "theme": "forest",
-      "url": "https://paksue.github.io/sand_box/previews/the-shortcut/",
-      "source": "https://github.com/paksue/sand_box/tree/main/the-shortcut",
-      "kind": "preview",
-      "variants": [
-        {
-          "label": "Source entry",
-          "url": "https://paksue.github.io/sand_box/the-shortcut/",
-          "kind": "source"
-        }
-      ]
-    },
-    {
-      "id": "the-forge-movie",
-      "title": "The Forge",
-      "description": "A cinematic creative movie experience.",
+      "id": "dnd-miniature-web-poc",
+      "title": "D&D Miniature Studio",
+      "description": "Web-based tabletop miniature proof of concept.",
       "category": "creative",
       "tags": [
-        "movie",
-        "cinematic",
-        "video"
+        "3d",
+        "miniatures",
+        "tabletop",
+        "prototype"
       ],
-      "glyph": "✦",
-      "theme": "ember",
-      "url": "https://paksue.github.io/sand_box/previews/the-forge-movie/",
-      "source": "https://github.com/paksue/sand_box/tree/main/the-forge-movie",
+      "glyph": "♞",
+      "theme": "orchid",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/previews/dnd-miniature-web-poc/",
+      "source": "https://github.com/paksue/sand_box/tree/main/previews/dnd-miniature-web-poc",
       "kind": "preview",
-      "variants": [
-        {
-          "label": "Source entry",
-          "url": "https://paksue.github.io/sand_box/the-forge-movie/",
-          "kind": "source"
-        }
-      ]
+      "variants": [],
+      "updatedAt": "2026-08-28T09:15:46-04:00"
+    },
+    {
+      "id": "deep-current",
+      "title": "Deep Current",
+      "description": "New SandBox app. Add a description in catalog/project-metadata.json.",
+      "category": "other",
+      "tags": [
+        "new"
+      ],
+      "glyph": "✳",
+      "theme": "slate",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/previews/deep-current/",
+      "source": "https://github.com/paksue/sand_box/tree/main/previews/deep-current",
+      "kind": "preview",
+      "variants": [],
+      "updatedAt": "2026-10-27T21:23:17-04:00"
     },
     {
       "id": "deep-current-3d",
@@ -150,44 +124,27 @@
         {
           "label": "Source entry",
           "url": "https://paksue.github.io/sand_box/deep-current-3d/",
-          "kind": "source"
+          "kind": "app"
         }
-      ]
+      ],
+      "updatedAt": "2026-10-28T03:10:19Z"
     },
     {
-      "id": "glow-gut-journal",
-      "title": "Glow Gut Journal",
-      "description": "Private local-first wellness and symptom journal.",
-      "category": "wellness",
+      "id": "food_guide",
+      "title": "Food Guide",
+      "description": "New SandBox app. Add a description in catalog/project-metadata.json.",
+      "category": "other",
       "tags": [
-        "gut",
-        "health",
-        "tracking",
-        "journal"
+        "new"
       ],
-      "glyph": "✿",
-      "theme": "mint",
-      "url": "https://paksue.github.io/sand_box/glow-gut-journal/",
-      "source": "https://github.com/paksue/sand_box/tree/main/glow-gut-journal",
+      "glyph": "✳",
+      "theme": "slate",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/food_guide/",
+      "source": "https://github.com/paksue/sand_box/tree/main/food_guide",
       "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "human-nature-lab",
-      "title": "Human Nature Lab",
-      "description": "Explore the ideas and forces shaping human behavior.",
-      "category": "research",
-      "tags": [
-        "human",
-        "psychology",
-        "behavior"
-      ],
-      "glyph": "◎",
-      "theme": "violet",
-      "url": "https://paksue.github.io/sand_box/human-nature-lab/",
-      "source": "https://github.com/paksue/sand_box/tree/main/human-nature-lab",
-      "kind": "app",
-      "variants": []
+      "variants": [],
+      "updatedAt": "2026-07-15T00:08:06Z"
     },
     {
       "id": "foot-movement-atlas",
@@ -202,28 +159,12 @@
       ],
       "glyph": "🦶",
       "theme": "mint",
+      "featured": false,
       "url": "https://paksue.github.io/sand_box/foot-movement-atlas/",
       "source": "https://github.com/paksue/sand_box/tree/main/foot-movement-atlas",
       "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "ma-firearm-training",
-      "title": "MA Firearm Training",
-      "description": "Massachusetts firearm education and study materials.",
-      "category": "learning",
-      "tags": [
-        "massachusetts",
-        "training",
-        "study",
-        "law"
-      ],
-      "glyph": "🎯",
-      "theme": "slate",
-      "url": "https://paksue.github.io/sand_box/ma-firearm-training/",
-      "source": "https://github.com/paksue/sand_box/tree/main/ma-firearm-training",
-      "kind": "app",
-      "variants": []
+      "variants": [],
+      "updatedAt": "2026-11-05T07:39:00-05:00"
     },
     {
       "id": "frontier-journey",
@@ -237,64 +178,12 @@
       ],
       "glyph": "🏕",
       "theme": "sand",
+      "featured": false,
       "url": "https://paksue.github.io/sand_box/frontier-journey/",
       "source": "https://github.com/paksue/sand_box/tree/main/frontier-journey",
       "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "king_quest_the_shortcut",
-      "title": "King's Quest: The Shortcut",
-      "description": "A retro-styled story and exploration game.",
-      "category": "games",
-      "tags": [
-        "retro",
-        "quest",
-        "adventure"
-      ],
-      "glyph": "♜",
-      "theme": "orchid",
-      "url": "https://paksue.github.io/sand_box/king_quest_the_shortcut/",
-      "source": "https://github.com/paksue/sand_box/tree/main/king_quest_the_shortcut",
-      "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "midnight-japanese-studio",
-      "title": "Midnight Japanese",
-      "description": "Listen, speak and read Japanese through a nighttime studio.",
-      "category": "learning",
-      "tags": [
-        "japanese",
-        "language",
-        "voice",
-        "audio"
-      ],
-      "glyph": "夜",
-      "theme": "teal",
-      "featured": true,
-      "url": "https://paksue.github.io/sand_box/midnight-japanese-studio/",
-      "source": "https://github.com/paksue/sand_box/tree/main/midnight-japanese-studio",
-      "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "chatgpt-pages-qa",
-      "title": "Pages QA",
-      "description": "Browser-based quality assurance tools for Pages apps.",
-      "category": "tools",
-      "tags": [
-        "testing",
-        "qa",
-        "web",
-        "developer"
-      ],
-      "glyph": "⌘",
-      "theme": "slate",
-      "url": "https://paksue.github.io/sand_box/chatgpt-pages-qa/",
-      "source": "https://github.com/paksue/sand_box/tree/main/chatgpt-pages-qa",
-      "kind": "app",
-      "variants": []
+      "variants": [],
+      "updatedAt": "2026-08-09T11:10:49-04:00"
     },
     {
       "id": "frontier-painted-sprite-lab",
@@ -309,185 +198,90 @@
       ],
       "glyph": "🎨",
       "theme": "sand",
+      "featured": false,
       "url": "https://paksue.github.io/sand_box/frontier-painted-sprite-lab/",
       "source": "https://github.com/paksue/sand_box/tree/main/frontier-painted-sprite-lab",
       "kind": "app",
-      "variants": []
+      "variants": [],
+      "updatedAt": "2026-08-18T08:54:55-04:00"
     },
     {
-      "id": "trello-vault",
-      "title": "Trello Vault",
-      "description": "Explore and preserve Trello data and project history.",
-      "category": "tools",
+      "id": "frontier-production-spine-hero",
+      "title": "Frontier Visual Prototype",
+      "description": "Cinematic visual experiments for Frontier Journey.",
+      "category": "creative",
       "tags": [
-        "trello",
-        "archive",
-        "productivity"
+        "frontier",
+        "animation",
+        "prototype"
       ],
-      "glyph": "▥",
-      "theme": "blue",
-      "url": "https://paksue.github.io/sand_box/trello-vault/",
-      "source": "https://github.com/paksue/sand_box/tree/main/trello-vault",
-      "kind": "app",
-      "variants": []
+      "glyph": "✦",
+      "theme": "sand",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/previews/frontier-production-spine-hero/",
+      "source": "https://github.com/paksue/sand_box/tree/main/previews/frontier-production-spine-hero",
+      "kind": "preview",
+      "variants": [],
+      "updatedAt": "2026-08-19T13:42:56Z"
     },
     {
-      "id": "isometric-timer",
-      "title": "Isometric Timer",
-      "description": "A guided movement and exercise timing studio.",
+      "id": "glow-gut-journal",
+      "title": "Glow Gut Journal",
+      "description": "Private local-first wellness and symptom journal.",
       "category": "wellness",
       "tags": [
-        "timer",
-        "exercise",
-        "isometrics",
-        "fitness"
+        "gut",
+        "health",
+        "tracking",
+        "journal"
       ],
-      "glyph": "⏱",
+      "glyph": "✿",
       "theme": "mint",
-      "url": "https://paksue.github.io/sand_box/isometric-timer/",
-      "source": "https://github.com/paksue/sand_box/tree/main/isometric-timer",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/glow-gut-journal/",
+      "source": "https://github.com/paksue/sand_box/tree/main/glow-gut-journal",
       "kind": "app",
-      "variants": []
+      "variants": [],
+      "updatedAt": "2026-08-17T23:01:36-04:00"
     },
     {
-      "id": "sci-fi-writing",
-      "title": "Sci-Fi Writing",
-      "description": "A workspace for speculative worlds and creative stories.",
-      "category": "creative",
+      "id": "college-grade-growth",
+      "title": "Grade Growth",
+      "description": "Track academic progress and next-quarter improvements.",
+      "category": "learning",
       "tags": [
-        "sci-fi",
-        "writing",
-        "story"
+        "school",
+        "grades",
+        "college",
+        "students"
       ],
-      "glyph": "✎",
-      "theme": "violet",
-      "url": "https://paksue.github.io/sand_box/sci-fi-writing/",
-      "source": "https://github.com/paksue/sand_box/tree/main/sci-fi-writing",
+      "glyph": "↗",
+      "theme": "lime",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/college-grade-growth/",
+      "source": "https://github.com/paksue/sand_box/tree/main/college-grade-growth",
       "kind": "app",
-      "variants": []
+      "variants": [],
+      "updatedAt": "2026-11-11T12:11:01-05:00"
     },
     {
-      "id": "reality-check",
-      "title": "Reality Check",
-      "description": "A critical thinking and evidence exploration tool.",
+      "id": "hanover-ballot-2026",
+      "title": "Hanover Ballot 2026",
+      "description": "Local election research and ballot information.",
       "category": "research",
       "tags": [
-        "facts",
-        "evidence",
-        "claims",
-        "logic"
+        "hanover",
+        "election",
+        "massachusetts"
       ],
-      "glyph": "◎",
-      "theme": "blue",
-      "url": "https://paksue.github.io/sand_box/reality-check/",
-      "source": "https://github.com/paksue/sand_box/tree/main/reality-check",
+      "glyph": "▣",
+      "theme": "slate",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/hanover-ballot-2026/",
+      "source": "https://github.com/paksue/sand_box/tree/main/hanover-ballot-2026",
       "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "todo",
-      "title": "To-Do",
-      "description": "A personal task tracker with focused actions and planning.",
-      "category": "tools",
-      "tags": [
-        "tasks",
-        "planner",
-        "productivity"
-      ],
-      "glyph": "✓",
-      "theme": "lime",
-      "url": "https://paksue.github.io/sand_box/todo/",
-      "source": "https://github.com/paksue/sand_box/tree/main/todo",
-      "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "worldtap-next",
-      "title": "WorldTap Next",
-      "description": "The next evolution of the interactive geography game.",
-      "category": "games",
-      "tags": [
-        "geography",
-        "world",
-        "flags",
-        "game"
-      ],
-      "glyph": "🌐",
-      "theme": "ocean",
-      "url": "https://paksue.github.io/sand_box/worldtap-next/",
-      "source": "https://github.com/paksue/sand_box/tree/main/worldtap-next",
-      "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "worldtap",
-      "title": "WorldTap",
-      "description": "Explore the world through an interactive geography game.",
-      "category": "games",
-      "tags": [
-        "geography",
-        "map",
-        "world",
-        "flags"
-      ],
-      "glyph": "🌎",
-      "theme": "blue",
-      "url": "https://paksue.github.io/sand_box/worldtap/",
-      "source": "https://github.com/paksue/sand_box/tree/main/worldtap",
-      "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "spy-novel-library",
-      "title": "Spy Novel Library",
-      "description": "Explore stories and reading recommendations in espionage fiction.",
-      "category": "creative",
-      "tags": [
-        "books",
-        "novels",
-        "espionage"
-      ],
-      "glyph": "📚",
-      "theme": "ink",
-      "url": "https://paksue.github.io/sand_box/spy-novel-library/",
-      "source": "https://github.com/paksue/sand_box/tree/main/spy-novel-library",
-      "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "nyc-day-planner",
-      "title": "NYC Day Planner",
-      "description": "Build a personalized day around New York City.",
-      "category": "travel",
-      "tags": [
-        "nyc",
-        "itinerary",
-        "city",
-        "travel"
-      ],
-      "glyph": "🏙",
-      "theme": "orange",
-      "url": "https://paksue.github.io/sand_box/nyc-day-planner/",
-      "source": "https://github.com/paksue/sand_box/tree/main/nyc-day-planner",
-      "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "trip_guide",
-      "title": "Trip Guide",
-      "description": "A practical guide for travel plans and discoveries.",
-      "category": "travel",
-      "tags": [
-        "travel",
-        "guide",
-        "itinerary"
-      ],
-      "glyph": "✈",
-      "theme": "ocean",
-      "url": "https://paksue.github.io/sand_box/trip_guide/",
-      "source": "https://github.com/paksue/sand_box/tree/main/trip_guide",
-      "kind": "app",
-      "variants": []
+      "variants": [],
+      "updatedAt": "2026-11-02T12:23:29-05:00"
     },
     {
       "id": "dying-light-survivor-handbook",
@@ -506,24 +300,27 @@
       "url": "https://paksue.github.io/sand_box/dying-light-survivor-handbook/",
       "source": "https://github.com/paksue/sand_box/tree/main/dying-light-survivor-handbook",
       "kind": "app",
-      "variants": []
+      "variants": [],
+      "updatedAt": "2026-11-12T11:18:08-05:00"
     },
     {
-      "id": "read-the-room",
-      "title": "Read the Room",
-      "description": "An interactive exploration of people and social cues.",
+      "id": "human-nature-lab",
+      "title": "Human Nature Lab",
+      "description": "Explore the ideas and forces shaping human behavior.",
       "category": "research",
       "tags": [
-        "social",
-        "communication",
-        "learning"
+        "human",
+        "psychology",
+        "behavior"
       ],
-      "glyph": "◈",
-      "theme": "orchid",
-      "url": "https://paksue.github.io/sand_box/read-the-room/",
-      "source": "https://github.com/paksue/sand_box/tree/main/read-the-room",
+      "glyph": "◎",
+      "theme": "violet",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/human-nature-lab/",
+      "source": "https://github.com/paksue/sand_box/tree/main/human-nature-lab",
       "kind": "app",
-      "variants": []
+      "variants": [],
+      "updatedAt": "2026-08-14T13:07:40-04:00"
     },
     {
       "id": "hunger-review",
@@ -537,164 +334,12 @@
       ],
       "glyph": "🍽",
       "theme": "orange",
+      "featured": false,
       "url": "https://paksue.github.io/sand_box/hunger-review/",
       "source": "https://github.com/paksue/sand_box/tree/main/hunger-review",
       "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "night-signal",
-      "title": "Night Signal",
-      "description": "A cinematic storytelling and signal-driven experience.",
-      "category": "creative",
-      "tags": [
-        "cinematic",
-        "story",
-        "signal"
-      ],
-      "glyph": "☾",
-      "theme": "ink",
-      "url": "https://paksue.github.io/sand_box/night-signal/",
-      "source": "https://github.com/paksue/sand_box/tree/main/night-signal",
-      "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "college-grade-growth",
-      "title": "Grade Growth",
-      "description": "Track academic progress and next-quarter improvements.",
-      "category": "learning",
-      "tags": [
-        "school",
-        "grades",
-        "college",
-        "students"
-      ],
-      "glyph": "↗",
-      "theme": "lime",
-      "url": "https://paksue.github.io/sand_box/college-grade-growth/",
-      "source": "https://github.com/paksue/sand_box/tree/main/college-grade-growth",
-      "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "study-desk-studio",
-      "title": "Study Desk Studio",
-      "description": "Study materials and learning tools in one workspace.",
-      "category": "learning",
-      "tags": [
-        "study",
-        "school",
-        "learning"
-      ],
-      "glyph": "✎",
-      "theme": "blue",
-      "url": "https://paksue.github.io/sand_box/study-desk-studio/",
-      "source": "https://github.com/paksue/sand_box/tree/main/study-desk-studio",
-      "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "price-of-tomorrow",
-      "title": "Price of Tomorrow",
-      "description": "Explore economics and the future of prices.",
-      "category": "research",
-      "tags": [
-        "economics",
-        "finance",
-        "technology"
-      ],
-      "glyph": "◇",
-      "theme": "slate",
-      "url": "https://paksue.github.io/sand_box/price-of-tomorrow/",
-      "source": "https://github.com/paksue/sand_box/tree/main/price-of-tomorrow",
-      "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "salem-halloween",
-      "title": "Salem Halloween",
-      "description": "A planning guide for Salem's Halloween season.",
-      "category": "travel",
-      "tags": [
-        "salem",
-        "halloween",
-        "massachusetts"
-      ],
-      "glyph": "🎃",
-      "theme": "ember",
-      "url": "https://paksue.github.io/sand_box/salem-halloween/",
-      "source": "https://github.com/paksue/sand_box/tree/main/salem-halloween",
-      "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "hanover-ballot-2026",
-      "title": "Hanover Ballot 2026",
-      "description": "Local election research and ballot information.",
-      "category": "research",
-      "tags": [
-        "hanover",
-        "election",
-        "massachusetts"
-      ],
-      "glyph": "▣",
-      "theme": "slate",
-      "url": "https://paksue.github.io/sand_box/hanover-ballot-2026/",
-      "source": "https://github.com/paksue/sand_box/tree/main/hanover-ballot-2026",
-      "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "snowpro-recall",
-      "title": "SnowPro Recall",
-      "description": "Flashcards and recall drills for Snowflake certification.",
-      "category": "learning",
-      "tags": [
-        "snowflake",
-        "certification",
-        "flashcards"
-      ],
-      "glyph": "❄",
-      "theme": "blue",
-      "url": "https://paksue.github.io/sand_box/snowpro-recall/",
-      "source": "https://github.com/paksue/sand_box/tree/main/snowpro-recall",
-      "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "murder-investigation",
-      "title": "Murder Investigation",
-      "description": "An interactive investigative reasoning experience.",
-      "category": "games",
-      "tags": [
-        "mystery",
-        "detective",
-        "story"
-      ],
-      "glyph": "🔎",
-      "theme": "ink",
-      "url": "https://paksue.github.io/sand_box/murder-investigation/",
-      "source": "https://github.com/paksue/sand_box/tree/main/murder-investigation",
-      "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "ai-concepts-explorer",
-      "title": "AI Concepts Explorer",
-      "description": "Discover artificial intelligence concepts through interactive learning.",
-      "category": "learning",
-      "tags": [
-        "ai",
-        "machine learning",
-        "technology"
-      ],
-      "glyph": "✧",
-      "theme": "violet",
-      "url": "https://paksue.github.io/sand_box/ai-concepts-explorer/",
-      "source": "https://github.com/paksue/sand_box/tree/main/ai-concepts-explorer",
-      "kind": "app",
-      "variants": []
+      "variants": [],
+      "updatedAt": "2026-08-30T08:35:40-04:00"
     },
     {
       "id": "insanity-defense-responsibility",
@@ -708,10 +353,290 @@
       ],
       "glyph": "⚖",
       "theme": "violet",
+      "featured": false,
       "url": "https://paksue.github.io/sand_box/insanity-defense-responsibility/",
       "source": "https://github.com/paksue/sand_box/tree/main/insanity-defense-responsibility",
       "kind": "app",
-      "variants": []
+      "variants": [],
+      "updatedAt": "2026-09-06T11:50:25-04:00"
+    },
+    {
+      "id": "isometric-timer",
+      "title": "Isometric Timer",
+      "description": "A guided movement and exercise timing studio.",
+      "category": "wellness",
+      "tags": [
+        "timer",
+        "exercise",
+        "isometrics",
+        "fitness"
+      ],
+      "glyph": "⏱",
+      "theme": "mint",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/isometric-timer/",
+      "source": "https://github.com/paksue/sand_box/tree/main/isometric-timer",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-08-17T22:12:35-04:00"
+    },
+    {
+      "id": "king_quest_the_shortcut",
+      "title": "King's Quest: The Shortcut",
+      "description": "A retro-styled story and exploration game.",
+      "category": "games",
+      "tags": [
+        "retro",
+        "quest",
+        "adventure"
+      ],
+      "glyph": "♜",
+      "theme": "orchid",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/king_quest_the_shortcut/",
+      "source": "https://github.com/paksue/sand_box/tree/main/king_quest_the_shortcut",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-10-02T10:45:40-04:00"
+    },
+    {
+      "id": "ma-firearm-training",
+      "title": "MA Firearm Training",
+      "description": "Massachusetts firearm education and study materials.",
+      "category": "learning",
+      "tags": [
+        "massachusetts",
+        "training",
+        "study",
+        "law"
+      ],
+      "glyph": "🎯",
+      "theme": "slate",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/ma-firearm-training/",
+      "source": "https://github.com/paksue/sand_box/tree/main/ma-firearm-training",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-09-01T12:12:59-04:00"
+    },
+    {
+      "id": "midnight-japanese-studio",
+      "title": "Midnight Japanese",
+      "description": "Listen, speak and read Japanese through a nighttime studio.",
+      "category": "learning",
+      "tags": [
+        "japanese",
+        "language",
+        "voice",
+        "audio"
+      ],
+      "glyph": "夜",
+      "theme": "teal",
+      "featured": true,
+      "url": "https://paksue.github.io/sand_box/midnight-japanese-studio/",
+      "source": "https://github.com/paksue/sand_box/tree/main/midnight-japanese-studio",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-11-14T23:52:35-05:00"
+    },
+    {
+      "id": "murder-investigation",
+      "title": "Murder Investigation",
+      "description": "An interactive investigative reasoning experience.",
+      "category": "games",
+      "tags": [
+        "mystery",
+        "detective",
+        "story"
+      ],
+      "glyph": "🔎",
+      "theme": "ink",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/murder-investigation/",
+      "source": "https://github.com/paksue/sand_box/tree/main/murder-investigation",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-09-03T17:11:04-04:00"
+    },
+    {
+      "id": "night-signal",
+      "title": "Night Signal",
+      "description": "A cinematic storytelling and signal-driven experience.",
+      "category": "creative",
+      "tags": [
+        "cinematic",
+        "story",
+        "signal"
+      ],
+      "glyph": "☾",
+      "theme": "ink",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/night-signal/",
+      "source": "https://github.com/paksue/sand_box/tree/main/night-signal",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-09-05T23:26:59-04:00"
+    },
+    {
+      "id": "nyc-day-planner",
+      "title": "NYC Day Planner",
+      "description": "Build a personalized day around New York City.",
+      "category": "travel",
+      "tags": [
+        "nyc",
+        "itinerary",
+        "city",
+        "travel"
+      ],
+      "glyph": "🏙",
+      "theme": "orange",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/nyc-day-planner/",
+      "source": "https://github.com/paksue/sand_box/tree/main/nyc-day-planner",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-08-11T14:43:08-04:00"
+    },
+    {
+      "id": "chatgpt-pages-qa",
+      "title": "Pages QA",
+      "description": "Browser-based quality assurance tools for Pages apps.",
+      "category": "tools",
+      "tags": [
+        "testing",
+        "qa",
+        "web",
+        "developer"
+      ],
+      "glyph": "⌘",
+      "theme": "slate",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/chatgpt-pages-qa/",
+      "source": "https://github.com/paksue/sand_box/tree/main/chatgpt-pages-qa",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-10-26T23:05:55-04:00"
+    },
+    {
+      "id": "political-violence-audit",
+      "title": "Political Violence Audit",
+      "description": "Investigate claims and evidence about political violence.",
+      "category": "research",
+      "tags": [
+        "politics",
+        "evidence",
+        "data"
+      ],
+      "glyph": "▤",
+      "theme": "slate",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/political-violence-audit/",
+      "source": "https://github.com/paksue/sand_box/tree/main/political-violence-audit",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-10-31T13:41:46-04:00"
+    },
+    {
+      "id": "price-of-tomorrow",
+      "title": "Price of Tomorrow",
+      "description": "Explore economics and the future of prices.",
+      "category": "research",
+      "tags": [
+        "economics",
+        "finance",
+        "technology"
+      ],
+      "glyph": "◇",
+      "theme": "slate",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/price-of-tomorrow/",
+      "source": "https://github.com/paksue/sand_box/tree/main/price-of-tomorrow",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-10-22T13:27:10-04:00"
+    },
+    {
+      "id": "rc-explorer",
+      "title": "RC Explorer",
+      "description": "Discover and explore tiny radio-controlled adventures.",
+      "category": "games",
+      "tags": [
+        "rc",
+        "exploration",
+        "interactive"
+      ],
+      "glyph": "🚙",
+      "theme": "lime",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/previews/rc-explorer/",
+      "source": "https://github.com/paksue/sand_box/tree/main/rc-explorer",
+      "kind": "preview",
+      "variants": [
+        {
+          "label": "Source entry",
+          "url": "https://paksue.github.io/sand_box/rc-explorer/",
+          "kind": "app"
+        }
+      ],
+      "updatedAt": "2026-09-24T20:57:03-04:00"
+    },
+    {
+      "id": "read-the-room",
+      "title": "Read the Room",
+      "description": "An interactive exploration of people and social cues.",
+      "category": "research",
+      "tags": [
+        "social",
+        "communication",
+        "learning"
+      ],
+      "glyph": "◈",
+      "theme": "orchid",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/read-the-room/",
+      "source": "https://github.com/paksue/sand_box/tree/main/read-the-room",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-08-12T10:51:08-04:00"
+    },
+    {
+      "id": "reality-check",
+      "title": "Reality Check",
+      "description": "A critical thinking and evidence exploration tool.",
+      "category": "research",
+      "tags": [
+        "facts",
+        "evidence",
+        "claims",
+        "logic"
+      ],
+      "glyph": "◎",
+      "theme": "blue",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/reality-check/",
+      "source": "https://github.com/paksue/sand_box/tree/main/reality-check",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-08-11T15:37:30-04:00"
+    },
+    {
+      "id": "salem-halloween",
+      "title": "Salem Halloween",
+      "description": "A planning guide for Salem's Halloween season.",
+      "category": "travel",
+      "tags": [
+        "salem",
+        "halloween",
+        "massachusetts"
+      ],
+      "glyph": "🎃",
+      "theme": "ember",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/salem-halloween/",
+      "source": "https://github.com/paksue/sand_box/tree/main/salem-halloween",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-10-31T14:38:25-04:00"
     },
     {
       "id": "college-sat-act-planner",
@@ -733,46 +658,31 @@
       "kind": "app",
       "variants": [
         {
-          "label": "Earlier SAT planner preview",
+          "label": "Alternate preview",
           "url": "https://paksue.github.io/sand_box/previews/sat-planner-2026-27/",
           "kind": "preview"
         }
-      ]
+      ],
+      "updatedAt": "2026-11-11T10:57:20-05:00"
     },
     {
-      "id": "cochrane-integrity-atlas",
-      "title": "Cochrane Integrity Atlas",
-      "description": "Explore evidence quality, research methods and integrity.",
-      "category": "research",
+      "id": "sci-fi-writing",
+      "title": "Sci-Fi Writing",
+      "description": "A workspace for speculative worlds and creative stories.",
+      "category": "creative",
       "tags": [
-        "cochrane",
-        "science",
-        "medical",
-        "studies"
+        "sci-fi",
+        "writing",
+        "story"
       ],
-      "glyph": "◉",
-      "theme": "teal",
-      "url": "https://paksue.github.io/sand_box/cochrane-integrity-atlas/",
-      "source": "https://github.com/paksue/sand_box/tree/main/cochrane-integrity-atlas",
+      "glyph": "✎",
+      "theme": "violet",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/sci-fi-writing/",
+      "source": "https://github.com/paksue/sand_box/tree/main/sci-fi-writing",
       "kind": "app",
-      "variants": []
-    },
-    {
-      "id": "political-violence-audit",
-      "title": "Political Violence Audit",
-      "description": "Investigate claims and evidence about political violence.",
-      "category": "research",
-      "tags": [
-        "politics",
-        "evidence",
-        "data"
-      ],
-      "glyph": "▤",
-      "theme": "slate",
-      "url": "https://paksue.github.io/sand_box/political-violence-audit/",
-      "source": "https://github.com/paksue/sand_box/tree/main/political-violence-audit",
-      "kind": "app",
-      "variants": []
+      "variants": [],
+      "updatedAt": "2026-08-17T12:20:24-04:00"
     },
     {
       "id": "snowpro-cof-c03-exam-lab",
@@ -786,62 +696,279 @@
       ],
       "glyph": "❄",
       "theme": "ocean",
+      "featured": false,
       "url": "https://paksue.github.io/sand_box/snowpro-cof-c03-exam-lab/",
       "source": "https://github.com/paksue/sand_box/tree/main/snowpro-cof-c03-exam-lab",
       "kind": "app",
-      "variants": []
+      "variants": [],
+      "updatedAt": "2026-11-14T20:52:21-05:00"
     },
     {
-      "id": "camera-safety-notifier",
-      "title": "Camera Safety Notifier",
-      "description": "Camera safety notification project and preview.",
-      "category": "tools",
+      "id": "snowpro-recall",
+      "title": "SnowPro Recall",
+      "description": "Flashcards and recall drills for Snowflake certification.",
+      "category": "learning",
       "tags": [
-        "camera",
-        "privacy",
-        "monitoring"
+        "snowflake",
+        "certification",
+        "flashcards"
       ],
-      "glyph": "📷",
-      "theme": "slate",
-      "url": "https://paksue.github.io/sand_box/previews/camera-safety-notifier/",
-      "source": "https://github.com/paksue/sand_box/tree/main/previews/camera-safety-notifier",
-      "kind": "preview",
-      "variants": []
+      "glyph": "❄",
+      "theme": "blue",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/snowpro-recall/",
+      "source": "https://github.com/paksue/sand_box/tree/main/snowpro-recall",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-11-14T20:40:16-05:00"
     },
     {
-      "id": "dnd-miniature-web-poc",
-      "title": "D&D Miniature Studio",
-      "description": "Web-based tabletop miniature proof of concept.",
+      "id": "spy-novel-library",
+      "title": "Spy Novel Library",
+      "description": "Explore stories and reading recommendations in espionage fiction.",
       "category": "creative",
       "tags": [
-        "3d",
-        "miniatures",
-        "tabletop",
-        "prototype"
+        "books",
+        "novels",
+        "espionage"
       ],
-      "glyph": "♞",
-      "theme": "orchid",
-      "url": "https://paksue.github.io/sand_box/previews/dnd-miniature-web-poc/",
-      "source": "https://github.com/paksue/sand_box/tree/main/previews/dnd-miniature-web-poc",
-      "kind": "preview",
-      "variants": []
+      "glyph": "📚",
+      "theme": "ink",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/spy-novel-library/",
+      "source": "https://github.com/paksue/sand_box/tree/main/spy-novel-library",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-10-26T08:52:39-04:00"
     },
     {
-      "id": "frontier-production-spine-hero",
-      "title": "Frontier Visual Prototype",
-      "description": "Cinematic visual experiments for Frontier Journey.",
+      "id": "study-desk-studio",
+      "title": "Study Desk Studio",
+      "description": "Study materials and learning tools in one workspace.",
+      "category": "learning",
+      "tags": [
+        "study",
+        "school",
+        "learning"
+      ],
+      "glyph": "✎",
+      "theme": "blue",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/study-desk-studio/",
+      "source": "https://github.com/paksue/sand_box/tree/main/study-desk-studio",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-09-01T20:14:09-04:00"
+    },
+    {
+      "id": "tag-arena",
+      "title": "Tag Arena",
+      "description": "Fast-paced interactive tag arena prototype.",
+      "category": "games",
+      "tags": [
+        "arcade",
+        "multiplayer",
+        "prototype"
+      ],
+      "glyph": "⚡",
+      "theme": "orange",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/previews/tag-arena/",
+      "source": "https://github.com/paksue/sand_box/tree/main/tag-arena",
+      "kind": "preview",
+      "variants": [
+        {
+          "label": "Source entry",
+          "url": "https://paksue.github.io/sand_box/tag-arena/",
+          "kind": "app"
+        }
+      ],
+      "updatedAt": "2026-08-21T22:59:19Z"
+    },
+    {
+      "id": "the-forge-movie",
+      "title": "The Forge",
+      "description": "A cinematic creative movie experience.",
       "category": "creative",
       "tags": [
-        "frontier",
-        "animation",
-        "prototype"
+        "movie",
+        "cinematic",
+        "video"
       ],
       "glyph": "✦",
-      "theme": "sand",
-      "url": "https://paksue.github.io/sand_box/previews/frontier-production-spine-hero/",
-      "source": "https://github.com/paksue/sand_box/tree/main/previews/frontier-production-spine-hero",
+      "theme": "ember",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/previews/the-forge-movie/",
+      "source": "https://github.com/paksue/sand_box/tree/main/the-forge-movie",
       "kind": "preview",
-      "variants": []
+      "variants": [
+        {
+          "label": "Source entry",
+          "url": "https://paksue.github.io/sand_box/the-forge-movie/",
+          "kind": "app"
+        }
+      ],
+      "updatedAt": "2026-09-09T19:30:15Z"
+    },
+    {
+      "id": "the-rule",
+      "title": "The Rule",
+      "description": "An interactive world of choices, consequences and reasoning.",
+      "category": "research",
+      "tags": [
+        "logic",
+        "interactive",
+        "ideas"
+      ],
+      "glyph": "⚖",
+      "theme": "violet",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/the-rule/",
+      "source": "https://github.com/paksue/sand_box/tree/main/the-rule",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-08-26T15:04:22-04:00"
+    },
+    {
+      "id": "the-shortcut",
+      "title": "The Shortcut",
+      "description": "A compact interactive adventure and game prototype.",
+      "category": "games",
+      "tags": [
+        "adventure",
+        "story",
+        "interactive"
+      ],
+      "glyph": "🗺",
+      "theme": "forest",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/previews/the-shortcut/",
+      "source": "https://github.com/paksue/sand_box/tree/main/the-shortcut",
+      "kind": "preview",
+      "variants": [
+        {
+          "label": "Source entry",
+          "url": "https://paksue.github.io/sand_box/the-shortcut/",
+          "kind": "app"
+        }
+      ],
+      "updatedAt": "2026-09-29T20:46:43-04:00"
+    },
+    {
+      "id": "todo",
+      "title": "To-Do",
+      "description": "A personal task tracker with focused actions and planning.",
+      "category": "tools",
+      "tags": [
+        "tasks",
+        "planner",
+        "productivity"
+      ],
+      "glyph": "✓",
+      "theme": "lime",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/todo/",
+      "source": "https://github.com/paksue/sand_box/tree/main/todo",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-11-11T09:50:22-05:00"
+    },
+    {
+      "id": "trello-vault",
+      "title": "Trello Vault",
+      "description": "Explore and preserve Trello data and project history.",
+      "category": "tools",
+      "tags": [
+        "trello",
+        "archive",
+        "productivity"
+      ],
+      "glyph": "▥",
+      "theme": "blue",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/trello-vault/",
+      "source": "https://github.com/paksue/sand_box/tree/main/trello-vault",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-09-28T19:53:05-04:00"
+    },
+    {
+      "id": "trip_guide",
+      "title": "Trip Guide",
+      "description": "A practical guide for travel plans and discoveries.",
+      "category": "travel",
+      "tags": [
+        "travel",
+        "guide",
+        "itinerary"
+      ],
+      "glyph": "✈",
+      "theme": "ocean",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/trip_guide/",
+      "source": "https://github.com/paksue/sand_box/tree/main/trip_guide",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-07-14T14:15:51-04:00"
+    },
+    {
+      "id": "watchdeck",
+      "title": "Watchdeck",
+      "description": "A personal watch console and organized viewing dashboard.",
+      "category": "tools",
+      "tags": [
+        "watch",
+        "monitor",
+        "dashboard"
+      ],
+      "glyph": "◉",
+      "theme": "ink",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/watchdeck/",
+      "source": "https://github.com/paksue/sand_box/tree/main/watchdeck",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-09-27T18:37:03-04:00"
+    },
+    {
+      "id": "worldtap",
+      "title": "WorldTap",
+      "description": "Explore the world through an interactive geography game.",
+      "category": "games",
+      "tags": [
+        "geography",
+        "map",
+        "world",
+        "flags"
+      ],
+      "glyph": "🌎",
+      "theme": "blue",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/worldtap/",
+      "source": "https://github.com/paksue/sand_box/tree/main/worldtap",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-08-14T10:38:05-04:00"
+    },
+    {
+      "id": "worldtap-next",
+      "title": "WorldTap Next",
+      "description": "The next evolution of the interactive geography game.",
+      "category": "games",
+      "tags": [
+        "geography",
+        "world",
+        "flags",
+        "game"
+      ],
+      "glyph": "🌐",
+      "theme": "ocean",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/worldtap-next/",
+      "source": "https://github.com/paksue/sand_box/tree/main/worldtap-next",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-08-17T12:09:28-04:00"
     }
   ]
 }
