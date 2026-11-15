@@ -144,7 +144,7 @@ function render(){
   $("listButton").setAttribute("aria-pressed",String(state.display==="list"));
   if(nodes.sort.value!==state.sort)nodes.sort.value=state.sort;
   $("resultCount").textContent=arr.length+" "+(arr.length===1?"project":"projects")+" found";
-  $("clearButton").hidden=!state.query&&!state.category&&!state.view?true:(state.query===""&&state.category==="all"&&state.view==="all");
+  $("clearButton").hidden=state.query===""&&state.category==="all"&&state.view==="all";
   const subtitles={all:"Everything you've created, organized and ready to launch.",favorites:"The projects you've saved for quick access.",recent:"Projects you've opened through this library."};
   $("sectionSubtitle").textContent=subtitles[state.view]||subtitles.all;
   $("libraryHeading").textContent=state.view==="favorites"?"Your favorites.":state.view==="recent"?"Recently opened.":"Explore your projects.";
@@ -220,7 +220,7 @@ function parseTreePaths(tree){
   const aliases={"sat-planner-2026-27":"college-sat-act-planner"};
   const groups=new Map();
   for(const entry of tree.tree){
-    if(entry.type!=="blob"||typeof entry.path!=="string")continue;
+    if(entry.type!=="blob"||typeof entry.path!=="string"||entry.size===0)continue;
     const parts=entry.path.split("/");
     if(parts[parts.length-1]!=="index.html")continue;
     let id=null,entryPath=null,kind="app";
@@ -302,7 +302,7 @@ function initEvents(){
   document.addEventListener("click",e=>{
     const view=e.target.closest("[data-view]");if(view){setView(view.dataset.view);return;}
     const category=e.target.closest("[data-category]");if(category){setCategory(category.dataset.category);return;}
-    const fav=e.target.closest("[data-fav]");if(fav){toggleFavorite(fav.dataset.fav);if(nodes.dialog.open&&nodes.dialog.dataset.project===fav.dataset.fav)nodes.dialogContent.innerHTML=dialogTemplate(state.all.find(x=>x.id===fav.dataset.fav));return;}
+    const fav=e.target.closest("[data-fav]");if(fav){toggleFavorite(fav.dataset.fav);if(nodes.dialog.open&&nodes.dialog.dataset.project===fav.dataset.fav){const button=nodes.dialogContent.querySelector("[data-fav]");if(button)button.textContent=state.favorites.has(fav.dataset.fav)?"★ Favorited":"☆ Add favorite";}return;}
     const details=e.target.closest("[data-details]");if(details){openDetails(details.dataset.details);return;}
     const launch=e.target.closest("a[data-launch]");if(launch){trackLaunch(launch.dataset.launch);}
   });
