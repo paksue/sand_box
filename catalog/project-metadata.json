@@ -590,6 +590,20 @@
       ],
       "glyph": "⚓",
       "theme": "ocean"
+    },
+    "food_guide": {
+      "title": "German Food Guide",
+      "description": "Explore regional German dishes, photos, and food ideas for a trip.",
+      "category": "travel",
+      "tags": [
+        "germany",
+        "food",
+        "munich",
+        "rothenburg",
+        "travel"
+      ],
+      "glyph": "🥨",
+      "theme": "sand"
     }
   }
 }
