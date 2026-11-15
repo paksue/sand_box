@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Frontier Hero · Production Spine Contract</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./hero-motion.css" />
+</head>
+<body>
+  <main class="lab-shell hero-motion-shell">
+    <header class="lab-header">
+      <div>
+        <p class="eyebrow">FRONTIER VISUAL R&D · PRODUCTION HERO V2</p>
+        <h1>Real Spine export. No runtime-generated puppet.</h1>
+        <p class="lede">This page is the production boundary for the horse/rider. It loads only the documented Spine export package: skeleton binary + atlas + packed painterly texture.</p>
+      </div>
+      <div class="header-actions">
+        <a class="repo-link" href="./hero-motion.html">V1 motion POC</a>
+        <a class="repo-link" href="./painting-world.html">Living painting world</a>
+      </div>
+    </header>
+
+    <section class="benchmark-banner hero-banner">
+      <strong>Target: Phaser 4.2 Spine-demo quality with a museum-painterly rider/horse.</strong>
+      <span>Required before this page turns green: purpose-painted layers, weighted meshes, four-leg IK, authored idle/walk/land-step/rear clips, and the real Spine 4.3 export files.</span>
+    </section>
+
+    <section class="hero-layout">
+      <div class="hero-main">
+        <figure class="live-card">
+          <div class="card-label"><span>PRODUCTION RUNTIME</span><strong id="productionState">checking export…</strong></div>
+          <div id="productionHeroStage" class="hero-motion-stage" data-ready="false">
+            <div id="productionHeroMount" class="hero-phaser-mount" aria-label="Production Spine horse and rider"></div>
+            <div class="stage-ground" aria-hidden="true"></div>
+            <div class="stage-vignette" aria-hidden="true"></div>
+            <div class="motion-caption"><span id="productionClip">—</span><span id="productionTime">—</span></div>
+          </div>
+          <figcaption id="productionMessage">Checking the documented runtime package under <code>assets/frontier-hero/runtime/</code>.</figcaption>
+        </figure>
+
+        <div class="transport hero-transport">
+          <button data-clip="idle_alive" type="button">Idle alive</button>
+          <button data-clip="walk" type="button">Walk</button>
+          <button data-clip="land_step" type="button">Land + step</button>
+          <button data-clip="rear_action" type="button">Rear / action</button>
+          <button id="productionPause" type="button">Pause</button>
+          <button class="production-speed" data-speed="0.25" type="button">0.25×</button>
+          <button class="production-speed" data-speed="0.5" type="button">0.5×</button>
+          <button class="production-speed active" data-speed="1" type="button">1×</button>
+        </div>
+      </div>
+
+      <aside class="controls-panel hero-controls">
+        <section>
+          <h2>Required export</h2>
+          <div class="selected-card"><span>Skeleton</span><strong>frontier-hero.skel</strong></div>
+          <div class="selected-card"><span>Atlas</span><strong>frontier-hero.atlas</strong></div>
+          <div class="selected-card"><span>Texture</span><strong>frontier-hero.png</strong></div>
+        </section>
+        <section>
+          <h2>Quality gate</h2>
+          <p class="hint">The production asset is rejected if hooves slide, weighted body regions crease, joints reveal cut seams, rider motion is locked to the horse, or any 0.25× freeze frame looks like a collage.</p>
+        </section>
+        <section>
+          <h2>Engine contract</h2>
+          <p class="hint">Phaser owns placement and game state. Spine AnimationState owns the performance. No custom JS bone-puppeteering is allowed on this page.</p>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/phaser@4.2.1/dist/phaser.min.js"></script>
+  <script src="https://unpkg.com/@esotericsoftware/spine-phaser-v4@4.3.*/dist/iife/spine-phaser-v4.min.js"></script>
+  <script type="module" src="./src/production-hero.js"></script>
+</body>
+</html>
