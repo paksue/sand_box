@@ -23,7 +23,7 @@ async function test(){
  assert.ok(Array.isArray(catalog.apps)&&catalog.apps.length>20,"Catalog should contain existing projects");
  assert.equal(new Set(catalog.apps.map(x=>x.id)).size,catalog.apps.length,"Duplicate project IDs");
  assert.equal(new Set(catalog.apps.map(x=>x.url)).size,catalog.apps.length,"Duplicate launch URLs");
- assert.ok(!catalog.apps.some(x=>x.id==="food_guide"),"Exclude empty placeholder HTML");
+ assert.ok(catalog.apps.some(x=>x.id==="food_guide"),"Generated food guide should be discoverable");
  assert.ok(catalog.apps.some(x=>x.id==="college-sat-act-planner"),"SAT planner missing");
  assert.ok(catalog.apps.some(x=>x.id==="midnight-japanese-studio"),"Japanese studio missing");
  const compiled=catalog.apps.find(x=>x.id==="tag-arena");
