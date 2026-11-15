@@ -1,0 +1,153 @@
+{
+  "format": 1,
+  "engine": "Kokoro-82M",
+  "voice": "jm_kumo",
+  "kind": "pre-generated masculine Japanese synthetic voice",
+  "model": "https://huggingface.co/hexgrad/Kokoro-82M",
+  "phrases": {
+    "p01": {
+      "file": "./audio/male/p01.mp3",
+      "seconds": 2.65
+    },
+    "p02": {
+      "file": "./audio/male/p02.mp3",
+      "seconds": 2.48
+    },
+    "p03": {
+      "file": "./audio/male/p03.mp3",
+      "seconds": 2.48
+    },
+    "p04": {
+      "file": "./audio/male/p04.mp3",
+      "seconds": 2.77
+    },
+    "p05": {
+      "file": "./audio/male/p05.mp3",
+      "seconds": 2.3
+    },
+    "p06": {
+      "file": "./audio/male/p06.mp3",
+      "seconds": 1.95
+    },
+    "p07": {
+      "file": "./audio/male/p07.mp3",
+      "seconds": 1.95
+    },
+    "p08": {
+      "file": "./audio/male/p08.mp3",
+      "seconds": 2.38
+    },
+    "p09": {
+      "file": "./audio/male/p09.mp3",
+      "seconds": 2.3
+    },
+    "p10": {
+      "file": "./audio/male/p10.mp3",
+      "seconds": 2.45
+    },
+    "p11": {
+      "file": "./audio/male/p11.mp3",
+      "seconds": 2.27
+    },
+    "p12": {
+      "file": "./audio/male/p12.mp3",
+      "seconds": 2.67
+    },
+    "p13": {
+      "file": "./audio/male/p13.mp3",
+      "seconds": 2.65
+    },
+    "p14": {
+      "file": "./audio/male/p14.mp3",
+      "seconds": 2.4
+    },
+    "p15": {
+      "file": "./audio/male/p15.mp3",
+      "seconds": 2.6
+    },
+    "p16": {
+      "file": "./audio/male/p16.mp3",
+      "seconds": 2.83
+    },
+    "p17": {
+      "file": "./audio/male/p17.mp3",
+      "seconds": 2.45
+    },
+    "p18": {
+      "file": "./audio/male/p18.mp3",
+      "seconds": 2.45
+    },
+    "p19": {
+      "file": "./audio/male/p19.mp3",
+      "seconds": 2.3
+    },
+    "p20": {
+      "file": "./audio/male/p20.mp3",
+      "seconds": 2.45
+    },
+    "p21": {
+      "file": "./audio/male/p21.mp3",
+      "seconds": 2.5
+    },
+    "p22": {
+      "file": "./audio/male/p22.mp3",
+      "seconds": 2.38
+    },
+    "p23": {
+      "file": "./audio/male/p23.mp3",
+      "seconds": 2.12
+    },
+    "p24": {
+      "file": "./audio/male/p24.mp3",
+      "seconds": 2.33
+    },
+    "p25": {
+      "file": "./audio/male/p25.mp3",
+      "seconds": 2.67
+    },
+    "p26": {
+      "file": "./audio/male/p26.mp3",
+      "seconds": 2.62
+    },
+    "p27": {
+      "file": "./audio/male/p27.mp3",
+      "seconds": 2.73
+    },
+    "p28": {
+      "file": "./audio/male/p28.mp3",
+      "seconds": 2.67
+    },
+    "p29": {
+      "file": "./audio/male/p29.mp3",
+      "seconds": 2.35
+    },
+    "p30": {
+      "file": "./audio/male/p30.mp3",
+      "seconds": 2.4
+    },
+    "p31": {
+      "file": "./audio/male/p31.mp3",
+      "seconds": 2.2
+    },
+    "p32": {
+      "file": "./audio/male/p32.mp3",
+      "seconds": 2.58
+    },
+    "p33": {
+      "file": "./audio/male/p33.mp3",
+      "seconds": 2.5
+    },
+    "p34": {
+      "file": "./audio/male/p34.mp3",
+      "seconds": 2.65
+    },
+    "p35": {
+      "file": "./audio/male/p35.mp3",
+      "seconds": 2.65
+    },
+    "p36": {
+      "file": "./audio/male/p36.mp3",
+      "seconds": 2.17
+    }
+  }
+}
