@@ -1,0 +1,582 @@
+{
+  "version": 1,
+  "aliases": {
+    "sat-planner-2026-27": "college-sat-act-planner"
+  },
+  "projects": {
+    "the-rule": {
+      "title": "The Rule",
+      "description": "An interactive world of choices, consequences and reasoning.",
+      "category": "research",
+      "tags": [
+        "logic",
+        "interactive",
+        "ideas"
+      ],
+      "glyph": "⚖",
+      "theme": "violet"
+    },
+    "tag-arena": {
+      "title": "Tag Arena",
+      "description": "Fast-paced interactive tag arena prototype.",
+      "category": "games",
+      "tags": [
+        "arcade",
+        "multiplayer",
+        "prototype"
+      ],
+      "glyph": "⚡",
+      "theme": "orange"
+    },
+    "watchdeck": {
+      "title": "Watchdeck",
+      "description": "A personal watch console and organized viewing dashboard.",
+      "category": "tools",
+      "tags": [
+        "watch",
+        "monitor",
+        "dashboard"
+      ],
+      "glyph": "◉",
+      "theme": "ink"
+    },
+    "rc-explorer": {
+      "title": "RC Explorer",
+      "description": "Discover and explore tiny radio-controlled adventures.",
+      "category": "games",
+      "tags": [
+        "rc",
+        "exploration",
+        "interactive"
+      ],
+      "glyph": "🚙",
+      "theme": "lime"
+    },
+    "the-shortcut": {
+      "title": "The Shortcut",
+      "description": "A compact interactive adventure and game prototype.",
+      "category": "games",
+      "tags": [
+        "adventure",
+        "story",
+        "interactive"
+      ],
+      "glyph": "🗺",
+      "theme": "forest"
+    },
+    "the-forge-movie": {
+      "title": "The Forge",
+      "description": "A cinematic creative movie experience.",
+      "category": "creative",
+      "tags": [
+        "movie",
+        "cinematic",
+        "video"
+      ],
+      "glyph": "✦",
+      "theme": "ember"
+    },
+    "deep-current-3d": {
+      "title": "Deep Current 3D",
+      "description": "Cinematic submarine simulation and exploration.",
+      "category": "games",
+      "tags": [
+        "submarine",
+        "3d",
+        "simulation",
+        "ocean"
+      ],
+      "glyph": "⚓",
+      "theme": "ocean",
+      "featured": true
+    },
+    "glow-gut-journal": {
+      "title": "Glow Gut Journal",
+      "description": "Private local-first wellness and symptom journal.",
+      "category": "wellness",
+      "tags": [
+        "gut",
+        "health",
+        "tracking",
+        "journal"
+      ],
+      "glyph": "✿",
+      "theme": "mint"
+    },
+    "human-nature-lab": {
+      "title": "Human Nature Lab",
+      "description": "Explore the ideas and forces shaping human behavior.",
+      "category": "research",
+      "tags": [
+        "human",
+        "psychology",
+        "behavior"
+      ],
+      "glyph": "◎",
+      "theme": "violet"
+    },
+    "foot-movement-atlas": {
+      "title": "Foot Movement Atlas",
+      "description": "An illustrated foot movement and rehabilitation reference.",
+      "category": "wellness",
+      "tags": [
+        "foot",
+        "exercise",
+        "mobility",
+        "pt"
+      ],
+      "glyph": "🦶",
+      "theme": "mint"
+    },
+    "ma-firearm-training": {
+      "title": "MA Firearm Training",
+      "description": "Massachusetts firearm education and study materials.",
+      "category": "learning",
+      "tags": [
+        "massachusetts",
+        "training",
+        "study",
+        "law"
+      ],
+      "glyph": "🎯",
+      "theme": "slate"
+    },
+    "frontier-journey": {
+      "title": "Frontier Journey",
+      "description": "A frontier travel adventure inspired by classic journeys.",
+      "category": "games",
+      "tags": [
+        "frontier",
+        "oregon",
+        "adventure"
+      ],
+      "glyph": "🏕",
+      "theme": "sand"
+    },
+    "king_quest_the_shortcut": {
+      "title": "King's Quest: The Shortcut",
+      "description": "A retro-styled story and exploration game.",
+      "category": "games",
+      "tags": [
+        "retro",
+        "quest",
+        "adventure"
+      ],
+      "glyph": "♜",
+      "theme": "orchid"
+    },
+    "midnight-japanese-studio": {
+      "title": "Midnight Japanese",
+      "description": "Listen, speak and read Japanese through a nighttime studio.",
+      "category": "learning",
+      "tags": [
+        "japanese",
+        "language",
+        "voice",
+        "audio"
+      ],
+      "glyph": "夜",
+      "theme": "teal",
+      "featured": true
+    },
+    "chatgpt-pages-qa": {
+      "title": "Pages QA",
+      "description": "Browser-based quality assurance tools for Pages apps.",
+      "category": "tools",
+      "tags": [
+        "testing",
+        "qa",
+        "web",
+        "developer"
+      ],
+      "glyph": "⌘",
+      "theme": "slate"
+    },
+    "frontier-painted-sprite-lab": {
+      "title": "Frontier Sprite Lab",
+      "description": "Painted sprites and cinematic visual experiments.",
+      "category": "creative",
+      "tags": [
+        "pixel",
+        "sprites",
+        "animation",
+        "frontier"
+      ],
+      "glyph": "🎨",
+      "theme": "sand"
+    },
+    "trello-vault": {
+      "title": "Trello Vault",
+      "description": "Explore and preserve Trello data and project history.",
+      "category": "tools",
+      "tags": [
+        "trello",
+        "archive",
+        "productivity"
+      ],
+      "glyph": "▥",
+      "theme": "blue"
+    },
+    "isometric-timer": {
+      "title": "Isometric Timer",
+      "description": "A guided movement and exercise timing studio.",
+      "category": "wellness",
+      "tags": [
+        "timer",
+        "exercise",
+        "isometrics",
+        "fitness"
+      ],
+      "glyph": "⏱",
+      "theme": "mint"
+    },
+    "sci-fi-writing": {
+      "title": "Sci-Fi Writing",
+      "description": "A workspace for speculative worlds and creative stories.",
+      "category": "creative",
+      "tags": [
+        "sci-fi",
+        "writing",
+        "story"
+      ],
+      "glyph": "✎",
+      "theme": "violet"
+    },
+    "reality-check": {
+      "title": "Reality Check",
+      "description": "A critical thinking and evidence exploration tool.",
+      "category": "research",
+      "tags": [
+        "facts",
+        "evidence",
+        "claims",
+        "logic"
+      ],
+      "glyph": "◎",
+      "theme": "blue"
+    },
+    "todo": {
+      "title": "To-Do",
+      "description": "A personal task tracker with focused actions and planning.",
+      "category": "tools",
+      "tags": [
+        "tasks",
+        "planner",
+        "productivity"
+      ],
+      "glyph": "✓",
+      "theme": "lime"
+    },
+    "worldtap-next": {
+      "title": "WorldTap Next",
+      "description": "The next evolution of the interactive geography game.",
+      "category": "games",
+      "tags": [
+        "geography",
+        "world",
+        "flags",
+        "game"
+      ],
+      "glyph": "🌐",
+      "theme": "ocean"
+    },
+    "worldtap": {
+      "title": "WorldTap",
+      "description": "Explore the world through an interactive geography game.",
+      "category": "games",
+      "tags": [
+        "geography",
+        "map",
+        "world",
+        "flags"
+      ],
+      "glyph": "🌎",
+      "theme": "blue"
+    },
+    "spy-novel-library": {
+      "title": "Spy Novel Library",
+      "description": "Explore stories and reading recommendations in espionage fiction.",
+      "category": "creative",
+      "tags": [
+        "books",
+        "novels",
+        "espionage"
+      ],
+      "glyph": "📚",
+      "theme": "ink"
+    },
+    "nyc-day-planner": {
+      "title": "NYC Day Planner",
+      "description": "Build a personalized day around New York City.",
+      "category": "travel",
+      "tags": [
+        "nyc",
+        "itinerary",
+        "city",
+        "travel"
+      ],
+      "glyph": "🏙",
+      "theme": "orange"
+    },
+    "trip_guide": {
+      "title": "Trip Guide",
+      "description": "A practical guide for travel plans and discoveries.",
+      "category": "travel",
+      "tags": [
+        "travel",
+        "guide",
+        "itinerary"
+      ],
+      "glyph": "✈",
+      "theme": "ocean"
+    },
+    "dying-light-survivor-handbook": {
+      "title": "Harran Field Manual",
+      "description": "Survival, crafting and skills guide for Dying Light.",
+      "category": "games",
+      "tags": [
+        "dying light",
+        "survival",
+        "zombies",
+        "crafting"
+      ],
+      "glyph": "☣",
+      "theme": "ember",
+      "featured": true
+    },
+    "read-the-room": {
+      "title": "Read the Room",
+      "description": "An interactive exploration of people and social cues.",
+      "category": "research",
+      "tags": [
+        "social",
+        "communication",
+        "learning"
+      ],
+      "glyph": "◈",
+      "theme": "orchid"
+    },
+    "hunger-review": {
+      "title": "Hunger Review",
+      "description": "Explore hunger, nutrition and food-related evidence.",
+      "category": "wellness",
+      "tags": [
+        "hunger",
+        "nutrition",
+        "health"
+      ],
+      "glyph": "🍽",
+      "theme": "orange"
+    },
+    "night-signal": {
+      "title": "Night Signal",
+      "description": "A cinematic storytelling and signal-driven experience.",
+      "category": "creative",
+      "tags": [
+        "cinematic",
+        "story",
+        "signal"
+      ],
+      "glyph": "☾",
+      "theme": "ink"
+    },
+    "college-grade-growth": {
+      "title": "Grade Growth",
+      "description": "Track academic progress and next-quarter improvements.",
+      "category": "learning",
+      "tags": [
+        "school",
+        "grades",
+        "college",
+        "students"
+      ],
+      "glyph": "↗",
+      "theme": "lime"
+    },
+    "study-desk-studio": {
+      "title": "Study Desk Studio",
+      "description": "Study materials and learning tools in one workspace.",
+      "category": "learning",
+      "tags": [
+        "study",
+        "school",
+        "learning"
+      ],
+      "glyph": "✎",
+      "theme": "blue"
+    },
+    "price-of-tomorrow": {
+      "title": "Price of Tomorrow",
+      "description": "Explore economics and the future of prices.",
+      "category": "research",
+      "tags": [
+        "economics",
+        "finance",
+        "technology"
+      ],
+      "glyph": "◇",
+      "theme": "slate"
+    },
+    "salem-halloween": {
+      "title": "Salem Halloween",
+      "description": "A planning guide for Salem's Halloween season.",
+      "category": "travel",
+      "tags": [
+        "salem",
+        "halloween",
+        "massachusetts"
+      ],
+      "glyph": "🎃",
+      "theme": "ember"
+    },
+    "hanover-ballot-2026": {
+      "title": "Hanover Ballot 2026",
+      "description": "Local election research and ballot information.",
+      "category": "research",
+      "tags": [
+        "hanover",
+        "election",
+        "massachusetts"
+      ],
+      "glyph": "▣",
+      "theme": "slate"
+    },
+    "snowpro-recall": {
+      "title": "SnowPro Recall",
+      "description": "Flashcards and recall drills for Snowflake certification.",
+      "category": "learning",
+      "tags": [
+        "snowflake",
+        "certification",
+        "flashcards"
+      ],
+      "glyph": "❄",
+      "theme": "blue"
+    },
+    "murder-investigation": {
+      "title": "Murder Investigation",
+      "description": "An interactive investigative reasoning experience.",
+      "category": "games",
+      "tags": [
+        "mystery",
+        "detective",
+        "story"
+      ],
+      "glyph": "🔎",
+      "theme": "ink"
+    },
+    "ai-concepts-explorer": {
+      "title": "AI Concepts Explorer",
+      "description": "Discover artificial intelligence concepts through interactive learning.",
+      "category": "learning",
+      "tags": [
+        "ai",
+        "machine learning",
+        "technology"
+      ],
+      "glyph": "✧",
+      "theme": "violet"
+    },
+    "insanity-defense-responsibility": {
+      "title": "Insanity & Responsibility",
+      "description": "A research experience about law and responsibility.",
+      "category": "research",
+      "tags": [
+        "law",
+        "justice",
+        "reasoning"
+      ],
+      "glyph": "⚖",
+      "theme": "violet"
+    },
+    "college-sat-act-planner": {
+      "title": "SAT / ACT Launchpad",
+      "description": "Emma and Angelina's college testing and preparation planner.",
+      "category": "learning",
+      "tags": [
+        "sat",
+        "act",
+        "psat",
+        "college",
+        "planner"
+      ],
+      "glyph": "✳",
+      "theme": "lime",
+      "featured": true
+    },
+    "cochrane-integrity-atlas": {
+      "title": "Cochrane Integrity Atlas",
+      "description": "Explore evidence quality, research methods and integrity.",
+      "category": "research",
+      "tags": [
+        "cochrane",
+        "science",
+        "medical",
+        "studies"
+      ],
+      "glyph": "◉",
+      "theme": "teal"
+    },
+    "political-violence-audit": {
+      "title": "Political Violence Audit",
+      "description": "Investigate claims and evidence about political violence.",
+      "category": "research",
+      "tags": [
+        "politics",
+        "evidence",
+        "data"
+      ],
+      "glyph": "▤",
+      "theme": "slate"
+    },
+    "snowpro-cof-c03-exam-lab": {
+      "title": "SnowPro Exam Lab",
+      "description": "Practice exam questions for SnowPro Core COF-C03.",
+      "category": "learning",
+      "tags": [
+        "snowflake",
+        "certification",
+        "exam"
+      ],
+      "glyph": "❄",
+      "theme": "ocean"
+    },
+    "camera-safety-notifier": {
+      "title": "Camera Safety Notifier",
+      "description": "Camera safety notification project and preview.",
+      "category": "tools",
+      "tags": [
+        "camera",
+        "privacy",
+        "monitoring"
+      ],
+      "glyph": "📷",
+      "theme": "slate"
+    },
+    "dnd-miniature-web-poc": {
+      "title": "D&D Miniature Studio",
+      "description": "Web-based tabletop miniature proof of concept.",
+      "category": "creative",
+      "tags": [
+        "3d",
+        "miniatures",
+        "tabletop",
+        "prototype"
+      ],
+      "glyph": "♞",
+      "theme": "orchid"
+    },
+    "frontier-production-spine-hero": {
+      "title": "Frontier Visual Prototype",
+      "description": "Cinematic visual experiments for Frontier Journey.",
+      "category": "creative",
+      "tags": [
+        "frontier",
+        "animation",
+        "prototype"
+      ],
+      "glyph": "✦",
+      "theme": "sand"
+    }
+  }
+}
