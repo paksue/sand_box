@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#20362d"/><stop offset="1" stop-color="#0d1915"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f5d5a0"/><stop offset="1" stop-color="#b98046"/></linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="18"/></filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <circle cx="350" cy="142" r="79" fill="#c49d57" opacity=".21" filter="url(#glow)"/>
+  <path d="M87 401H427" stroke="#675c41" stroke-width="6" stroke-linecap="round"/>
+  <path d="M131 373h250" stroke="#bc9663" stroke-width="10" stroke-linecap="round"/>
+  <rect x="163" y="127" width="186" height="226" rx="36" fill="url(#gold)" stroke="#5d442b" stroke-width="14"/>
+  <rect x="185" y="146" width="142" height="190" rx="20" fill="#d69d61" opacity=".35"/>
+  <path d="M256 94v33" stroke="#d8b88c" stroke-width="13" stroke-linecap="round"/>
+  <path d="M181 200h151M181 265h151" stroke="#805f3c" stroke-width="5" opacity=".3"/>
+  <text x="256" y="283" font-size="116" font-weight="700" font-family="serif" text-anchor="middle" fill="#263229">夜</text>
+  <path d="M117 402l23-29M394 402l-23-29" stroke="#bc9663" stroke-width="7" stroke-linecap="round"/>
+</svg>
