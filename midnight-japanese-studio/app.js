@@ -118,7 +118,7 @@ function studio(){
     (state.english?'<div class="phrase-translation">'+esc(p.en)+'</div>':'<button class="hidden-text" data-action="toggle-english">Translation hidden — tap to reveal</button>')+'</div>'+
     '<div class="player-bottom"><div class="seek-controls"><div class="segmented" aria-label="Playback speed">'+[.7,.85,1,1.15].map(function(n){return '<button data-rate="'+n+'" class="'+(Math.abs(state.rate-n)<.04?"selected":"")+'">'+n+'×</button>';}).join("")+'</div><label class="toggle"><input type="checkbox" data-pref="kana" '+(state.kana?"checked":"")+'> Kana</label><label class="toggle"><input type="checkbox" data-pref="romaji" '+(state.romaji?"checked":"")+'> Romaji</label><label class="toggle"><input type="checkbox" data-pref="english" '+(state.english?"checked":"")+'> English</label></div>'+
     glyphwave()+'<div class="transport"><button class="button" data-action="slow" title="Play slowly">↘ Slow</button><button class="play-circle" data-action="play" aria-label="Hear this Japanese phrase">▶</button><button class="button" data-action="repeat" title="Hear three times">⟲ 3×</button><button class="button" data-action="play-unit" title="Play all phrases in this chapter">▤ Unit</button><button class="button" data-action="stop" title="Stop">■</button></div>'+
-    '<div class="transport-label" id="audio-status">'+(hasAudio?"Your imported reference recording":selectedVoiceInfo().label+" · "+state.rate+"× speed")+'</div></div>'+
+    '<div class="transport-label" id="audio-status">'+(hasAudio?"Your imported reference recording":selectedVoiceInfo().label+" · "+state.rate+"× speed")+'</div><button class="text-button" style="display:flex;margin:3px auto 0" data-go="progress">⚙ Change narrator voice →</button></div>'+
     '<div class="player-nav"><button class="button button-sm" data-action="previous" '+(state.current===0?"disabled":"")+'>← Previous</button><span>'+fmt(state.current+1)+' / '+fmt(P.length)+'</span><button class="button button-sm" data-action="next" '+(state.current===P.length-1?"disabled":"")+'>Next →</button></div></div>'+
     '<div class="side-panel"><section class="card panel-section"><div class="oneline"><span class="mini-heading">SPEAKING BOOTH</span><span class="pill muted" id="rec-flag">'+(recording?'<span class="recording-light"></span> Recording':"PRIVATE MIC")+'</span></div><h3>Make it your voice.</h3><p>Listen first. Record your imitation, then play both back-to-back.</p><div class="mic-visual"><canvas width="640" height="90" id="mic-canvas" aria-label="Microphone level"></canvas></div><div class="status-text" id="mic-status">'+(recording?"Recording… tap Stop when finished.":"No recording sent to any server.")+'</div><div class="take-actions"><button class="button '+(recording?"button-danger":"button-primary")+'" data-action="record">'+(recording?"■ Stop recording":"● Record my voice")+'</button><button class="button" data-action="compare" '+(!lastTake||lastTakePhrase!==p.id?"disabled":"")+'>♫ Compare</button></div>'+
     (lastTake&&lastTakePhrase===p.id?'<audio class="audio-take" src="'+esc(lastTake.url)+'" controls preload="metadata"></audio><div class="take-actions"><button class="button button-sm" data-action="download-take">↓ Save my recording</button></div>':'')+
@@ -195,7 +195,7 @@ function selectedVoiceInfo(){
   const preferred=bestMaleVoice(list);
   const voice=choice||(state.voice?null:preferred)||list.find(isJapaneseVoice)||null;
   const male=!!voice&&isLikelyMaleJapanese(voice);
-  return {voice:voice,male:male,missingRequested:!!state.voice&&!choice,
+  return {voice:voice,male:male,availableMale:!!preferred,missingRequested:!!state.voice&&!choice,
     label:voice?(voice.name+(male?" · male Japanese":" · gender unverified")):"No Japanese voice found"};
 }
 function hydrateVoices(){
@@ -207,8 +207,9 @@ function hydrateVoices(){
   if(state.voice&&!japanese.some(function(v){return v.voiceURI===state.voice;}))sel.innerHTML+='<option value="'+esc(state.voice)+'" selected>Previously chosen voice unavailable</option>';
   if(!japanese.length)sel.innerHTML+='<option disabled>No Japanese voices exposed by browser</option>';
   const info=selectedVoiceInfo(),status=$("#male-voice-status");
-  if(status)status.innerHTML=info.male?'<span class="privacy-dot"></span>Selected: '+esc(info.voice.name)+' · likely male Japanese':
-    '<strong>Male Japanese voice not detected.</strong> '+(info.missingRequested?"Your saved voice is unavailable here. Select Auto or another Japanese voice. ":"")+"For iPhone, download Otoya in Settings → Accessibility → Read & Speak → Voices → Japanese, then reopen Safari.";
+  if(status)status.innerHTML=info.male?'<span class="privacy-dot"></span>Selected: '+esc(info.voice.name)+' · recognized masculine Japanese voice':
+    info.availableMale?'<strong>A male Japanese voice is available.</strong> Switch to Auto or choose a male-labeled voice in the list.':
+    '<strong>No recognized male Japanese voice available.</strong> '+(info.missingRequested?"Your saved voice is unavailable here. ":"")+"On iPhone, download Otoya via Settings → Accessibility → Read & Speak → Voices → Japanese, then reopen Safari.";
   const style=$("#narrator-select");if(style)style.value=state.narrator;
 }
 function stopSound(){
@@ -227,7 +228,7 @@ function speakTTS(text,session,rate){
     u.lang="ja-JP";u.rate=rate||state.rate;u.pitch=state.narrator==="warm"?.92:1;u.volume=1;
     const picked=selectedVoiceInfo(),voice=picked.voice;
     if(voice)u.voice=voice;
-    if(!picked.male)toast((picked.missingRequested?"Chosen voice unavailable. ":"")+"No recognized male Japanese voice installed. Try installing Otoya.");
+    if(!picked.male)toast(picked.availableMale?"Choose Auto or a male-labeled Japanese voice in Settings.":"No recognized male Japanese voice available. Try installing Otoya.");
     let settled=false;
     const finish=function(ok){if(settled)return;settled=true;clearTimeout(failsafe);if(session===ttsSession)showWave(false,ok?"Finished · tap Play to repeat":"Could not play Japanese speech");resolve(ok);};
     u.onstart=function(){if(session===ttsSession)showWave(true,(picked.male?"Male Japanese voice":"Japanese device voice")+" · "+(voice?voice.name:"default")+" · "+Number(rate||state.rate).toFixed(2)+"×");};
