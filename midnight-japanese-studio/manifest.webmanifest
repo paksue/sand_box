@@ -1,0 +1,16 @@
+{
+  "name": "Midnight Japanese — Listening & Speaking Studio",
+  "short_name": "Midnight Japanese",
+  "description": "Hear, speak, read and remember Japanese after hours.",
+  "id": "./",
+  "start_url": "./#home",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#101917",
+  "theme_color": "#101917",
+  "lang": "en",
+  "orientation": "any",
+  "icons": [
+    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
