@@ -7,7 +7,6 @@ voice: jm_kumo. See LICENSE-VOICE.md.
 """
 from __future__ import annotations
 import json
-import math
 import subprocess
 import tempfile
 from pathlib import Path
@@ -35,7 +34,7 @@ def phrases_from_js():
 
 def generate():
     samples = phrases_from_js()
-    print("Starting Japanese Kokoro-82M male voice generator", flush=True)
+    print("Starting Japanese Kokoro-82M male voice generator (36 short phrases)", flush=True)
     pipeline = KPipeline(lang_code="j", device="cpu")
     available = {}
     with tempfile.TemporaryDirectory() as scratch:
