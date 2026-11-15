@@ -1,0 +1,76 @@
+name: Build Midnight Japanese male narration
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'midnight-japanese-studio/voicebuild/**'
+      - '.github/workflows/midnight-japanese-voice.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: midnight-japanese-male-voice
+  cancel-in-progress: false
+
+jobs:
+  render-male-narration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out the lesson repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: midnight-japanese-studio/voicebuild/requirements.txt
+      - name: Install audio toolchain
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg libsndfile1
+          python -m pip install --upgrade pip
+          pip install -r midnight-japanese-studio/voicebuild/requirements.txt
+      - name: Ensure Japanese MeCab dictionary exists
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          try:
+              import unidic
+          except ImportError:
+              print("unidic-lite should supply Japanese MeCab data")
+          else:
+              if not (Path(unidic.DICDIR) / "mecabrc").is_file():
+                  subprocess.run(["python", "-m", "unidic", "download"], check=True)
+          PY
+      - name: Render all male Japanese phrase recordings
+        run: python midnight-japanese-studio/voicebuild/generate_audio.py
+      - name: Confirm every phrase has a recording
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          base=Path("midnight-japanese-studio/audio/male")
+          manifest=json.loads((base/"manifest.json").read_text())
+          assert len(manifest["phrases"]) == 36, "Expected 36 male Japanese clips"
+          for pid in manifest["phrases"]:
+              assert (base/(pid+".mp3")).stat().st_size > 1000
+          print("All 36 MP3 recordings verified")
+          PY
+      - name: Commit the generated public audio files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add midnight-japanese-studio/audio/male/
+          if git diff --cached --quiet; then
+            echo "No generated voice changes"
+          else
+            git commit -m "Publish original Japanese male narration MP3s [skip ci]"
+            git push origin HEAD:main
+          fi
