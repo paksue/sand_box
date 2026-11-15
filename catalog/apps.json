@@ -133,23 +133,6 @@
       "updatedAt": "2026-10-27T21:23:17-04:00"
     },
     {
-      "id": "food_guide",
-      "title": "Food Guide",
-      "description": "New SandBox app. Add a description in catalog/project-metadata.json.",
-      "category": "other",
-      "tags": [
-        "new"
-      ],
-      "glyph": "✳",
-      "theme": "slate",
-      "featured": false,
-      "url": "https://paksue.github.io/sand_box/food_guide/",
-      "source": "https://github.com/paksue/sand_box/tree/main/food_guide",
-      "kind": "app",
-      "variants": [],
-      "updatedAt": "2026-07-15T00:08:06Z"
-    },
-    {
       "id": "foot-movement-atlas",
       "title": "Foot Movement Atlas",
       "description": "An illustrated foot movement and rehabilitation reference.",
@@ -226,6 +209,27 @@
       "kind": "preview",
       "variants": [],
       "updatedAt": "2026-08-19T13:42:56Z"
+    },
+    {
+      "id": "food_guide",
+      "title": "German Food Guide",
+      "description": "Explore regional German dishes, photos, and food ideas for a trip.",
+      "category": "travel",
+      "tags": [
+        "germany",
+        "food",
+        "munich",
+        "rothenburg",
+        "travel"
+      ],
+      "glyph": "🥨",
+      "theme": "sand",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/food_guide/",
+      "source": "https://github.com/paksue/sand_box/tree/main/food_guide",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-07-15T00:08:06Z"
     },
     {
       "id": "glow-gut-journal",
