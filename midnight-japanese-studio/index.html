@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101917">
+  <meta name="description" content="A private, audio-first Japanese language studio inspired by Midnight Diner. Hear, shadow, record, read and remember.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Midnight Japanese">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <title>Midnight Japanese — The Listening Studio</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./data.js"></script>
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <div class="ambient ambient-one" aria-hidden="true"></div><div class="ambient ambient-two" aria-hidden="true"></div>
+  <div id="app" class="shell">
+    <aside class="sidebar" id="sidebar">
+      <a href="#home" class="brand" aria-label="Midnight Japanese home">
+        <span class="brand-mark" aria-hidden="true">夜</span>
+        <span><strong>深夜ことば</strong><small>MIDNIGHT JAPANESE</small></span>
+      </a>
+      <div class="sidebar-caption">YOUR PRIVATE LANGUAGE STUDIO</div>
+      <nav class="side-nav" id="side-nav" aria-label="Primary navigation">
+        <button class="nav-item active" data-route="home"><span class="nav-glyph">◈</span> Overview</button>
+        <button class="nav-item" data-route="studio"><span class="nav-glyph">◉</span> Listening Studio</button>
+        <button class="nav-item" data-route="library"><span class="nav-glyph">▤</span> Phrase Library</button>
+        <button class="nav-item" data-route="review"><span class="nav-glyph">◎</span> Daily Review <span class="nav-count" id="nav-due">0</span></button>
+        <button class="nav-item" data-route="progress"><span class="nav-glyph">▥</span> Progress & Settings</button>
+      </nav>
+      <div class="side-spacer"></div>
+      <div class="sidebar-quote"><span class="quote-symbol">“</span><p>Every night, another story. Every phrase, another step.</p><small>LEARN AT YOUR OWN PACE</small></div>
+      <div class="side-footer"><span class="privacy-dot"></span> Private progress on this device</div>
+    </aside>
+    <main class="main" id="main">
+      <header class="topbar">
+        <div class="breadcrumb"><span class="overline">THE AFTER-HOURS SCHOOL</span><span class="breadcrumb-separator">/</span><span id="breadcrumb-page">Overview</span></div>
+        <div class="topbar-right"><span id="today-date" class="date-text"></span><button class="icon-button mobile-menu" id="menu-button" aria-label="Open menu">☰</button><span class="avatar" aria-hidden="true">夜</span></div>
+      </header>
+      <div id="view" aria-live="polite"></div>
+      <footer class="app-footer">MIDNIGHT JAPANESE · Crafted for patient learning <span>•</span> Audio-first · Local-first · Independent fan learning project</footer>
+    </main>
+  </div>
+  <nav class="mobile-nav" aria-label="Mobile navigation">
+    <button data-route="home" class="mobile-nav-item active"><span>⌂</span><small>Home</small></button>
+    <button data-route="studio" class="mobile-nav-item"><span>◉</span><small>Studio</small></button>
+    <button data-route="library" class="mobile-nav-item"><span>▤</span><small>Library</small></button>
+    <button data-route="review" class="mobile-nav-item"><span>◎</span><small>Review</small></button>
+    <button data-route="progress" class="mobile-nav-item"><span>▥</span><small>Me</small></button>
+  </nav>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop" id="dialog-backdrop" hidden><section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title"><button class="dialog-close" id="dialog-close" aria-label="Close dialog">×</button><div id="dialog-content"></div></section></div>
+</body>
+</html>
