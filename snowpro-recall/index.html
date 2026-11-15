@@ -28,6 +28,72 @@
 .flash-question.compact{font-size:clamp(23px,3.3vw,31px)}.flash-answer.compact{font-size:clamp(24px,3.5vw,33px)}.flash-excerpt{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;line-clamp:4;overflow:hidden}.chip{cursor:pointer}.chip:hover{border-color:var(--aqua);background:#22555a}
 @media(max-width:720px){.flash-question.compact{font-size:clamp(22px,6.1vw,29px)}.flash-answer.compact{font-size:clamp(22px,6.8vw,30px)}}
 .archive-strip{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:18px;margin:21px 0;background:linear-gradient(120deg,#163448,#102b39);border:1px solid #376b70;border-radius:17px}.archive-strip>div:first-child{display:grid;gap:6px}.archive-strip b{color:#d9fbef;font-size:14px}.archive-strip span{color:#a4bfca;font-size:12px}.archive-actions{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end}.objective-list{display:grid;gap:10px}.objective-card{display:block;width:100%;padding:16px 17px;text-align:left;background:#112b3a;color:#d9f5f2;border:1px solid #365462;border-radius:14px}.objective-card:hover{border-color:#83dbd2;background:#1c3b47}.objective-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:11px}.objective-head b{font-size:13px;font-weight:710}.objective-head span,.objective-card small{font-size:11px;color:#95b5bf}.objective-card small{display:block;margin-top:9px}.source-list{display:grid;gap:11px}.source-card{padding:18px 20px;display:grid;gap:6px;border-radius:14px;background:#143042;border:1px solid #365467;text-decoration:none;color:#e1f6f4}.source-card:hover{background:#214150;border-color:#8ce0d2}.source-card strong{font-size:15px;color:#e6fbf6}.source-card small{font-size:12px;color:#abc3cb}.source-card span{font-size:12px;color:#85ded5;font-weight:740;margin-top:5px}@media(max-width:720px){.archive-strip{flex-direction:column;align-items:stretch;gap:12px}.archive-actions{justify-content:flex-start}.objective-head{display:grid;gap:5px}.toolbar{flex-wrap:wrap}.toolbar .field{width:100%}}
+
+/* Swipe-to-explore: retains the question/answer flip and the four recall ratings.
+   All following panels belong to the same concept; no swipe changes main cards. */
+.explore-navigation{display:flex;align-items:center;justify-content:center;gap:14px;margin:11px 0 2px;min-height:51px}
+.panel-arrow{border:1px solid #426775;background:#16394a;color:#daefe9;width:45px;height:45px;min-width:45px;border-radius:14px;font-size:30px;line-height:1;font-weight:300;display:grid;place-items:center;transition:background .16s,transform .17s}
+.panel-arrow:not(:disabled):active{transform:scale(.94);background:#255668}
+.panel-arrow:hover:not(:disabled){border-color:#80d8d0;background:#225465}
+.panel-arrow:disabled{background:transparent;border-color:#284655;color:#607f8d}
+.panel-navigation-center{display:grid;align-items:center;gap:7px;justify-items:center;min-width:160px}
+.panel-dots{display:flex;justify-content:center;align-items:center;gap:6px}
+.panel-dot{appearance:none;display:block;border:0;border-radius:12px;background:#416170;width:13px;height:7px;min-height:7px;padding:0;transition:width .22s,background .22s}
+.panel-dot.active{width:25px;background:#92e8d7;box-shadow:0 0 11px #87e1ce33}
+.panel-dot:hover{background:#94d1ce}
+.panel-name{font-size:10px;letter-spacing:.6px;font-weight:670;color:#a5bdc7}
+.explore-scene .back-face{background:radial-gradient(circle at 96% 0%,#2e6d64,transparent 49%),linear-gradient(140deg,#1a4650,#0b273a 75%)}
+.explore-content{width:100%;min-height:0;flex:1;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#4f8b8d transparent;display:flex;flex-direction:column;justify-content:center;align-items:stretch;padding:13px 2px;gap:12px;text-align:left}
+.explore-content h3{font-family:var(--serif);font-weight:400;font-size:clamp(27px,4.2vw,38px);letter-spacing:-.8px;line-height:1.16;color:#f2fff8;margin:0}
+.explore-content p{font-size:clamp(13px,1.65vw,16px);line-height:1.67;color:#d2e8e6;margin:0;overflow-wrap:anywhere}
+.explore-kicker{font-size:9px;font-weight:850;letter-spacing:1.6px;color:#a1eee0;text-transform:uppercase}
+.explore-takeaway{display:grid;gap:6px;padding:14px 15px;border-radius:13px;background:#6edbb51c;border:1px solid #8ce8c92b}
+.explore-takeaway b{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#bcefe3}
+.explore-takeaway span{font-size:14px;font-weight:700;line-height:1.5;color:#e5fff2;overflow-wrap:anywhere}
+.explore-takeaway code,.variation-solution code{font-size:.91em}
+.explore-code{font:clamp(12px,1.6vw,15px)/1.64 ui-monospace,SFMono-Regular,Consolas,Monaco,monospace;background:#081b2b;border:1px solid #3d6976;border-radius:14px;padding:16px 13px;white-space:pre-wrap;overflow-x:auto;overflow-wrap:anywhere;color:#b3f2df;margin:3px 0 0}
+.explore-caption{font-size:12px!important;color:#a8c6cc!important}
+.explore-trap{border-left:3px solid #e8bd82;background:#63462e44;padding:16px;border-radius:6px 13px 13px 6px;color:#ffe7c6;font-size:clamp(15px,2vw,18px);line-height:1.65}
+.variation-question{font-family:var(--serif);font-size:clamp(21px,3.4vw,28px)!important;line-height:1.37!important;color:#eafdf5!important}
+.variation-placeholder{background:#2c556050;border:1px dashed #8bd5ce80;color:#b7dbd6;border-radius:12px;text-align:center;padding:12px;font-size:12px}
+.variation-solution{background:#1a4d4c;border:1px solid #5da99377;border-radius:13px;padding:13px 14px;display:grid;gap:7px}
+.variation-solution strong{font-size:17px;line-height:1.35;color:#c8fff1;overflow-wrap:anywhere}
+.variation-solution p{font-size:12px;color:#c4dedb;line-height:1.5}
+.explore-tags{display:flex;flex-wrap:wrap;gap:7px}
+.explore-tags span{color:#a6e6da;border:1px solid #528982;border-radius:99px;padding:6px 9px;font-size:11px;background:#245457}
+.explore-doc-link{display:inline-flex;align-self:start;align-items:center;min-height:40px;border:1px solid #70ada5;border-radius:11px;padding:8px 12px;font-size:12px;color:#c5fff1;text-decoration:none}
+.explore-doc-link:hover{background:#28625c}
+.explore-scene .face-bottom{color:#a5e3d4;font-size:10px}
+.back-face.swipe-enter-right > *, .back-face.swipe-enter-left > *{animation:explore-arrive .28s cubic-bezier(.2,.72,.2,1) both}
+.back-face.swipe-enter-left > *{animation-name:explore-arrive-from-left}
+@keyframes explore-arrive{from{opacity:.35;translate:24px 0}to{opacity:1;translate:0 0}}
+@keyframes explore-arrive-from-left{from{opacity:.35;translate:-24px 0}to{opacity:1;translate:0 0}}
+.back-face.is-dragging > *{transform:translateX(var(--drag-x,0px))}
+@media(max-width:720px){
+ .explore-navigation{margin-top:7px;gap:10px;min-height:47px}
+ .panel-arrow{width:42px;height:42px;min-width:42px}
+ .panel-navigation-center{min-width:145px}
+ .explore-content{padding:8px 0;gap:11px}
+ .explore-content h3{font-size:clamp(26px,7vw,34px)}
+ .explore-content p{font-size:13px;line-height:1.56}
+ .explore-code{font-size:12px;padding:11px}
+ .explore-trap{font-size:14px;padding:12px}
+ .variation-question{font-size:clamp(19px,5.4vw,24px)!important}
+ .variation-solution{padding:10px}
+ .variation-solution strong{font-size:15px}
+ .variation-solution p{font-size:11px}
+ .face-bottom{font-size:10px}
+}
+@media(max-height:750px) and (max-width:720px){
+ .explore-content{gap:8px}
+ .explore-content h3{font-size:24px}
+ .explore-content p{font-size:12px}
+ .panel-arrow{height:39px;width:39px;min-width:39px}
+ .explore-navigation{min-height:42px;margin-top:6px}
+}
+@media(prefers-reduced-motion:reduce){.back-face.swipe-enter-right > *, .back-face.swipe-enter-left > *{animation:none!important}.back-face.is-dragging > *{transform:none!important}}
+
+.flash-scene:focus-visible{outline:3px solid #94e5d6;outline-offset:5px;border-radius:29px}
 </style>
 </head>
 <body>
@@ -137,22 +203,114 @@ function interleaveByDomain(cards){const grouped={};for(const c of cards)(groupe
 function limitFor(mins){return mins===2?7:mins===10?32:16;}
 function begin(mode,domain='all',limit=null,queue=null){if(state.session&&!state.session.completedAt&&state.session.index<state.session.queue.length){if(!confirm('Start a new set? Your existing progress is saved, but the current set will be replaced.'))return;}
  const ids=queue||selectQueue(mode,domain,limit||limitFor(state.settings.minutes));if(!ids.length){toast('No cards match this collection');return;}
- state.session={id:'r'+NOW(),mode,domain,queue:ids,index:0,rated:[],beganAt:NOW(),revealed:false,completedAt:null,draft:'',retried:{}};save();ui.page='study';render();}
+ state.session={id:'r'+NOW(),mode,domain,queue:ids,index:0,rated:[],beganAt:NOW(),revealed:false,completedAt:null,draft:'',retried:{},panelIndex:0,variationRevealed:{}};save();ui.page='study';render();}
 function current(){const s=state.session;return s?C.get(s.queue[s.index]):null;}
 function completeSession(){const s=state.session;if(!s||s.completedAt)return;s.completedAt=NOW();save();render();confetti();}
 function closeSession(){ui.page='home';render();}
-function reveal(){if(!state.session||state.session.revealed)return;state.session.revealed=true;save();haptic();renderStudyInPlace();}
+function reveal(){if(!state.session||state.session.revealed)return;state.session.revealed=true;state.session.panelIndex=0;save();haptic();renderStudyInPlace();}
+// Deep exploration stays within the *same* card. The 405-card corpus supplies real
+// nearby contrast questions instead of a fabricated generic explanation.
+function relatedVariations(c){
+ const terms=(c.related||[]).map(x=>String(x).trim().toLowerCase()).filter(x=>x.length>2);
+ const candidates=CARD_BANK.filter(x=>x.id!==c.id&&x.domain===c.domain&&((x.status==='legacy')===(c.status==='legacy'))&&x.front!==c.front&&x.back!==c.back);
+ return candidates.map(x=>{
+  const hay=(x.front+' '+x.back+' '+x.tag).toLowerCase();
+  const exact=terms.some(t=>hay.includes(t));
+  const similarity=x.tag===c.tag;
+  const objective=!!c.objective&&c.objective===x.objective;
+  const score=(exact?50:0)+(similarity?25:0)+(objective?5:0)+(x.priority||1);
+  return{x,score,eligible:exact||similarity};
+ }).filter(o=>o.eligible).sort((a,b)=>b.score-a.score||a.x.id.localeCompare(b.x.id)).slice(0,2).map(o=>o.x);
+}
+function explorationPanels(c){
+ const panels=[{type:'answer',title:'The answer',id:'answer'},{type:'why',title:'How it works',id:'why'}];
+ if(c.code&&c.code.trim())panels.push({type:'code',title:'SQL / syntax',id:'code'});
+ panels.push({type:'trap',title:'Exam trap',id:'trap'});
+ for(const v of relatedVariations(c))panels.push({type:'variation',title:'Try a variation',id:'variation-'+v.id,card:v});
+ panels.push({type:'reference',title:'Reference',id:'reference'});
+ return panels;
+}
+function exploreBack(c,s,panels){
+ const index=clamp(Number(s.panelIndex)||0,0,panels.length-1),p=panels[index];
+ const top=`<div class="face-top"><span>${esc(p.title)} · ${index+1}/${panels.length}</span><span class="flash-symbol">${p.type==='answer'?'✧':p.type==='variation'?'◇':'✦'}</span></div>`;
+ let center='',bottom='';
+ if(p.type==='answer'){
+  center=`<div class="flash-center"><div class="flash-answer ${c.back.length>65?'compact':''}">${format(c.back)}</div><p class="flash-excerpt">${esc(c.why)}</p></div>`;
+  bottom=`<div class="face-bottom"><span>Swipe left for deeper learning</span><span>↻ tap to flip</span></div>`;
+ }else if(p.type==='why'){
+  center=`<div class="explore-content"><span class="explore-kicker">01 · UNDERSTAND</span><h3>Why this works</h3><p>${format(c.why)}</p><div class="explore-takeaway"><b>Remember</b><span>${format(c.back)}</span></div></div>`;
+  bottom=`<div class="face-bottom"><span>Mechanism, not just memorization</span><span>← swipe →</span></div>`;
+ }else if(p.type==='code'){
+  center=`<div class="explore-content"><span class="explore-kicker">02 · EXACT SYNTAX</span><h3>See it in SQL</h3><pre class="explore-code">${esc(c.code)}</pre><p class="explore-caption">Read the exact names, arguments and punctuation. Practice writing it from memory.</p></div>`;
+  bottom=`<div class="face-bottom"><span>Exact syntax matters on COF-C03</span><span>← swipe →</span></div>`;
+ }else if(p.type==='trap'){
+  center=`<div class="explore-content"><span class="explore-kicker">03 · WATCH OUT</span><h3>The exam trap</h3><div class="explore-trap">${format(c.trap)}</div><p class="explore-caption">What changes the answer? Look for the specific constraint or near-identical option.</p></div>`;
+  bottom=`<div class="face-bottom"><span>Spot the plausible wrong choice</span><span>← swipe →</span></div>`;
+ }else if(p.type==='variation'){
+  const v=p.card,visible=!!(s.variationRevealed||{})[p.id];
+  center=`<div class="explore-content variation-content"><span class="explore-kicker">04 · APPLY IT DIFFERENTLY</span><h3>Related challenge</h3><p class="variation-question">${esc(v.front)}</p>${visible?`<div class="variation-solution"><strong>${format(v.back)}</strong><p>${esc(v.why)}</p></div>`:`<div class="variation-placeholder">Recall the answer before you reveal it.</div>`}</div>`;
+  bottom=`<div class="face-bottom"><span>${visible?'Swipe for more':'Tap to reveal the variation'}</span><span>${visible?'← swipe →':'✦ test yourself'}</span></div>`;
+ }else{
+  center=`<div class="explore-content"><span class="explore-kicker">05 · CONNECT & VERIFY</span><h3>Put it in context</h3><p>${esc(c.tag)} · ${esc(DOMAINS[c.domain].name)}</p>${c.related?.length?`<div class="explore-tags">${c.related.map(x=>`<span>${esc(x)}</span>`).join('')}</div>`:''}<p class="explore-caption">Official Snowflake documentation and your personal notes are available in Learn more below.</p><a class="explore-doc-link" href="${esc(c.doc)}" target="_blank" rel="noopener noreferrer">Read official documentation ↗</a></div>`;
+  bottom=`<div class="face-bottom"><span>All panels complete — rate when ready</span><span>${index+1}/${panels.length}</span></div>`;
+ }
+ return top+center+bottom;
+}
+function explorationNav(c,s,panels){
+ if(!s.revealed)return'';
+ const index=clamp(Number(s.panelIndex)||0,0,panels.length-1);
+ return `<div class="explore-navigation" aria-label="Explore this topic"><button class="panel-arrow" data-panel-step="-1" aria-label="Previous learning panel" ${index===0?'disabled':''}>‹</button><div class="panel-navigation-center"><div class="panel-dots" role="group" aria-label="Learning panels">${panels.map((p,i)=>`<button class="panel-dot ${i===index?'active':''}" data-panel-index="${i}" aria-label="${esc(p.title)}, panel ${i+1} of ${panels.length}" ${i===index?'aria-current="step"':''}></button>`).join('')}</div><span class="panel-name">${esc(panels[index].title)} · ${index+1} of ${panels.length}</span></div><button class="panel-arrow" data-panel-step="1" aria-label="Next learning panel" ${index===panels.length-1?'disabled':''}>›</button></div>`;
+}
+function movePanel(index){const s=state.session,c=current();if(!s?.revealed||!c||ui.page!=='study')return;
+ const panels=explorationPanels(c),next=clamp(index,0,panels.length-1),previous=Number(s.panelIndex)||0;
+ if(next===previous)return;s.panelIndex=next;save();haptic();renderStudyInPlace({slide:next>previous?1:-1});
+}
+function tapFlashcard(){const s=state.session,c=current();if(!s||!c)return;
+ if(!s.revealed){reveal();return;}
+ const panels=explorationPanels(c),p=panels[clamp(Number(s.panelIndex)||0,0,panels.length-1)];
+ if(p.type==='variation'){
+  s.variationRevealed=s.variationRevealed||{};
+  s.variationRevealed[p.id]=!s.variationRevealed[p.id];save();renderStudyInPlace();return;
+ }
+ if(p.type==='answer'){s.revealed=false;s.panelIndex=0;save();haptic();renderStudyInPlace();}
+}
 function renderStudy(){const s=state.session;if(!s)return `<div class="content"><h1>Start a recall session</h1><button class="btn primary" data-action="start" data-mode="mix">Start 5-minute review</button></div>`;
- if(s.index>=s.queue.length || s.completedAt)return renderCompletion();const c=current(),r=cardState(c.id),flipped=s.revealed,est=Math.round((s.index/s.queue.length)*100),isTyping=s.mode==='sql';return `<div class="study-page"><div class="study-top"><button class="icon-btn" data-action="close-study" aria-label="Close session">${icon('close')}</button><div class="study-head"><span class="overline">${esc(s.mode==='sql'?'WRITE THE SQL':s.mode==='weak'?'EXAM SPRINT':'SMART RECALL')}</span><b>${s.index+1} of ${s.queue.length}</b></div><span class="pill ${due(c.id)?'sand':'green'}">${due(c.id)?'Due':reviewed(c.id)?'Practice':'New'}</span></div><div class="study-meter" role="progressbar" aria-valuenow="${s.index}" aria-valuemin="0" aria-valuemax="${s.queue.length}"><span style="width:${est}%"></span></div>
- <div class="flash-scene" id="flashScene" role="button" tabindex="0" aria-label="${flipped?'Answer revealed. Tap to see question.':'Flashcard question. Tap to reveal answer.'}"><div class="card-stack"></div><div class="flip-card ${flipped?'flipped':''}" id="flipCard"><article class="flash-face front-face"><div class="face-top"><span>${esc(DOMAINS[c.domain].short)} · ${esc(c.tag)}</span><span class="flash-symbol">✳</span></div><div class="flash-center"><div class="flash-question ${c.front.length>112?'compact':''}">${esc(c.front)}</div></div><div class="face-bottom"><span class="card-call">${icon('flip')} Tap to reveal</span><span>${c.priority>=3?'HIGH YIELD':'CORE REVIEW'}</span></div></article><article class="flash-face back-face"><div class="face-top"><span>THE ANSWER</span><span class="flash-symbol">✧</span></div><div class="flash-center"><div class="flash-answer ${c.back.length>65?'compact':''}">${format(c.back)}</div><p class="flash-excerpt">${esc(c.why)}</p></div><div class="face-bottom"><span>Think of the deciding clue</span><span>↻ tap to flip</span></div></article></div></div>
+ if(s.index>=s.queue.length || s.completedAt)return renderCompletion();
+ const c=current(),flipped=s.revealed,panels=explorationPanels(c),index=clamp(Number(s.panelIndex)||0,0,panels.length-1),est=Math.round((s.index/s.queue.length)*100),isTyping=s.mode==='sql';
+ return `<div class="study-page"><div class="study-top"><button class="icon-btn" data-action="close-study" aria-label="Close session">${icon('close')}</button><div class="study-head"><span class="overline">${esc(s.mode==='sql'?'WRITE THE SQL':s.mode==='weak'?'EXAM SPRINT':'SMART RECALL')}</span><b>${s.index+1} of ${s.queue.length}</b></div><span class="pill ${due(c.id)?'sand':'green'}">${due(c.id)?'Due':reviewed(c.id)?'Practice':'New'}</span></div><div class="study-meter" role="progressbar" aria-valuenow="${s.index}" aria-valuemin="0" aria-valuemax="${s.queue.length}"><span style="width:${est}%"></span></div>
+ <div class="flash-scene ${flipped?'explore-scene':''}" id="flashScene" data-card-id="${c.id}" data-panel-index="${index}" role="button" tabindex="0" aria-label="${!flipped?'Flashcard question. Tap to reveal answer.':index===0?'Answer revealed. Tap to flip back, or swipe left to learn more.':panels[index].type==='variation'?'Related challenge. Tap to reveal its answer or swipe to explore.':'Explore '+esc(panels[index].title)+'. Swipe left or right to navigate.'}"><div class="card-stack"></div><div class="flip-card ${flipped?'flipped':''}" id="flipCard"><article class="flash-face front-face"><div class="face-top"><span>${esc(DOMAINS[c.domain].short)} · ${esc(c.tag)}</span><span class="flash-symbol">✳</span></div><div class="flash-center"><div class="flash-question ${c.front.length>112?'compact':''}">${esc(c.front)}</div></div><div class="face-bottom"><span class="card-call">${icon('flip')} Tap to reveal</span><span>${c.priority>=3?'HIGH YIELD':'CORE REVIEW'}</span></div></article><article class="flash-face back-face">${exploreBack(c,s,panels)}</article></div></div>
+ ${explorationNav(c,s,panels)}
  ${isTyping&&!flipped?`<textarea class="type-answer" id="typedDraft" placeholder="Recall the function or write the syntax here, then flip…" aria-label="Write your answer first">${esc(s.draft||'')}</textarea>`:''}
- <div class="card-status">${flipped?'Explain it in your own words. How easy was recall?':'Recall first, then tap to check yourself.'}</div>
- <div class="rating-wrap">${flipped?`<div class="rating-label">HOW WELL DID YOU REALLY REMEMBER?</div><div class="rating-grid">${futureLabels(c.id).map(({grade,label})=>`<button class="rating ${grade}" data-grade="${grade}"><strong>${grade[0].toUpperCase()+grade.slice(1)}</strong><small>${label}</small></button>`).join('')}</div>`:`<button class="btn primary full" data-action="reveal">Reveal answer ${icon('flip')}</button>`}</div><div class="study-tools"><button class="btn quiet small" data-action="bookmark" data-id="${c.id}">${bookmarked(c.id)?'★ Saved':'☆ Save'}</button>${flipped?`<button class="btn quiet small" data-action="details" data-id="${c.id}">${icon('book')} Learn more</button>`:''}<button class="btn quiet small" data-action="skip">Skip ${icon('arrow')}</button></div></div>`;}
-function renderStudyInPlace(){if(ui.page!=='study')return;$('#view').innerHTML=renderStudy();}
+ <div class="card-status">${flipped?`Swipe left/right to learn more on this topic. Rate whenever you're ready.`:'Recall first, then tap to check yourself.'}</div>
+ <div class="rating-wrap">${flipped?`<div class="rating-label">HOW WELL DID YOU REMEMBER THE MAIN ANSWER?</div><div class="rating-grid">${futureLabels(c.id).map(({grade,label})=>`<button class="rating ${grade}" data-grade="${grade}"><strong>${grade[0].toUpperCase()+grade.slice(1)}</strong><small>${label}</small></button>`).join('')}</div>`:`<button class="btn primary full" data-action="reveal">Reveal answer ${icon('flip')}</button>`}</div><div class="study-tools"><button class="btn quiet small" data-action="bookmark" data-id="${c.id}">${bookmarked(c.id)?'★ Saved':'☆ Save'}</button>${flipped?`<button class="btn quiet small" data-action="details" data-id="${c.id}">${icon('book')} Notes & sources</button>`:''}<button class="btn quiet small" data-action="skip">Skip ${icon('arrow')}</button></div></div>`;
+}
+// Preserve the physical card node so revealing it animates the 3D rotation,
+// and changing panels animates horizontally without resetting the whole session.
+function renderStudyInPlace({slide=0}={}){
+ if(ui.page!=='study')return;
+ const old=$('#flashScene'),oldIndex=Number(old?.dataset.panelIndex||0),wasFlipped=old?.querySelector('#flipCard')?.classList.contains('flipped');
+ $('#view').innerHTML=renderStudy();
+ const fresh=$('#flashScene');
+ if(!old||!fresh||old.dataset.cardId!==fresh.dataset.cardId)return;
+ old.querySelector('.back-face').innerHTML=fresh.querySelector('.back-face').innerHTML;
+ old.dataset.panelIndex=fresh.dataset.panelIndex;
+ old.setAttribute('aria-label',fresh.getAttribute('aria-label'));
+ old.classList.toggle('explore-scene',state.session?.revealed===true);
+ fresh.replaceWith(old);
+ if(slide&&oldIndex!==Number(old.dataset.panelIndex)){
+  const face=old.querySelector('.back-face');
+  face.classList.remove('swipe-enter-right','swipe-enter-left');
+  void face.offsetWidth;
+  face.classList.add(slide>0?'swipe-enter-right':'swipe-enter-left');
+ }
+ const flipped=!!state.session?.revealed,flip=old.querySelector('#flipCard');
+ if(flipped!==wasFlipped){requestAnimationFrame(()=>{if(flip.isConnected)flip.classList.toggle('flipped',flipped);});}
+}
+
 function renderCompletion(){const s=state.session;if(!s)return'';const total=s.rated.length,good=s.rated.filter(x=>x.grade>=3).length,again=s.rated.filter(x=>x.grade===1).length;return `<div class="content completion"><div class="overline">A LITTLE BETTER THAN BEFORE</div><div class="big-star pop">✳</div><h1>That memory work<br><span style="color:#9ae5d5">adds up.</span></h1><p class="muted">You completed your set. Review the hard concepts again when they're due. The strongest knowledge survives a delay.</p><div class="completion-stats"><div><strong>${total}</strong><small>Review ratings</small></div><div><strong>${good}</strong><small>Good / Easy</small></div><div><strong>${again}</strong><small>Again ratings</small></div></div><div class="btn-row" style="justify-content:center"><button class="btn primary" data-action="start" data-mode="mix">Another quick set ${icon('arrow')}</button><button class="btn" data-page="insights">See progress</button></div></div>`;}
 function gradeCurrent(grade){const s=state.session,c=current();if(!s||!c||!s.revealed||transitioning)return;const currentState=cardState(c.id)||{reps:0,lapses:0,bookmark:false,note:''},prev=currentState.lastGrade;const out=schedule(currentState,grade),g=ratingN[grade];state.cards[c.id]={...currentState,...out,reps:currentState.reps+1,lapses:(currentState.lapses||0)+(g===1?1:0),lastGrade:g,last:NOW()};const log={id:c.id,time:NOW(),grade:g,interval:out.intervalDays,mode:s.mode,wasNew:!currentState.reps};state.history.push(log);s.rated.push(log);if(g===1&&!s.retried[c.id]&&s.queue.length<55){s.retried[c.id]=true;s.queue.splice(Math.min(s.index+4,s.queue.length),0,c.id);}
- s.index++;s.revealed=false;s.draft='';if(s.index>=s.queue.length)s.completedAt=NOW();save();haptic();if(g>=3&&prev===1){confetti();toast('You recovered a previously missed concept ✦');}else if(g===1)toast('This one will return soon');render();}
-function studySkip(){const s=state.session;if(!s)return;s.index++;s.revealed=false;s.draft='';if(s.index>=s.queue.length)s.completedAt=NOW();save();render();}
+ s.index++;s.revealed=false;s.panelIndex=0;s.variationRevealed={};s.draft='';if(s.index>=s.queue.length)s.completedAt=NOW();save();haptic();if(g>=3&&prev===1){confetti();toast('You recovered a previously missed concept ✦');}else if(g===1)toast('This one will return soon');render();}
+function studySkip(){const s=state.session;if(!s)return;s.index++;s.revealed=false;s.panelIndex=0;s.variationRevealed={};s.draft='';if(s.index>=s.queue.length)s.completedAt=NOW();save();render();}
 function detailsHTML(c,preview=false){const st=cardState(c.id)||{};return `<div class="sheet-backdrop" data-action="close-layer"></div><section class="sheet" role="dialog" aria-modal="true" aria-label="Card deep dive"><div class="sheet-handle"></div><div class="sheet-head"><div><div class="overline">${esc(DOMAINS[c.domain].name)} · ${esc(c.objective||'Core')} · ${esc(c.tag)} ${c.status==='legacy'?'· HISTORICAL':''}</div><h2>${preview?'Explore this card':'Go one layer deeper.'}</h2></div><button class="icon-btn" data-action="close-layer" aria-label="Close">${icon('close')}</button></div><div class="sheet-section"><h3>Recall prompt</h3><p style="font-family:var(--serif);font-size:22px;color:#f0faf8">${esc(c.front)}</p></div><div class="sheet-section"><h3>Quick answer</h3><p style="font-size:18px;color:#aeead8;font-weight:700">${format(c.back)}</p></div><div class="sheet-section"><h3>Understand why</h3><p>${esc(c.why)}</p></div>${c.code?`<div class="sheet-section"><h3>Snowflake SQL / syntax</h3><pre class="code-block">${esc(c.code)}</pre></div>`:''}<div class="sheet-section"><h3>Common exam trap</h3><div class="warning-note">${esc(c.trap)}</div></div>${c.related?.length?`<div class="sheet-section"><h3>Connect the ideas</h3><div class="chip-row">${c.related.map(s=>`<button class="chip" data-related="${esc(s)}">${esc(s)} ↗</button>`).join('')}</div></div>`:''}<div class="sheet-section"><h3>Coverage and origin</h3><p>${c.status==='legacy'?'Historical COF-C01/COF-C02 context. This may no longer be an active COF-C03 objective.':'Current COF-C03 study concept.'} ${c.objective&&c.objective!=='Legacy'?'Official objective '+esc(c.objective)+'.':''} This is an original recall prompt, not a confidential certification question.</p></div><div class="sheet-section"><h3>Official documentation</h3><a class="link-chip" href="${esc(c.doc)}" target="_blank" rel="noopener noreferrer">Snowflake documentation ↗</a></div><div class="sheet-section"><h3>Your note</h3><textarea class="note-editor" id="cardNote" data-id="${c.id}" placeholder="Why did you miss this? A short memory hook…">${esc(st.note||'')}</textarea></div><div class="btn-row" style="margin-bottom:8px"><button class="btn ${bookmarked(c.id)?'primary':'quiet'}" data-action="bookmark" data-id="${c.id}">${bookmarked(c.id)?'★ Saved':'☆ Save this card'}</button>${preview?`<button class="btn primary" data-action="study-single" data-id="${c.id}">Study this card ${icon('arrow')}</button>`:''}</div></section>`;}
 function showLayer(html){const el=$('#layer');el.innerHTML=html;el.classList.add('show');document.body.style.overflow='hidden';el.querySelector('.sheet')?.focus?.();}
 function closeLayer(){const el=$('#layer');el.classList.remove('show');el.innerHTML='';document.body.style.overflow='';}
@@ -172,6 +330,8 @@ document.body.addEventListener('click',e=>{const b=e.target.closest('button,[dat
  if(b.dataset.minutesSelect){state.settings.minutes=Number(b.dataset.minutesSelect);save();render();return;}
  if(b.dataset.preview){const c=C.get(b.dataset.preview);if(c)showLayer(detailsHTML(c,true));return;}
  if(b.dataset.grade){gradeCurrent(b.dataset.grade);return;}
+ if(b.dataset.panelStep){movePanel((Number(state.session?.panelIndex)||0)+Number(b.dataset.panelStep));return;}
+ if(b.dataset.panelIndex!==undefined){movePanel(Number(b.dataset.panelIndex));return;}
  const action=b.dataset.action;if(!action)return;
  if(action==='settings'){showLayer(settingsHTML());return;}
  if(action==='start'){begin(b.dataset.mode||'mix','all',limitFor(Number(b.dataset.minutes)||state.settings.minutes));return;}
@@ -206,9 +366,49 @@ document.body.addEventListener('input',e=>{const t=e.target;if(t.id==='cardSearc
  if(t.id==='cardNote'){const v=cardState(t.dataset.id)||{};state.cards[t.dataset.id]={...v,note:t.value};save();}
  });
 const sceneSelector=e=>e.target.closest('#flashScene');
-document.body.addEventListener('click',e=>{const scene=sceneSelector(e);if(!scene||ui.page!=='study')return; if(e.target.closest('button'))return; const s=state.session;if(!s)return;s.revealed=!s.revealed;save();haptic();renderStudyInPlace();});
-document.body.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#layer').classList.contains('show')){closeLayer();return;}if(ui.page!=='study'||e.target.matches('input,textarea,select'))return;if(e.key===' '||e.key==='Enter'){const s=state.session;if(s&&!s.completedAt){s.revealed=!s.revealed;save();renderStudyInPlace();e.preventDefault();}}if(state.session?.revealed&&['1','2','3','4'].includes(e.key)){gradeCurrent(['again','hard','good','easy'][Number(e.key)-1]);}});
-let touch=null;document.body.addEventListener('pointerdown',e=>{const sc=sceneSelector(e);if(!sc||e.pointerType==='mouse')return;touch={x:e.clientX,y:e.clientY,at:NOW()};},{passive:true});document.body.addEventListener('pointerup',e=>{if(!touch||ui.page!=='study')return;const dx=e.clientX-touch.x,dy=e.clientY-touch.y;touch=null;if(Math.abs(dy)>90&&Math.abs(dy)>Math.abs(dx)*1.2){const s=state.session;if(s){s.revealed=!s.revealed;save();renderStudyInPlace();}}},{passive:true});
+let suppressNextSceneClick=false;
+document.body.addEventListener('click',e=>{const scene=sceneSelector(e);if(!scene||ui.page!=='study')return; if(e.target.closest('button,a,textarea'))return; if(suppressNextSceneClick){suppressNextSceneClick=false;return;}tapFlashcard();});
+document.body.addEventListener('keydown',e=>{
+ if(e.key==='Escape'&&$('#layer').classList.contains('show')){closeLayer();return;}
+ if(ui.page!=='study'||$('#layer').classList.contains('show')||e.target.matches('input,textarea,select'))return;
+ if(e.target.closest('button,a')&&e.target.id!=='flashScene')return;
+ if(state.session?.revealed && e.key==='ArrowRight'){movePanel((Number(state.session.panelIndex)||0)+1);e.preventDefault();return;}
+ if(state.session?.revealed && e.key==='ArrowLeft'){movePanel((Number(state.session.panelIndex)||0)-1);e.preventDefault();return;}
+ if(e.key===' '||e.key==='Enter'){tapFlashcard();e.preventDefault();return;}
+ if(state.session?.revealed&&['1','2','3','4'].includes(e.key)){gradeCurrent(['again','hard','good','easy'][Number(e.key)-1]);}
+});
+let touch=null;
+document.body.addEventListener('pointerdown',e=>{
+ const scene=sceneSelector(e);if(!scene||ui.page!=='study'||e.target.closest('button,a,textarea'))return;
+ if(e.pointerType==='mouse'&&e.button!==0)return;
+ touch={x:e.clientX,y:e.clientY,id:e.pointerId,card:scene,started:NOW(),horizontal:false};
+},{passive:true});
+document.body.addEventListener('pointermove',e=>{
+ if(!touch||e.pointerId!==touch.id||!state.session?.revealed)return;
+ const dx=e.clientX-touch.x,dy=e.clientY-touch.y;
+ if(Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy)*1.3){
+  touch.horizontal=true;
+  const face=touch.card.querySelector('.back-face');
+  if(face){face.style.transition='none';face.style.setProperty('--drag-x',clamp(dx*.28,-45,45)+'px');face.classList.add('is-dragging');}
+ }
+},{passive:true});
+document.body.addEventListener('pointerup',e=>{
+ if(!touch||touch.id!==e.pointerId)return;
+ const dx=e.clientX-touch.x,dy=e.clientY-touch.y,wasHorizontal=touch.horizontal;
+ touch.card.querySelector('.back-face')?.classList.remove('is-dragging');
+ const face=touch.card.querySelector('.back-face');if(face){face.style.removeProperty('--drag-x');face.style.removeProperty('transition');}
+ touch=null;
+ if(wasHorizontal&&Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.15&&state.session?.revealed){
+  suppressNextSceneClick=true;
+  movePanel((Number(state.session.panelIndex)||0)+(dx<0?1:-1));
+  // Browsers may not fire click after a drag; reset the suppression shortly.
+  setTimeout(()=>{suppressNextSceneClick=false;},320);
+ }
+},{passive:true});
+document.body.addEventListener('pointercancel',()=>{
+ if(touch?.card){const face=touch.card.querySelector('.back-face');if(face){face.classList.remove('is-dragging');face.style.removeProperty('--drag-x');face.style.removeProperty('transition');}}
+ touch=null;
+},{passive:true});
 window.addEventListener('storage',e=>{if(e.key===STORAGE_KEY){try{const value=JSON.parse(e.newValue);if(value?.version===1){state=value;render();}}catch(e){}}});
 const picker=document.createElement('input');picker.type='file';picker.accept='.json,application/json';picker.id='importPicker';picker.hidden=true;document.body.appendChild(picker);
 if('serviceWorker' in navigator && location.protocol==='https:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));}
