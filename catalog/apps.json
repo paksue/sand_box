@@ -627,6 +627,23 @@
       "updatedAt": "2026-08-11T15:37:30-04:00"
     },
     {
+      "id": "riemann-ai-explainer",
+      "title": "Riemann Ai Explainer",
+      "description": "New SandBox app. Add a description in catalog/project-metadata.json.",
+      "category": "other",
+      "tags": [
+        "new"
+      ],
+      "glyph": "✳",
+      "theme": "slate",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/riemann-ai-explainer/",
+      "source": "https://github.com/paksue/sand_box/tree/main/riemann-ai-explainer",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-11-15T22:29:52-05:00"
+    },
+    {
       "id": "salem-halloween",
       "title": "Salem Halloween",
       "description": "A planning guide for Salem's Halloween season.",
@@ -727,7 +744,7 @@
       "source": "https://github.com/paksue/sand_box/tree/main/snowpro-recall",
       "kind": "app",
       "variants": [],
-      "updatedAt": "2026-11-15T13:51:16-05:00"
+      "updatedAt": "2026-11-15T13:51:59-05:00"
     },
     {
       "id": "spy-novel-library",
