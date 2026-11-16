@@ -69,3 +69,11 @@ The original **tap-to-flip** behavior remains. Once the main answer is revealed,
 No swipe changes the main flashcard. **Again / Hard / Good / Easy** rates the main answer and moves forward. Exploring is optional, so a quick review can remain quick. The current panel and revealed variation state autosave with the existing session; the app preserves the existing `snowpro-recall-v1` progress storage key.
 
 The original 405 cards and associated ratings are retained. The interaction is built using plain JavaScript and CSS transforms; there is no extra library or backend.
+
+## Review progress and non-repeating sets (November 16, 2026)
+
+Flipping a card counts as **viewed**; only Again, Hard, Good or Easy saves a spaced-repetition review. The app now displays a rating confirmation, counts opened and rated cards separately, and lists recently finished or ended-early study sets under Insights.
+
+Smart Review rotates cards that appeared in recent sets, including unrated cards, so starting another set doesn't continually show the same high-priority items. Exam Sprint prioritizes weak/high-yield topics; Write the SQL stays SQL-only. Due cards or especially weak cards can intentionally recur. Five-minute sets contain approximately 16 cards and have no countdown clock.
+
+All prior 405 card IDs and the `snowpro-recall-v1` local-storage key remain unchanged. You can export your ratings and notes using Settings → Export JSON backup.
