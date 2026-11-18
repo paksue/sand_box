@@ -36,7 +36,18 @@ async function capture(browser,app){
    return text>=20||Boolean(document.querySelector("canvas,video,svg,main,.app"));
   }).catch(()=>false);
   if(!substantive)throw Error("Empty or non-substantive app page");
-  const shot=await page.screenshot({type:"jpeg",quality:83,animations:"disabled",timeout:15000});
+  let shot;
+  try{
+    shot=await page.screenshot({type:"jpeg",quality:83,animations:"disabled",timeout:22000});
+  }catch(primaryError){
+    // WebGL apps can keep Playwright's screenshot-stability wait busy forever.
+    // Capture directly from Chrome's rendering pipeline as a fallback.
+    const cdp=await page.context().newCDPSession(page);
+    try{
+      const image=await cdp.send("Page.captureScreenshot",{format:"jpeg",quality:78,captureBeyondViewport:false});
+      shot=Buffer.from(image.data,"base64");
+    }finally{await cdp.detach().catch(()=>{});}
+  }
   const resized=await sharp(shot).resize({width:850,height:478,fit:"cover",position:"attention"}).webp({quality:80,effort:5}).toBuffer();
   const stats=await sharp(resized).stats();
   if(stats.channels.every(c=>c.stdev<5))throw Error("Blank-looking screenshot");
