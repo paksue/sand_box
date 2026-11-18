@@ -1,0 +1,1636 @@
+{
+  "title": "SnowPro Core COF-C03 — Exam 3 Gap Challenge",
+  "official": false,
+  "questions": [
+    {
+      "id": "C001",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.4",
+      "topic": "Standard warehouse generation selection",
+      "stem": "A team upgrades an established Standard Gen 1 warehouse to Standard Gen 2 for a new analytics workload. Its CFO says the warehouse will necessarily have the same hourly credit rate because the T-shirt size is unchanged. What is the most defensible response?",
+      "options": [
+        "Gen 2 always uses the exact same credit rate as Gen 1 at a matching size.",
+        "Benchmark representative runtime and consult the applicable Gen 2 service-consumption rate before estimating total credits.",
+        "Gen 2 is a separate Snowflake account edition and requires converting the account.",
+        "Changing to Gen 2 converts all permanent tables into Iceberg tables."
+      ],
+      "feedback": [
+        "Generation is a pricing-relevant property; do not infer matching credit rates from a shared size label.",
+        "Correct: separate runtime changes from generation-specific consumption rates, then calculate the measured total.",
+        "Gen 2 is a standard warehouse generation, not the Business Critical/Enterprise account edition.",
+        "Warehouse compute generation does not convert table storage formats."
+      ],
+      "answer": [
+        2
+      ],
+      "reason": "Gen 2 is a warehouse compute-generation option. Performance may differ and billing rates can differ; compare total credits for an identical useful workload, not the name Medium alone.",
+      "clue": "The budget claim assumes matching size always implies identical credit pricing.",
+      "learn": [
+        "A warehouse has independent dimensions: type, generation, size, and number of active clusters.",
+        "Gen 2 aims for better price/performance on supported workloads, but results depend on query mix.",
+        "Treat region availability and Snowflake service-consumption rates as facts to verify at deployment time."
+      ],
+      "workedExample": "Measure representative query duration and billed credits on Gen 1 versus Gen 2; a shorter runtime does not automatically mean a lower bill if the credit rate changes.",
+      "examTrap": "Do not memorize one rate across all warehouse generations or regions.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/warehouses-gen2",
+        "https://docs.snowflake.com/en/sql-reference/sql/create-warehouse"
+      ]
+    },
+    {
+      "id": "C002",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.4",
+      "topic": "High-memory Snowpark workload",
+      "stem": "A Python Snowpark stored-procedure workload allocates very large in-memory structures and encounters memory pressure on a Standard warehouse, though ordinary SQL dashboards are healthy. The team wants the compute type intended for memory-intensive Snowpark processing. Which should it evaluate?",
+      "options": [
+        "Increase MAX_CLUSTER_COUNT to six and expect one Python invocation to automatically pool all clusters into one memory space.",
+        "Turn on Search Optimization Service for every table accessed by the stored procedure.",
+        "A Snowpark-optimized warehouse, with the supported resource constraint and memory profile.",
+        "Switch to a smaller Standard Gen 1 warehouse, because Python allocations always shrink with compute size."
+      ],
+      "feedback": [
+        "Additional clusters target concurrency, not one shared-memory Python process.",
+        "Search optimization accelerates eligible lookups, not the Python process memory limit.",
+        "Correct: this warehouse type is designed for larger memory demands of Snowpark/ML workloads.",
+        "Smaller Standard compute would not address the stated memory needs."
+      ],
+      "answer": [
+        3
+      ],
+      "reason": "Snowpark-optimized warehouses offer higher memory-per-node configurations for large Snowpark and ML jobs; extra multi-cluster capacity is not a substitute for single-job memory.",
+      "clue": "The actual bottleneck is process memory during Snowpark execution, not dashboard concurrency.",
+      "learn": [
+        "Warehouse size and warehouse type answer different questions.",
+        "Snowpark-optimized resource constraints determine supported compute/memory configurations.",
+        "Use memory profiling and workload benchmarking; selecting a specialized warehouse can change cost."
+      ],
+      "workedExample": "If one Python job needs a very large in-memory dataframe, three independent Standard clusters do not combine their RAM for that one process.",
+      "examTrap": "“Scale out” is not a fix for a single worker’s RAM pressure.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/warehouses-snowpark-optimized",
+        "https://docs.snowflake.com/en/sql-reference/sql/create-warehouse"
+      ]
+    },
+    {
+      "id": "C003",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.4",
+      "topic": "Warehouse sizing versus cluster count",
+      "stem": "One dashboard query spills gigabytes to remote storage while the warehouse has almost no queued queries. Another team proposes increasing the warehouse maximum cluster count from 1 to 4. Which change is likelier to target the observed bottleneck?",
+      "options": [
+        "Increase MAX_CLUSTER_COUNT because a single query automatically runs across four clusters.",
+        "Set SCALING_POLICY = ECONOMY to allocate more memory to each running cluster.",
+        "Increase statement timeout; memory spill disappears when queries may run longer.",
+        "Evaluate scaling up the warehouse size or restructuring the memory-heavy operation."
+      ],
+      "feedback": [
+        "Multi-cluster warehouses generally scale concurrency, not a single query across multiple independently serving clusters.",
+        "Scaling policy governs when extra clusters start, not memory within a cluster.",
+        "More time does not itself improve available RAM.",
+        "Correct: both address resources or SQL behavior for the individual query."
+      ],
+      "answer": [
+        4
+      ],
+      "reason": "The distinction is scale up (more compute resources for an executing query) versus scale out (additional clusters for concurrent queries).",
+      "clue": "The profile shows spill but not queuing.",
+      "learn": [
+        "Read spilled bytes and queue times separately in Query Profile.",
+        "Increase size only after validating that spill is a genuine runtime bottleneck.",
+        "Multi-cluster may reduce queues while leaving the same single-query plan and memory needs."
+      ],
+      "workedExample": "A single hash join consuming more memory than one cluster offers will not gain four-way shared memory just by allowing four clusters.",
+      "examTrap": "Cluster count and warehouse size are not synonyms.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/warehouses-multicluster",
+        "https://docs.snowflake.com/en/user-guide/performance-query-exploring"
+      ]
+    },
+    {
+      "id": "C004",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.4",
+      "topic": "Auto-suspend versus warm cache tradeoff",
+      "stem": "A reporting team runs quick repeated SELECTs roughly every three minutes during business hours. Their warehouse has AUTO_SUSPEND = 60 and spends much of the day repeatedly stopping and restarting. They want to evaluate cost and response time together. Which analysis is best? (Select TWO.)",
+      "options": [
+        "Disable auto-suspend permanently; it always minimizes credits for intermittent queries.",
+        "Increase the auto-suspend interval for a controlled benchmark, comparing billed idle time, minimum restart billing, and local cache warmth.",
+        "Repeated short resumes can also incur startup-minimum charges and cause cold warehouse-local data cache after suspension.",
+        "Convert all tables to temporary tables because cache warmth follows table persistence."
+      ],
+      "feedback": [
+        "Leaving the warehouse running during long idle periods could raise cost.",
+        "Correct: experiment with realistic cadence and quantify the tradeoff.",
+        "Correct: frequent short restarts can impose minimum billing and cache-rewarming penalties.",
+        "Table lifetime and warehouse cache warmth are separate concerns."
+      ],
+      "answer": [
+        2,
+        3
+      ],
+      "reason": "Frequent suspend/resume cycles can save idle credits but cause repeated startup minimum billing and cold local caches. Measure both spend and latency. Both indicated statements are required for full credit.",
+      "clue": "The queries arrive every three minutes but auto-suspend occurs after one minute.",
+      "learn": [
+        "Each warehouse resume carries a minimum billed interval; short recurring work may pay repeated minimums.",
+        "Local data cache is tied to running warehouse compute.",
+        "For interactive/BI traffic, longer auto-suspend windows can improve cache utility at the expense of idle credits.",
+        "Select-two scoring is all-or-nothing: choose both independently justified facts."
+      ],
+      "workedExample": "Compare 60-second and 10-minute auto-suspend over a business-hour replay rather than assuming the cheaper option based only on the parameter value.",
+      "examTrap": "Neither “always suspend early” nor “never suspend” is an absolute best practice.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/warehouses-considerations",
+        "https://docs.snowflake.com/en/user-guide/performance-query-warehouse-cache"
+      ]
+    },
+    {
+      "id": "C005",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.3",
+      "topic": "Account user session precedence",
+      "stem": "At the account level, STATEMENT_TIMEOUT_IN_SECONDS is 600. The user has a default of 300. In a new session, the user successfully runs ALTER SESSION SET STATEMENT_TIMEOUT_IN_SECONDS = 90. What value controls subsequent statements in that session unless changed again? (Select TWO.)",
+      "options": [
+        "If the user starts another session without a session override, the user-level default of 300 seconds can apply there.",
+        "300, because user parameters always override an explicit ALTER SESSION value.",
+        "90, because the session setting overrides user and account defaults.",
+        "The three values are added to produce 990."
+      ],
+      "feedback": [
+        "Correct: a session override does not automatically rewrite the user-level default for all future sessions.",
+        "A session-level override wins over the user default for that session.",
+        "Correct: the most specific session-level setting is effective.",
+        "The parameter hierarchy uses precedence, not arithmetic."
+      ],
+      "answer": [
+        1,
+        3
+      ],
+      "reason": "For session parameters, account defaults can be overridden at user level, then at the live session level, subject to parameter support and privileges. Both indicated statements are required for full credit.",
+      "clue": "The session explicitly changes the parameter after inheritance.",
+      "learn": [
+        "Think Account → User → Session for session-parameter precedence.",
+        "Use SHOW PARAMETERS to inspect effective values and levels rather than guessing.",
+        "An ALTER SESSION change is local to the session, not a new account-wide default.",
+        "Select-two scoring is all-or-nothing: choose both independently justified facts."
+      ],
+      "workedExample": "Account 600; user 300; session 90 → effective timeout 90 seconds.",
+      "examTrap": "Confusing account-level defaults with mandatory unoverrideable policy is the trap.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/admin-account-management",
+        "https://docs.snowflake.com/en/sql-reference/sql/show-parameters"
+      ]
+    },
+    {
+      "id": "C006",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.3",
+      "topic": "Object parameter inheritance",
+      "stem": "A parameter that supports object-level hierarchy is configured at account, database, and schema levels. A new table is created in the schema without an explicit table override. Which statement best describes the effective value?",
+      "options": [
+        "The table inherits the applicable most-specific setting from its containing schema, subject to that parameter’s supported hierarchy.",
+        "Only the account value can apply to tables; schema overrides are always ignored.",
+        "The session user role’s alphabetical name determines the effective table parameter.",
+        "The values from account, database and schema are concatenated into one parameter string."
+      ],
+      "feedback": [
+        "Correct: schema-level object parameter settings can supersede more general defaults.",
+        "That contradicts the documented object parameter hierarchy.",
+        "Role naming is unrelated to parameter inheritance.",
+        "Parameter inheritance selects an effective value rather than concatenating settings."
+      ],
+      "answer": [
+        1
+      ],
+      "reason": "Object parameters use a separate, scoped hierarchy. A table can inherit a value from its schema if that parameter supports the level, with the account/database settings farther upstream.",
+      "clue": "This is an object parameter, not a session parameter.",
+      "learn": [
+        "Session scope and object scope are different hierarchies.",
+        "The precise levels available vary by named parameter, so check its parameter reference.",
+        "Inspect effective configuration with SHOW PARAMETERS IN TABLE/SCHEMA where supported."
+      ],
+      "workedExample": "If a database sets a retention default and the schema sets a permitted narrower value, a table with no override receives the schema-level setting.",
+      "examTrap": "Do not assume every Snowflake parameter supports every hierarchy level.",
+      "docs": [
+        "https://docs.snowflake.com/en/sql-reference/parameters",
+        "https://docs.snowflake.com/en/user-guide/admin-account-management"
+      ]
+    },
+    {
+      "id": "C007",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.3",
+      "topic": "Unqualified SQL name resolution",
+      "stem": "A worksheet runs USE DATABASE FINANCE; USE SCHEMA MODEL; then SELECT * FROM TRANSACTIONS; with no fully qualified object name. A table with that name exists in FINANCE.MODEL and another in FINANCE.RAW. Which one does the unqualified query ordinarily target?",
+      "options": [
+        "FINANCE.RAW.TRANSACTIONS because RAW sorts first alphabetically.",
+        "Both tables, because the same short name implies a union.",
+        "The most recently created TRANSACTIONS table in the account.",
+        "FINANCE.MODEL.TRANSACTIONS, according to the current database and schema context."
+      ],
+      "feedback": [
+        "The SQL resolver does not select the alphabetically first schema.",
+        "An unqualified name resolves to one object in the active context.",
+        "Creation time does not resolve unqualified object names.",
+        "Correct: the current context provides the missing qualifiers."
+      ],
+      "answer": [
+        4
+      ],
+      "reason": "USE DATABASE and USE SCHEMA set the current namespace, which determines resolution for unqualified table names.",
+      "clue": "Two tables share the same name, making session context decisive.",
+      "learn": [
+        "A fully qualified name is DB.SCHEMA.OBJECT.",
+        "The active role still needs database/schema USAGE and object privileges.",
+        "Separate worksheets or connections can maintain separate session contexts."
+      ],
+      "workedExample": "USE SCHEMA FINANCE.MODEL followed by FROM TRANSACTIONS resolves to FINANCE.MODEL.TRANSACTIONS.",
+      "examTrap": "Database context does not grant privileges or automatically search all schemas.",
+      "docs": [
+        "https://docs.snowflake.com/en/sql-reference/sql/use-schema",
+        "https://docs.snowflake.com/en/sql-reference/name-resolution"
+      ]
+    },
+    {
+      "id": "C008",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.3",
+      "topic": "Sequence gaps versus identity assumptions",
+      "stem": "An audit system assigns invoice numbers from a Snowflake SEQUENCE. After retries and concurrent inserts, the numbers appear as 101, 102, 105, 108. The CFO wants every number to be consecutive without gaps. Which conclusion is technically justified?",
+      "options": [
+        "Sequence values are guaranteed gapless if every warehouse has AUTO_RESUME = TRUE.",
+        "Sequence values need not be gap-free; business-required gapless numbering needs a separate controlled allocation design.",
+        "Set ORDER on the sequence and it guarantees no gaps after all failed transactions.",
+        "Replace the sequence with a result cache to force contiguous numbers."
+      ],
+      "feedback": [
+        "Warehouse lifecycle settings do not guarantee contiguous values.",
+        "Correct: sequence generation does not guarantee no gaps.",
+        "Ordering and gap-free guarantees are separate; Snowflake sequences may have gaps.",
+        "Caching query results is not a numeric allocation ledger."
+      ],
+      "answer": [
+        2
+      ],
+      "reason": "Snowflake sequences generate values without a gap-free guarantee; retries, preallocation and aborted work can leave holes.",
+      "clue": "The business requirement says every number must be consecutive.",
+      "learn": [
+        "Sequences and identity behavior should not be confused with ledger numbering.",
+        "SEQUENCE NEXTVAL provides generated values; generation is not rolled back into a perfect contiguous list.",
+        "Uniqueness expectations require understanding sequence configuration and usage, not a gapless assumption."
+      ],
+      "workedExample": "If allocation 103 occurs in a transaction that rolls back, later 104 can still be assigned; an audit should not infer missing invoices solely from a numeric gap.",
+      "examTrap": "Sequence ORDER does not mean gapless.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/querying-sequences",
+        "https://docs.snowflake.com/en/sql-reference/sql/create-sequence"
+      ]
+    },
+    {
+      "id": "C009",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.3",
+      "topic": "Organization versus account objects",
+      "stem": "A security team has several accounts under one Snowflake organization. They create a database in Account A and ask why Account B cannot immediately SELECT from it using the same three-part name. Which distinction matters?",
+      "options": [
+        "A database is automatically global to all accounts in one organization.",
+        "A shared account name makes every schema reachable without setup.",
+        "The organization groups accounts; databases remain account-scoped until an explicit sharing/replication mechanism is used.",
+        "Account B must choose a Gen 2 warehouse to read Account A objects."
+      ],
+      "feedback": [
+        "Database namespace and grants belong to an account; separate accounts are not automatic shared namespaces.",
+        "A shared organization does not remove account boundaries.",
+        "Correct: organization membership does not automatically make tables cross-account.",
+        "Compute generation does not authorize cross-account data access."
+      ],
+      "answer": [
+        3
+      ],
+      "reason": "Snowflake organizations contain separate accounts, each with its own account objects and databases; collaboration requires a supported explicit mechanism.",
+      "clue": "The user equates common organization membership with a common SQL object namespace.",
+      "learn": [
+        "Organization-level roles and services do not collapse account security boundaries.",
+        "Secure sharing exposes provider data to an authorized consumer through an imported database.",
+        "Replication duplicates supported objects according to configured refresh/failover semantics."
+      ],
+      "workedExample": "A SALES.PUBLIC.ORDERS table in Account A is not automatically the same object as SALES.PUBLIC.ORDERS in Account B.",
+      "examTrap": "Same organization ≠ automatically shared schemas.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/organizations",
+        "https://docs.snowflake.com/en/user-guide/data-sharing-intro"
+      ]
+    },
+    {
+      "id": "C010",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.2",
+      "topic": "Snowsight worksheet execution context",
+      "stem": "An analyst sees the same worksheet SQL return different rows for two colleagues, even though the text is unchanged. The underlying view applies a role-sensitive row access policy. What context should be compared first?",
+      "options": [
+        "The color theme of their Snowsight browser sessions.",
+        "The number of open worksheet tabs, because it changes row-policy grants.",
+        "The default CSV file format for the entire account.",
+        "The active worksheet role and execution context, and policy evaluation of the effective roles."
+      ],
+      "feedback": [
+        "Theme has no role-based data filtering effect.",
+        "Tabs do not create new privileges.",
+        "CSV parsing has no effect on the same SELECT over a view.",
+        "Correct: worksheet role context changes effective access and policy results."
+      ],
+      "answer": [
+        4
+      ],
+      "reason": "A Snowsight worksheet executes within a session with selected role, warehouse and namespace context; row policies can vary results based on effective identity/roles.",
+      "clue": "Unchanged SQL text does not imply the same authorization context.",
+      "learn": [
+        "Check CURRENT_ROLE() and related effective-role predicates in controlled tests.",
+        "The selected warehouse provides compute, not authorization to hidden rows.",
+        "Snowsight worksheets/workspaces maintain execution context that can differ between users."
+      ],
+      "workedExample": "One user runs as ANALYST_EAST; another as ANALYST_WEST. The row policy can intentionally return different regional subsets.",
+      "examTrap": "Result differences are not always caching bugs.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/ui-snowsight-worksheets",
+        "https://docs.snowflake.com/en/user-guide/security-row-intro"
+      ]
+    },
+    {
+      "id": "C011",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.2",
+      "topic": "Snowsight Query History and Profile",
+      "stem": "A SQL query in Snowsight became 12 times slower this week. The team wants operator-level evidence for high spill bytes, partition scanning, and join fanout before rewriting SQL. Which path is most appropriate?",
+      "options": [
+        "Use Query History to open the executed query’s Query Profile or details.",
+        "Use LIST @stage to identify operators of the SELECT query.",
+        "Read only the source SQL text; runtime operators can be inferred exactly without execution metrics.",
+        "Change the Snowsight UI language because language affects spill."
+      ],
+      "feedback": [
+        "Correct: operator-level statistics are exposed through execution profile.",
+        "LIST reports staged objects, not relational query execution operators.",
+        "SQL text alone cannot establish actual profile statistics.",
+        "UI language is unrelated to execution memory or pruning."
+      ],
+      "answer": [
+        1
+      ],
+      "reason": "Query Profile and Query Insights expose observed execution behavior. Diagnose measured bottlenecks rather than optimizing by guesswork.",
+      "clue": "The requested evidence is operator-level spill, scan and join statistics.",
+      "learn": [
+        "Query History helps find and compare executions.",
+        "Query Profile exposes physical plan operators and relevant timing/data metrics.",
+        "Query Insights can highlight patterns, but supported insight coverage varies by query."
+      ],
+      "workedExample": "An unexpectedly large join output in Query Profile may explain slowdown even when warehouse credits have not changed.",
+      "examTrap": "Compilation estimates and measured execution telemetry are different sources.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/ui-snowsight-activity",
+        "https://docs.snowflake.com/en/user-guide/query-insights"
+      ]
+    },
+    {
+      "id": "C012",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.2",
+      "topic": "IDE integration and SQL deployment",
+      "stem": "A developer needs SQL editing with version-controlled project files, connection profiles, and execution against Snowflake directly from VS Code. A teammate claims they must paste every file into a browser worksheet manually. What is the strongest alternative?",
+      "options": [
+        "Use the Snowflake VS Code extension or supported CLI tooling to connect and run SQL in a developer workflow.",
+        "Use a Snowflake storage integration as a local editor extension.",
+        "Use an external table to synchronize editor keystrokes with Snowsight.",
+        "Use Snowflake Marketplace to install a SQL text editor into each database."
+      ],
+      "feedback": [
+        "Correct: the ecosystem offers IDE integrations and command-line automation.",
+        "Storage integrations authorize cloud storage locations, not VS Code editing.",
+        "External tables are read-only file-backed query objects.",
+        "Marketplace offerings are not a prerequisite for standard IDE integrations."
+      ],
+      "answer": [
+        1
+      ],
+      "reason": "The official scope includes interfaces beyond Snowsight: Snowflake CLI and IDE integrations support SQL/project workflows.",
+      "clue": "The constraint is an IDE-based, repeatable developer workflow.",
+      "learn": [
+        "Connection configuration still requires account identity, authentication, role, and warehouse.",
+        "Version control lives with project files; IDE extensions are not a database storage mechanism.",
+        "For CI/CD, Snowflake CLI can execute project tasks non-interactively when configured."
+      ],
+      "workedExample": "Edit schema migrations in VS Code, test with a Snowflake connection, then commit files to Git; no manual browser copy step is inherently required.",
+      "examTrap": "IDE integrations and Git integrations solve different layers of the workflow.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/vscode-ext",
+        "https://docs.snowflake.com/en/developer-guide/snowflake-cli/index"
+      ]
+    },
+    {
+      "id": "C013",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.6",
+      "topic": "Snowflake Notebooks for collaborative analysis",
+      "stem": "A data scientist wants to combine Python, SQL, plots and narrative markdown in an interactive, governed analysis artifact, querying tables without exporting a 2-TB dataset to a laptop. Which Snowflake capability best matches?",
+      "options": [
+        "Use a permanent stage as the interactive Python execution interface.",
+        "Use Snowflake Notebooks with suitable compute and Snowflake data access.",
+        "Create a network policy and expect it to generate Python notebook cells.",
+        "Use a Snowflake direct share, since a share itself executes Python notebook cells."
+      ],
+      "feedback": [
+        "Stages store files, not notebook cells.",
+        "Correct: notebooks support interactive code, queries, visualizations, and narrative.",
+        "Network policies govern connection origins.",
+        "Shares expose data to consumers; notebooks supply interactive computing."
+      ],
+      "answer": [
+        2
+      ],
+      "reason": "Snowflake Notebooks provide an integrated analysis environment using Python/SQL and visualizations while operating with Snowflake-managed resources and governance.",
+      "clue": "The requested output is a collaborative interactive analysis, not a dashboard-only app or data file.",
+      "learn": [
+        "Notebooks may use supported warehouse or container compute; check runtime capabilities.",
+        "Use Snowpark/dataframe pushdown to avoid pulling huge intermediate data to a client.",
+        "Notebook access still follows Snowflake roles and object permissions."
+      ],
+      "workedExample": "A notebook can run a SQL aggregation, visualize the small result in Python, and document reasoning in Markdown cells.",
+      "examTrap": "A notebook is not the same thing as a scheduled task or a Streamlit app.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/ui-snowsight/notebooks-create",
+        "https://docs.snowflake.com/en/user-guide/ui-snowsight/notebooks-visualize-data"
+      ]
+    },
+    {
+      "id": "C014",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.6",
+      "topic": "Notebook package and compute planning",
+      "stem": "A teammate opens a Snowflake Notebook and uses pandas and plotting libraries. They claim that selecting a large BI warehouse guarantees arbitrary internet pip installs and access to every external API. What should the lead engineer check?",
+      "options": [
+        "Only the table clustering key, which determines all notebook package and network rights.",
+        "Whether the account’s external stages are transient.",
+        "The notebook runtime, supported package-management path, and required external access controls.",
+        "Whether result caching is disabled, because cache reuse permits pip networking."
+      ],
+      "feedback": [
+        "Clustering does not authorize package installation or network egress.",
+        "Stage type does not determine allowed notebook packages and egress.",
+        "Correct: packages, runtimes, and external network permissions are distinct concerns.",
+        "Result caching is unrelated to network authorization."
+      ],
+      "answer": [
+        3
+      ],
+      "reason": "Notebook environments offer supported Python packages and runtime configurations. Arbitrary package availability and outbound network access are separate governed capabilities.",
+      "clue": "The claim combines compute sizing, package availability, and internet permissions as if they were one setting.",
+      "learn": [
+        "Check package selection against the runtime’s supported channels and restrictions.",
+        "External network access may require explicit integrations or policies.",
+        "A larger warehouse addresses compute capacity, not all egress and package policy."
+      ],
+      "workedExample": "A notebook with pandas available by default can still be blocked from calling an unapproved external API.",
+      "examTrap": "More CPU does not grant external network permission.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/ui-snowsight/notebooks-import-packages",
+        "https://docs.snowflake.com/en/user-guide/ui-snowsight/notebooks-create"
+      ]
+    },
+    {
+      "id": "C015",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.6",
+      "topic": "Streamlit owner privileges",
+      "stem": "A Snowflake Streamlit app uses its default owner-rights execution. A viewer has USAGE on the app but no direct SELECT privilege on the owner’s restricted base table. Which result is consistent with the documented default, assuming the app owner can SELECT it?",
+      "options": [
+        "The viewer’s lack of direct SELECT necessarily prevents the app from reading the base table.",
+        "The app can run authorized queries with its owner’s privileges, so the viewer may see app-presented results without direct base-table grants.",
+        "The app always runs as ACCOUNTADMIN for every viewer.",
+        "The app automatically copies the entire table into the viewer’s own schema."
+      ],
+      "feedback": [
+        "That is not the default owner-rights model for Streamlit apps.",
+        "Correct: the default owner-rights context allows this pattern.",
+        "The execution privilege context is app owner, not automatically ACCOUNTADMIN.",
+        "Displaying app results does not imply a copy into consumer-owned tables."
+      ],
+      "answer": [
+        2
+      ],
+      "reason": "By default, Streamlit in Snowflake uses owner’s rights; the viewer interacts with a managed app subject to the app owner’s configured permissions.",
+      "clue": "The question specifies default owner-rights execution.",
+      "learn": [
+        "Owner’s rights are powerful, so app designers must constrain exposed UI and queries.",
+        "Restricted caller’s rights is a separate supported configuration for certain runtimes, not the default.",
+        "Granting access to an app is not identical to granting SELECT on every underlying table."
+      ],
+      "workedExample": "An owner-approved KPI app can display regional aggregates to a viewer who cannot query the raw data directly.",
+      "examTrap": "Do not confuse app USAGE with direct table SELECT, or assume all runtimes behave identically.",
+      "docs": [
+        "https://docs.snowflake.com/en/developer-guide/streamlit/object-management/owners-rights",
+        "https://docs.snowflake.com/en/developer-guide/streamlit/object-management/security"
+      ]
+    },
+    {
+      "id": "C016",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.6",
+      "topic": "Streamlit viewing privileges",
+      "stem": "A role can query SALES.PUBLIC.ORDERS but cannot open an existing Streamlit app in SALES.PUBLIC. The application owner confirms the app itself is healthy. What permission family should be inspected rather than granting broader table rights?",
+      "options": [
+        "USAGE on the application object and required containing database/schema, with relevant viewer privileges.",
+        "Only INSERT on the base ORDERS table.",
+        "OWNERSHIP on every table the app might query.",
+        "MANAGE GRANTS on the entire account, which all viewers must receive."
+      ],
+      "feedback": [
+        "Correct: Streamlit is a securable object with its own grants.",
+        "INSERT does not authorize opening an app.",
+        "Viewer ownership is excessive and not required.",
+        "This would violate least privilege and is not a normal app viewing requirement."
+      ],
+      "answer": [
+        1
+      ],
+      "reason": "App consumption requires application-object permissions, not just permissions to the data that its code queries.",
+      "clue": "Table SELECT exists, but opening the app fails.",
+      "learn": [
+        "Grant USAGE on relevant database and schema.",
+        "Grant appropriate app-level USAGE to intended viewers.",
+        "Whether viewers need underlying table SELECT depends on app execution/security model."
+      ],
+      "workedExample": "A role can run SELECT on SALES.PUBLIC.ORDERS and still lack USAGE ON STREAMLIT SALES.PUBLIC.SALES_APP.",
+      "examTrap": "Table privileges and app privileges are different.",
+      "docs": [
+        "https://docs.snowflake.com/en/developer-guide/streamlit/object-management/privileges"
+      ]
+    },
+    {
+      "id": "C017",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.6",
+      "topic": "Choosing an AI SQL function",
+      "stem": "A customer-success team already stores complaint text in a VARCHAR column. It wants to label each complaint as positive, negative, or neutral, rather than translate the text, search similar documents, or generate SQL. Which built-in AI function category is the best direct fit?",
+      "options": [
+        "Cortex Analyst, because any natural language input must become a SQL query.",
+        "Cortex Search, because semantic retrieval itself guarantees a sentiment score.",
+        "A supported Snowflake Cortex sentiment function such as AI_SENTIMENT.",
+        "A data-sharing listing that exposes the complaint column."
+      ],
+      "feedback": [
+        "Analyst translates business questions into SQL over semantic definitions.",
+        "Search retrieves relevant records rather than directly assigning sentiment.",
+        "Correct: sentiment analysis labels the emotional polarity of text.",
+        "Listings distribute governed data products but do not compute sentiment automatically."
+      ],
+      "answer": [
+        3
+      ],
+      "reason": "Cortex AI SQL functions perform text tasks. Choose the function by output—classification, sentiment, translation, completion, extraction—not by the fact that input is human language.",
+      "clue": "The desired output is sentiment, not SQL, search results, or arbitrary generation.",
+      "learn": [
+        "AI_SENTIMENT is specialized for sentiment classification.",
+        "AI_CLASSIFY targets provided categories and is not always the same as sentiment.",
+        "Cortex Analyst and Cortex Search solve distinct structured-query and retrieval problems."
+      ],
+      "workedExample": "\"I loved the support\" is positive; \"The shipment arrived late\" may score negative; a sentiment function returns structured opinion indicators rather than a SQL plan.",
+      "examTrap": "Do not choose Cortex Analyst simply because the input is prose.",
+      "docs": [
+        "https://docs.snowflake.com/en/sql-reference/functions/ai_sentiment",
+        "https://docs.snowflake.com/en/user-guide/snowflake-cortex/llm-functions"
+      ]
+    },
+    {
+      "id": "C018",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.4",
+      "topic": "Generation availability and defaults",
+      "stem": "An infrastructure script creates a Standard warehouse without specifying a generation. One region’s new warehouse is Gen 2 but another region’s account creates a different generation. An engineer calls this evidence of corrupted account metadata. Which interpretation is safest?",
+      "options": [
+        "Generation can depend on regional availability and applicable Snowflake defaults; explicitly request a supported generation for deterministic configuration.",
+        "The account identifier automatically sets Gen 1 for names beginning with a letter.",
+        "Every Standard warehouse always uses Gen 1 regardless of region or creation date.",
+        "Every Snowpark-optimized warehouse becomes Gen 2 whenever any Standard warehouse is created."
+      ],
+      "feedback": [
+        "Correct: defaults and availability evolve and can differ by supported region/account conditions.",
+        "Identifiers are not a generation-setting mechanism.",
+        "This is outdated and conflicts with Gen 2 support.",
+        "Standard generation and Snowpark-optimized resource constraints are different settings."
+      ],
+      "answer": [
+        1
+      ],
+      "reason": "Gen 2 support and default selection can vary by region and release. Specify generation/resource constraints when reproducibility matters; do not assume one immutable global default.",
+      "clue": "The same omitted parameter yields different region-dependent outcomes.",
+      "learn": [
+        "Gen 1 and Gen 2 are Standard warehouse generations.",
+        "Snowpark-optimized warehouses have separate type/resource constraints.",
+        "Read CREATE WAREHOUSE properties and regional availability before writing infrastructure tests."
+      ],
+      "workedExample": "Explicit GENERATION or RESOURCE_CONSTRAINT settings reduce unexpected behavior when default generation changes.",
+      "examTrap": "Never rely on a date-free statement that Standard always means Gen 1.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/warehouses-gen2",
+        "https://docs.snowflake.com/en/sql-reference/sql/create-warehouse"
+      ]
+    },
+    {
+      "id": "C019",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.4",
+      "topic": "Workload-specific warehouse placement",
+      "stem": "An organization uses the same large warehouse for dashboard queries, batch file loads, and Python training jobs. BI users complain about queues and unexpected credits. Which redesign most directly improves performance isolation and budget attribution?",
+      "options": [
+        "Move all underlying tables into one larger schema while preserving the one compute warehouse.",
+        "Set all three workloads to use ACCOUNTADMIN, which grants priority scheduling.",
+        "Turn on search optimization for every column regardless of access patterns.",
+        "Route distinct workloads to separately monitored warehouses sized and typed for their needs."
+      ],
+      "feedback": [
+        "Schemas are logical namespaces, not compute isolation.",
+        "Privileges do not allocate isolated compute capacity.",
+        "Access-path optimization does not separate compute contention or attribute workloads.",
+        "Correct: independent compute creates workload and cost boundaries."
+      ],
+      "answer": [
+        4
+      ],
+      "reason": "Dedicated virtual warehouses isolate competing workloads while querying the same underlying data. Their sizes/types and monitoring can be adjusted independently.",
+      "clue": "The organization needs both isolation and cost attribution.",
+      "learn": [
+        "High-concurrency BI, batch ingestion and memory-intensive Snowpark are different compute shapes.",
+        "Multiple warehouses do not mean duplicating the stored tables.",
+        "Use warehouse usage history, tags, or workload queries to compare consumption."
+      ],
+      "workedExample": "An XS BI warehouse and a Snowpark-optimized ML warehouse can read the same SALES database without sharing a queue.",
+      "examTrap": "Increasing a shared warehouse is not the same as isolation.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/warehouses-overview",
+        "https://docs.snowflake.com/en/user-guide/warehouses-considerations"
+      ]
+    },
+    {
+      "id": "C020",
+      "exam": 3,
+      "domain": 2,
+      "objective": "2.2",
+      "topic": "Trust Center scanner findings",
+      "stem": "An account security officer needs a dashboard of Snowflake security-configuration risks such as publicly exposed access patterns, with scanner findings and recommended remediation. They do not want to inspect every warehouse Query Profile. What should they use?",
+      "options": [
+        "Warehouse Query Profile, which audits the current security posture of all accounts.",
+        "A micro-partition clustering function, which scores network policy weaknesses.",
+        "Snowflake Trust Center with relevant security scanner packages and findings.",
+        "Snowpipe COPY_HISTORY, because loaded files show privilege anomalies."
+      ],
+      "feedback": [
+        "Query Profile explains query execution, not account-level security posture.",
+        "Clustering information concerns storage access patterns.",
+        "Correct: Trust Center centralizes security posture findings and associated guidance.",
+        "COPY history tracks ingestion, not scanner-based security findings."
+      ],
+      "answer": [
+        3
+      ],
+      "reason": "Trust Center identifies security risks and misconfigurations with scanner packages and findings; it is not a substitute for query tuning or data quality checks.",
+      "clue": "The request is a security posture scan and remediation workflow.",
+      "learn": [
+        "Scanner packages can be configured or activated where supported.",
+        "Findings should be investigated and remediated; scanners do not by themselves fix every vulnerability.",
+        "View and administration privileges are role-dependent; use dedicated Trust Center application roles."
+      ],
+      "workedExample": "A scanner finds an unapproved exposure; the officer reviews its finding and remediation instructions, fixes the setting, and verifies the finding clears.",
+      "examTrap": "Trust Center is security posture, not Query Profile or data freshness.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/trust-center/using-the-trust-center"
+      ]
+    },
+    {
+      "id": "C021",
+      "exam": 3,
+      "domain": 2,
+      "objective": "2.2",
+      "topic": "Trust Center notification integration",
+      "stem": "A security team already reviews Trust Center findings manually. It now wants Snowflake to send new scanner findings to an approved external notification destination. What additional configuration should it investigate?",
+      "options": [
+        "Increase BI warehouse MAX_CLUSTER_COUNT to route scanner findings.",
+        "Configure supported Trust Center notifications with a notification integration and requisite privileges.",
+        "Grant CREATE TABLE to all readers of Trust Center, because findings are sent by table creation.",
+        "Replace all Trust Center scanners with data metric functions."
+      ],
+      "feedback": [
+        "Concurrency does not configure outbound security notifications.",
+        "Correct: Trust Center has a supported notification-integration path.",
+        "Table creation grants do not set up integration delivery.",
+        "DMFs measure data quality and do not replace security posture findings."
+      ],
+      "answer": [
+        2
+      ],
+      "reason": "Security findings can be surfaced programmatically through configured Trust Center notifications; the integration bridges Snowflake with email/webhook/message destinations under appropriate privileges.",
+      "clue": "The request is delivery of findings, not creation of new scanners.",
+      "learn": [
+        "A notification integration represents an outbound integration with a supported destination.",
+        "Sending a test notification is useful before operational reliance.",
+        "The security team should restrict who can configure notification integrations and scanner alerts."
+      ],
+      "workedExample": "A new high-severity Trust Center finding can trigger a notification to a monitored endpoint, provided the relevant scanner and integration settings are enabled.",
+      "examTrap": "Creating a notification integration alone does not guarantee every scanner is enabled and routed.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/trust-center/notification-integrations",
+        "https://docs.snowflake.com/en/user-guide/trust-center/notifications-trust-center"
+      ]
+    },
+    {
+      "id": "C022",
+      "exam": 3,
+      "domain": 2,
+      "objective": "2.2",
+      "topic": "Column data lineage versus object dependencies",
+      "stem": "A transformation writes CUSTOMER_RISK_SCORE into an output table using columns from two source tables. An auditor wants to determine which source columns contributed to the output column, not merely whether the output view depends on a table. Which feature/evidence is most relevant?",
+      "options": [
+        "A detailed column lineage view or supported ACCESS_HISTORY lineage records, subject to supported operations and visibility.",
+        "SHOW WAREHOUSES, which records source-column derivation.",
+        "Use only a list of database object names; object existence always proves exact column-level origins.",
+        "Set the output table to TRANSIENT to automatically reveal all source column mappings."
+      ],
+      "feedback": [
+        "Correct: lineage targets source-to-output data movement at column granularity.",
+        "Warehouse metadata is unrelated to column lineage.",
+        "Object-level dependencies cannot always reconstruct expression-level origins.",
+        "Table retention class does not itself provide data lineage."
+      ],
+      "answer": [
+        1
+      ],
+      "reason": "Lineage traces data movement and dependency between source and target objects/columns. Object dependencies alone cannot always answer exact column-origin questions.",
+      "clue": "The auditor explicitly asks which columns produced one derived column.",
+      "learn": [
+        "ACCESS_HISTORY may contain column lineage for supported queries and plans.",
+        "Data lineage can be inspected in Snowsight with appropriate visibility privileges.",
+        "Lineage visibility and retention are bounded; it is not universal for every external transformation."
+      ],
+      "workedExample": "If OUT.SCORE = 0.6*RAW.A + 0.4*RAW.B, lineage should identify RAW.A and RAW.B as contributing inputs.",
+      "examTrap": "Object dependencies and column-level lineage are related but not identical.",
+      "docs": [
+        "https://docs.snowflake.com/en/sql-reference/account-usage/access_history",
+        "https://docs.snowflake.com/en/user-guide/ui-snowsight-lineage"
+      ]
+    },
+    {
+      "id": "C023",
+      "exam": 3,
+      "domain": 2,
+      "objective": "2.2",
+      "topic": "Lineage authorization",
+      "stem": "A governance reader can SELECT some reporting views but cannot open their upstream/downstream data lineage graph in Snowsight. Which access-control concept should the administrator evaluate without granting full ACCOUNTADMIN?",
+      "options": [
+        "CREATE STAGE on every warehouse.",
+        "MODIFY on the underlying source tables so the reader can edit lineage.",
+        "The relevant VIEW LINEAGE privilege or supported governance role permissions.",
+        "OWNERSHIP on all source data for every analyst."
+      ],
+      "feedback": [
+        "Stage creation has nothing to do with viewing lineage.",
+        "Read-only lineage inspection does not require editing source tables.",
+        "Correct: lineage visibility has dedicated privilege controls.",
+        "Broad ownership is inappropriate for a read-only auditor."
+      ],
+      "answer": [
+        3
+      ],
+      "reason": "Snowflake exposes specific governance privileges for inspecting lineage, separate from general SELECT or object ownership.",
+      "clue": "The reader can query data but not view its lineage graph.",
+      "learn": [
+        "Use a least-privilege governance role rather than ACCOUNTADMIN for every auditor.",
+        "Lineage visibility can have object and role-based restrictions.",
+        "SELECT on a table is not by itself a universal grant to all governance metadata."
+      ],
+      "workedExample": "An auditor may have SELECT on a shared reporting view but need a separate approved role to view lineage across upstream objects.",
+      "examTrap": "Data access permission and lineage-inspection permission are distinct.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/security-access-control-privileges",
+        "https://docs.snowflake.com/en/user-guide/ui-snowsight-lineage"
+      ]
+    },
+    {
+      "id": "C024",
+      "exam": 3,
+      "domain": 2,
+      "objective": "2.2",
+      "topic": "Scheduled alert condition and action",
+      "stem": "A finance table contains DAILY_COST. Whenever its daily total crosses a defined threshold, Snowflake should evaluate the condition on a schedule and notify a budget owner automatically. Which construction best fits? (Select TWO.)",
+      "options": [
+        "Create a row access policy and assume it sends email whenever it filters a row.",
+        "Create a scheduled Snowflake Alert with a condition query and an action that sends an approved notification.",
+        "Set a warehouse AUTO_SUSPEND value equal to the threshold amount.",
+        "The alert action can use an appropriately configured notification integration to deliver an email."
+      ],
+      "feedback": [
+        "Row access policies filter visibility; they are not scheduled notifications.",
+        "Correct: alerts bind condition evaluation to actions.",
+        "Idle timeout does not monitor table contents.",
+        "Correct: alert logic and notification delivery are distinct configured pieces."
+      ],
+      "answer": [
+        2,
+        4
+      ],
+      "reason": "A Snowflake Alert evaluates a condition and performs an action, such as sending a notification, when the condition is met. Both indicated statements are required for full credit.",
+      "clue": "The requirement specifies scheduled evaluation, condition and action.",
+      "learn": [
+        "An alert condition may be SQL returning relevant rows or a predicate, subject to alert syntax.",
+        "The alert action uses suitable privileges, often with a notification integration for external delivery.",
+        "Ensure an alert is configured, resumed and monitored; defining it is not the full operational lifecycle.",
+        "Select-two scoring is all-or-nothing: choose both independently justified facts."
+      ],
+      "workedExample": "Every hour, run a condition for daily spend > threshold; if true, send an email or log the violation.",
+      "examTrap": "A notification integration is the delivery mechanism, not the scheduled condition engine by itself.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/alerts",
+        "https://docs.snowflake.com/en/sql-reference/sql/create-alert"
+      ]
+    },
+    {
+      "id": "C025",
+      "exam": 3,
+      "domain": 2,
+      "objective": "2.2",
+      "topic": "Notification integration versus alert",
+      "stem": "A team creates an EMAIL notification integration for incident emails and expects it to query an ERROR_LOG table every hour without creating any other object. Why is this incomplete?",
+      "options": [
+        "Notification integrations supply a destination/channel; a scheduled alert or another invocation must evaluate the condition and send the message.",
+        "Email integrations only work after every source table is converted to an external table.",
+        "A virtual warehouse automatically runs all SELECTs referenced in integration definitions.",
+        "An alert cannot ever use a notification integration."
+      ],
+      "feedback": [
+        "Correct: integration alone is not a polling rule.",
+        "Table storage type is unrelated to setting up email delivery.",
+        "Integrations do not independently schedule arbitrary SQL conditions.",
+        "Alerts can be configured to perform notification actions."
+      ],
+      "answer": [
+        1
+      ],
+      "reason": "An integration configures a communication path. An alert/task/application invokes the notification when its own logic detects a condition.",
+      "clue": "The team created the output channel but no rule or schedule.",
+      "learn": [
+        "Alerts and notification integrations are composable but separate features.",
+        "A notification integration can also be used in other workflows, including tasks and Trust Center.",
+        "Test recipients, permissions and alert scheduling."
+      ],
+      "workedExample": "Email integration = email transport; alert = run a SQL check at 10:00 and notify if needed.",
+      "examTrap": "Integration objects are not autonomous SQL schedulers.",
+      "docs": [
+        "https://docs.snowflake.com/en/sql-reference/sql/create-notification-integration",
+        "https://docs.snowflake.com/en/user-guide/alerts"
+      ]
+    },
+    {
+      "id": "C026",
+      "exam": 3,
+      "domain": 2,
+      "objective": "2.3",
+      "topic": "Gen 1 warehouse compute credit arithmetic",
+      "stem": "For a STANDARD GEN 1 warehouse, a Medium warehouse (4 credits/hour) is running for exactly 45 billed minutes with one active cluster. Ignore cloud services and other charges. What is the warehouse compute charge?",
+      "options": [
+        "1 credit, because Medium always bills 1 credit per query.",
+        "4 credits, because any partial hour is billed as a full hour.",
+        "8 credits, because Medium has two underlying compute nodes.",
+        "3 credits, because 4 × (45/60) = 3."
+      ],
+      "feedback": [
+        "Credits are consumed per running time, not per query.",
+        "Standard warehouse compute is billed per second subject to a startup minimum, not rounded to a full hour for this duration.",
+        "The stated Medium rate is for the warehouse, not an extra per-node multiplier.",
+        "Correct: multiply the hourly rate by 0.75 hour."
+      ],
+      "answer": [
+        4
+      ],
+      "reason": "Billed warehouse credits = applicable credits per hour per running cluster × billed runtime hours, summed across clusters.",
+      "clue": "The stated Gen 1 Medium rate and exact 45-minute billed runtime remove rate and startup ambiguity.",
+      "learn": [
+        "Gen 1 XS/Small/Medium/Large standard sizes generally double their hourly rates with each size step.",
+        "Each running multi-cluster cluster contributes separately to compute credits.",
+        "Storage, serverless services and cloud services are additional categories not included in this problem."
+      ],
+      "workedExample": "Medium 4 credits/hour × 45 minutes ÷ 60 = 3 credits.",
+      "examTrap": "Always check whether the question states generation, cluster count and billed time.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/warehouses-overview",
+        "https://docs.snowflake.com/en/user-guide/warehouses-considerations"
+      ]
+    },
+    {
+      "id": "C027",
+      "exam": 3,
+      "domain": 2,
+      "objective": "2.3",
+      "topic": "Multi-cluster billing calculation",
+      "stem": "A Standard Gen 1 SMALL warehouse has a per-cluster rate of 2 credits/hour. One cluster ran for a full billed hour; a second cluster was active for 15 billed minutes during peak concurrency. What is the total warehouse compute usage for that hour? (Select TWO.)",
+      "options": [
+        "2.5 credits, because 2 × (60/60) + 2 × (15/60) = 2.5.",
+        "2 credits, because MAX_CLUSTER_COUNT does not affect billing when more clusters actually run.",
+        "4 credits, because configuring two clusters bills both for the entire hour even when only one runs part-time.",
+        "A maximum of two clusters does not imply the second cluster runs or bills for the entire hour."
+      ],
+      "feedback": [
+        "Correct: sum the billed runtime of each active cluster.",
+        "The additional active cluster consumes credits.",
+        "Cluster compute is based on runtime, including applicable startup minimums, not always the maximum configured duration.",
+        "Correct: the cluster ceiling differs from observed active cluster time."
+      ],
+      "answer": [
+        1,
+        4
+      ],
+      "reason": "In a multi-cluster warehouse, each running cluster consumes compute credits. Pay for the actual billed duration of each cluster, not just maximum capacity. Both indicated statements are required for full credit.",
+      "clue": "The second cluster ran only part of the hour.",
+      "learn": [
+        "MAX_CLUSTER_COUNT is a cap, not a promise that all clusters run continuously.",
+        "Standard and Economy scaling policies affect when extra clusters are started.",
+        "A warehouse startup has a minimum billable duration; here all durations exceed it.",
+        "Select-two scoring is all-or-nothing: choose both independently justified facts."
+      ],
+      "workedExample": "Primary cluster: 2 × 1 = 2; second cluster: 2 × 0.25 = 0.5; total = 2.5 credits.",
+      "examTrap": "“Two clusters configured” differs from “two clusters active all hour.”",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/warehouses-multicluster",
+        "https://docs.snowflake.com/en/user-guide/warehouses-overview"
+      ]
+    },
+    {
+      "id": "C028",
+      "exam": 3,
+      "domain": 2,
+      "objective": "2.1",
+      "topic": "Logging and tracing for stored procedures",
+      "stem": "A JavaScript or Python stored procedure fails intermittently in production. The team needs centrally queryable diagnostic events and trace records from the procedure, not just final query status. Which Snowflake observability arrangement should it evaluate?",
+      "options": [
+        "A table clustering key on the procedure name.",
+        "A new private data share for the procedure arguments.",
+        "Configure supported event-table logging/tracing and appropriate telemetry levels for procedure execution.",
+        "Rely only on COPY_HISTORY, which records every JavaScript stack trace."
+      ],
+      "feedback": [
+        "Clustering does not emit diagnostic telemetry.",
+        "Data sharing is not a logging system.",
+        "Correct: event tables capture emitted logs and traces.",
+        "COPY_HISTORY is ingestion history, not generic procedure telemetry."
+      ],
+      "answer": [
+        3
+      ],
+      "reason": "Snowflake supports event tables for observability data such as logging, metrics and tracing from supported handlers.",
+      "clue": "The request is diagnostic events from procedure code, not only query completion metadata.",
+      "learn": [
+        "Telemetry levels can be configured through supported session/object settings.",
+        "Do not log secrets, PII or sensitive request payloads accidentally.",
+        "Query History helps correlate executed SQL; event telemetry adds handler-level detail."
+      ],
+      "workedExample": "Emit an application log when a branch fails, then inspect the event table for message and trace context.",
+      "examTrap": "A procedure is not automatically fully instrumented just because its query appears in history.",
+      "docs": [
+        "https://docs.snowflake.com/en/developer-guide/logging-tracing/logging",
+        "https://docs.snowflake.com/en/developer-guide/logging-tracing/telemetry-levels"
+      ]
+    },
+    {
+      "id": "C029",
+      "exam": 3,
+      "domain": 2,
+      "objective": "2.1",
+      "topic": "Discretionary versus role-based grants",
+      "stem": "An object owner insists only ACCOUNTADMIN can ever grant SELECT on a table because Snowflake uses RBAC. In a regular schema, a different role legitimately owns the table. What is the best correction?",
+      "options": [
+        "Object ownership confers applicable grant-control capabilities under Snowflake discretionary access rules, subject to managed-access and other restrictions.",
+        "Every SELECT grant must be issued by an account-level root superuser.",
+        "Only the warehouse owner can grant privileges on stored tables.",
+        "Users can grant any table privileges merely by knowing its object name."
+      ],
+      "feedback": [
+        "Correct: RBAC and owner-driven grant control coexist under Snowflake permissions.",
+        "Snowflake supports object ownership and delegated grant administration.",
+        "Warehouse ownership is distinct from table ownership.",
+        "Knowing a name confers no grant authority."
+      ],
+      "answer": [
+        1
+      ],
+      "reason": "RBAC controls rights through roles, while discretionary access control gives object owners defined authority over privileges where permitted.",
+      "clue": "The scenario identifies a table owner in a normal schema.",
+      "learn": [
+        "OWNERSHIP is stronger than ordinary SELECT and often includes managing grants, except in managed access schemas.",
+        "MANAGE GRANTS is a broad administrative privilege and should be limited.",
+        "In a managed access schema, the schema owner or grants administrator controls object grants."
+      ],
+      "workedExample": "ROLE_DATA_OWNER owns a table in a normal schema and may grant SELECT to ROLE_REPORTING, subject to Snowflake rules.",
+      "examTrap": "“RBAC” does not mean “every grant requires ACCOUNTADMIN.”",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/security-access-control-overview",
+        "https://docs.snowflake.com/en/user-guide/security-access-control-configure"
+      ]
+    },
+    {
+      "id": "C030",
+      "exam": 3,
+      "domain": 3,
+      "objective": "3.3",
+      "topic": "Git integration components",
+      "stem": "A release team wants Snowflake to reference SQL stored in a private GitHub repository. They create a Git repository clone object in Snowflake, but remote authentication and permitted Git URLs have not been configured. Which pair of components is central to fixing the integration?",
+      "options": [
+        "An API integration for the Git host and an appropriate secret for private repository credentials.",
+        "A CSV file format and warehouse resource monitor.",
+        "An external table and row access policy only.",
+        "A storage integration for S3 data files, which automatically authenticates to private GitHub APIs."
+      ],
+      "feedback": [
+        "Correct: host API configuration and credentials are separate required components.",
+        "CSV parsing and credit alerts do not authorize Git API access.",
+        "Table access controls do not configure remote Git repository API authentication.",
+        "Storage integration IAM trust is distinct from Git API access."
+      ],
+      "answer": [
+        1
+      ],
+      "reason": "Git repository clones connect through an API integration describing allowed origins; private repositories may also require a Snowflake secret containing supported credentials.",
+      "clue": "The repository exists conceptually, but the remote host and credential trust are incomplete.",
+      "learn": [
+        "API integrations configure Snowflake access to an approved Git service.",
+        "Secrets store supported credentials; do not embed tokens directly into SQL scripts.",
+        "A Git repository clone provides repository-like staged files for SQL execution and workflows."
+      ],
+      "workedExample": "CREATE API INTEGRATION ... API_PROVIDER = git_https_api; CREATE SECRET ...; CREATE GIT REPOSITORY ... API_INTEGRATION ... GIT_CREDENTIALS ... (syntax depends on setup).",
+      "examTrap": "A storage integration and a Git API integration solve different trust problems.",
+      "docs": [
+        "https://docs.snowflake.com/en/developer-guide/git/git-setting-up",
+        "https://docs.snowflake.com/en/developer-guide/git/git-setting-up-public"
+      ]
+    },
+    {
+      "id": "C031",
+      "exam": 3,
+      "domain": 3,
+      "objective": "3.3",
+      "topic": "Refreshing a Snowflake Git repository clone",
+      "stem": "A Snowflake Git repository clone was created last week. The upstream GitHub main branch gained new migration files today, but the clone continues listing yesterday’s commits. What operation synchronizes remote changes into the Snowflake clone?",
+      "options": [
+        "ALTER TABLE ... RECLUSTER on the application database.",
+        "ALTER GIT REPOSITORY my_repo FETCH;",
+        "CREATE FILE FORMAT TYPE = CSV on the Git branch.",
+        "RESUME WAREHOUSE and assume it always performs Git fetch automatically."
+      ],
+      "feedback": [
+        "Clustering data tables does not refresh repository metadata.",
+        "Correct: FETCH updates the repository clone from its remote origin.",
+        "File formats do not fetch remote commits.",
+        "Resuming compute does not guarantee a repository synchronization."
+      ],
+      "answer": [
+        2
+      ],
+      "reason": "Git repository clones are snapshots of a remote Git repository and can be refreshed explicitly using ALTER GIT REPOSITORY ... FETCH.",
+      "clue": "The remote has new commits but the Snowflake clone has not synchronized.",
+      "learn": [
+        "Check branch and path context when referencing files in the repository stage.",
+        "Remote repository credentials and integrations must remain valid for FETCH.",
+        "Git fetch updates the clone metadata/content; it does not automatically execute migrations."
+      ],
+      "workedExample": "After a main-branch push, run ALTER GIT REPOSITORY db.schema.repo FETCH; then inspect the stage branch for the new SQL.",
+      "examTrap": "Fetching code and executing code are separate actions.",
+      "docs": [
+        "https://docs.snowflake.com/en/sql-reference/sql/alter-git-repository",
+        "https://docs.snowflake.com/en/developer-guide/git/git-operations"
+      ]
+    },
+    {
+      "id": "C032",
+      "exam": 3,
+      "domain": 3,
+      "objective": "3.3",
+      "topic": "API integration versus external access integration",
+      "stem": "A Python UDF must call an approved live HTTPS scoring endpoint during SQL execution. A developer creates an API integration intended for Git repositories and expects the UDF to use it as an outbound network rule. What should be evaluated instead?",
+      "options": [
+        "Only a COPY INTO FILES list, because UDF network calls require staged CSV files.",
+        "A row access policy, which grants TCP egress to HTTPS services.",
+        "A data-sharing listing that forwards all UDF HTTPS requests.",
+        "An external access integration with permitted network rules and any necessary secrets."
+      ],
+      "feedback": [
+        "COPY file selection has no bearing on Python UDF egress.",
+        "Row policies filter table visibility; they do not allow network egress.",
+        "Listings distribute products and are not egress authorization.",
+        "Correct: external access integrations govern approved outbound calls for supported UDF/procedure handlers."
+      ],
+      "answer": [
+        4
+      ],
+      "reason": "An API integration for Git or external functions is not the same thing as an external access integration that authorizes an in-Snowflake Python handler to call a remote service.",
+      "clue": "The code runs inside a Snowflake Python UDF and needs HTTP egress.",
+      "learn": [
+        "Network rules limit permitted outbound destinations.",
+        "External access integrations associate those rules and optional approved secrets with handler execution.",
+        "Snowflake privileges control which roles can use integrations."
+      ],
+      "workedExample": "Python UDF → external access integration → allowed host/API; Snowflake Git clone → Git API integration (different workflow).",
+      "examTrap": "The common word “integration” does not mean these are interchangeable.",
+      "docs": [
+        "https://docs.snowflake.com/en/developer-guide/external-network-access/external-network-access-overview",
+        "https://docs.snowflake.com/en/developer-guide/git/git-setting-up"
+      ]
+    },
+    {
+      "id": "C033",
+      "exam": 3,
+      "domain": 3,
+      "objective": "3.3",
+      "topic": "Driver versus connector selection",
+      "stem": "A Java application runs parameterized SQL queries against Snowflake and uses standard JDBC interfaces. Another application is a Python service using the Python DB-API. Which pairing best matches the client stacks without creating a data pipeline connector?",
+      "options": [
+        "Java uses the Snowflake JDBC driver; Python uses the Snowflake Connector for Python.",
+        "Java requires Snowpipe Streaming; Python requires a directory table.",
+        "Both languages must use the Spark Connector, even without Spark.",
+        "Both must connect through a Snowflake Marketplace listing."
+      ],
+      "feedback": [
+        "Correct: choose native language/client drivers for SQL connectivity.",
+        "Streaming and directory tables are ingestion/file tools, not normal DB-API clients.",
+        "Spark Connector is for Spark workloads, not required for basic Java/Python SQL.",
+        "Listings are for distribution, not basic language-driver connections."
+      ],
+      "answer": [
+        1
+      ],
+      "reason": "Drivers and language connectors establish application SQL connectivity; choose them by client runtime and integration requirements.",
+      "clue": "The applications use JDBC and Python DB-API.",
+      "learn": [
+        "JDBC is commonly used for Java/compatible applications; ODBC for compatible BI tools.",
+        "Python Connector provides programmatic SQL access to Snowflake from Python.",
+        "Specialized Spark/Kafka connectors address data-engine integration with their ecosystems."
+      ],
+      "workedExample": "Java PreparedStatement → JDBC; Python cursor.execute(...) → snowflake-connector-python.",
+      "examTrap": "Do not confuse a SQL driver with a file ingestion pipeline.",
+      "docs": [
+        "https://docs.snowflake.com/en/developer-guide/drivers",
+        "https://docs.snowflake.com/en/developer-guide/python-connector/python-connector"
+      ]
+    },
+    {
+      "id": "C034",
+      "exam": 3,
+      "domain": 3,
+      "objective": "3.3",
+      "topic": "Kafka connector ingestion architecture",
+      "stem": "A Kafka topic carries near-continuous JSON event records. The team wants a supported ingestion bridge into Snowflake without writing its own polling Python script or accumulating hourly S3 files. Which family of tooling deserves primary evaluation?",
+      "options": [
+        "A JDBC client that reads the topic once a week and manually inserts one CSV file per day.",
+        "A materialized view over an imaginary Kafka schema in Snowflake.",
+        "Snowflake Connector for Kafka with a supported ingestion mode such as Snowpipe Streaming.",
+        "CREATE SEQUENCE on the target table and assume Kafka messages are pulled automatically."
+      ],
+      "feedback": [
+        "JDBC alone does not provide the requested Kafka ingestion bridge.",
+        "Materialized views do not ingest external Kafka topics by themselves.",
+        "Correct: the Kafka connector is intended to bridge Kafka events into Snowflake.",
+        "Sequences generate values, not events from brokers."
+      ],
+      "answer": [
+        3
+      ],
+      "reason": "The Kafka connector is designed to move Kafka topic records into Snowflake; streaming ingestion reduces reliance on staged file batches.",
+      "clue": "The input is a continuous Kafka topic, not a directory of staged files.",
+      "learn": [
+        "Kafka connector settings determine supported error handling, schema conversion and ingestion modes.",
+        "Snowpipe Streaming is distinct from file-based Snowpipe.",
+        "End-to-end reliability still requires offset/checkpoint and retry planning."
+      ],
+      "workedExample": "A retail event topic streams records to a managed Kafka Connect sink using the Snowflake connector, instead of a custom hourly bulk COPY.",
+      "examTrap": "Snowpipe and Snowpipe Streaming share a name but have different architectures.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/kafka-connector",
+        "https://docs.snowflake.com/en/user-guide/data-load-snowpipe-streaming-overview"
+      ]
+    },
+    {
+      "id": "C035",
+      "exam": 3,
+      "domain": 3,
+      "objective": "3.1",
+      "topic": "S3 server-side encryption via external stage",
+      "stem": "An S3 bucket is configured for AWS KMS encryption and the team must configure a Snowflake external stage to read and write permitted objects using that key. Which stage-related setting is germane, in addition to AWS IAM/KMS policy authorization?",
+      "options": [
+        "Set WAREHOUSE_SIZE = LARGE on the stage object.",
+        "Set FILE_FORMAT TYPE = JSON and assume it supplies KMS key access.",
+        "Set STORAGE_ALLOWED_LOCATIONS to the bucket and assume the KMS key is never required.",
+        "Use supported ENCRYPTION settings such as AWS_SSE_KMS with an appropriate KMS_KEY_ID where applicable."
+      ],
+      "feedback": [
+        "Warehouse size is not an external stage encryption setting.",
+        "File parsing format does not authorize KMS decryption.",
+        "Storage location scope alone may not grant access to customer-managed KMS keys.",
+        "Correct: stage encryption configuration works with corresponding cloud-side KMS permissions."
+      ],
+      "answer": [
+        4
+      ],
+      "reason": "Snowflake external stages support S3 server-side encryption types, including AWS_SSE_KMS, but successful reads/writes still depend on AWS permissions and KMS configuration.",
+      "clue": "The files are encrypted with a customer-managed KMS key.",
+      "learn": [
+        "Storage integrations control cloud identity and allowed paths.",
+        "Stage ENCRYPTION governs how supported encrypted objects are handled.",
+        "KMS permission failures are not solved by changing file compression or virtual warehouse size."
+      ],
+      "workedExample": "A stage pointing at an encrypted S3 prefix may need AWS_SSE_KMS settings and an IAM role allowed to use the key.",
+      "examTrap": "An integration ACTIVE status does not imply all KMS actions are permitted.",
+      "docs": [
+        "https://docs.snowflake.com/en/sql-reference/sql/create-stage",
+        "https://docs.snowflake.com/en/user-guide/data-load-s3-config-aws-iam-user"
+      ]
+    },
+    {
+      "id": "C036",
+      "exam": 3,
+      "domain": 3,
+      "objective": "3.3",
+      "topic": "Executing versioned SQL from Git",
+      "stem": "After fetching a Snowflake Git repository clone, a deployment engineer wants a repeatable way to run a reviewed SQL migration from a named branch, without copying its text by hand into a worksheet. Which approach fits the integration?",
+      "options": [
+        "Use EXECUTE IMMEDIATE FROM a valid file path in the Snowflake Git repository clone, with required privileges and supported syntax.",
+        "Create a resource monitor and wait for it to apply the migration.",
+        "Give SELECT on all application tables to the Git integration; grants alone cause scripts to execute.",
+        "Turn on RESULT_CACHE and assume any new SQL file executes when it is fetched."
+      ],
+      "feedback": [
+        "Correct: scripts stored in repository stages can be executed with supported SQL commands.",
+        "Resource monitors track/limit warehouse usage, not SQL migrations.",
+        "Permissions do not schedule or execute Git file contents.",
+        "Fetching source code and executing a script are separate operations."
+      ],
+      "answer": [
+        1
+      ],
+      "reason": "Snowflake integrates repository-staged SQL with commands such as EXECUTE IMMEDIATE FROM, enabling versioned deployment workflows.",
+      "clue": "The repository is already fetched; the missing step is execution of a reviewed script.",
+      "learn": [
+        "Fetch operations update the clone; they do not apply schema changes.",
+        "Repository paths include supported branches/commits and stage conventions.",
+        "Run deployments with a least-privilege role and validate SQL before production execution."
+      ],
+      "workedExample": "Fetch Git main → review 002_add_index.sql → EXECUTE IMMEDIATE FROM an authorized repository path.",
+      "examTrap": "Git sync and migration execution are distinct and should have separate approvals.",
+      "docs": [
+        "https://docs.snowflake.com/en/developer-guide/git/git-operations",
+        "https://docs.snowflake.com/en/sql-reference/sql/execute-immediate-from"
+      ]
+    },
+    {
+      "id": "C037",
+      "exam": 3,
+      "domain": 3,
+      "objective": "3.3",
+      "topic": "Client account identifier versus locator",
+      "stem": "A new connection works using a Snowflake organization-account identifier but fails when someone replaces it with only a short account locator without region/cloud context in an older client. What is the likely issue? (Select TWO.)",
+      "options": [
+        "Warehouse autosuspend is too short for connecting clients.",
+        "The account identifier format and required region/cloud components vary with supported locator versus organization-account naming and client settings.",
+        "A table has no clustering key, so authentication cannot locate the account.",
+        "Checking the connection details supplied by Snowsight for the specific client is a sound way to validate account addressing."
+      ],
+      "feedback": [
+        "Warehouse state does not usually determine the hostname/account identifier syntax.",
+        "Correct: account addressing needs the expected identifier syntax.",
+        "Clustering is a data performance feature.",
+        "Correct: official connection information reduces locator and region-format confusion."
+      ],
+      "answer": [
+        2,
+        4
+      ],
+      "reason": "Connection parameters identify the correct Snowflake account. Organization-account names and account-locator forms can require different syntax and contextual details. Both indicated statements are required for full credit.",
+      "clue": "The same credentials work with one account naming form but not another.",
+      "learn": [
+        "Use Snowsight or official client connection instructions to copy a supported account identifier.",
+        "Drivers may accept different combinations of account, host, region and cloud parameters.",
+        "Authentication failures should be distinguished from network hostname/identifier configuration errors.",
+        "Select-two scoring is all-or-nothing: choose both independently justified facts."
+      ],
+      "workedExample": "orgname-accountname is an organization-account form; a legacy locator may need region/cloud qualifiers depending on connection method.",
+      "examTrap": "An account locator alone is not universally the same as a complete connection identifier.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/admin-account-identifier",
+        "https://docs.snowflake.com/en/user-guide/gen-conn-config"
+      ]
+    },
+    {
+      "id": "C038",
+      "exam": 3,
+      "domain": 3,
+      "objective": "3.3",
+      "topic": "Spark Connector predicate pushdown",
+      "stem": "A Spark ETL job uses Snowflake as a source and then applies filters to a very large table. Its developers want to avoid transferring all rows into the Spark cluster before filtering. Which capability should they evaluate?",
+      "options": [
+        "Snowflake Connector for Spark query/predicate pushdown for supported operations.",
+        "A Snowflake Reader Account to run the Spark driver as the provider.",
+        "ALTER WAREHOUSE SET AUTO_SUSPEND = 0, which forces every Spark filter to run remotely.",
+        "Choose FILE_FORMAT = XML to make all Spark DataFrames execute in Snowflake."
+      ],
+      "feedback": [
+        "Correct: pushdown can perform eligible work in Snowflake before transferring results.",
+        "Reader accounts are for consuming shared data, not pushing Spark filters.",
+        "Auto-suspend affects warehouse lifecycle, not Spark pushdown eligibility.",
+        "File formats do not control Spark connector pushdown."
+      ],
+      "answer": [
+        1
+      ],
+      "reason": "The Spark Connector supports pushdown of certain operations, improving efficiency by reducing data shipped from Snowflake to the Spark runtime.",
+      "clue": "The performance goal is fewer transferred rows before Spark-side processing.",
+      "learn": [
+        "Pushdown support depends on connector versions, operations and query shape.",
+        "Inspect actual generated SQL and transferred row counts to confirm effectiveness.",
+        "Pushdown does not mean all Spark transformations run inside Snowflake."
+      ],
+      "workedExample": "If Snowflake can evaluate WHERE event_date >= cutoff before returning rows, Spark receives less data than for a full-table scan.",
+      "examTrap": "A specialized connector is not the same as a SQL driver or a Snowpark API.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/spark-connector-use"
+      ]
+    },
+    {
+      "id": "C039",
+      "exam": 3,
+      "domain": 4,
+      "objective": "4.3",
+      "topic": "Cloud Services metadata caching",
+      "stem": "A user asks why a metadata-only statement such as SHOW TABLES can often respond without scanning billions of rows from table storage. The engineer explains that Snowflake uses centrally maintained object metadata. Which architecture component is closest to this mechanism? (Select TWO.)",
+      "options": [
+        "Only local warehouse SSD cache containing every table data page.",
+        "The persisted SQL result cache, which must always store the previous SHOW output for years.",
+        "Cloud Services metadata/catalog facilities and their caching, separate from scanning table micro-partitions.",
+        "Warehouse-local SSD data caching and centralized metadata caching serve different purposes."
+      ],
+      "feedback": [
+        "Warehouse caches are transient data caches, not the central catalog of object names.",
+        "Persisted results have eligibility and lifetime rules and are not the sole metadata source.",
+        "Correct: central catalog metadata can service metadata queries without table scans.",
+        "Correct: warehouse cache accelerates data reads, whereas metadata cache/control plane serves catalog work."
+      ],
+      "answer": [
+        3,
+        4
+      ],
+      "reason": "The guide lists metadata caching separately from the persisted query-result cache and warehouse data cache. Metadata lives in the platform control plane and can answer catalog-style queries without scanning stored data. Both indicated statements are required for full credit.",
+      "clue": "The query is about table definitions/names, not table row contents.",
+      "learn": [
+        "Query result cache reuses eligible query output.",
+        "Warehouse cache stores accessed table data while running.",
+        "Cloud Services maintains central metadata and can respond to metadata operations separately from data scans.",
+        "Select-two scoring is all-or-nothing: choose both independently justified facts."
+      ],
+      "workedExample": "SHOW TABLES lists catalog objects; SELECT COUNT(*) FROM a huge table is a different query whose optimization depends on semantics and available metadata.",
+      "examTrap": "Do not equate every fast metadata operation with a reused persisted SQL result.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/intro-key-concepts",
+        "https://docs.snowflake.com/en/user-guide/querying-persisted-results"
+      ]
+    },
+    {
+      "id": "C040",
+      "exam": 3,
+      "domain": 4,
+      "objective": "4.3",
+      "topic": "Three caching layers",
+      "stem": "A dashboard query repeats immediately and returns fast even after the execution warehouse is suspended. A separate query that differs in SQL text but reads similar data becomes slower after suspension. Which model best explains this difference?",
+      "options": [
+        "Both queries are always accelerated by an immutable 90-day local SSD cache.",
+        "Persisted result reuse may serve an eligible identical query independently of running warehouse compute, while local warehouse data cache may be cold after suspension.",
+        "A Snowflake sequence caches all SELECT outputs by table name.",
+        "All cache layers are exactly the same physical storage with identical reuse rules."
+      ],
+      "feedback": [
+        "Warehouse local caches may be lost on suspension and do not have that guarantee.",
+        "Correct: the two caches have different lifecycles.",
+        "Sequence generators do not cache query output.",
+        "Different caching mechanisms serve different operations and lifetimes."
+      ],
+      "answer": [
+        2
+      ],
+      "reason": "Result reuse, warehouse local data caching and central metadata are separate. Suspend impacts local compute cache, not necessarily eligibility for previously persisted query results.",
+      "clue": "One exact eligible query repeats; another cannot simply reuse the identical persisted result.",
+      "learn": [
+        "Persisted result reuse needs eligible deterministic SQL and unchanged relevant data/conditions.",
+        "Warehouse cache improves scans when compute remains warm.",
+        "Metadata caching helps control-plane/catalog and optimization operations."
+      ],
+      "workedExample": "First query may return from persisted results; second re-scans data on a cold warehouse.",
+      "examTrap": "Suspending a warehouse does not mean all Snowflake caches vanish together.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/querying-persisted-results",
+        "https://docs.snowflake.com/en/user-guide/performance-query-warehouse-cache"
+      ]
+    },
+    {
+      "id": "C041",
+      "exam": 3,
+      "domain": 4,
+      "objective": "4.1",
+      "topic": "Grouped query history diagnosis",
+      "stem": "A business dashboard generates hundreds of SQL statements with different filter literals but otherwise the same shape. The performance team wants to identify recurring expensive query patterns rather than inspect 500 isolated IDs. Which built-in investigation workflow is closest?",
+      "options": [
+        "Review Snowsight Grouped Query History and appropriate query statistics to identify repeated patterns.",
+        "Look only at the last single QUERY_ID and assume it represents the workload.",
+        "Create 500 transient tables named after query IDs.",
+        "Set PASSWORD = NULL on the query owner."
+      ],
+      "feedback": [
+        "Correct: grouped analysis can identify common query shapes and accumulated impact.",
+        "One execution cannot reliably represent a repeated workload.",
+        "More tables do not group query patterns for performance analysis.",
+        "Authentication changes are unrelated to query workload grouping."
+      ],
+      "answer": [
+        1
+      ],
+      "reason": "Grouped Query History and query-pattern analysis reveal expensive recurring workloads, helping prioritize cumulative cost instead of only slowest single statements.",
+      "clue": "The filter literals differ but the SQL structure repeats.",
+      "learn": [
+        "Group similar query patterns before choosing warehouse and query changes.",
+        "Query Profile reveals why representative executions are slow.",
+        "Aggregate count, total compute impact and latency, not merely maximum single-query duration."
+      ],
+      "workedExample": "500 queries at 2 seconds may be a larger cost target than one 20-second query; group the repeated template.",
+      "examTrap": "Do not optimize only one query ID when the workload is repetitive.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/ui-snowsight-activity"
+      ]
+    },
+    {
+      "id": "C042",
+      "exam": 3,
+      "domain": 4,
+      "objective": "4.1",
+      "topic": "Query insights not definitive proof",
+      "stem": "Snowsight Query Insights flags a join that may produce excessive intermediate rows. A developer proposes immediately buying a larger warehouse without checking the output cardinality or join predicates. What is the best next step?",
+      "options": [
+        "Assume all query insights are merely visual decoration and ignore them.",
+        "Delete the source table to clear the join insight.",
+        "Change the account edition to Business Critical to force perfect joins.",
+        "Inspect the Query Profile, join condition and row counts to verify the insight, then redesign or benchmark the query."
+      ],
+      "feedback": [
+        "Query insights can provide useful direction for diagnosis.",
+        "Destructive changes do not address query semantics.",
+        "Edition does not correct join predicates or row fanout.",
+        "Correct: validate insight against observed execution before tuning resources."
+      ],
+      "answer": [
+        4
+      ],
+      "reason": "Query Insights surfaces potential issues, while Query Profile provides the underlying operator evidence. Use them together with query logic and correctness requirements.",
+      "clue": "The insight is about row explosion, not measured memory or concurrency shortage.",
+      "learn": [
+        "An exploding join can arise from missing/low-selectivity join conditions.",
+        "A larger warehouse may hide some cost while preserving a massive unnecessary intermediate.",
+        "Query rewrites require confirming the intended join semantics before eliminating matches."
+      ],
+      "workedExample": "Compare input rows and join output rows; a sudden jump to billions signals possible fanout.",
+      "examTrap": "Automated insight is a diagnostic suggestion, not a proof that resize is the best fix.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/query-insights",
+        "https://docs.snowflake.com/en/user-guide/ui-query-profile"
+      ]
+    },
+    {
+      "id": "C043",
+      "exam": 3,
+      "domain": 5,
+      "objective": "5.3",
+      "topic": "Native App package versus direct share",
+      "stem": "A software vendor wants customers to install versioned application logic (procedures and a Streamlit front end) along with governed reference data inside their Snowflake accounts. Simply sharing read-only tables is insufficient. What provider-side artifact should the vendor build? (Select TWO.)",
+      "options": [
+        "A share containing only SELECT privileges on reference tables, with no app logic.",
+        "A Snowflake Native App application package distributed through an appropriate listing.",
+        "Published app releases and versions should be managed through the Native App application-package lifecycle.",
+        "A database clone executed from the consumer account against an arbitrary provider account."
+      ],
+      "feedback": [
+        "A direct share distributes data but does not itself package installable application code.",
+        "Correct: a Native App package contains installable application components and supporting data.",
+        "Correct: the package is the distribution artifact and controlled releases govern updates.",
+        "Cross-account cloning does not provide the requested installable versioned application mechanism."
+      ],
+      "answer": [
+        2,
+        3
+      ],
+      "reason": "Native Apps package provider-controlled data and executable application capabilities, while ordinary shares focus on controlled access to data. Both indicated statements are required for full credit.",
+      "clue": "The requirement is installed logic and versioned lifecycle, not read-only tables only.",
+      "learn": [
+        "Providers prepare an application package and published releases.",
+        "A listing can distribute a Native App to eligible consumers.",
+        "Consumers install an application object, subject to needed permissions and security review.",
+        "Select-two scoring is all-or-nothing: choose both independently justified facts."
+      ],
+      "workedExample": "Provider package includes procedures and Streamlit UI; consumer installs from listing and receives governed application behavior rather than raw tables alone.",
+      "examTrap": "An application package is not the same object as a data share.",
+      "docs": [
+        "https://docs.snowflake.com/en/developer-guide/native-apps/native-apps-about",
+        "https://docs.snowflake.com/en/developer-guide/native-apps/ui-provider-publishing-app-package"
+      ]
+    },
+    {
+      "id": "C044",
+      "exam": 3,
+      "domain": 5,
+      "objective": "5.3",
+      "topic": "Marketplace Native App security review",
+      "stem": "A vendor has tested a Snowflake Native App locally and now wants to publish it to the public Snowflake Marketplace. A teammate proposes bypassing all review because the application package installed successfully in one test account. What is the key correction?",
+      "options": [
+        "Successful local installation automatically grants permission to publish any app publicly with no provider requirements.",
+        "The app must first be converted to a transient table because Marketplace cannot publish logic.",
+        "Public Marketplace app listings have provider-submission, security/functional review, and listing requirements distinct from local testing.",
+        "The app automatically becomes a public listing when the provider runs ALTER WAREHOUSE RESUME."
+      ],
+      "feedback": [
+        "Local tests are not the entire public Marketplace publication process.",
+        "Native Apps distribute application logic and do not need a transient table conversion.",
+        "Correct: publishing includes defined Marketplace guidelines and review.",
+        "Compute lifecycle has no effect on listing publication."
+      ],
+      "answer": [
+        3
+      ],
+      "reason": "Public Native App distribution requires listing setup and compliance with Snowflake Marketplace guidelines, not merely a working local installer.",
+      "clue": "The proposed shortcut treats local functionality as public distribution authorization.",
+      "learn": [
+        "Prepare the application package and release directive.",
+        "Submit the public listing and comply with applicable security/functional review steps.",
+        "Private distribution and public Marketplace discovery have different recipient/review requirements."
+      ],
+      "workedExample": "A tested package may pass internal QA but still need to meet Marketplace app publication and security-scanning requirements.",
+      "examTrap": "Local installation success is necessary evidence but not a publishing approval.",
+      "docs": [
+        "https://docs.snowflake.com/en/collaboration/guidelines-reqs-for-listing-apps",
+        "https://docs.snowflake.com/en/developer-guide/native-apps/publish-guidelines"
+      ]
+    },
+    {
+      "id": "C045",
+      "exam": 3,
+      "domain": 5,
+      "objective": "5.3",
+      "topic": "Updating a published Native App",
+      "stem": "A provider has a Native App installed by many customers and discovers a bug in an application procedure. The provider wants governed updates with versioned releases rather than asking each consumer to copy SQL manually. Which lifecycle is relevant?",
+      "options": [
+        "Change the application-package release/version configuration and use supported Native App upgrade distribution.",
+        "Revoke the entire data share because application packages cannot version code.",
+        "Increase every consumer warehouse by one size to patch SQL logic.",
+        "Insert SQL text into ACCOUNT_USAGE.QUERY_HISTORY to change installed application definitions."
+      ],
+      "feedback": [
+        "Correct: Native Apps have provider-controlled version and release management.",
+        "Native App framework supports releases and upgrades.",
+        "More compute cannot correct a procedure implementation.",
+        "Query History is observability data, not a deployment control plane."
+      ],
+      "answer": [
+        1
+      ],
+      "reason": "Native Apps separate provider package versioning/release management from consumer installation and upgrades.",
+      "clue": "The requirement is a safe published update to an installed application.",
+      "learn": [
+        "Release directives/channels guide which application version consumers receive where supported.",
+        "App packages may be distributed through listings; consumers operate installed application objects.",
+        "A data-share refresh is not an application code-upgrade mechanism."
+      ],
+      "workedExample": "Test a new app release, update the package release configuration, and promote to eligible consumers through supported lifecycle operations.",
+      "examTrap": "Data freshness and application code versioning are separate concerns.",
+      "docs": [
+        "https://docs.snowflake.com/en/developer-guide/native-apps/release-channels",
+        "https://docs.snowflake.com/en/developer-guide/native-apps/native-apps-about"
+      ]
+    }
+  ]
+}
