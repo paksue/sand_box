@@ -32,6 +32,8 @@ async function test(){
  for(let i=0;i<30;i++)await Promise.resolve();
  const first=page.get("projectGrid").innerHTML;
  assert.ok(first.includes("Midnight Japanese"),"Initial catalog should render");
+ assert.ok(first.includes("/assets/covers/curated/midnight-japanese-studio.webp"),"Curated art should be preferred for featured projects");
+ assert.ok(first.includes("/assets/covers/screenshots/"),"Every project should have a screenshot fallback");
  assert.equal((first.match(/<article/g)||[]).length,catalog.apps.length,"App cards missing");
  const search=page.get("searchInput");
  search.listeners.input({target:{value:"Midnight Japanese"}});
