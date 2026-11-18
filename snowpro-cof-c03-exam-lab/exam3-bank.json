@@ -1,5 +1,5 @@
 {
-  "title": "SnowPro Core COF-C03 — Exam 3 Gap Challenge",
+  "title": "Exam 3 — 66-question knowledge gaps and personalized Exam 1/2 misses",
   "official": false,
   "questions": [
     {
@@ -1631,6 +1631,820 @@
         "https://docs.snowflake.com/en/developer-guide/native-apps/release-channels",
         "https://docs.snowflake.com/en/developer-guide/native-apps/native-apps-about"
       ]
+    },
+    {
+      "id": "C046",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.5",
+      "sourceId": "Q008",
+      "topic": "Iceberg external volume and storage ownership",
+      "stem": "A company wants Snowflake to manage the Iceberg catalog but mandates that its Iceberg data files stay in a specified company-owned S3 bucket. Which component must be configured to identify and grant Snowflake access to that external location?",
+      "options": [
+        "An external volume pointing to the approved bucket and storage credentials.",
+        "A standard internal table stage created with CREATE STAGE.",
+        "A query result cache attached to the warehouse.",
+        "An internal named file format with TYPE=ICEBERG."
+      ],
+      "answer": [
+        1
+      ],
+      "feedback": [
+        "Correct: an external volume defines externally managed cloud storage used for Iceberg files.",
+        "An internal stage is not the Iceberg external storage configuration.",
+        "Warehouse caching does not designate an Iceberg storage location.",
+        "File formats do not define Iceberg storage authorization."
+      ],
+      "reason": "Correct: an external volume defines externally managed cloud storage used for Iceberg files.",
+      "clue": "Snowflake-managed catalog does not necessarily mean Snowflake-managed file storage.",
+      "learn": [
+        "Separate who manages the Iceberg catalog from where table files physically live.",
+        "Explicit company-owned storage calls for a configured external volume.",
+        "Snowflake also offers Snowflake-managed Iceberg storage; that does not satisfy this requirement."
+      ],
+      "workedExample": "The same catalog owner can support different storage models depending on external volume settings.",
+      "examTrap": "Do not confuse an external volume with an external stage or a catalog integration.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/tables-iceberg-storage",
+        "https://docs.snowflake.com/en/user-guide/tables-iceberg-configure-external-volume"
+      ]
+    },
+    {
+      "id": "C047",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.5",
+      "sourceId": "Q021",
+      "topic": "Dynamic table target lag under pipeline changes",
+      "stem": "An analytics team wants a continuously maintained aggregate of a staging table with about ten minutes of freshness, without maintaining change streams and custom task schedules. Which object is the best starting point?",
+      "options": [
+        "A materialized view with TARGET_LAG=10 MINUTES.",
+        "A dynamic table defined by SELECT with TARGET_LAG='10 MINUTES' and a refresh warehouse.",
+        "A temporary table plus a SELECT query executed once at creation.",
+        "A secure view with auto-refresh on each INSERT."
+      ],
+      "answer": [
+        2
+      ],
+      "feedback": [
+        "Materialized views do not use the dynamic-table TARGET_LAG scheduling model.",
+        "Correct: dynamic tables maintain supported query results to an approximate target-lag goal.",
+        "A one-time temporary table does not automatically refresh.",
+        "Secure views compute when queried; they are not target-lag materialization pipelines."
+      ],
+      "reason": "Correct: dynamic tables maintain supported query results to an approximate target-lag goal.",
+      "clue": "The requirement is a declarative freshness goal for maintained transformations.",
+      "learn": [
+        "A dynamic table defines its transformation in a query.",
+        "TARGET_LAG is a freshness target rather than an exact cron firing time.",
+        "Incremental versus full refresh depends on supported transformations and configuration."
+      ],
+      "workedExample": "Define revenue_by_hour AS SELECT hour, SUM(amount) ... with a lag target instead of hand-building stream offsets and task chains.",
+      "examTrap": "Do not claim a 10-minute target lag guarantees an exact refresh every ten minutes.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/dynamic-tables/overview",
+        "https://docs.snowflake.com/en/user-guide/dynamic-tables/target-lag"
+      ]
+    },
+    {
+      "id": "C048",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.6",
+      "sourceId": "Q026",
+      "topic": "Cortex Search versus SQL generation",
+      "stem": "A compliance assistant must find semantically related paragraphs from unstructured vendor contracts and cite relevant passages before an LLM drafts a response. The team is NOT translating English into analytical SQL. Which managed Snowflake service best fits retrieval?",
+      "options": [
+        "Cortex Analyst, because it is a SQL-semantic-model service.",
+        "Search Optimization Service on a transaction ID lookup alone.",
+        "Cortex Search, exposing search over indexed text for retrieval.",
+        "A Snowflake resource monitor."
+      ],
+      "answer": [
+        3
+      ],
+      "feedback": [
+        "Cortex Analyst targets natural-language analytics using semantic models and SQL.",
+        "Table search optimization does not itself supply an application-level semantic text retrieval service.",
+        "Correct: Cortex Search provides managed hybrid/semantic text retrieval for RAG-like uses.",
+        "Resource monitors manage compute consumption, not document retrieval."
+      ],
+      "reason": "Correct: Cortex Search provides managed hybrid/semantic text retrieval for RAG-like uses.",
+      "clue": "Choose a service for retrieving passages, not generating SQL.",
+      "learn": [
+        "Cortex Search supports semantic and keyword retrieval over indexed text.",
+        "Cortex Analyst is for natural-language questions about modeled structured data.",
+        "RAG retrieves grounding context before generation."
+      ],
+      "workedExample": "Search 'supplier termination notice' across paragraph text, then pass retrieved passages to a response model.",
+      "examTrap": "Both are 'Cortex' services, but their input and output responsibilities differ.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+      ]
+    },
+    {
+      "id": "C049",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.1",
+      "sourceId": "Q029",
+      "topic": "Minimum edition for Tri-Secret Secure",
+      "stem": "A security architect asks for Snowflake Tri-Secret Secure with a customer-managed key supplementing Snowflake-managed keys. If only Standard, Enterprise, and Business Critical editions are in scope, what is the minimum suitable edition?",
+      "options": [
+        "Standard.",
+        "Enterprise.",
+        "Business Critical.",
+        "All three offer identical customer-managed key features."
+      ],
+      "answer": [
+        3
+      ],
+      "feedback": [
+        "Standard alone does not provide this feature.",
+        "Enterprise alone is below the minimum for Tri-Secret Secure.",
+        "Correct: Tri-Secret Secure is a Business Critical or higher capability.",
+        "Encryption at rest exists across editions; Tri-Secret Secure is a separate higher-edition feature."
+      ],
+      "reason": "Correct: Tri-Secret Secure is a Business Critical or higher capability.",
+      "clue": "Differentiate automatic encryption from customer-managed Tri-Secret Secure.",
+      "learn": [
+        "All editions include baseline encryption.",
+        "Tri-Secret Secure requires Business Critical or higher.",
+        "Periodic data rekeying has a different edition requirement."
+      ],
+      "workedExample": "An Enterprise subscription can satisfy some rekeying requirements yet still not satisfy a Tri-Secret Secure mandate.",
+      "examTrap": "Do not merge periodic rekeying and Tri-Secret Secure into one edition rule.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/security-encryption-tss-ssa",
+        "https://docs.snowflake.com/en/user-guide/intro-editions"
+      ]
+    },
+    {
+      "id": "C050",
+      "exam": 3,
+      "domain": 2,
+      "objective": "2.3",
+      "sourceId": "Q034",
+      "topic": "Information Schema versus Account Usage for current objects",
+      "stem": "A developer needs to discover currently accessible tables in one database immediately after deployment; the audit team separately wants historical account-wide usage. Which TWO statements are correct? (Select TWO.)",
+      "options": [
+        "The database INFORMATION_SCHEMA is a natural place to inspect currently visible objects, subject to role privileges.",
+        "ACCOUNT_USAGE always reflects every newly created object instantly with no reporting latency.",
+        "ACCOUNT_USAGE is commonly used for account-wide historical reporting and can have view-specific latency.",
+        "INFORMATION_SCHEMA automatically exposes every object in all accounts regardless of grants."
+      ],
+      "answer": [
+        1,
+        3
+      ],
+      "feedback": [
+        "Correct: database-scoped Information Schema metadata is permission-sensitive.",
+        "Account Usage views have documented reporting latencies.",
+        "Correct: Account Usage is useful for historical/account-wide analysis.",
+        "Information Schema is scoped and privilege filtered, not a cross-account bypass."
+      ],
+      "reason": "Correct: database-scoped Information Schema metadata is permission-sensitive. Correct: Account Usage is useful for historical/account-wide analysis.",
+      "clue": "The question contrasts fresh database-scoped discovery with historical account-wide reporting.",
+      "learn": [
+        "Information Schema can provide current object metadata.",
+        "ACCOUNT_USAGE surfaces account-level history and has latency caveats.",
+        "Role visibility still governs which objects appear."
+      ],
+      "workedExample": "Check newly deployed tables using the database information schema; use Account Usage for trend auditing.",
+      "examTrap": "Do not treat the two metadata families as identical snapshots.",
+      "docs": [
+        "https://docs.snowflake.com/en/sql-reference/info-schema",
+        "https://docs.snowflake.com/en/sql-reference/account-usage"
+      ]
+    },
+    {
+      "id": "C051",
+      "exam": 3,
+      "domain": 2,
+      "objective": "2.2",
+      "sourceId": "Q054",
+      "topic": "Periodic rekeying edition requirement",
+      "stem": "An account already encrypts all customer data. A new policy specifically requires Snowflake's PERIODIC_DATA_REKEYING capability, but NOT Tri-Secret Secure. Which minimum edition among Standard, Enterprise and Business Critical supports it?",
+      "options": [
+        "Standard.",
+        "Enterprise.",
+        "Business Critical, exclusively.",
+        "No Snowflake edition supports periodic rekeying."
+      ],
+      "answer": [
+        2
+      ],
+      "feedback": [
+        "Standard does not meet the periodic-data-rekeying edition requirement.",
+        "Correct: Enterprise or higher supports periodic rekeying.",
+        "Business Critical can support it but is not the minimum.",
+        "Snowflake documents this as a supported higher-edition feature."
+      ],
+      "reason": "Correct: Enterprise or higher supports periodic rekeying.",
+      "clue": "The requested feature is periodic rekeying, not customer-managed Tri-Secret Secure.",
+      "learn": [
+        "Periodic rekeying is an Enterprise-or-higher feature.",
+        "Tri-Secret Secure instead requires Business Critical or higher.",
+        "Ordinary automatic encryption is not evidence that periodic rekeying is enabled."
+      ],
+      "workedExample": "For a contract mandating only periodic rekeying, Enterprise meets the edition threshold; enable the account parameter separately.",
+      "examTrap": "Distinguish feature availability from feature activation.",
+      "docs": [
+        "https://docs.snowflake.com/en/sql-reference/parameters",
+        "https://docs.snowflake.com/en/user-guide/security-encryption-manage"
+      ]
+    },
+    {
+      "id": "C052",
+      "exam": 3,
+      "domain": 4,
+      "objective": "4.4",
+      "sourceId": "Q083",
+      "topic": "SPLIT_PART indexing",
+      "stem": "A VARCHAR column contains 'apac|retail|renewals'. Which expression returns only 'retail' without regex, assuming the value uses the shown delimiter?",
+      "options": [
+        "SPLIT_PART(region_key, '|', 0)",
+        "SPLIT_PART(region_key, '|', 1)",
+        "SPLIT_PART(region_key, '|', 2)",
+        "SPLIT_PART(region_key, '|', 3)"
+      ],
+      "answer": [
+        3
+      ],
+      "feedback": [
+        "Index zero is treated like position one, not the middle part.",
+        "Part one is apac.",
+        "Correct: Snowflake SPLIT_PART uses a one-based field position.",
+        "Part three is renewals."
+      ],
+      "reason": "Correct: Snowflake SPLIT_PART uses a one-based field position.",
+      "clue": "Count fields starting at one.",
+      "learn": [
+        "SPLIT_PART splits a string using a literal delimiter.",
+        "Positive field positions start at 1.",
+        "Negative positions can select fields counting backward."
+      ],
+      "workedExample": "apac is part 1, retail is part 2, renewals is part 3.",
+      "examTrap": "Do not import zero-based indexing assumptions from Python.",
+      "docs": [
+        "https://docs.snowflake.com/en/sql-reference/functions/split_part"
+      ]
+    },
+    {
+      "id": "C053",
+      "exam": 3,
+      "domain": 4,
+      "objective": "4.4",
+      "sourceId": "Q085",
+      "topic": "CONCAT_WS and NULL propagation",
+      "stem": "A query builds a label with CONCAT_WS('-', 'active', NULL, 'premium'). The developer expects 'active-premium'. In Snowflake, what is the actual result?",
+      "options": [
+        "'active-premium' because NULL is skipped.",
+        "An empty string.",
+        "SQL NULL.",
+        "'active--premium' because NULL is replaced by an empty field."
+      ],
+      "answer": [
+        3
+      ],
+      "feedback": [
+        "Snowflake CONCAT_WS does not skip NULL arguments.",
+        "The result is NULL, not an empty string.",
+        "Correct: a NULL argument makes CONCAT_WS return NULL.",
+        "Snowflake does not implicitly coerce NULL to an empty string."
+      ],
+      "reason": "Correct: a NULL argument makes CONCAT_WS return NULL.",
+      "clue": "The function's NULL behavior differs across SQL dialects.",
+      "learn": [
+        "CONCAT_WS returns NULL when any input argument is NULL.",
+        "COALESCE can explicitly replace NULL with a chosen string before concatenating.",
+        "Never assume a cross-database function behaves identically by name."
+      ],
+      "workedExample": "CONCAT_WS('-', 'active', COALESCE(NULL, ''), 'premium') can produce a double separator rather than omitting a segment.",
+      "examTrap": "Remember that coalescing to empty string does not automatically remove the extra delimiter.",
+      "docs": [
+        "https://docs.snowflake.com/en/sql-reference/functions/concat_ws"
+      ]
+    },
+    {
+      "id": "C054",
+      "exam": 3,
+      "domain": 5,
+      "objective": "5.1",
+      "sourceId": "Q095",
+      "topic": "Consumer actions on imported share",
+      "stem": "A consumer has read-only imported database PARTNER_FEED and a writable local database ANALYTICS. Which TWO operations respect the sharing boundary? (Select TWO.)",
+      "options": [
+        "SELECT rows from PARTNER_FEED for analysis.",
+        "CREATE TABLE ANALYTICS.PUBLIC.COPY AS SELECT ... FROM PARTNER_FEED.PUBLIC.EVENTS, if privileges allow.",
+        "UPDATE PARTNER_FEED.PUBLIC.EVENTS directly to tag consumer-owned status.",
+        "ALTER the provider's shared table to add a proprietary column."
+      ],
+      "answer": [
+        1,
+        2
+      ],
+      "feedback": [
+        "Correct: read access is the consumer's primary capability.",
+        "Correct: materializing results into the consumer's own writable database is allowed.",
+        "Direct DML cannot modify provider-owned shared tables.",
+        "Consumers do not change provider schema definitions through a direct share."
+      ],
+      "reason": "Correct: read access is the consumer's primary capability. Correct: materializing results into the consumer's own writable database is allowed.",
+      "clue": "Reading shared data and writing local derived data are distinct rights.",
+      "learn": [
+        "Provider objects in imported shares remain read-only.",
+        "Consumers can combine shared rows with local data.",
+        "The consumer controls its own local derived objects."
+      ],
+      "workedExample": "A local table can store joined shared order rows and private risk scores without changing the source share.",
+      "examTrap": "Read-only does not mean you cannot use shared rows in a local writable query.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/data-sharing-intro",
+        "https://docs.snowflake.com/en/user-guide/data-share-consumers"
+      ]
+    },
+    {
+      "id": "C055",
+      "exam": 3,
+      "domain": 1,
+      "objective": "1.3",
+      "sourceId": "B002",
+      "topic": "Replicated secondary versus cross-account clone",
+      "stem": "A company wants an automatically refreshable copy of PROD_DB in another Snowflake account. A teammate proposes CREATE DATABASE CLONE using the source account's name. Which TWO claims are accurate? (Select TWO.)",
+      "options": [
+        "Ordinary zero-copy cloning is not an arbitrary cross-account database copy mechanism.",
+        "A secondary created by database replication can be refreshed from its primary.",
+        "A secondary replica becomes writable immediately after every refresh.",
+        "Secure sharing alone grants the consumer an independently writable full duplicate of provider tables."
+      ],
+      "answer": [
+        1,
+        2
+      ],
+      "feedback": [
+        "Correct: normal CLONE syntax does not jump between accounts.",
+        "Correct: replication creates a secondary that can be refreshed.",
+        "A secondary stays read-only unless supported failover promotes it.",
+        "Shared database objects are read-only for consumers."
+      ],
+      "reason": "Correct: normal CLONE syntax does not jump between accounts. Correct: replication creates a secondary that can be refreshed.",
+      "clue": "Choose between same-account cloning, cross-account replication, and read-only sharing.",
+      "learn": [
+        "Replication keeps another account's secondary database current.",
+        "A replica's writeability differs from a local zero-copy clone.",
+        "Failover is separate from basic replication refresh."
+      ],
+      "workedExample": "Use replication to maintain a disaster-recovery copy and failover procedures to promote it if writes are required.",
+      "examTrap": "Replication is not the same as Time Travel or a normal clone.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/db-replication-config",
+        "https://docs.snowflake.com/en/user-guide/data-sharing-intro"
+      ]
+    },
+    {
+      "id": "C056",
+      "exam": 3,
+      "domain": 2,
+      "objective": "2.1",
+      "sourceId": "B035",
+      "topic": "Schema-level future grant precedence",
+      "stem": "Database CORP has a future SELECT grant on TABLES to ROLE_REPORT. Schema CORP.FINANCE separately grants future SELECT on TABLES to ROLE_FINANCE. A new regular table is created in CORP.FINANCE. Which TWO statements are correct? (Select TWO.)",
+      "options": [
+        "The schema-level future grant applies to the new table.",
+        "Both database- and schema-level SELECT future grants always accumulate for the same object type.",
+        "The schema-level grant takes precedence over the database-level future grant for TABLES in that schema.",
+        "The owner of every existing table changes to ROLE_FINANCE automatically."
+      ],
+      "answer": [
+        1,
+        3
+      ],
+      "feedback": [
+        "Correct: the schema's future privilege is materialized for its new tables.",
+        "Same-type future grants at the two levels do not simply accumulate in this situation.",
+        "Correct: the schema-level rule supersedes the corresponding database-level rule.",
+        "SELECT grants do not transfer OWNERSHIP or retroactively change old tables."
+      ],
+      "reason": "Correct: the schema's future privilege is materialized for its new tables. Correct: the schema-level rule supersedes the corresponding database-level rule.",
+      "clue": "Future-grant precedence depends on object type and scope.",
+      "learn": [
+        "Future grants act on new objects, not on arbitrary old objects.",
+        "Schema-level future grants supersede database-level future grants for the same object type.",
+        "Ownership grants and regular privileges require separate consideration."
+      ],
+      "workedExample": "Finance-specific future grants override default database-wide future grants for newly created Finance tables.",
+      "examTrap": "A database future grant isn't guaranteed to grant everyone access when a schema-specific rule exists.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/security-access-control-configure",
+        "https://docs.snowflake.com/en/sql-reference/sql/grant-privilege"
+      ]
+    },
+    {
+      "id": "C057",
+      "exam": 3,
+      "domain": 2,
+      "objective": "2.2",
+      "sourceId": "B042",
+      "topic": "Row access policy mapping table owner rights",
+      "stem": "A ROW ACCESS POLICY consults a private entitlement mapping table. Analysts can SELECT the protected fact table but cannot SELECT the mapping table. Their fact-table queries work. Which TWO explanations are consistent with Snowflake? (Select TWO.)",
+      "options": [
+        "Each analyst must be given direct SELECT on the mapping table or the policy cannot execute.",
+        "Policy evaluation uses the policy owner's privileges when resolving its mapping table dependencies.",
+        "The policy-owning role needs access to the mapping table used by the policy.",
+        "A table owner can bypass any row access policy just by choosing a larger warehouse."
+      ],
+      "answer": [
+        2,
+        3
+      ],
+      "feedback": [
+        "Owner-rights policy evaluation can protect the mapping table from direct consumer access.",
+        "Correct: row access policies evaluate with the policy owner's rights.",
+        "Correct: the owner role needs suitable privileges on mapping-table dependencies.",
+        "Compute sizing does not bypass policy enforcement."
+      ],
+      "reason": "Correct: row access policies evaluate with the policy owner's rights. Correct: the owner role needs suitable privileges on mapping-table dependencies.",
+      "clue": "The hidden lookup table does not automatically require every querying role to have SELECT on it.",
+      "learn": [
+        "Row access policies evaluate with owner-rights semantics.",
+        "Protected mapping tables can remain inaccessible directly to analysts.",
+        "Test owner privileges independently from analyst table privileges."
+      ],
+      "workedExample": "Grant the policy owner access to ENTITLEMENTS and analysts access to SALES; analysts still see only permitted SALES rows.",
+      "examTrap": "Don't grant sensitive entitlement mappings to all analysts just to make row policies work.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/security-row-using",
+        "https://docs.snowflake.com/en/user-guide/security-row-intro"
+      ]
+    },
+    {
+      "id": "C058",
+      "exam": 3,
+      "domain": 2,
+      "objective": "2.2",
+      "sourceId": "B045",
+      "topic": "Enforcing approved join keys",
+      "stem": "A publisher allows analysts to join a sensitive claims table only using CLAIM_ID; joining by EMAIL must be rejected at query compilation. Which mechanism most directly expresses such restrictions for the protected table?",
+      "options": [
+        "A join policy attached to the table with CLAIM_ID as an allowed join key.",
+        "A row access policy filtering by CURRENT_ROLE alone.",
+        "An account-level resource monitor.",
+        "A default database collation setting."
+      ],
+      "answer": [
+        1
+      ],
+      "feedback": [
+        "Correct: join policies support join requirements and configured allowed join keys.",
+        "Row access policies restrict rows; they do not substitute for an allowed-join-key rule.",
+        "Credit controls cannot dictate legal join predicates.",
+        "Collation controls string comparison behavior, not approved join relationships."
+      ],
+      "reason": "Correct: join policies support join requirements and configured allowed join keys.",
+      "clue": "The constraint concerns JOIN operations and approved keys.",
+      "learn": [
+        "Join policies can require joins against a protected table.",
+        "Allowed join keys are specified when attaching the policy to a table or view.",
+        "Policies may be applied through supported object configuration."
+      ],
+      "workedExample": "Attach a join policy to CLAIMS with ALLOWED JOIN KEYS (CLAIM_ID) to disallow unsupported EMAIL join patterns.",
+      "examTrap": "Do not confuse a row-filtering policy with a policy governing joins.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/join-policies",
+        "https://docs.snowflake.com/en/sql-reference/sql/create-join-policy"
+      ]
+    },
+    {
+      "id": "C059",
+      "exam": 3,
+      "domain": 2,
+      "objective": "2.3",
+      "sourceId": "B048",
+      "topic": "Budgets and resource monitors scope",
+      "stem": "A company uses Snowpipe and other serverless features as well as warehouses. Finance needs alerts when a group of services approaches its credit budget. Which TWO statements are accurate? (Select TWO.)",
+      "options": [
+        "A resource monitor assigned to a virtual warehouse automatically stops every serverless service in the account.",
+        "A Snowflake budget can monitor supported objects and serverless usage and trigger notifications.",
+        "Budget alerts are not equivalent to a guaranteed account-wide automatic suspension of all compute.",
+        "Any budget requires every query to run on the same named warehouse."
+      ],
+      "answer": [
+        2,
+        3
+      ],
+      "feedback": [
+        "Warehouse resource monitors do not comprehensively control serverless consumption.",
+        "Correct: budgets can monitor supported object/service usage and notify.",
+        "Correct: budget alerts do not guarantee shutdown of all service categories.",
+        "Budget coverage is not limited to a single chosen virtual warehouse."
+      ],
+      "reason": "Correct: budgets can monitor supported object/service usage and notify. Correct: budget alerts do not guarantee shutdown of all service categories.",
+      "clue": "The scope includes serverless spending, not only virtual warehouses.",
+      "learn": [
+        "Budgets are for cost monitoring and alerts across eligible sources.",
+        "Resource monitors principally control warehouse credit usage.",
+        "Monitoring and enforced shutdown are different capabilities."
+      ],
+      "workedExample": "Track Snowpipe and warehouse spending in budgets, and use warehouse monitors separately when suspension is required.",
+      "examTrap": "Don't equate receiving a budget email with preventing every future credit charge.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/cost-controlling",
+        "https://docs.snowflake.com/en/user-guide/resource-monitors"
+      ]
+    },
+    {
+      "id": "C060",
+      "exam": 3,
+      "domain": 3,
+      "objective": "3.1",
+      "sourceId": "B052",
+      "topic": "COPY transformations versus MATCH_BY_COLUMN_NAME",
+      "stem": "A loader selects `$1:id::NUMBER` and `$1:total::NUMBER` from staged JSON and maps them into target columns (ORDER_ID, AMOUNT). It also sets MATCH_BY_COLUMN_NAME=CASE_INSENSITIVE on that COPY statement. Which TWO statements are correct? (Select TWO.)",
+      "options": [
+        "MATCH_BY_COLUMN_NAME cannot be combined with a COPY SELECT transformation in the same command.",
+        "Using an explicit target column list and a compatible SELECT transformation is an appropriate way to control these mappings.",
+        "CASE_INSENSITIVE makes an otherwise invalid SELECT-transformation combination legal.",
+        "Changing warehouse size resolves this SQL compilation restriction."
+      ],
+      "answer": [
+        1,
+        2
+      ],
+      "feedback": [
+        "Correct: the two COPY mechanisms are mutually exclusive in the same statement.",
+        "Correct: explicit targets with source SELECT expressions can map fields.",
+        "The named match mode does not override the SQL restriction.",
+        "Compilation rules do not depend on warehouse horsepower."
+      ],
+      "reason": "Correct: the two COPY mechanisms are mutually exclusive in the same statement. Correct: explicit targets with source SELECT expressions can map fields.",
+      "clue": "The conflict arises from combining two valid but incompatible COPY mechanisms.",
+      "learn": [
+        "COPY INTO can transform staged data through a source SELECT.",
+        "MATCH_BY_COLUMN_NAME is a separate mapping mechanism.",
+        "Snowflake explicitly rejects MATCH_BY_COLUMN_NAME with a COPY transform SELECT."
+      ],
+      "workedExample": "Use COPY INTO orders(order_id,amount) FROM (SELECT $1:id::NUMBER,$1:total::NUMBER FROM @stage), without MATCH_BY_COLUMN_NAME.",
+      "examTrap": "Don't try to fix SQL compatibility restrictions by changing match case.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/data-load-transform",
+        "https://docs.snowflake.com/en/sql-reference/sql/copy-into-table"
+      ]
+    },
+    {
+      "id": "C061",
+      "exam": 3,
+      "domain": 3,
+      "objective": "3.1",
+      "sourceId": "B054",
+      "topic": "CSV NULL token and empty field distinction",
+      "stem": "A CSV includes `NULL` for missing values and an empty unquoted field for a genuine empty VARCHAR. The target requires SQL NULL for the text token but an empty string for the empty field. Which TWO file-format settings are relevant? (Select TWO.)",
+      "options": [
+        "Configure NULL_IF to recognize the literal token 'NULL'.",
+        "Set EMPTY_FIELD_AS_NULL=FALSE so empty CSV fields need not become SQL NULL.",
+        "Set EMPTY_FIELD_AS_NULL=TRUE to preserve empty strings in every case.",
+        "Set ON_ERROR=SKIP_FILE; that differentiates NULL tokens from empty strings."
+      ],
+      "answer": [
+        1,
+        2
+      ],
+      "feedback": [
+        "Correct: NULL_IF maps specified source text tokens to SQL NULL.",
+        "Correct: EMPTY_FIELD_AS_NULL controls unquoted empty fields.",
+        "TRUE interprets empty fields as SQL NULL rather than preserving empty strings.",
+        "Error handling is not a substitute for file-format NULL semantics."
+      ],
+      "reason": "Correct: NULL_IF maps specified source text tokens to SQL NULL. Correct: EMPTY_FIELD_AS_NULL controls unquoted empty fields.",
+      "clue": "Literal NULL and empty CSV field are two different inputs.",
+      "learn": [
+        "NULL_IF matches specified text tokens including 'NULL'.",
+        "EMPTY_FIELD_AS_NULL affects empty fields in CSV.",
+        "Inspect named file-format settings instead of assuming defaults work."
+      ],
+      "workedExample": "Input `A,NULL,` can represent a SQL NULL and a genuine empty VARCHAR when the two controls are set deliberately.",
+      "examTrap": "Always test actual CSV quoting and null-sentinel conventions.",
+      "docs": [
+        "https://docs.snowflake.com/en/sql-reference/sql/create-file-format",
+        "https://docs.snowflake.com/en/sql-reference/sql/copy-into-table"
+      ]
+    },
+    {
+      "id": "C062",
+      "exam": 3,
+      "domain": 3,
+      "objective": "3.1",
+      "sourceId": "B069",
+      "topic": "COPY unload validation mode",
+      "stem": "An analyst wants to see all rows that a `COPY INTO @exports FROM (SELECT ...)` unload would emit, while writing no files. Which option is specifically supported for COPY INTO a location?",
+      "options": [
+        "VALIDATION_MODE = RETURN_ERRORS.",
+        "VALIDATION_MODE = RETURN_ALL_ERRORS.",
+        "ON_ERROR = CONTINUE.",
+        "VALIDATION_MODE = RETURN_ROWS."
+      ],
+      "answer": [
+        4
+      ],
+      "feedback": [
+        "RETURN_ERRORS belongs to load-validation modes, not unload preview.",
+        "RETURN_ALL_ERRORS also belongs to load validation.",
+        "ON_ERROR is not the documented preview switch for an unload.",
+        "Correct: RETURN_ROWS executes the query and returns the data rather than unloading files."
+      ],
+      "reason": "Correct: RETURN_ROWS executes the query and returns the data rather than unloading files.",
+      "clue": "Unloading has a RETURN_ROWS preview option distinct from loading's error-validation options.",
+      "learn": [
+        "COPY INTO <location> can use VALIDATION_MODE=RETURN_ROWS.",
+        "This mode does not unload files.",
+        "RETURN_ERRORS and RETURN_ALL_ERRORS are load-validation concepts."
+      ],
+      "workedExample": "Run COPY INTO @exports FROM (SELECT * FROM orders LIMIT 10) VALIDATION_MODE=RETURN_ROWS before removing the option to unload.",
+      "examTrap": "Do not confuse previewing unload rows with finding errors in staged load files.",
+      "docs": [
+        "https://docs.snowflake.com/en/sql-reference/sql/copy-into-location",
+        "https://docs.snowflake.com/en/sql-reference/sql/copy-into-table"
+      ]
+    },
+    {
+      "id": "C063",
+      "exam": 3,
+      "domain": 4,
+      "objective": "4.1",
+      "sourceId": "B079",
+      "topic": "Micro-partition pruning and predicate ranges",
+      "stem": "A timestamp-based event table spans billions of rows. A report filters `TO_VARCHAR(EVENT_TS,'YYYY-MM-DD')='2026-11-15'` and scans most micro-partitions. Which TWO observations are defensible? (Select TWO.)",
+      "options": [
+        "Rewriting to `EVENT_TS >= '2026-11-15'::TIMESTAMP AND EVENT_TS < '2026-11-16'::TIMESTAMP` may improve pruning.",
+        "Applying functions to the filtered timestamp can make direct min/max range pruning less effective.",
+        "Snowflake must scan all partitions whenever a table contains a TIMESTAMP column.",
+        "Increasing multi-cluster count always restores partition pruning on the expression."
+      ],
+      "answer": [
+        1,
+        2
+      ],
+      "feedback": [
+        "Correct: a direct half-open timestamp range often exposes useful pruning metadata.",
+        "Correct: function-wrapped predicates can obscure directly prunable ranges.",
+        "A timestamp column does not force a full scan.",
+        "Extra clusters increase concurrency capacity, not guaranteed predicate pruning."
+      ],
+      "reason": "Correct: a direct half-open timestamp range often exposes useful pruning metadata. Correct: function-wrapped predicates can obscure directly prunable ranges.",
+      "clue": "Expose raw timestamp bounds and inspect partitions scanned.",
+      "learn": [
+        "Micro-partition metadata includes value ranges used in pruning.",
+        "Functions around filter columns can reduce effective pruning.",
+        "Use query profile to compare the actual partitions scanned before and after."
+      ],
+      "workedExample": "Compare the two predicates on the same table and inspect total vs scanned partitions in Query Profile.",
+      "examTrap": "More compute isn't a substitute for a prunable predicate.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/tables-clustering-micropartitions"
+      ]
+    },
+    {
+      "id": "C064",
+      "exam": 3,
+      "domain": 4,
+      "objective": "4.4",
+      "sourceId": "B089",
+      "topic": "QUALIFY with ROW_NUMBER",
+      "stem": "A table records multiple sensor measurements per SENSOR_ID. The report must return one newest row per sensor using ROW_NUMBER() ordered by event time. Which TWO patterns can implement this correctly, assuming a deterministic tie-breaker is included? (Select TWO.)",
+      "options": [
+        "Use `WHERE ROW_NUMBER() OVER (...) = 1` directly in the same SELECT's WHERE clause.",
+        "Use `QUALIFY ROW_NUMBER() OVER (PARTITION BY sensor_id ORDER BY event_ts DESC, event_id DESC)=1`.",
+        "Use `HAVING ROW_NUMBER() OVER (...)=1` without grouping.",
+        "Compute ROW_NUMBER() AS rn in a subquery, then filter `WHERE rn=1` outside."
+      ],
+      "answer": [
+        2,
+        4
+      ],
+      "feedback": [
+        "Window functions are not directly filterable through WHERE at the same SELECT level.",
+        "Correct: QUALIFY filters after window functions are computed.",
+        "HAVING is not a generic replacement for QUALIFY on window results.",
+        "Correct: a subquery or CTE can expose the window result for an outer WHERE."
+      ],
+      "reason": "Correct: QUALIFY filters after window functions are computed. Correct: a subquery or CTE can expose the window result for an outer WHERE.",
+      "clue": "QUALIFY and an outer WHERE operate after the window value exists.",
+      "learn": [
+        "QUALIFY is evaluated after window functions.",
+        "A CTE with rn followed by outer WHERE rn=1 is a valid alternative.",
+        "Explicit tie-breakers make latest-row selection deterministic."
+      ],
+      "workedExample": "SELECT ... QUALIFY ROW_NUMBER() OVER(PARTITION BY sensor_id ORDER BY ts DESC,id DESC)=1 matches a CTE producing rn then filtering rn=1.",
+      "examTrap": "Do not use WHERE to filter a just-computed window function in the same SELECT.",
+      "docs": [
+        "https://docs.snowflake.com/en/sql-reference/constructs/qualify"
+      ]
+    },
+    {
+      "id": "C065",
+      "exam": 3,
+      "domain": 5,
+      "objective": "5.1",
+      "sourceId": "B091",
+      "topic": "Cross-database secure view sharing requirements",
+      "stem": "A secure view in PUBLISH.PUBLIC.V_EVENTS reads a protected base table in INTERNAL.PUBLIC.EVENTS. The provider wants a classic direct share exposing only the view. Which TWO steps are relevant? (Select TWO.)",
+      "options": [
+        "Give the share REFERENCE_USAGE on INTERNAL so the view may reference objects in that separate database.",
+        "Grant consumers direct SELECT on the INTERNAL base table as the only supported approach.",
+        "Provide the appropriate USAGE on the published database/schema and SELECT on the secure view to the share.",
+        "Replace the secure view with an ordinary non-secure view; ordinary views are required for cross-database shares."
+      ],
+      "answer": [
+        1,
+        3
+      ],
+      "feedback": [
+        "Correct: REFERENCE_USAGE enables the cross-database reference needed by this share.",
+        "Sharing the underlying base table directly is unnecessary for view-only exposure.",
+        "Correct: published view privileges and published database/schema visibility are still required.",
+        "Cross-database classic sharing of a view uses supported secure-view behavior."
+      ],
+      "reason": "Correct: REFERENCE_USAGE enables the cross-database reference needed by this share. Correct: published view privileges and published database/schema visibility are still required.",
+      "clue": "Reference database permission and shared view permission solve different parts.",
+      "learn": [
+        "The share needs REFERENCE_USAGE for databases referenced by its shared secure view.",
+        "USAGE and SELECT grants are still needed on published objects.",
+        "Base data can remain private from the consumer as a directly shared table."
+      ],
+      "workedExample": "Share PUBLISH.PUBLIC.V_EVENTS while giving REFERENCE_USAGE for INTERNAL; don't expose INTERNAL.PUBLIC.EVENTS directly.",
+      "examTrap": "REFERENCE_USAGE does not replace USAGE/SELECT grants on the published view.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/data-sharing-multiple-db",
+        "https://docs.snowflake.com/en/sql-reference/sql/grant-privilege-share"
+      ]
+    },
+    {
+      "id": "C066",
+      "exam": 3,
+      "domain": 5,
+      "objective": "5.1",
+      "sourceId": "B093",
+      "topic": "Local enrichment of provider shared data",
+      "stem": "A receiving account imports a provider's read-only sales share. Its analysts must join the shared sales records to private local fraud scores and store enriched results for downstream teams. Which TWO statements are correct? (Select TWO.)",
+      "options": [
+        "The consumer can SELECT shared rows and JOIN them to local fraud tables.",
+        "The consumer can write the combined result into a local table it owns, with sufficient privileges.",
+        "The consumer can add a FRAUD_SCORE column directly to the provider-owned shared table.",
+        "A read-only share makes any consumer-side SELECT involving a local table illegal."
+      ],
+      "answer": [
+        1,
+        2
+      ],
+      "feedback": [
+        "Correct: a consumer can join read-only shared data to local objects.",
+        "Correct: writable derived objects can be created in the consumer's database.",
+        "The provider's shared object definition cannot be modified by the consumer.",
+        "Read-only describes the shared objects, not every downstream query that references them."
+      ],
+      "reason": "Correct: a consumer can join read-only shared data to local objects. Correct: writable derived objects can be created in the consumer's database.",
+      "clue": "Data ownership stays with the provider; enrichment belongs in the consumer's database.",
+      "learn": [
+        "Shares expose provider-controlled read-only objects.",
+        "Local CTAS and inserts can materialize enriched results.",
+        "Join privileges and local write privileges are checked separately."
+      ],
+      "workedExample": "CREATE TABLE local.enriched AS SELECT s.*, f.score FROM shared.sales s JOIN local.fraud f ON s.id=f.id.",
+      "examTrap": "Distinguish modifying a share from producing a local derived dataset.",
+      "docs": [
+        "https://docs.snowflake.com/en/user-guide/data-share-consumers",
+        "https://docs.snowflake.com/en/user-guide/data-sharing-intro"
+      ]
     }
-  ]
+  ],
+  "personalization": {
+    "source": "Exam #1 (91/100) and Exam #2 (88/100) progress export",
+    "originalQuestionCount": 45,
+    "addedQuestionCount": 21,
+    "originalMisses": [
+      "Q008",
+      "Q021",
+      "Q026",
+      "Q029",
+      "Q034",
+      "Q054",
+      "Q083",
+      "Q085",
+      "Q095",
+      "B002",
+      "B035",
+      "B042",
+      "B045",
+      "B048",
+      "B052",
+      "B054",
+      "B069",
+      "B079",
+      "B089",
+      "B091",
+      "B093"
+    ],
+    "mode": "append-only; preserve existing C001-C045 answer history",
+    "reviewStatus": "Author-created; full independent audit still required"
+  }
 }
