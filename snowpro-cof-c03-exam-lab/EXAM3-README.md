@@ -1,22 +1,35 @@
-# SnowPro Core COF-C03 Exam Lab — Exam #3 Knowledge Gap Challenge
+# SnowPro Core COF-C03 Exam Lab — Exam #3 Personalized Gap Challenge
 
-This package contains an expanded standalone HTML exam app (`index.html`) with all three mock exam banks and 245 questions total, plus the standalone Exam #3 bank JSON.
+Exam #3 is now **66 questions**: 45 original coverage-gap questions plus 21 new scenario-based follow-ups for the learner's exact wrong answers in Exams #1 and #2.
 
-## Exam #3
+## Evidence-based personalization
 
-- 45 original, gap-focused questions. Distribution by official guide domain: Architecture 19; Governance 10; Loading and Connectivity 9; Performance 4; Collaboration 3.
-- 7 select-two questions with all-or-nothing scoring.
-- A 52-minute timed mode and a self-paced learning mode.
-- Explanations after answers in Learning Mode and after completion in Timed Mode. Explanations cover **all four answer choices**, deciding clues, at least three related learning points, a practical mental-model example, an exam trap, and links to official Snowflake documentation.
-- Official COF-C03 study-guide subobjective tags shown on questions and a gap-objective progress tracker on dashboard.
-- Local instant persistence, session history, mistakes-only retests, bookmarks, notes, JSON export/import, and mobile-friendly larger text.
+- Exam #1 (Learning Mode): **91/100**, nine misses: Q008, Q021, Q026, Q029, Q034, Q054, Q083, Q085, Q095.
+- Exam #2 (Learning Mode): **88/100**, twelve misses: B002, B035, B042, B045, B048, B052, B054, B069, B079, B089, B091, B093.
+- New questions C046–C066 each map to one of these misses. They are new scenarios, not exact replays of the old stems. The sourceId field documents the mapping.
+- All original questions C001–C045 are retained unchanged, covering objectives still under-tested by the two full 100-question forms.
+- Final domain counts: Architecture 24, Governance 16, Loading and Connectivity 12, Performance 8, Collaboration 6.
+- **19 exact-match select-two** questions (about 29% of this gap form), emphasizing the learner's low multi-select success in Exam #2.
 
-## Compatibility and history
+## User experience
 
-Exam #1 (`Q001`–`Q100`) and Exam #2 (`B001`–`B100`) are **unmodified**. Exam #3 uses `C001`–`C045`; the existing `snowpro-cof-c03-lab-v1` browser `localStorage` key and state schema remain unchanged. Original 91/100 Exam #1 history is preserved on the same browser and site origin. The user's active selected form preference also remains intact. Download/import JSON backups when changing browsers.
+- **80-minute** timed mode or Learning Mode with per-answer feedback.
+- All four answers explained; documented deciding clue, at least three follow-up lessons, worked example, exam trap, official Snowflake documentation links.
+- 266 total questions across all three forms: Exam #1 = 100; Exam #2 = 100; Exam #3 = 66.
+- The original Exam #1 and Exam #2 banks are untouched.
+- Original Exam #3 C001–C045 IDs and text remain untouched; existing completed or ongoing C-ID attempts can still be read without question-ID reuse.
+- Original browser storage key (`snowpro-cof-c03-lab-v1`) and import/export state schema remain unchanged.
+- `exam3-bank.json` mirrors the embedded HTML question bank.
 
-The 45-question challenge intentionally does **not** mirror the official certification's five domain percentages; it is a gap-closure quiz targeting omissions identified in the 200-question coverage audit. It is not an official practice exam or a reliable pass prediction.
+## Interpretation and limits
 
-## Independent answer audit
+This is a **knowledge-gap challenge**, not a blueprint-weighted full mock exam. Snowflake's actual domain blueprint is 31/20/18/21/10; this 66-question drill is deliberately biased toward both previous misses and objectives with weak prior coverage.
 
-This bank was authored with reference to the July 8, 2026 official COF-C03 guide and Snowflake documentation and has passed structural, duplicate-text, key-validity, browser-navigation and save/resume tests. A truly independent second AI session/agent has **not** reviewed every fact. Use `INDEPENDENT-AUDIT.md` and `exam3-bank.json` in a new session to obtain a fresh reviewer before relying on the entire answer key.
+**Exam #3 answer keys are provisional until a separate independent auditor checks every technical fact, key, distractor, explanation, current documentation, and wording.** An author-side structural check and selected current official-document spot checks have been performed, but those are not independent certification-content validation.
+
+No user results were published to the repository. Only the corresponding old question IDs are included in the authored lesson source mapping.
+
+## Audit files
+
+- `INDEPENDENT-AUDIT-EXAM3.md` — fresh separate reviewer checklist for C001–C066.
+- `INDEPENDENT-AUDIT.md` — original Exam #2 independent-audit handoff.
