@@ -6,7 +6,7 @@ const METADATA=path.join(ROOT,"catalog","project-metadata.json");
 const OUTPUT=path.join(ROOT,"catalog","apps.json");
 const content=JSON.parse(fs.readFileSync(METADATA,"utf8"));
 const aliases=content.aliases||{}, metadata=content.projects||{};
-const omitted=new Set(["assets","catalog","scripts","previews",".git",".github","node_modules","skills","tests","docs"]);
+const omitted=new Set(["assets","catalog","scripts","previews",".git",".github","node_modules","skills","tests","docs","king_quest_the_shortcut"]);
 function humanize(x){return x.replace(/[-_]/g," ").replace(/\b\w/g,y=>y.toUpperCase());}
 function directory(pathname){const file=path.join(ROOT,pathname,"index.html");return fs.existsSync(file)&&fs.statSync(file).isFile()&&fs.statSync(file).size>0;}
 function listFolders(pathname){
