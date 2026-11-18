@@ -7163,5 +7163,205 @@
     ],
     "provenance": "Original learning prompt; based on public Snowflake documentation",
     "id": "sp405"
+  },
+  {
+    "id": "sp406",
+    "domain": "governance",
+    "tag": "Grant precedence",
+    "front": "Why do schema and database future grants not always combine?",
+    "back": "Schema future grants take precedence for the same object type.",
+    "why": "Database-level future grants supply a default, unless the schema defines its own future grant for that type.",
+    "trap": "A schema future TABLE grant does not erase database future VIEW grants.",
+    "code": "",
+    "doc": "https://docs.snowflake.com/en/sql-reference/sql/grant-privilege",
+    "priority": 4,
+    "kind": "concept",
+    "related": [],
+    "objective": "2.1",
+    "status": "current",
+    "versions": [
+      "COF-C03"
+    ],
+    "provenance": "Original concept-teaching prompt based on official Snowflake docs"
+  },
+  {
+    "id": "sp407",
+    "domain": "governance",
+    "tag": "Policy owner",
+    "front": "Why might a row access policy work without exposing its mapping table?",
+    "back": "It evaluates with policy-owner rights when correctly configured.",
+    "why": "The policy owner needs access to referenced mapping data, while ordinary consumers may remain restricted.",
+    "trap": "The data table owner and policy owner may differ.",
+    "code": "",
+    "doc": "https://docs.snowflake.com/en/user-guide/security-row-intro",
+    "priority": 4,
+    "kind": "concept",
+    "related": [],
+    "objective": "2.2",
+    "status": "current",
+    "versions": [
+      "COF-C03"
+    ],
+    "provenance": "Original concept-teaching prompt based on official Snowflake docs"
+  },
+  {
+    "id": "sp408",
+    "domain": "loading",
+    "tag": "COPY compatibility",
+    "front": "When should a load use explicit SELECT transformations instead of name matching?",
+    "back": "When supported transformations must map staged values to target columns.",
+    "why": "COPY SELECT transformations and MATCH_BY_COLUMN_NAME are incompatible.",
+    "trap": "Do not add MATCH_BY_COLUMN_NAME to a transformation SELECT.",
+    "code": "",
+    "doc": "https://docs.snowflake.com/en/user-guide/data-load-transform",
+    "priority": 4,
+    "kind": "concept",
+    "related": [],
+    "objective": "3.1",
+    "status": "current",
+    "versions": [
+      "COF-C03"
+    ],
+    "provenance": "Original concept-teaching prompt based on official Snowflake docs"
+  },
+  {
+    "id": "sp409",
+    "domain": "loading",
+    "tag": "Load vs unload",
+    "front": "How do load validation and unload preview differ?",
+    "back": "Load validates staged input; unload RETURN_ROWS previews outgoing rows.",
+    "why": "COPY INTO <table> and COPY INTO <location> accept different VALIDATION_MODE options.",
+    "trap": "RETURN_ALL_ERRORS is a load option, not an unload preview option.",
+    "code": "",
+    "doc": "https://docs.snowflake.com/en/sql-reference/sql/copy-into-location",
+    "priority": 4,
+    "kind": "concept",
+    "related": [],
+    "objective": "3.1",
+    "status": "current",
+    "versions": [
+      "COF-C03"
+    ],
+    "provenance": "Original concept-teaching prompt based on official Snowflake docs"
+  },
+  {
+    "id": "sp410",
+    "domain": "loading",
+    "tag": "CSV NULL behavior",
+    "front": "How can a CSV load preserve an empty string but treat the token NULL as SQL NULL?",
+    "back": "Configure NULL_IF and EMPTY_FIELD_AS_NULL deliberately.",
+    "why": "The null-token list and empty-field parsing both influence conversion to SQL NULL.",
+    "trap": "Including the empty string in NULL_IF makes it NULL.",
+    "code": "",
+    "doc": "https://docs.snowflake.com/en/sql-reference/sql/create-file-format",
+    "priority": 4,
+    "kind": "concept",
+    "related": [],
+    "objective": "3.1",
+    "status": "current",
+    "versions": [
+      "COF-C03"
+    ],
+    "provenance": "Original concept-teaching prompt based on official Snowflake docs"
+  },
+  {
+    "id": "sp411",
+    "domain": "architecture",
+    "tag": "Cross-account data",
+    "front": "Why is a database clone not the same as a cross-account replica?",
+    "back": "CLONE is a supported in-account copy; replication works across accounts.",
+    "why": "Replication maintains a secondary, while cloning initially shares unchanged micro-partitions.",
+    "trap": "A replica normally needs promotion for writes.",
+    "code": "",
+    "doc": "https://docs.snowflake.com/en/user-guide/account-replication-intro",
+    "priority": 4,
+    "kind": "concept",
+    "related": [],
+    "objective": "1.5",
+    "status": "current",
+    "versions": [
+      "COF-C03"
+    ],
+    "provenance": "Original concept-teaching prompt based on official Snowflake docs"
+  },
+  {
+    "id": "sp412",
+    "domain": "sharing",
+    "tag": "Consumer enrichment",
+    "front": "Where should a Snowflake share consumer save enriched data?",
+    "back": "A table in its own writable database.",
+    "why": "The consumer can SELECT from imported shared objects but cannot modify the provider database.",
+    "trap": "CTAS in the imported shared database is not allowed.",
+    "code": "",
+    "doc": "https://docs.snowflake.com/en/user-guide/data-sharing-intro",
+    "priority": 4,
+    "kind": "concept",
+    "related": [],
+    "objective": "5.2",
+    "status": "current",
+    "versions": [
+      "COF-C03"
+    ],
+    "provenance": "Original concept-teaching prompt based on official Snowflake docs"
+  },
+  {
+    "id": "sp413",
+    "domain": "sharing",
+    "tag": "Secure view sharing",
+    "front": "Why does a cross-database shared secure view need REFERENCE_USAGE?",
+    "back": "To authorize access through its referenced database dependency.",
+    "why": "The share can reference the base database without granting direct SELECT on sensitive source tables.",
+    "trap": "REFERENCE_USAGE does not mean raw-table SELECT.",
+    "code": "",
+    "doc": "https://docs.snowflake.com/en/user-guide/data-sharing-multiple-db",
+    "priority": 4,
+    "kind": "concept",
+    "related": [],
+    "objective": "5.2",
+    "status": "current",
+    "versions": [
+      "COF-C03"
+    ],
+    "provenance": "Original concept-teaching prompt based on official Snowflake docs"
+  },
+  {
+    "id": "sp414",
+    "domain": "performance",
+    "tag": "QUALIFY",
+    "front": "Why does QUALIFY work for ROW_NUMBER when WHERE does not?",
+    "back": "QUALIFY executes after window functions; WHERE executes before them.",
+    "why": "Filter computed window results with QUALIFY or use a CTE plus outer WHERE.",
+    "trap": "Do not place ROW_NUMBER directly in the same SELECT WHERE.",
+    "code": "",
+    "doc": "https://docs.snowflake.com/en/sql-reference/constructs/qualify",
+    "priority": 4,
+    "kind": "concept",
+    "related": [],
+    "objective": "4.4",
+    "status": "current",
+    "versions": [
+      "COF-C03"
+    ],
+    "provenance": "Original concept-teaching prompt based on official Snowflake docs"
+  },
+  {
+    "id": "sp415",
+    "domain": "performance",
+    "tag": "Pruning predicates",
+    "front": "Why can wrapping a timestamp column in a function increase scanning?",
+    "back": "It can obscure native range metadata used for pruning.",
+    "why": "A direct typed timestamp range often makes partition elimination clearer.",
+    "trap": "A larger warehouse does not automatically reduce partitions scanned.",
+    "code": "",
+    "doc": "https://docs.snowflake.com/en/user-guide/tables-micro-partitions",
+    "priority": 4,
+    "kind": "concept",
+    "related": [],
+    "objective": "4.1",
+    "status": "current",
+    "versions": [
+      "COF-C03"
+    ],
+    "provenance": "Original concept-teaching prompt based on official Snowflake docs"
   }
 ]

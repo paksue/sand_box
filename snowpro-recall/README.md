@@ -8,7 +8,7 @@ Phone-first, installable PWA for SnowPro Core study.
 
 ## What's included (November 2026)
 
-- **405 original recall flashcards:** 371 focused on the current COF-C03 exam and 34 separately labeled historical COF-C01/COF-C02 cards.
+- **415 original recall flashcards:** 381 focused on the current COF-C03 exam and 34 separately labeled historical COF-C01/COF-C02 cards.
 - All **19 objective identifiers** from the July 8, 2026 official COF-C03 study guide represented by dedicated cards. This means objective-level representation, *not every possible exam question.*
 - Five C03 domains: 86 Architecture/AI, 74 Governance, 95 Loading, 96 Performance/SQL, and 54 Data Collaboration (counts include 34 historical cards).
 - Deep-dive explanations, decision traps, SQL examples, links to official Snowflake documentation, and optional legacy browsing.
@@ -31,16 +31,16 @@ Saved progress is **local to each browser and site origin**, not synced through 
 
 ## Source and editing
 
-- `index.html`: complete standalone app, including all 405 built-in cards.
+- `index.html`: complete standalone app, including all 415 built-in cards.
 - `cards.json`: full deck for inspection/editing.
-- `make_cards.py` and `extra_cards.py`: original card definitions and official objective map.
+- `make_cards.py` and `extra_cards.py`: historical scripts for reconstructing the original 405-card set; do **not** run these to update the current 415-card deck.
+- `lessons.json`: authored concept-teaching sequences; `exam-links.json`: original public Exam Lab answer keys and question-to-topic links (NO personal answers).
 - `app.js`, `style.css`, `template.html`, `build.py`: app source and reproducible build.
 - `service-worker.js`, `manifest.webmanifest`, `icon.svg`: PWA install/offline assets.
 
 Build locally:
 
 ```bash
-python make_cards.py
 python build.py
 ```
 
@@ -68,12 +68,31 @@ The original **tap-to-flip** behavior remains. Once the main answer is revealed,
 
 No swipe changes the main flashcard. **Again / Hard / Good / Easy** rates the main answer and moves forward. Exploring is optional, so a quick review can remain quick. The current panel and revealed variation state autosave with the existing session; the app preserves the existing `snowpro-recall-v1` progress storage key.
 
-The original 405 cards and associated ratings are retained. The interaction is built using plain JavaScript and CSS transforms; there is no extra library or backend.
+The original 405 cards and associated ratings are retained; 10 educational prompts have been added. The interaction is built using plain JavaScript and CSS transforms; there is no extra library or backend.
 
-## Review progress and non-repeating sets (November 16, 2026)
+## Review tracking and queue rotation fix (November 16, 2026)
 
-Flipping a card counts as **viewed**; only Again, Hard, Good or Easy saves a spaced-repetition review. The app now displays a rating confirmation, counts opened and rated cards separately, and lists recently finished or ended-early study sets under Insights.
+- **Tap/flip/view** is now counted separately as a *viewed* card; it is not a graded recall review.
+- **Again / Hard / Good / Easy** immediately records a rating, updates the FSRS due date, and shows an onscreen confirmation.
+- Home and Insights clearly distinguish **cards opened** from **cards rated**; Insights includes recent study-set history even for sessions ended early.
+- Starting another Smart Review, Exam Sprint, or SQL set prefers cards not offered by the last few sets, **including cards not yet rated**. Due and previously difficult cards can still recur deliberately according to spaced-repetition needs.
+- "2 / 5 / 10 minutes" indicates a suggested study set (7 / 16 / 32 cards), not an automatic countdown. Sessions are complete when those cards are rated or skipped.
+- Replacing a partly completed session keeps all previous ratings and logs a set summary, but the prior unfinished set is not independently resumable. **Resume** continues the current unfinished session.
+- The storage key and previous card IDs remain unchanged. Review history is not erased by this upgrade.
 
-Smart Review rotates cards that appeared in recent sets, including unrated cards, so starting another set doesn't continually show the same high-priority items. Exam Sprint prioritizes weak/high-yield topics; Write the SQL stays SQL-only. Due cards or especially weak cards can intentionally recur. Five-minute sets contain approximately 16 cards and have no countdown clock.
+## Concept-first learning and Exam Lab gap import (November 2026)
 
-All prior 405 card IDs and the `snowpro-recall-v1` local-storage key remain unchanged. You can export your ratings and notes using Settings → Export JSON backup.
+- **415 cards**: all previous 405 IDs unchanged; 10 new concept-oriented prompts `sp406`–`sp415`. Historical C01/C02 remain opt-in.
+- **59 guided cards** across 33 original expert-authored lessons and related concept variants. Guiding panels follow: core answer → meaning → three-step mechanism → worked example (with SQL where suitable) → contrasting boundaries → teach-it-back (tap to reveal) → official docs. The remaining cards retain shorter explanatory panels until further enrichment.
+- **Learn concepts deeply** studies current guided cards in rotating short sets, separate from Smart Review.
+- **Learn from mock gaps** opens a locally imported exam-based learning path. Choose the `snowpro-core-progress-*.json` exported by the separately hosted [SnowPro Exam Lab](https://paksue.github.io/sand_box/snowpro-cof-c03-exam-lab/). The app calculates per-exam results from the two original 100-question public mock answer keys and groups the 21 known missed-question topics into 20 core lessons; future/unmapped questions are not silently treated as known.
+- **Privacy:** The 200 original mock answer keys and concept-mapping identifiers are public code, but **your personal exam responses/results are never included in the repository**. The uploaded progress JSON stays inside the browser and is stored locally under the existing `snowpro-recall-v1` key. No new network endpoint, analytics service, or backend is used.
+- **Preserved ratings:** All earlier flashcard IDs, ratings, due times, bookmarks and notes remain intact. Starting a new learning set uses existing session-history behavior and does not retroactively grade your old study sessions.
+
+To build from the canonical source:
+
+```bash
+python build.py
+```
+
+`cards.json`, `lessons.json`, `exam-links.json`, `app.js`, `style.css`, and `template.html` together reproduce `index.html`. Do not rerun legacy generators unless intentionally rebuilding the historical card bank.

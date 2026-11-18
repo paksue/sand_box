@@ -8,9 +8,10 @@ const icon=(n)=>`<span class="icon"><svg viewBox="0 0 24 24" role="img" aria-hid
 const C=new Map(CARD_BANK.map(c=>[c.id,c]));
 if(CARD_BANK.length<162||C.size!==CARD_BANK.length)throw Error('Card bank integrity failed');
 const currentCards=()=>CARD_BANK.filter(c=>c.status!=='legacy');
+const guidedCards=()=>currentCards().filter(c=>!!LESSON_BANK[c.id]);
 const legacyCards=()=>CARD_BANK.filter(c=>c.status==='legacy');
 const OBJECTIVES={"1.1": "Architecture, compute and editions", "1.2": "Snowflake interfaces and tools", "1.3": "Object hierarchy, types and session parameters", "1.4": "Virtual warehouse configuration", "1.5": "Storage, tables and view types", "1.6": "AI/ML and applications", "2.1": "Access models and authentication", "2.2": "Governance, encryption and monitoring", "2.3": "FinOps, warehouse credits and Account Usage", "3.1": "Stages, file formats, COPY and error handling", "3.2": "Snowpipe, streams, tasks and dynamic tables", "3.3": "Connectors, drivers and integrations", "4.1": "Query Profile, bottlenecks and workload management", "4.2": "Performance optimization services", "4.3": "Query and warehouse caching", "4.4": "SQL and data transformations", "5.1": "Time Travel, Fail-safe, cloning and replication", "5.2": "Secure sharing, consumers and clean rooms", "5.3": "Marketplace, listings and Native Apps"};
-const defaultState=()=>({version:1,cards:{},session:null,sessionArchive:[],history:[],settings:{examDate:'2026-11-19',minutes:5,retention:0.9,haptics:false,dailyNew:16,typing:false},updatedAt:Date.now()});
+const defaultState=()=>({version:1,cards:{},session:null,sessionArchive:[],examProgress:null,history:[],settings:{examDate:'2026-11-19',minutes:5,retention:0.9,haptics:false,dailyNew:16,typing:false},updatedAt:Date.now()});
 let state,storageOK=true;
 try{let raw=localStorage.getItem(STORAGE_KEY);state=raw?JSON.parse(raw):defaultState();if(state?.version!==1||!state.cards||!state.settings)state=defaultState();}catch(e){storageOK=false;state=defaultState();}
 let ui={page:'home',domain:'all',search:'',only:'all',version:'current',objective:'all',drawer:null,activePreview:null,swipeEnabled:true},toastTimer=null,transitioning=false,pointerStart=null;
@@ -66,12 +67,14 @@ function schedule(current,grade,when=NOW()){
 function futureLabels(id){const old=cardState(id);return Object.entries(ratingN).map(([grade])=>({grade,label:cardDueLabel(schedule(old,grade).due)}));}
 function setPage(page,opts={}){ui.page=page;if(opts.domain)ui.domain=opts.domain;render();window.scrollTo({top:0,behavior:'instant'});}
 function renderNav(){const items=[['home','Today','home'],['decks','Decks','cards'],['browse','Library','search'],['insights','Insights','insights']];const html=items.map(([page,label,ic])=>`<button class="nav-link ${ui.page===page?'active':''}" data-page="${page}" ${ui.page===page?'aria-current="page"':''}>${icon(ic)}<span>${label}</span></button>`).join('');$('#bottomNav').innerHTML=html;$('#desktopNav').innerHTML=html+`<button class="nav-link" data-action="settings">${icon('settings')}<span>Settings</span></button>`;document.body.classList.toggle('in-study',ui.page==='study');}
-function render(){renderNav();const m=$('#view');m.innerHTML=ui.page==='home'?renderHome():ui.page==='decks'?renderDecks():ui.page==='browse'?renderBrowse():ui.page==='insights'?renderInsights():ui.page==='coverage'?renderCoverage():ui.page==='sources'?renderSources():ui.page==='study'?renderStudy():renderHome();setSave();}
+function render(){renderNav();const m=$('#view');m.innerHTML=ui.page==='home'?renderHome():ui.page==='decks'?renderDecks():ui.page==='browse'?renderBrowse():ui.page==='insights'?renderInsights():ui.page==='coverage'?renderCoverage():ui.page==='sources'?renderSources():ui.page==='mistakes'?renderMistakes():ui.page==='study'?renderStudy():renderHome();setSave();}
 function examCountdown(){const d=daysToExam();const label=state.settings.examDate?new Date(state.settings.examDate+'T12:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'}):'';return d===null?'Exam date not set':d>0?`${d} day${d===1?'':'s'} to ${label}`:d===0?'Exam day · stay sharp':'Exam date passed';}
 function renderHome(){const st=allStats(),remain=daysToExam(),minutes=state.settings.minutes,active=state.session&&!state.session.completedAt&&state.session.index<state.session.queue.length;return `<div class="content"><div class="overline">${new Date().toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'}).toUpperCase()} · THE NEXT REP COUNTS</div><div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:9px 0 21px"><div><h1 style="margin-bottom:7px">Make it<br><span class="serif" style="color:#9ce5d5">stick.</span></h1><div class="countdown-strip"><span class="spark"></span>${esc(examCountdown())}</div></div><div style="text-align:right"><span class="pill green">${st.due?st.due+' due':st.new+' fresh'}</span><div class="small subtle" style="margin-top:7px">${st.seen} rated · ${st.viewed} viewed</div></div></div>
  <section class="hero"><div class="hero-art" aria-hidden="true"><div class="art-card one"></div><div class="art-card two">✳</div><div class="art-dot"></div></div><div class="overline">YOUR DAILY MEMORY RESET</div><h2>${st.due?`${st.due} memories are waiting for you.`:'A few minutes now. Stronger recall later.'}</h2><p>${st.due?`Review what is due, then add new concepts. The hard ones return sooner.`:`Start with the highest-yield Snowflake distinctions. Each card includes a short answer and an optional deep dive.`}</p><button class="btn primary" data-action="${active?'resume':'start'}" data-mode="mix" data-minutes="${minutes}">${icon('spark')} ${active?'Resume your set':`Start ~${minutes}-minute set`} ${icon('arrow')}</button></section>
  <div class="stat-grid"><div class="stat"><span class="stat-label">Due now</span><strong>${st.due}</strong><small>For spaced review</small></div><div class="stat"><span class="stat-label">Still new</span><strong>${st.new}</strong><small>Not rated yet</small></div><div class="stat"><span class="stat-label">Mastered</span><strong>${st.mastered}</strong><small>Delayed recall proved</small></div></div>
  <div class="section-head"><h2>Choose your pace</h2><span class="small subtle">Suggested length · not a timer</span></div><div class="session-presets">${[2,5,10].map(n=>`<button class="preset ${minutes===n?'active':''}" data-minutes-select="${n}" aria-pressed="${minutes===n}">${n} min <span class="subtle">· ${limitFor(n)} cards</span></button>`).join('')}</div>
+ <div class="section-head"><h2>Learn, don't just memorize</h2><span class="small subtle">New guided lessons</span></div>
+ <div class="learning-entry-grid"><button class="learning-entry" data-action="start-deep"><span class="learning-entry-icon">${icon('book')}</span><strong>Learn concepts deeply</strong><small>${guidedCards().length} guided cards · meaning, mechanics, examples, boundaries, teach-back</small><span class="entry-arrow">Start a learning set →</span></button><button class="learning-entry accent" data-page="mistakes"><span class="learning-entry-icon">${icon('compass')}</span><strong>Learn from mock gaps</strong><small>Import your Exam Lab progress privately. Learn the concept behind each miss.</small><span class="entry-arrow">${state.examProgress?'Open my learning path':'Import & build my path'} →</span></button></div>
  <div class="modes"><button class="mode" data-action="start" data-mode="mix"><span class="mode-icon">${icon('flip')}</span><strong>Smart review</strong><small>Due + new, mixed topics</small></button><button class="mode" data-action="start" data-mode="weak"><span class="mode-icon">${icon('bolt')}</span><strong>Exam sprint</strong><small>Weak spots + high yield</small></button><button class="mode" data-action="start" data-mode="sql"><span class="mode-icon">${icon('book')}</span><strong>Write the SQL</strong><small>Recall exact syntax first</small></button></div>
  <div class="section-head"><h2>Focus by domain</h2><button class="btn small quiet" data-page="decks">All decks ${icon('arrow')}</button></div><div class="focus-grid">${Object.entries(DOMAINS).map(([k,v])=>{const t=domainStats(k);return `<button class="focus-card" data-domain="${k}" data-action="focus"><span class="overline" style="color:${v.color};font-size:9px">DOMAIN ${['architecture','governance','loading','performance','sharing'].indexOf(k)+1}</span><div class="number">${t.count}<span class="small subtle"> cards</span></div><div class="t">${esc(v.name)}</div><small>${t.seen} studied · ${t.due} due</small><div class="bar" style="margin-top:12px"><span style="width:${Math.round(100*t.seen/t.count)}%"></span></div></button>`}).join('')}</div>
  <div class="archive-strip"><div><b>${currentCards().length} current cards · ${legacyCards().length} historical</b><span>Review the objective map and see which publicly available exam sources exist.</span></div><div class="archive-actions"><button class="btn small quiet" data-page="coverage">Coverage map →</button><button class="btn small quiet" data-page="sources">Question sources ↗</button></div></div><div class="footer-note">Designed for actual recall, not just familiar-looking answers. Scheduled intervals are estimates, not a guarantee of exam readiness. Private progress is saved in this browser after every rating.</div></div>`;}
@@ -88,6 +91,41 @@ function sessionHistoryHTML(){
 }
 function renderInsights(){const st=allStats(),total=state.history.length,last=state.history.slice(-30),good=last.filter(l=>l.grade>=3).length,accuracy=last.length?Math.round(good/last.length*100):null;return `<div class="content"><span class="overline">PROGRESS OVER PERFECTION</span><h1 style="margin:9px 0 12px">The memory <span class="serif" style="color:#a1e4d7">map.</span></h1><p class="muted">Measure retention and consistency, not just how fast you flip. Mastery requires successful reviews over time.</p><div class="insight-hero"><span class="overline">YOUR RECALL JOURNEY</span><strong>${total.toLocaleString()}</strong><div class="small muted">Review ratings across ${st.seen} rated concepts · ${st.viewed} cards opened (${st.viewedUnrated} viewed but not rated) · ${st.mastered} mastered</div><div class="stat-split"><div><strong>${st.weak}</strong><small>Concepts needing attention</small></div><div><strong>${accuracy===null?'—':accuracy+'%'}</strong><small>Recent Good/Easy ratings</small></div></div></div><div class="study-note" style="margin-top:15px">Flipping or swiping records a card as viewed. Again / Hard / Good / Easy records the review and updates the memory schedule. A 5-minute set is a suggestion (16 cards), not a countdown. Your rated progress is saved after every answer.</div><div class="section-head"><h2>Last 21 days</h2><span class="pill neutral">${streak()} day${streak()===1?'':'s'} active</span></div><div class="panel"><div class="review-map">${activityHTML()}</div><div class="heatmap-key"><span class="swatch"></span> One or more reviews · darker means fewer</div></div><div class="section-head"><h2>Domain mastery</h2></div><div class="panel">${Object.entries(DOMAINS).map(([k,v])=>{const s=domainStats(k);return `<div class="progress-row"><div class="prog-label"><span>${esc(v.name)}</span><span>${s.seen}/${s.count} seen · ${s.mastered} mastered</span></div><div class="bar"><span style="width:${Math.round(100*s.seen/s.count)}%"></span></div></div>`}).join('')}</div>${sessionHistoryHTML()}<div class="section-head"><h2>Review activity</h2></div>${total?`<div class="panel">${state.history.slice(-8).reverse().map(l=>{const c=C.get(l.id);return `<div class="check-row"><div><b>${esc(c?.tag||'Review')}</b><br><small>${esc(c?.front.slice(0,54)||'')} · ${new Date(l.time).toLocaleDateString()}</small></div><span class="pill ${l.grade===1?'coral':l.grade===2?'sand':'green'}">${['','Again','Hard','Good','Easy'][l.grade]}</span></div>`}).join('')}</div>`:'<div class="empty">Start your first set to build a meaningful recall history.</div>'}<div class="footer-note">The review intervals use default FSRS-6 parameters with short-learning-step safeguards. They are not optimized on your personal history yet. The app never claims a predicted official Snowflake score.</div></div>`;}
 function renderCoverage(){const cards=currentCards(),groups=Object.entries(OBJECTIVES).map(([id,title])=>{const items=cards.filter(c=>c.objective===id),done=items.filter(c=>reviewed(c.id)).length;const pct=items.length?Math.round(done/items.length*100):0;return `<button class="objective-card" data-objective="${id}"><div class="objective-head"><b>${esc(id)} · ${esc(title)}</b><span>${done}/${items.length} reviewed</span></div><div class="bar"><span style="width:${pct}%"></span></div><small>${items.length} dedicated original prompts · click to study them</small></button>`}).join('');return `<div class="content"><span class="overline">C03 · OFFICIAL OBJECTIVE MAP</span><h1 style="margin:9px 0 12px">Coverage you can <span class="serif" style="color:#9ce5d5">verify.</span></h1><p class="muted">Every one of the 19 published COF-C03 objectives has dedicated recall cards. That shows <strong>objective representation, not proof of every possible real exam question.</strong> The original 162 cards also contribute to study but predate per-card objective tags.</p><div class="stat-grid"><div class="stat"><span class="stat-label">Published objectives</span><strong>${Object.keys(OBJECTIVES).length}</strong><small>July 2026 guide</small></div><div class="stat"><span class="stat-label">Current cards</span><strong>${cards.length}</strong><small>C03 study queue</small></div><div class="stat"><span class="stat-label">Legacy cards</span><strong>${legacyCards().length}</strong><small>Optional C01/C02</small></div></div><div class="section-head"><h2>Browse each objective</h2><button class="btn small quiet" data-page="sources">Question sources →</button></div><div class="objective-list">${groups}</div><div class="archive-strip"><div><b>Official source of truth</b><span>Compare cards with the July 2026 SnowPro Core Exam Study Guide.</span></div><a href="https://learn.snowflake.com/en/certifications/snowpro-core-c03/" class="btn small quiet" target="_blank" rel="noopener noreferrer">Snowflake guide ↗</a></div></div>`;}
+function examMistakes(){return [...new Set((state.examProgress?.attempts||[]).flatMap(a=>a.wrong||[]))];}
+function gapCardIds(){return [...new Set(examMistakes().map(id=>(EXAM_LINKS.links[id]||[])[0]).filter(Boolean))].filter(id=>C.has(id)&&C.get(id).status!=='legacy');}
+function gapQueue(limit=16){
+ const ids=gapCardIds(),recent=recentQueueIds();
+ const favored=ids.filter(id=>!recent.has(id));const repeated=ids.filter(id=>recent.has(id));
+ return [...favored,...repeated].slice(0,limit);
+}
+function renderMistakes(){
+ const attempts=state.examProgress?.attempts||[],mistakes=examMistakes(),linked=gapCardIds();
+ return `<div class="content"><div class="overline">YOUR PRIVATE LEARNING PATH</div><h1 style="margin:9px 0 11px">Learn the <span class="serif" style="color:#9ce5d5">missing concepts.</span></h1><p class="muted">Import the JSON export from your own SnowPro Exam Lab. Your answers are analyzed only inside this browser—not uploaded to GitHub or a server. This is a lesson plan, not another mock test.</p>
+ <div class="learning-entry-grid"><button class="learning-entry accent" data-action="import-exam"><span class="learning-entry-icon">${icon('upload')}</span><strong>${attempts.length?'Update Exam Lab results':'Import Exam Lab progress JSON'}</strong><small>Accepts snowpro-core-progress-*.json</small><span class="entry-arrow">Choose JSON file →</span></button><button class="learning-entry" data-action="start-deep"><span class="learning-entry-icon">${icon('book')}</span><strong>Explore all guided lessons</strong><small>${guidedCards().length} curated concept cards, even if not tested by your mocks</small><span class="entry-arrow">Study broader coverage →</span></button></div>
+ ${attempts.length?`<div class="section-head"><h2>Your imported attempts</h2><span class="pill green">Stored on this device</span></div><div class="learning-stats">${attempts.map(a=>`<div class="learning-stat"><b>Exam #${a.exam}</b><strong>${a.correct}/${a.total}</strong><small>${a.wrong.length} missed · Learning Mode</small></div>`).join('')}</div><div class="panel" style="margin-top:15px"><div class="overline">CONNECTED TO LEARNING TOPICS</div><h2 style="margin:12px 0 5px">${linked.length} core lessons for ${mistakes.length} distinct missed questions</h2><p class="muted">Each missed question points to a core lesson teaching its underlying concept. Repeated mistakes in one concept are consolidated.</p><div class="btn-row" style="margin-top:15px"><button class="btn primary" data-action="start-gaps" ${linked.length?'':'disabled'}>Learn my weak concepts ${icon('arrow')}</button></div></div><div class="section-head"><h2>What to understand next</h2></div><div class="lesson-topic-list">${linked.slice(0,26).map(id=>{const c=C.get(id),l=LESSON_BANK[id];return `<button class="lesson-topic-item" data-preview="${id}"><span class="pill neutral">${esc(DOMAINS[c.domain].short)}</span><span><strong>${esc(l?.title||c.tag)}</strong><small>${esc(c.front)}</small></span><span class="arrow">↗</span></button>`;}).join('')}</div>${mistakes.length>21?`<div class="study-note">${mistakes.length-21} additional missed questions may not have explicitly curated links yet. This learning map currently covers the 21 previously identified miss topics.</div>`:''}`:`<div class="panel" style="margin-top:16px"><h2>No mock progress imported</h2><p class="muted">Use the Import button above. A 5-minute set remains a suggested number of flashcards, not a timed exam.</p></div>`}
+ <div class="footer-note">Exam Lab answer keys and question-to-topic links are bundled to score your exported practice attempts locally. Only question/topic mappings—not your responses—are included in the public repository. Importing again replaces the prior exam import without changing flashcard ratings.</div></div>`;
+}
+function importExamProgress(file){
+ if(!file||file.size>5_000_000){alert('Please choose an Exam Lab progress JSON smaller than 5 MB.');return;}
+ const reader=new FileReader();reader.onload=()=>{try{
+  const data=JSON.parse(reader.result);
+  if(data.app!=='SnowPro COF-C03 Exam Lab'||!Array.isArray(data.attempts))throw Error('Not a recognized SnowPro Exam Lab progress file');
+  const candidates=data.attempts.filter(a=>a&&a.responses&&typeof a.responses==='object'&&Object.keys(a.responses).length);
+  const byExam=new Map();
+  for(const a of candidates){
+   const entries=Object.entries(a.responses).filter(([id,res])=>EXAM_LINKS.answers[id]&&Array.isArray(res?.selected)&&res.locked===true);
+   if(!entries.length)continue;
+   const form=entries.some(([id])=>id.startsWith('B'))?2:1;
+   const previous=byExam.get(form);
+   if(previous&&previous.total>entries.length)continue;
+   const wrong=entries.filter(([id,res])=>{const actual=[...res.selected].sort((x,y)=>x-y),expected=[...EXAM_LINKS.answers[id]].sort((x,y)=>x-y);return JSON.stringify(actual)!==JSON.stringify(expected);}).map(([id])=>id);
+   byExam.set(form,{exam:form,total:entries.length,correct:entries.length-wrong.length,wrong});
+  }
+  if(!byExam.size)throw Error('No scored/locked answers found. Export the completed Exam Lab attempt.');
+  state.examProgress={importedAt:NOW(),attempts:[...byExam.values()].sort((a,b)=>a.exam-b.exam)};
+  save();ui.page='mistakes';render();toast('Exam results imported privately');
+ }catch(e){alert('Could not import Exam Lab progress: '+e.message);}};reader.readAsText(file);
+}
 function renderSources(){const links=[['Official COF-C03 guide and sample questions','Snowflake · current · includes 5 published sample questions','https://learn.snowflake.com/en/certifications/snowpro-core-c03/'],['Official SnowPro Core practice exam','Snowflake · optional paid exam; practice items are not the live exam','https://learn.snowflake.com/en/certifications/snowpro-practice-exams/'],['SnowPro Core certification prep course','Snowflake University · free course with knowledge checks','https://learn.snowflake.com/en/courses/OD-COREPREP/'],['Our original 100-question hard mock exam','SnowPro Exam Lab · original authored scenarios','https://paksue.github.io/sand_box/snowpro-cof-c03-exam-lab/'],['Public COF-C03 practice examples','CertSafari · independent, with sources and explanations','https://www.certsafari.com/snowflake/snowpro-core-certification-c03'],['Older COF-C02 public study guide','Historical guide · for comparison only; check modern answer validity','https://www.bene.haus/assets/documents/snowflake/COF-CO2_SnowProCoreStudyGuide_090922.pdf']];return `<div class="content"><span class="overline">SOURCED QUESTION LIBRARY</span><h1 style="margin:9px 0 12px">What exists. <span class="serif" style="color:#9ce5d5">What doesn't.</span></h1><p class="muted">Snowflake has not published the complete pool of real certification questions. These are legitimate study sources and independently authored examples. We do not reproduce unauthorized exam dumps or claim to know every live question.</p><div class="source-list">${links.map(([title,sub,url])=>`<a class="source-card" href="${url}" target="_blank" rel="noopener noreferrer"><strong>${esc(title)}</strong><small>${esc(sub)}</small><span>Open reference ↗</span></a>`).join('')}</div><div class="archive-strip"><div><b>Current vs historical</b><span>Historical COF-C01/COF-C02 cards are separate from your default COF-C03 daily queue.</span></div><button class="btn small quiet" data-collection="historical">Explore legacy cards →</button></div><div class="archive-strip"><div><b>Want to contribute a question source?</b><span>Save or cite a legitimately published source, or use your own practice-bank export. Copyrighted third-party banks are not automatically redistributed.</span></div><button class="btn small quiet" data-page="coverage">Coverage map →</button></div></div>`;}
 // Recent sets include *unrated* cards. Otherwise switching modes repeatedly
 // replays the same high-priority prompts because those prompts have no review history.
@@ -100,7 +138,7 @@ function preferUnseenSet(items,recent){
 }
 function selectQueue(mode='mix',domain='all',limit=null){
  let cards=currentCards().filter(c=>domain==='all'||c.domain===domain);
- if(mode==='sql')cards=cards.filter(c=>c.kind==='sql');
+ if(mode==='sql')cards=cards.filter(c=>c.kind==='sql');if(mode==='deep')cards=cards.filter(c=>!!LESSON_BANK[c.id]);
  if(mode==='filtered')cards=filteredCards();
  if(mode==='saved')cards=cards.filter(c=>bookmarked(c.id));
  const recent=recentQueueIds(),max=limit||limitFor(state.settings.minutes);
@@ -176,36 +214,62 @@ function relatedVariations(c){
  }).filter(o=>o.eligible).sort((a,b)=>b.score-a.score||a.x.id.localeCompare(b.x.id)).slice(0,2).map(o=>o.x);
 }
 function explorationPanels(c){
- const panels=[{type:'answer',title:'The answer',id:'answer'},{type:'why',title:'How it works',id:'why'}];
- if(c.code&&c.code.trim())panels.push({type:'code',title:'SQL / syntax',id:'code'});
- panels.push({type:'trap',title:'Exam trap',id:'trap'});
- for(const v of relatedVariations(c))panels.push({type:'variation',title:'Try a variation',id:'variation-'+v.id,card:v});
+ const lesson=LESSON_BANK[c.id];
+ if(lesson){return [
+  {type:'answer',title:'Core answer',id:'answer'},
+  {type:'concept',title:'Understand',id:'concept'},
+  {type:'mechanism',title:'How it works',id:'mechanism'},
+  {type:'walkthrough',title:'Real example',id:'walkthrough'},
+  {type:'boundaries',title:'Compare & connect',id:'boundaries'},
+  {type:'teachback',title:'Explain it back',id:'teachback'},
+  {type:'reference',title:'References',id:'reference'}
+ ];}
+ const panels=[{type:'answer',title:'Core answer',id:'answer'},{type:'why',title:'How it works',id:'why'}];
+ if(c.code?.trim())panels.push({type:'code',title:'SQL / syntax',id:'code'});
+ panels.push({type:'trap',title:'Boundaries',id:'trap'});
+ for(const v of relatedVariations(c))panels.push({type:'variation',title:'Related concept',id:'variation-'+v.id,card:v});
  panels.push({type:'reference',title:'Reference',id:'reference'});
  return panels;
 }
 function exploreBack(c,s,panels){
- const index=clamp(Number(s.panelIndex)||0,0,panels.length-1),p=panels[index];
- const top=`<div class="face-top"><span>${esc(p.title)} · ${index+1}/${panels.length}</span><span class="flash-symbol">${p.type==='answer'?'✧':p.type==='variation'?'◇':'✦'}</span></div>`;
+ const index=clamp(Number(s.panelIndex)||0,0,panels.length-1),p=panels[index],lesson=LESSON_BANK[c.id];
+ const top=`<div class="face-top"><span>${esc(p.title)} · ${index+1}/${panels.length}</span><span class="flash-symbol">${lesson?'✳':'✦'}</span></div>`;
  let center='',bottom='';
  if(p.type==='answer'){
-  center=`<div class="flash-center"><div class="flash-answer ${c.back.length>65?'compact':''}">${format(c.back)}</div><p class="flash-excerpt">${esc(c.why)}</p></div>`;
-  bottom=`<div class="face-bottom"><span>Swipe left for deeper learning</span><span>↻ tap to flip</span></div>`;
+  center=`<div class="flash-center"><div class="flash-answer ${c.back.length>65?'compact':''}">${format(c.back)}</div><p class="flash-excerpt">${lesson?`Swipe to build your understanding of ${esc(lesson.title)}.`:esc(c.why)}</p></div>`;
+  bottom=`<div class="face-bottom"><span>Swipe left to understand the topic</span><span>↻ tap to flip</span></div>`;
+ }else if(p.type==='concept'){
+  center=`<div class="explore-content"><span class="explore-kicker">01 · MEANING</span><h3>${esc(lesson.title)}</h3><p>${format(lesson.idea)}</p><div class="learning-takeaway"><b>Core answer</b><span>${format(c.back)}</span></div></div>`;
+  bottom=`<div class="face-bottom"><span>Understand before memorizing</span><span>← swipe →</span></div>`;
+ }else if(p.type==='mechanism'){
+  center=`<div class="explore-content"><span class="explore-kicker">02 · THE MECHANISM</span><h3>How it actually works</h3><div class="lesson-steps">${lesson.steps.map((item,i)=>`<div class="lesson-step"><span>${i+1}</span><p>${format(item)}</p></div>`).join('')}</div></div>`;
+  bottom=`<div class="face-bottom"><span>Three steps · trace the logic</span><span>← swipe →</span></div>`;
+ }else if(p.type==='walkthrough'){
+  center=`<div class="explore-content"><span class="explore-kicker">03 · WORKED EXAMPLE</span><h3>See it in action</h3><p>${format(lesson.case)}</p>${lesson.code?`<pre class="explore-code">${esc(lesson.code)}</pre>`:''}<p class="explore-caption">Picture this happening in a real Snowflake account.</p></div>`;
+  bottom=`<div class="face-bottom"><span>Apply the idea · not an exam answer</span><span>← swipe →</span></div>`;
+ }else if(p.type==='boundaries'){
+  center=`<div class="explore-content"><span class="explore-kicker">04 · COMPARE CONCEPTS</span><h3>Where it differs</h3><div class="lesson-boundary">${format(lesson.contrast)}</div><p class="explore-caption">Explain why the alternatives are not interchangeable.</p></div>`;
+  bottom=`<div class="face-bottom"><span>Recognize the boundaries</span><span>← swipe →</span></div>`;
+ }else if(p.type==='teachback'){
+  const visible=!!(s.variationRevealed||{})[p.id];
+  center=`<div class="explore-content variation-content"><span class="explore-kicker">05 · TEACH IT BACK</span><h3>Without looking, explain:</h3><p class="variation-question">${format(lesson.question)}</p>${visible?`<div class="variation-solution"><strong>${format(lesson.solution)}</strong></div>`:`<div class="variation-placeholder">Say your explanation aloud, then tap the card to compare.</div>`}</div>`;
+  bottom=`<div class="face-bottom"><span>${visible?'How close was your explanation?':'Tap to reveal the model explanation'}</span><span>← swipe →</span></div>`;
  }else if(p.type==='why'){
   center=`<div class="explore-content"><span class="explore-kicker">01 · UNDERSTAND</span><h3>Why this works</h3><p>${format(c.why)}</p><div class="explore-takeaway"><b>Remember</b><span>${format(c.back)}</span></div></div>`;
-  bottom=`<div class="face-bottom"><span>Mechanism, not just memorization</span><span>← swipe →</span></div>`;
+  bottom=`<div class="face-bottom"><span>Build the mechanism</span><span>← swipe →</span></div>`;
  }else if(p.type==='code'){
-  center=`<div class="explore-content"><span class="explore-kicker">02 · EXACT SYNTAX</span><h3>See it in SQL</h3><pre class="explore-code">${esc(c.code)}</pre><p class="explore-caption">Read the exact names, arguments and punctuation. Practice writing it from memory.</p></div>`;
-  bottom=`<div class="face-bottom"><span>Exact syntax matters on COF-C03</span><span>← swipe →</span></div>`;
+  center=`<div class="explore-content"><span class="explore-kicker">02 · EXACT SYNTAX</span><h3>See it in SQL</h3><pre class="explore-code">${esc(c.code)}</pre><p class="explore-caption">Recall and write this from memory.</p></div>`;
+  bottom=`<div class="face-bottom"><span>Syntax in context</span><span>← swipe →</span></div>`;
  }else if(p.type==='trap'){
-  center=`<div class="explore-content"><span class="explore-kicker">03 · WATCH OUT</span><h3>The exam trap</h3><div class="explore-trap">${format(c.trap)}</div><p class="explore-caption">What changes the answer? Look for the specific constraint or near-identical option.</p></div>`;
-  bottom=`<div class="face-bottom"><span>Spot the plausible wrong choice</span><span>← swipe →</span></div>`;
+  center=`<div class="explore-content"><span class="explore-kicker">03 · LIMITS & EXCEPTIONS</span><h3>Where this breaks</h3><div class="explore-trap">${format(c.trap)}</div><p class="explore-caption">Which conditions change the correct design choice?</p></div>`;
+  bottom=`<div class="face-bottom"><span>Know its boundaries</span><span>← swipe →</span></div>`;
  }else if(p.type==='variation'){
   const v=p.card,visible=!!(s.variationRevealed||{})[p.id];
-  center=`<div class="explore-content variation-content"><span class="explore-kicker">04 · APPLY IT DIFFERENTLY</span><h3>Related challenge</h3><p class="variation-question">${esc(v.front)}</p>${visible?`<div class="variation-solution"><strong>${format(v.back)}</strong><p>${esc(v.why)}</p></div>`:`<div class="variation-placeholder">Recall the answer before you reveal it.</div>`}</div>`;
-  bottom=`<div class="face-bottom"><span>${visible?'Swipe for more':'Tap to reveal the variation'}</span><span>${visible?'← swipe →':'✦ test yourself'}</span></div>`;
+  center=`<div class="explore-content variation-content"><span class="explore-kicker">04 · RELATED CONCEPT</span><h3>Try a variation</h3><p class="variation-question">${format(v.front)}</p>${visible?`<div class="variation-solution"><strong>${format(v.back)}</strong><p>${format(v.why)}</p></div>`:`<div class="variation-placeholder">Explain it to yourself first, then tap for the answer.</div>`}</div>`;
+  bottom=`<div class="face-bottom"><span>${visible?'Swipe for more':'Tap to reveal this variation'}</span><span>← swipe →</span></div>`;
  }else{
-  center=`<div class="explore-content"><span class="explore-kicker">05 · CONNECT & VERIFY</span><h3>Put it in context</h3><p>${esc(c.tag)} · ${esc(DOMAINS[c.domain].name)}</p>${c.related?.length?`<div class="explore-tags">${c.related.map(x=>`<span>${esc(x)}</span>`).join('')}</div>`:''}<p class="explore-caption">Official Snowflake documentation and your personal notes are available in Learn more below.</p><a class="explore-doc-link" href="${esc(c.doc)}" target="_blank" rel="noopener noreferrer">Read official documentation ↗</a></div>`;
-  bottom=`<div class="face-bottom"><span>All panels complete — rate when ready</span><span>${index+1}/${panels.length}</span></div>`;
+  center=`<div class="explore-content"><span class="explore-kicker">06 · EXTEND THE LESSON</span><h3>Connect & verify</h3><p>${lesson?esc(lesson.title):esc(c.tag)} · ${esc(DOMAINS[c.domain].name)}</p><p class="explore-caption">Official Snowflake documentation and your personal notes are available below. The main recall rating remains separate from exploring.</p><a class="explore-doc-link" href="${esc(c.doc)}" target="_blank" rel="noopener noreferrer">Open official docs ↗</a></div>`;
+  bottom=`<div class="face-bottom"><span>Rate the original recall when ready</span><span>${index+1}/${panels.length}</span></div>`;
  }
  return top+center+bottom;
 }
@@ -221,7 +285,7 @@ function movePanel(index){const s=state.session,c=current();if(!s?.revealed||!c|
 function tapFlashcard(){const s=state.session,c=current();if(!s||!c)return;
  if(!s.revealed){reveal();return;}
  const panels=explorationPanels(c),p=panels[clamp(Number(s.panelIndex)||0,0,panels.length-1)];
- if(p.type==='variation'){
+ if(p.type==='variation'||p.type==='teachback'){
   s.variationRevealed=s.variationRevealed||{};
   s.variationRevealed[p.id]=!s.variationRevealed[p.id];save();renderStudyInPlace();return;
  }
@@ -230,7 +294,7 @@ function tapFlashcard(){const s=state.session,c=current();if(!s||!c)return;
 function renderStudy(){const s=state.session;if(!s)return `<div class="content"><h1>Start a recall session</h1><button class="btn primary" data-action="start" data-mode="mix">Start 5-minute review</button></div>`;
  if(s.index>=s.queue.length || s.completedAt)return renderCompletion();
  const c=current(),flipped=s.revealed,panels=explorationPanels(c),index=clamp(Number(s.panelIndex)||0,0,panels.length-1),est=Math.round((s.index/s.queue.length)*100),isTyping=s.mode==='sql';
- return `<div class="study-page"><div class="study-top"><button class="icon-btn" data-action="close-study" aria-label="Close session">${icon('close')}</button><div class="study-head"><span class="overline">${esc(s.mode==='sql'?'WRITE THE SQL':s.mode==='weak'?'EXAM SPRINT':'SMART RECALL')}</span><b>${s.index+1} of ${s.queue.length} · ${s.rated.length} rated</b></div><span class="pill ${due(c.id)?'sand':'green'}">${due(c.id)?'Due':reviewed(c.id)?'Practice':'New'}</span></div><div class="study-meter" role="progressbar" aria-valuenow="${s.index}" aria-valuemin="0" aria-valuemax="${s.queue.length}"><span style="width:${est}%"></span></div>
+ return `<div class="study-page"><div class="study-top"><button class="icon-btn" data-action="close-study" aria-label="Close session">${icon('close')}</button><div class="study-head"><span class="overline">${esc(s.mode==='sql'?'WRITE THE SQL':s.mode==='weak'?'EXAM SPRINT':s.mode==='deep'?'LEARN DEEPLY':s.mode==='gaps'?'MY KNOWLEDGE GAPS':'SMART RECALL')}</span><b>${s.index+1} of ${s.queue.length} · ${s.rated.length} rated</b></div><span class="pill ${due(c.id)?'sand':'green'}">${due(c.id)?'Due':reviewed(c.id)?'Practice':'New'}</span></div><div class="study-meter" role="progressbar" aria-valuenow="${s.index}" aria-valuemin="0" aria-valuemax="${s.queue.length}"><span style="width:${est}%"></span></div>
  <div class="flash-scene ${flipped?'explore-scene':''}" id="flashScene" data-card-id="${c.id}" data-panel-index="${index}" role="button" tabindex="0" aria-label="${!flipped?'Flashcard question. Tap to reveal answer.':index===0?'Answer revealed. Tap to flip back, or swipe left to learn more.':panels[index].type==='variation'?'Related challenge. Tap to reveal its answer or swipe to explore.':'Explore '+esc(panels[index].title)+'. Swipe left or right to navigate.'}"><div class="card-stack"></div><div class="flip-card ${flipped?'flipped':''}" id="flipCard"><article class="flash-face front-face"><div class="face-top"><span>${esc(DOMAINS[c.domain].short)} · ${esc(c.tag)}</span><span class="flash-symbol">✳</span></div><div class="flash-center"><div class="flash-question ${c.front.length>112?'compact':''}">${esc(c.front)}</div></div><div class="face-bottom"><span class="card-call">${icon('flip')} Tap to reveal</span><span>${c.priority>=3?'HIGH YIELD':'CORE REVIEW'}</span></div></article><article class="flash-face back-face">${exploreBack(c,s,panels)}</article></div></div>
  ${explorationNav(c,s,panels)}
  ${isTyping&&!flipped?`<textarea class="type-answer" id="typedDraft" placeholder="Recall the function or write the syntax here, then flip…" aria-label="Write your answer first">${esc(s.draft||'')}</textarea>`:''}
@@ -291,6 +355,9 @@ document.body.addEventListener('click',e=>{const b=e.target.closest('button,[dat
  if(action==='resume'){ui.page='study';render();return;}
  if(action==='focus'){begin('mix',b.dataset.domain,limitFor(state.settings.minutes));return;}
  if(action==='start-filtered'){begin('filtered','all',limitFor(state.settings.minutes));return;}
+ if(action==='start-deep'){begin('deep','all',limitFor(state.settings.minutes));return;}
+ if(action==='start-gaps'){const ids=gapQueue(limitFor(state.settings.minutes));if(!ids.length){toast('Import Exam Lab progress first');return;}begin('gaps','all',ids.length,ids);return;}
+ if(action==='import-exam'){$('#examProgressPicker').click();return;}
  if(action==='reveal'){reveal();return;}
  if(action==='close-study'){closeSession();return;}
  if(action==='bookmark'){toggleBookmark(b.dataset.id);return;}
@@ -312,6 +379,7 @@ document.body.addEventListener('change',e=>{const t=e.target;
  if(t.id==='haptics'){state.settings.haptics=t.checked;save();}
  if(t.id==='typing'){state.settings.typing=t.checked;save();}
  if(t.id==='importPicker'&&t.files[0]){importBackup(t.files[0]);t.value='';}
+ if(t.id==='examProgressPicker'&&t.files[0]){importExamProgress(t.files[0]);t.value='';}
  });
 function renderBrowseInto(){const input=$('#cardSearch'),pos=input?.selectionStart||0;$('#view').innerHTML=renderBrowse();const x=$('#cardSearch');if(x&&document.activeElement===input){x.focus();x.setSelectionRange(pos,pos);}}
 document.body.addEventListener('input',e=>{const t=e.target;if(t.id==='cardSearch'){const start=t.selectionStart;ui.search=t.value;const v=$('#view');v.innerHTML=renderBrowse();const field=$('#cardSearch');field.focus();field.setSelectionRange(start,start);}

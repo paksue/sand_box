@@ -1,0 +1,820 @@
+{
+  "sp079": {
+    "title": "Future grants and precedence",
+    "idea": "A future grant is a rule for privileges on objects created later, not a grant on the tables that already exist. Snowflake can define future grants at database or schema scope.",
+    "steps": [
+      "Define a future grant for an object type, such as TABLES.",
+      "When a new table of that type appears, Snowflake evaluates applicable future grants.",
+      "If the schema defines a future grant for that type, its future grants take precedence; corresponding database-level future grants are ignored."
+    ],
+    "case": "Database SALES has future SELECT for ROLE_A. Schema SALES.PUBLIC has future SELECT for ROLE_B. A new table in PUBLIC receives the schema-level future SELECT to ROLE_B, not both sets.",
+    "contrast": "Future grants are not the same as privileges on existing tables. The precedence is per object type; a schema future TABLE grant does not override database future VIEW grants.",
+    "question": "A new view is created in PUBLIC, which has schema-level future TABLE grants but no VIEW future grants. Which scope supplies its future VIEW grant?",
+    "solution": "The database-level future VIEW grant can still apply, because a future grant on TABLES is a different object type.",
+    "code": "GRANT SELECT ON FUTURE TABLES IN SCHEMA SALES.PUBLIC TO ROLE ROLE_B;"
+  },
+  "sp082": {
+    "title": "Row access policies and mapping tables",
+    "idea": "A row access policy determines whether each row is visible for a query. Its policy expression can consult a mapping table without broadly exposing that table to the querying users.",
+    "steps": [
+      "A policy is attached to a table or view and receives specified column values.",
+      "Snowflake evaluates its expression for authorized rows, potentially using a protected mapping table.",
+      "Policy expressions execute with the owner-rights privilege context, so the policy owner needs access to dependent mapping data."
+    ],
+    "case": "Analysts query SALES, while a mapping table holds allowed regions for each role. The analysts need SELECT on SALES, but do not need direct SELECT on the hidden mapping table if the policy owner has the required privileges.",
+    "contrast": "Row access filters rows; masking changes column values; join policies constrain joins. A table owner and policy owner are not automatically the same role.",
+    "question": "A policy references SECURITY.ALLOWED_REGIONS, but analysts lack SELECT on it. What privilege context matters?",
+    "solution": "The role owning the row access policy must be able to read the mapping table for the policy expression to evaluate.",
+    "code": "CREATE ROW ACCESS POLICY region_gate AS (region STRING) RETURNS BOOLEAN -> EXISTS (SELECT 1 FROM security.allowed_regions m WHERE m.region = region AND IS_ROLE_IN_SESSION(m.role_name));"
+  },
+  "sp233": {
+    "title": "Join policies",
+    "idea": "Join policies govern how a protected table may participate in joins, including restricting eligible join keys. They are not substitutes for row filtering or masking.",
+    "steps": [
+      "Protect the table with a join policy.",
+      "Specify the join constraints and allowed keys according to the policy definition.",
+      "Queries that do not satisfy those join restrictions are not permitted."
+    ],
+    "case": "A provider allows combining transactions with a partner table only through HASHED_CUSTOMER_ID. The permitted join key is enforced by policy rather than by relying on analyst conventions.",
+    "contrast": "Row access policies control visible rows; aggregation policies restrict disaggregation; projection policies restrict selected columns; join policies constrain how tables are joined.",
+    "question": "You need to allow aggregates but prevent individual-record results. Is a join policy alone sufficient?",
+    "solution": "No. Aggregation policy addresses aggregate-only access. A join policy alone cannot enforce a minimum group size."
+  },
+  "sp243": {
+    "title": "Warehouse resource monitors",
+    "idea": "A resource monitor tracks credits consumed by eligible user-managed virtual warehouses and can notify or suspend warehouses when configured thresholds are reached.",
+    "steps": [
+      "Assign warehouses or account warehouses to an appropriate monitor.",
+      "Define quota and trigger actions such as notify or suspend.",
+      "Understand that storage and many serverless costs are outside the warehouse-monitor boundary."
+    ],
+    "case": "Your BI warehouse reaches its credit quota and gets suspended. That does not automatically stop Snowpipe services or remove storage charges.",
+    "contrast": "A resource monitor has a potential suspension action; a Snowflake Budget monitors broader supported spending and alerts but is not a universal spend kill-switch.",
+    "question": "If you want alerts covering Snowpipe, storage and other supported services, which tool is broader?",
+    "solution": "Snowflake Budgets. Keep a warehouse resource monitor if you additionally need warehouse-specific suspension."
+  },
+  "sp244": {
+    "title": "Budgets versus monitors",
+    "idea": "Snowflake Budgets provides monitoring and notifications for spending across supported services. It is different from a warehouse-focused resource monitor.",
+    "steps": [
+      "Select account-level or scoped spending sources supported by Budgets.",
+      "Set spending thresholds and notification recipients.",
+      "Use the alerts for governance; do not assume Budget alerts stop all usage automatically."
+    ],
+    "case": "Finance wants to be warned about monthly spend from warehouses and serverless services. A Budget is appropriate, while warehouse suspension needs separate enforcement tools.",
+    "contrast": "Budget: broad supported cost visibility and alerts. Resource monitor: eligible warehouse credits and possible suspension. Neither guarantees absolutely no future charges.",
+    "question": "A budget sends an 80% notification. Does that guarantee the account cannot exceed its budget?",
+    "solution": "No. Budget notifications do not constitute a universal hard spending cap."
+  },
+  "sp148": {
+    "title": "Secure views across database boundaries",
+    "idea": "A shared secure view can refer to tables in another database without directly exposing those source tables to the consumer, but the share must have required cross-database reference privileges.",
+    "steps": [
+      "Grant the share the required USAGE on the published database and schema and SELECT on the secure view.",
+      "For a secure view referencing another database, grant required REFERENCE_USAGE on that referenced database to the share.",
+      "Do not grant SELECT on the underlying sensitive table if the consumer should see only the controlled view."
+    ],
+    "case": "PUBLISHED.PUBLIC.SAFE_VIEW references PRIVATE_DB.RAW.PII. Consumers receive access to SAFE_VIEW and REFERENCE_USAGE for PRIVATE_DB, not direct SELECT on RAW.PII.",
+    "contrast": "REFERENCE_USAGE allows resolving a secure view dependency; it is not equivalent to SELECT on the base tables. A separately granted raw base table would bypass view-only restrictions.",
+    "question": "A consumer can query a shared view, but its cross-database source is denied. Which provider-side grant should you investigate?",
+    "solution": "The required REFERENCE_USAGE on the referenced database, as well as view and namespace grants."
+  },
+  "sp146": {
+    "title": "Using shared data in a consumer-owned table",
+    "idea": "An imported shared database is read-only to the consumer. The consumer may use the shared data as a SELECT source and write the result to objects they own.",
+    "steps": [
+      "The provider exposes objects through a share; the consumer creates a database FROM SHARE.",
+      "The consumer queries those shared objects with its own warehouse, without changing the provider data.",
+      "To persist enriched data, the consumer runs CTAS/INSERT/MERGE into a table in a separate writable database."
+    ],
+    "case": "Join a shared ORDERS table to your own FRAUD_RISK table and persist the result as MY_DB.PUBLIC.ENRICHED_ORDERS, not inside the imported shared database.",
+    "contrast": "A consumer can read and transform shared records, but cannot CREATE TABLE or UPDATE provider-owned objects inside an imported shared database.",
+    "question": "Where must you create a persistent table combining shared sales and your own risk score?",
+    "solution": "In a consumer-owned writable database, selecting from the imported share as needed.",
+    "code": "CREATE TABLE MY_DB.PUBLIC.ENRICHED AS SELECT s.*,r.risk FROM SHARED_SALES.PUBLIC.ORDERS s JOIN MY_DB.PUBLIC.RISK r ON r.id=s.id;"
+  },
+  "sp055": {
+    "title": "Zero-copy clone versus replication",
+    "idea": "Zero-copy cloning creates a new logical object within supported account boundaries by initially sharing unchanged micro-partitions. Replication is the supported mechanism for maintaining copies between eligible accounts.",
+    "steps": [
+      "CLONE creates a logically independent object with shared initial storage references.",
+      "As either object changes, new micro-partitions accrue separate storage costs.",
+      "Cross-account disaster recovery uses supported replication/failover mechanisms instead of arbitrary account-qualified CLONE."
+    ],
+    "case": "Developers create PROD_ORDERS_CLONE in their Snowflake account for testing. A second Snowflake account needing a refreshed copy requires replication configuration.",
+    "contrast": "CLONE is not a cross-account replication command. A secondary replica is normally read-only until a supported failover promotes it.",
+    "question": "Can ACCOUNT_B simply issue CREATE DATABASE X CLONE ACCOUNT_A.PROD and keep it refreshed?",
+    "solution": "No. Use supported cross-account database replication and refresh for that architecture."
+  },
+  "sp239": {
+    "title": "Replication versus failover",
+    "idea": "Replication keeps eligible data or account objects synchronized in a secondary location. Failover changes which location is active/writable during recovery.",
+    "steps": [
+      "Configure a replication or failover group and target account as supported.",
+      "Refresh the secondary copy to reduce data loss exposure.",
+      "When recovery requires writes, execute the supported failover/promotion procedure; prepare client connectivity as well."
+    ],
+    "case": "A replicated secondary can answer limited read-only workloads, but it cannot become writable merely by resizing its warehouse. Promotion is needed for writable recovery.",
+    "contrast": "Replication is not a point-in-time backup; a bad DELETE can replicate. Time Travel within retention is designed to recover earlier table states.",
+    "question": "A primary is unavailable and the current secondary is read-only. What must happen before your app can write?",
+    "solution": "Supported promotion/failover, plus suitable connection/authentication/warehouse setup for the recovery account."
+  },
+  "sp007": {
+    "title": "Bulk-load validation",
+    "idea": "COPY INTO <table> normally loads staged data. Its VALIDATION_MODE option inspects applicable staged input without inserting rows into the destination table.",
+    "steps": [
+      "Use COPY INTO <table> FROM @stage with supported VALIDATION_MODE settings.",
+      "Inspect returned errors or limited row samples.",
+      "Do not assume the validation option works with source SELECT transformations, name matching or unload syntax."
+    ],
+    "case": "A CSV file might be malformed. Validate its staged records before loading; then separately run the real COPY if acceptable.",
+    "contrast": "For COPY INTO <location> (unloading), VALIDATION_MODE=RETURN_ROWS previews the query rows; RETURN_ERRORS/RETURN_ALL_ERRORS are for load validation.",
+    "question": "Can you copy VALIDATION_MODE=RETURN_ERRORS into COPY INTO @export_stage and preview an unload?",
+    "solution": "No. Use the supported unload RETURN_ROWS validation option, or run the SELECT first.",
+    "code": "COPY INTO sales FROM @incoming FILE_FORMAT=(TYPE=CSV) VALIDATION_MODE=RETURN_ERRORS;"
+  },
+  "sp261": {
+    "title": "CSV NULL tokens versus blank strings",
+    "idea": "NULL_IF is a list of source field text tokens that become SQL NULL. EMPTY_FIELD_AS_NULL controls behavior for an empty CSV field; both must be understood together.",
+    "steps": [
+      "Identify three distinct inputs: the literal letters NULL, an empty quoted value, and an unquoted empty field.",
+      "Configure NULL_IF to match intended null tokens; do not include an empty string if you need to preserve it.",
+      "Configure EMPTY_FIELD_AS_NULL appropriately and test the exact CSV representation in a sample load."
+    ],
+    "case": "Source values are NULL and empty. To map literal NULL to SQL NULL but preserve an empty VARCHAR, use NULL_IF=('NULL') and consider EMPTY_FIELD_AS_NULL=FALSE.",
+    "contrast": "The source text \"NULL\" is not SQL NULL unless configured or converted. `NULL_IF=('NULL','')` will also turn empty strings into SQL NULL.",
+    "question": "Does NULL_IF=('NULL','') preserve a truly empty string?",
+    "solution": "No. The empty-string token appears in the null-conversion list.",
+    "code": "CREATE FILE FORMAT my_csv TYPE=CSV NULL_IF=('NULL') EMPTY_FIELD_AS_NULL=FALSE;"
+  },
+  "sp271": {
+    "title": "COPY transformation compatibility",
+    "idea": "COPY INTO <table> supports certain source SELECT transformations to map staged fields explicitly. MATCH_BY_COLUMN_NAME is a separate mechanism that is incompatible with the SELECT-transform form.",
+    "steps": [
+      "Choose explicit SELECT $1:field expressions for compatible transformations and map them to target columns.",
+      "Alternatively, use MATCH_BY_COLUMN_NAME where supported for source-to-target column-name matching.",
+      "Do not combine MATCH_BY_COLUMN_NAME with a transformation SELECT; also do not assume load VALIDATION_MODE supports transformations."
+    ],
+    "case": "An incoming JSON object has customerId and total fields. Project them with SELECT expressions to the target column list; avoid adding MATCH_BY_COLUMN_NAME.",
+    "contrast": "MATCH_BY_COLUMN_NAME is not a universal extra safety option. It has incompatibilities with a transformation SELECT and certain validation usage.",
+    "question": "You already wrote COPY INTO t FROM (SELECT $1:id FROM @s). Should you append MATCH_BY_COLUMN_NAME?",
+    "solution": "No. Use the explicit transformation SELECT and target-column mapping without name matching.",
+    "code": "COPY INTO t(id) FROM (SELECT $1:id::NUMBER FROM @s) FILE_FORMAT=(TYPE=JSON);"
+  },
+  "sp273": {
+    "title": "Loading versus unloading",
+    "idea": "COPY INTO <table> reads staged files into a table. COPY INTO <location> writes data from a query/table to stage files. They have different parameter families.",
+    "steps": [
+      "Identify whether the destination is a table (loading) or an @stage / URL (unloading).",
+      "For loading, validation can return errors and staged row previews.",
+      "For unloading, RETURN_ROWS can preview the unload SELECT; SINGLE, PARTITION BY and OVERWRITE control file layout."
+    ],
+    "case": "A compliance export needs files grouped by country. Use COPY INTO @export ... PARTITION BY country; do not simultaneously demand one global output file with SINGLE=TRUE.",
+    "contrast": "VALIDATION_MODE=RETURN_ALL_ERRORS belongs to loading, not unloading. PARTITION BY for unload is a storage path choice, not SQL GROUP BY.",
+    "question": "What can you run to preview rows of a COPY INTO @stage export without writing the files?",
+    "solution": "The underlying SELECT, or supported unload validation mode RETURN_ROWS.",
+    "code": "COPY INTO @export FROM (SELECT * FROM orders) VALIDATION_MODE=RETURN_ROWS;"
+  },
+  "sp310": {
+    "title": "Predicate shape and micro-partition pruning",
+    "idea": "Snowflake tracks per-micro-partition statistics. Filters expressed as native ranges can help the optimizer skip irrelevant partitions before scanning their data.",
+    "steps": [
+      "A timestamp column has min/max ranges in micro-partition metadata.",
+      "A direct interval predicate exposes a comparison that the optimizer can often prune efficiently.",
+      "Wrapping the column with conversions or functions can sometimes hide a useful range and increase scanned partitions."
+    ],
+    "case": "Instead of TO_VARCHAR(order_ts,'YYYY-MM-DD')='2026-11-10', filter order_ts >= '2026-11-10' AND order_ts < '2026-11-11' with matching timestamp semantics.",
+    "contrast": "A bigger warehouse increases compute but does not change which micro-partitions logically qualify. Some expressions can still be optimized; inspect Query Profile rather than assuming.",
+    "question": "What Query Profile evidence would you seek before increasing warehouse size for a selective filter?",
+    "solution": "Partitions scanned versus total, pruning selectivity, predicates and clustering overlap.",
+    "code": "SELECT * FROM orders WHERE order_ts >= '2026-11-10'::TIMESTAMP AND order_ts < '2026-11-11'::TIMESTAMP;"
+  },
+  "sp331": {
+    "title": "QUALIFY and window functions",
+    "idea": "WHERE filters input rows before window-function results exist. QUALIFY filters after the window expressions have been computed.",
+    "steps": [
+      "Partition and order rows inside a window expression such as ROW_NUMBER().",
+      "Compute the analytic value for each resulting row.",
+      "Use QUALIFY to keep rows based on the window result, or use a subquery/CTE followed by an outer WHERE."
+    ],
+    "case": "For the latest order per customer, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_ts DESC)=1 belongs in QUALIFY (or an outer WHERE on a CTE alias).",
+    "contrast": "HAVING filters grouped aggregates; QUALIFY filters window results. WHERE ROW_NUMBER() OVER (...) = 1 at the same query level is not valid.",
+    "question": "Why is WHERE ROW_NUMBER() OVER(...) = 1 wrong in the same SELECT?",
+    "solution": "WHERE is evaluated before window functions; QUALIFY can filter their results.",
+    "code": "SELECT * FROM orders QUALIFY ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_ts DESC)=1;"
+  },
+  "sp121": {
+    "title": "SPLIT_PART positions",
+    "idea": "SPLIT_PART splits text by a delimiter and returns one component, using one-based positive positions. Negative positions count from the end.",
+    "steps": [
+      "Choose delimiter and field number.",
+      "Position 1 is the first field, 2 is the second; zero is not the normal second-field index.",
+      "An out-of-range field position returns an empty string."
+    ],
+    "case": "SPLIT_PART('sales:retail:us',':',2) returns retail; SPLIT_PART(...,-1) returns us.",
+    "contrast": "SPLIT_PART returns a scalar token. SPLIT produces an array, and SPLIT_TO_TABLE produces rows.",
+    "question": "Which position gets retail from sales:retail:us?",
+    "solution": "2, because SPLIT_PART uses one-based field numbering.",
+    "code": "SELECT SPLIT_PART('sales:retail:us',':',2);"
+  },
+  "sp120": {
+    "title": "CONCAT_WS and NULL semantics",
+    "idea": "CONCAT_WS joins input strings using a separator. In Snowflake, a NULL input argument can make the entire result NULL; it is not an automatic skip-null function.",
+    "steps": [
+      "Check which inputs might be SQL NULL.",
+      "Use COALESCE to substitute an empty string or other intentional value before concatenation.",
+      "Consider whether empty strings are actually acceptable in the final output."
+    ],
+    "case": "CONCAT_WS('-', 'A', NULL, 'B') yields NULL. CONCAT_WS('-', 'A', COALESCE(NULL,''), 'B') avoids NULL propagation but may introduce doubled separators.",
+    "contrast": "A null replacement decision is business logic, not merely syntax. CONCAT_WS and ARRAY_TO_STRING have different semantics and must not be substituted blindly.",
+    "question": "To concatenate customer fields without losing the whole result to NULL, what should you do?",
+    "solution": "Handle NULL inputs explicitly (e.g., COALESCE), choosing the intended empty or placeholder behavior.",
+    "code": "SELECT CONCAT_WS('-', 'A', COALESCE(col,''), 'B') FROM t;"
+  },
+  "sp057": {
+    "title": "Iceberg external volume",
+    "idea": "An external volume tells Snowflake where and how to access external cloud storage for Iceberg table files. It is not the catalog that tells readers which snapshot is current.",
+    "steps": [
+      "The external volume defines supported object-storage access and location.",
+      "The Iceberg catalog tracks committed table metadata and snapshot pointers.",
+      "Queries read files referenced by the current committed snapshot."
+    ],
+    "case": "A table has Parquet files on S3 and metadata in an external catalog. Configure supported external storage access and the appropriate catalog connection; neither alone describes the whole table.",
+    "contrast": "External volume = physical storage access. Catalog integration = external catalog metadata authority. Ordinary external tables have different metadata semantics.",
+    "question": "If S3 files exist but a query still sees the previous Iceberg snapshot, which layer deserves investigation?",
+    "solution": "The external catalog/snapshot metadata and refresh/discovery path, not simply warehouse sizing."
+  },
+  "sp058": {
+    "title": "Iceberg catalog ownership and snapshots",
+    "idea": "An external Iceberg catalog manages the authoritative metadata and pointers to committed snapshots. Snowflake connects to that catalog instead of inventing a separate view of raw Parquet files.",
+    "steps": [
+      "An engine writes files and commits an Iceberg snapshot with manifests.",
+      "The external catalog publishes the updated metadata pointer.",
+      "Snowflake discovers the committed snapshot through its supported catalog integration/refresh model and reads the referenced files."
+    ],
+    "case": "Two engines read the same table from an externally managed catalog. The files already exist, but readers should not see uncommitted additions until the catalog identifies the new snapshot.",
+    "contrast": "An external volume is about authorized access to cloud file storage. A catalog integration is about authoritative Iceberg metadata. These are complementary, not interchangeable.",
+    "question": "If an external engine writes new files but does not commit a snapshot to the catalog, should Snowflake see those rows?",
+    "solution": "No. Readers follow the catalog’s committed snapshot metadata, not arbitrary newly written files."
+  },
+  "sp090": {
+    "title": "INFORMATION_SCHEMA versus ACCOUNT_USAGE",
+    "idea": "INFORMATION_SCHEMA is usually database-scoped and suited to current metadata. SNOWFLAKE.ACCOUNT_USAGE provides longer-range, account-wide reporting but many views have publication latency.",
+    "steps": [
+      "Pick the scope: one database now, or account-wide historical audit.",
+      "Use INFORMATION_SCHEMA or SHOW for supported current-object inspection.",
+      "Use relevant ACCOUNT_USAGE views for historical/account-wide reports, accounting for privilege requirements and latency."
+    ],
+    "case": "A role was granted SELECT a minute ago. ACCOUNT_USAGE may not show it immediately; SHOW GRANTS or suitable current metadata often answers more quickly.",
+    "contrast": "A faster warehouse does not eliminate ACCOUNT_USAGE publication latency. Scope and history limits vary by view.",
+    "question": "Which source is usually better for a near-real-time check of current objects in one database?",
+    "solution": "The relevant INFORMATION_SCHEMA view or SHOW command, subject to permissions."
+  },
+  "sp070": {
+    "title": "Tri-Secret Secure editions",
+    "idea": "Tri-Secret Secure extends Snowflake’s managed encryption model by combining a customer-controlled key with the Snowflake key hierarchy. It is an edition-specific capability.",
+    "steps": [
+      "Snowflake encrypts stored data by default.",
+      "Customer-controlled key material is an extra control, not required for baseline encryption.",
+      "Tri-Secret Secure requires a qualifying edition such as Business Critical or higher."
+    ],
+    "case": "A Standard Edition account has encryption at rest without a customer-controlled Tri-Secret key. Requesting Tri-Secret changes requirements; it does not mean Standard lacks encryption.",
+    "contrast": "Tri-Secret Secure and periodic rekeying are different features, with different minimum-edition requirements.",
+    "question": "Does the absence of Tri-Secret Secure mean Snowflake does not encrypt stored data?",
+    "solution": "No. Snowflake manages encryption by default; Tri-Secret adds customer key control."
+  },
+  "sp071": {
+    "title": "Periodic rekeying",
+    "idea": "Periodic rekeying rotates encryption protection through Snowflake’s key hierarchy according to the supported feature behavior. It is not the same as supplying a customer-managed Tri-Secret key.",
+    "steps": [
+      "Understand automatic encryption as a baseline capability.",
+      "Understand periodic rekeying as an additional encryption-key lifecycle feature.",
+      "Remember the edition boundary: periodic rekeying is available in Enterprise and higher; Tri-Secret Secure requires Business Critical or higher."
+    ],
+    "case": "An Enterprise Edition security review asks for periodic rekeying. Enterprise may meet that requirement even though Tri-Secret Secure is a different Business Critical feature.",
+    "contrast": "Rekeying is not per-table SQL row encryption and not equivalent to database replication.",
+    "question": "Which needs the higher minimum edition: periodic rekeying or Tri-Secret Secure?",
+    "solution": "Tri-Secret Secure (Business Critical or higher versus Enterprise or higher for periodic rekeying)."
+  },
+  "sp169": {
+    "title": "Snowsight, Snowflake CLI and IDEs",
+    "idea": "Snowsight is the browser UI for writing queries and managing Snowflake. Snowflake CLI and IDE extensions help run development workflows in terminals or editors.",
+    "steps": [
+      "Use Snowsight for worksheet development, visualization and many admin tasks.",
+      "Use the Snowflake CLI for scripted commands in deployment/CI workflows.",
+      "Use supported IDE integrations for editor-based development; query execution still follows authorized Snowflake compute."
+    ],
+    "case": "An engineer explores SQL in Snowsight, commits code to Git, then runs deployment commands from a CI runner using Snowflake CLI.",
+    "contrast": "The GUI is not required for every SQL deployment. An IDE extension does not turn local editor memory into the Snowflake warehouse.",
+    "question": "Which interface is most natural for unattended CI/CD deployment commands?",
+    "solution": "Snowflake CLI rather than a manual browser worksheet."
+  },
+  "sp183": {
+    "title": "Snowpark-optimized warehouses",
+    "idea": "Snowpark-optimized warehouses are designed for workloads requiring more memory per compute unit, such as some Snowpark or ML processing jobs, compared with standard warehouses.",
+    "steps": [
+      "Diagnose workload memory requirements rather than assuming every Python job needs a special warehouse.",
+      "Consider Snowpark-optimized resources when memory-heavy operations justify them.",
+      "Benchmark performance and credits against standard warehouse alternatives."
+    ],
+    "case": "A large ML preprocessing operation runs out of memory on a standard warehouse. A Snowpark-optimized warehouse may help, but measure total cost and throughput.",
+    "contrast": "Snowpark execution is possible with ordinary warehouses. Snowpark-optimized is not another name for Gen 2 Standard.",
+    "question": "Does using the Snowpark API force you to choose a Snowpark-optimized warehouse?",
+    "solution": "No. Choose warehouse type based on workload and memory needs."
+  },
+  "sp184": {
+    "title": "Standard Gen 1, Gen 2 and warehouse families",
+    "idea": "Standard warehouse generations reflect differences in their underlying compute design and price/performance characteristics. Warehouse generation and Snowpark-optimized type are separate choices.",
+    "steps": [
+      "Distinguish a Standard Gen 1 warehouse from a Standard Gen 2 warehouse.",
+      "Evaluate resource constraints, credit rates and generation support in current documentation.",
+      "Choose based on workload benchmarking and availability, not only an assumed universal multiplier."
+    ],
+    "case": "Your ETL workload is CPU-heavy, but an ML job needs very high memory. Generation choice and selecting Snowpark-optimized compute solve different questions.",
+    "contrast": "Standard Gen 2 is not identical to Snowpark-optimized. A generation upgrade cannot guarantee the same percentage speedup for every query.",
+    "question": "A colleague says Gen 2 automatically means high-memory Snowpark-optimized. Is that correct?",
+    "solution": "No. Standard warehouse generation and Snowpark-optimized resource family differ."
+  },
+  "sp202": {
+    "title": "Snowflake Notebooks",
+    "idea": "Snowflake Notebooks provide an interactive environment where Python, SQL and narrative analysis can be used together with Snowflake data and supported compute.",
+    "steps": [
+      "Use cells for exploratory SQL/Python, visualization and explanation.",
+      "Run supported operations using the notebook’s configured Snowflake runtime and resources.",
+      "Move tested logic into appropriately governed production workflows when needed."
+    ],
+    "case": "An analyst explores a table using SQL cells, visualizes results with Python and documents assumptions in markdown cells, all in one collaborative notebook.",
+    "contrast": "A Notebook is for interactive development; a Streamlit app is a user-facing interactive application. A notebook is not automatically a production schedule.",
+    "question": "Which product is the natural place for an interactive SQL/Python analysis with explanatory cells?",
+    "solution": "Snowflake Notebooks."
+  },
+  "sp203": {
+    "title": "Streamlit in Snowflake",
+    "idea": "Streamlit in Snowflake hosts Python-based interactive data apps in a Snowflake environment using supported permissions and compute models.",
+    "steps": [
+      "Build Python UI widgets such as filters, charts and forms.",
+      "Connect UI actions to authorized Snowflake queries and data.",
+      "Plan app privileges, deployment, resource usage and intended audience."
+    ],
+    "case": "A sales leader opens an internal Streamlit app, chooses a region, and sees Snowflake-backed charts without editing SQL.",
+    "contrast": "Streamlit builds an interactive app. Snowflake Notebooks are for interactive analytic authoring; Cortex Analyst translates natural-language questions to SQL.",
+    "question": "Which feature would you choose to give business users a filterable dashboard built with Python?",
+    "solution": "Streamlit in Snowflake."
+  },
+  "sp234": {
+    "title": "Trust Center",
+    "idea": "Snowflake Trust Center surfaces supported security findings and recommendations. It helps security teams prioritize risks and inspect posture; it does not automatically replace all access policies.",
+    "steps": [
+      "Surface supported findings from configured scanners or checks.",
+      "Investigate what each finding means and which objects are affected.",
+      "Apply the correct policy or administrative change, then verify the finding is resolved."
+    ],
+    "case": "A security team sees an account-hardening finding and reviews the underlying configuration before modifying authentication or network controls.",
+    "contrast": "Trust Center is a discovery/assessment interface, unlike network policies, masking policies or row access policies, which enforce specific behavior.",
+    "question": "If Trust Center flags a risk, does clicking the finding automatically enforce every recommended security change?",
+    "solution": "No. Analyze the finding and configure the appropriate enforcement controls."
+  },
+  "sp237": {
+    "title": "Alerts and notifications",
+    "idea": "Snowflake alerts let you evaluate a specified SQL condition and invoke a supported action when the condition triggers. Notification integrations are one delivery mechanism for alerts or messages.",
+    "steps": [
+      "Define the condition and schedule/trigger semantics.",
+      "Define the action, such as invoking a supported notification.",
+      "Configure appropriate roles, integration permissions and monitoring for failures."
+    ],
+    "case": "An alert periodically checks a data quality metric and sends an email when the number of unexpected NULL values exceeds a threshold.",
+    "contrast": "An alert is the condition/action mechanism. A notification integration manages a supported communication channel. A task is a general scheduled computation unit.",
+    "question": "A data-quality monitor must send an email when a metric crosses a threshold. What components are involved?",
+    "solution": "An alert for the SQL condition/action and an appropriately configured notification integration for delivery."
+  },
+  "sp297": {
+    "title": "Git integration",
+    "idea": "Snowflake Git integration brings supported source-controlled repository content into Snowflake through a repository clone and authenticated API integration, enabling reproducible workflows.",
+    "steps": [
+      "Configure supported API integration and credentials or secret handling for the Git provider.",
+      "Create and fetch a Git repository clone so repository files become available for supported uses.",
+      "Use pinned or refreshed versions deliberately in development and deployment."
+    ],
+    "case": "A team stores SQL and Python files in GitHub. Developers fetch updated repository content into Snowflake before executing supported scripts.",
+    "contrast": "A Git repository clone is a source-code integration, not a zero-copy clone of Snowflake table data or a database backup.",
+    "question": "If an imported Git repository file changes upstream, does a Snowflake table CLONE refresh the repository code?",
+    "solution": "No. Git repository integration has its own fetch/update workflow; table CLONE is unrelated."
+  },
+  "sp324": {
+    "title": "Three kinds of caching",
+    "idea": "Snowflake has different caches that solve different problems: persisted query results, warehouse-local data cache and metadata-based optimizations. Their behavior and invalidation are not interchangeable.",
+    "steps": [
+      "Persisted results may return eligible query outputs without reexecuting the warehouse work.",
+      "Warehouse-local cache stores data on compute and is not guaranteed to survive suspension.",
+      "Metadata can allow eligible metadata-only responses or micro-partition pruning without scanning every row."
+    ],
+    "case": "COUNT or MIN/MAX-style work may sometimes leverage maintained metadata; a large JOIN generally still needs execution. A previously cached SELECT can sometimes reuse persisted results.",
+    "contrast": "Warehouse resizing does not make metadata caching a user-managed SSD setting. Query-result cache also has SQL/data/context eligibility rules.",
+    "question": "If a warehouse suspends, which cache is not guaranteed to survive?",
+    "solution": "Its local data cache; persisted query results and metadata mechanisms have different lifetimes."
+  },
+  "sp370": {
+    "title": "Snowflake Native Apps",
+    "idea": "Snowflake Native App Framework packages application logic and controlled access requirements for distribution and installation into consumer Snowflake accounts.",
+    "steps": [
+      "A provider builds and packages supported code, objects and manifest/setup logic.",
+      "Consumers install the application and approve the required privileges or references.",
+      "The app operates according to its application-role and permissions design in the consumer environment."
+    ],
+    "case": "A vendor distributes analytical logic that works with a customer’s own Snowflake data without requiring unrestricted export of raw data to the vendor.",
+    "contrast": "A simple share grants read-only data access. A Native App includes runnable application components and a permissions/lifecycle model.",
+    "question": "Why choose a Native App rather than only a shared view for customer-installed logic?",
+    "solution": "A Native App can package application functionality, setup and permissions in the customer environment."
+  },
+  "sp205": {
+    "title": "Cortex Search versus Analyst",
+    "idea": "Cortex Search provides retrieval over indexed text and other supported data for applications such as RAG. Cortex Analyst uses governed semantic definitions to generate SQL for business questions.",
+    "steps": [
+      "Identify your input: unstructured document text or structured relational metrics.",
+      "For document retrieval, maintain a search index with appropriate freshness/cost settings.",
+      "For structured natural-language analytics, define semantic relationships and metrics for Cortex Analyst."
+    ],
+    "case": "“Find the paragraph about support refund policy” points to Cortex Search. “What was approved net revenue last quarter?” points to Analyst with defined business semantics.",
+    "contrast": "Cortex Search retrieves relevant content; it is not by itself an accounting semantic model or a versioned predictive model registry.",
+    "question": "You want users to ask questions over governed sales totals and joins. Which feature is more direct?",
+    "solution": "Cortex Analyst, supported by a semantic model or semantic view."
+  },
+  "sp229": {
+    "title": "Row access policies and mapping tables",
+    "idea": "A row access policy determines whether each row is visible for a query. Its policy expression can consult a mapping table without broadly exposing that table to the querying users.",
+    "steps": [
+      "A policy is attached to a table or view and receives specified column values.",
+      "Snowflake evaluates its expression for authorized rows, potentially using a protected mapping table.",
+      "Policy expressions execute with the owner-rights privilege context, so the policy owner needs access to dependent mapping data."
+    ],
+    "case": "Analysts query SALES, while a mapping table holds allowed regions for each role. The analysts need SELECT on SALES, but do not need direct SELECT on the hidden mapping table if the policy owner has the required privileges.",
+    "contrast": "Row access filters rows; masking changes column values; join policies constrain joins. A table owner and policy owner are not automatically the same role.",
+    "question": "A policy references SECURITY.ALLOWED_REGIONS, but analysts lack SELECT on it. What privilege context matters?",
+    "solution": "The role owning the row access policy must be able to read the mapping table for the policy expression to evaluate.",
+    "code": "CREATE ROW ACCESS POLICY region_gate AS (region STRING) RETURNS BOOLEAN -> EXISTS (SELECT 1 FROM security.allowed_regions m WHERE m.region = region AND IS_ROLE_IN_SESSION(m.role_name));",
+    "sharedConceptFrom": "sp082"
+  },
+  "sp159": {
+    "title": "Using shared data in a consumer-owned table",
+    "idea": "An imported shared database is read-only to the consumer. The consumer may use the shared data as a SELECT source and write the result to objects they own.",
+    "steps": [
+      "The provider exposes objects through a share; the consumer creates a database FROM SHARE.",
+      "The consumer queries those shared objects with its own warehouse, without changing the provider data.",
+      "To persist enriched data, the consumer runs CTAS/INSERT/MERGE into a table in a separate writable database."
+    ],
+    "case": "Join a shared ORDERS table to your own FRAUD_RISK table and persist the result as MY_DB.PUBLIC.ENRICHED_ORDERS, not inside the imported shared database.",
+    "contrast": "A consumer can read and transform shared records, but cannot CREATE TABLE or UPDATE provider-owned objects inside an imported shared database.",
+    "question": "Where must you create a persistent table combining shared sales and your own risk score?",
+    "solution": "In a consumer-owned writable database, selecting from the imported share as needed.",
+    "code": "CREATE TABLE MY_DB.PUBLIC.ENRICHED AS SELECT s.*,r.risk FROM SHARED_SALES.PUBLIC.ORDERS s JOIN MY_DB.PUBLIC.RISK r ON r.id=s.id;",
+    "sharedConceptFrom": "sp146"
+  },
+  "sp144": {
+    "title": "Using shared data in a consumer-owned table",
+    "idea": "An imported shared database is read-only to the consumer. The consumer may use the shared data as a SELECT source and write the result to objects they own.",
+    "steps": [
+      "The provider exposes objects through a share; the consumer creates a database FROM SHARE.",
+      "The consumer queries those shared objects with its own warehouse, without changing the provider data.",
+      "To persist enriched data, the consumer runs CTAS/INSERT/MERGE into a table in a separate writable database."
+    ],
+    "case": "Join a shared ORDERS table to your own FRAUD_RISK table and persist the result as MY_DB.PUBLIC.ENRICHED_ORDERS, not inside the imported shared database.",
+    "contrast": "A consumer can read and transform shared records, but cannot CREATE TABLE or UPDATE provider-owned objects inside an imported shared database.",
+    "question": "Where must you create a persistent table combining shared sales and your own risk score?",
+    "solution": "In a consumer-owned writable database, selecting from the imported share as needed.",
+    "code": "CREATE TABLE MY_DB.PUBLIC.ENRICHED AS SELECT s.*,r.risk FROM SHARED_SALES.PUBLIC.ORDERS s JOIN MY_DB.PUBLIC.RISK r ON r.id=s.id;",
+    "sharedConceptFrom": "sp146"
+  },
+  "sp361": {
+    "title": "Secure views across database boundaries",
+    "idea": "A shared secure view can refer to tables in another database without directly exposing those source tables to the consumer, but the share must have required cross-database reference privileges.",
+    "steps": [
+      "Grant the share the required USAGE on the published database and schema and SELECT on the secure view.",
+      "For a secure view referencing another database, grant required REFERENCE_USAGE on that referenced database to the share.",
+      "Do not grant SELECT on the underlying sensitive table if the consumer should see only the controlled view."
+    ],
+    "case": "PUBLISHED.PUBLIC.SAFE_VIEW references PRIVATE_DB.RAW.PII. Consumers receive access to SAFE_VIEW and REFERENCE_USAGE for PRIVATE_DB, not direct SELECT on RAW.PII.",
+    "contrast": "REFERENCE_USAGE allows resolving a secure view dependency; it is not equivalent to SELECT on the base tables. A separately granted raw base table would bypass view-only restrictions.",
+    "question": "A consumer can query a shared view, but its cross-database source is denied. Which provider-side grant should you investigate?",
+    "solution": "The required REFERENCE_USAGE on the referenced database, as well as view and namespace grants.",
+    "sharedConceptFrom": "sp148"
+  },
+  "sp352": {
+    "title": "Replication versus failover",
+    "idea": "Replication keeps eligible data or account objects synchronized in a secondary location. Failover changes which location is active/writable during recovery.",
+    "steps": [
+      "Configure a replication or failover group and target account as supported.",
+      "Refresh the secondary copy to reduce data loss exposure.",
+      "When recovery requires writes, execute the supported failover/promotion procedure; prepare client connectivity as well."
+    ],
+    "case": "A replicated secondary can answer limited read-only workloads, but it cannot become writable merely by resizing its warehouse. Promotion is needed for writable recovery.",
+    "contrast": "Replication is not a point-in-time backup; a bad DELETE can replicate. Time Travel within retention is designed to recover earlier table states.",
+    "question": "A primary is unavailable and the current secondary is read-only. What must happen before your app can write?",
+    "solution": "Supported promotion/failover, plus suitable connection/authentication/warehouse setup for the recovery account.",
+    "sharedConceptFrom": "sp239"
+  },
+  "sp267": {
+    "title": "Bulk-load validation",
+    "idea": "COPY INTO <table> normally loads staged data. Its VALIDATION_MODE option inspects applicable staged input without inserting rows into the destination table.",
+    "steps": [
+      "Use COPY INTO <table> FROM @stage with supported VALIDATION_MODE settings.",
+      "Inspect returned errors or limited row samples.",
+      "Do not assume the validation option works with source SELECT transformations, name matching or unload syntax."
+    ],
+    "case": "A CSV file might be malformed. Validate its staged records before loading; then separately run the real COPY if acceptable.",
+    "contrast": "For COPY INTO <location> (unloading), VALIDATION_MODE=RETURN_ROWS previews the query rows; RETURN_ERRORS/RETURN_ALL_ERRORS are for load validation.",
+    "question": "Can you copy VALIDATION_MODE=RETURN_ERRORS into COPY INTO @export_stage and preview an unload?",
+    "solution": "No. Use the supported unload RETURN_ROWS validation option, or run the SELECT first.",
+    "code": "COPY INTO sales FROM @incoming FILE_FORMAT=(TYPE=CSV) VALIDATION_MODE=RETURN_ERRORS;",
+    "sharedConceptFrom": "sp007"
+  },
+  "sp272": {
+    "title": "COPY transformation compatibility",
+    "idea": "COPY INTO <table> supports certain source SELECT transformations to map staged fields explicitly. MATCH_BY_COLUMN_NAME is a separate mechanism that is incompatible with the SELECT-transform form.",
+    "steps": [
+      "Choose explicit SELECT $1:field expressions for compatible transformations and map them to target columns.",
+      "Alternatively, use MATCH_BY_COLUMN_NAME where supported for source-to-target column-name matching.",
+      "Do not combine MATCH_BY_COLUMN_NAME with a transformation SELECT; also do not assume load VALIDATION_MODE supports transformations."
+    ],
+    "case": "An incoming JSON object has customerId and total fields. Project them with SELECT expressions to the target column list; avoid adding MATCH_BY_COLUMN_NAME.",
+    "contrast": "MATCH_BY_COLUMN_NAME is not a universal extra safety option. It has incompatibilities with a transformation SELECT and certain validation usage.",
+    "question": "You already wrote COPY INTO t FROM (SELECT $1:id FROM @s). Should you append MATCH_BY_COLUMN_NAME?",
+    "solution": "No. Use the explicit transformation SELECT and target-column mapping without name matching.",
+    "code": "COPY INTO t(id) FROM (SELECT $1:id::NUMBER FROM @s) FILE_FORMAT=(TYPE=JSON);",
+    "sharedConceptFrom": "sp271"
+  },
+  "sp114": {
+    "title": "QUALIFY and window functions",
+    "idea": "WHERE filters input rows before window-function results exist. QUALIFY filters after the window expressions have been computed.",
+    "steps": [
+      "Partition and order rows inside a window expression such as ROW_NUMBER().",
+      "Compute the analytic value for each resulting row.",
+      "Use QUALIFY to keep rows based on the window result, or use a subquery/CTE followed by an outer WHERE."
+    ],
+    "case": "For the latest order per customer, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_ts DESC)=1 belongs in QUALIFY (or an outer WHERE on a CTE alias).",
+    "contrast": "HAVING filters grouped aggregates; QUALIFY filters window results. WHERE ROW_NUMBER() OVER (...) = 1 at the same query level is not valid.",
+    "question": "Why is WHERE ROW_NUMBER() OVER(...) = 1 wrong in the same SELECT?",
+    "solution": "WHERE is evaluated before window functions; QUALIFY can filter their results.",
+    "code": "SELECT * FROM orders QUALIFY ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_ts DESC)=1;",
+    "sharedConceptFrom": "sp331"
+  },
+  "sp341": {
+    "title": "CONCAT_WS and NULL semantics",
+    "idea": "CONCAT_WS joins input strings using a separator. In Snowflake, a NULL input argument can make the entire result NULL; it is not an automatic skip-null function.",
+    "steps": [
+      "Check which inputs might be SQL NULL.",
+      "Use COALESCE to substitute an empty string or other intentional value before concatenation.",
+      "Consider whether empty strings are actually acceptable in the final output."
+    ],
+    "case": "CONCAT_WS('-', 'A', NULL, 'B') yields NULL. CONCAT_WS('-', 'A', COALESCE(NULL,''), 'B') avoids NULL propagation but may introduce doubled separators.",
+    "contrast": "A null replacement decision is business logic, not merely syntax. CONCAT_WS and ARRAY_TO_STRING have different semantics and must not be substituted blindly.",
+    "question": "To concatenate customer fields without losing the whole result to NULL, what should you do?",
+    "solution": "Handle NULL inputs explicitly (e.g., COALESCE), choosing the intended empty or placeholder behavior.",
+    "code": "SELECT CONCAT_WS('-', 'A', COALESCE(col,''), 'B') FROM t;",
+    "sharedConceptFrom": "sp120"
+  },
+  "sp197": {
+    "title": "Iceberg external volume",
+    "idea": "An external volume tells Snowflake where and how to access external cloud storage for Iceberg table files. It is not the catalog that tells readers which snapshot is current.",
+    "steps": [
+      "The external volume defines supported object-storage access and location.",
+      "The Iceberg catalog tracks committed table metadata and snapshot pointers.",
+      "Queries read files referenced by the current committed snapshot."
+    ],
+    "case": "A table has Parquet files on S3 and metadata in an external catalog. Configure supported external storage access and the appropriate catalog connection; neither alone describes the whole table.",
+    "contrast": "External volume = physical storage access. Catalog integration = external catalog metadata authority. Ordinary external tables have different metadata semantics.",
+    "question": "If S3 files exist but a query still sees the previous Iceberg snapshot, which layer deserves investigation?",
+    "solution": "The external catalog/snapshot metadata and refresh/discovery path, not simply warehouse sizing.",
+    "sharedConceptFrom": "sp058"
+  },
+  "sp170": {
+    "title": "Snowsight, Snowflake CLI and IDEs",
+    "idea": "Snowsight is the browser UI for writing queries and managing Snowflake. Snowflake CLI and IDE extensions help run development workflows in terminals or editors.",
+    "steps": [
+      "Use Snowsight for worksheet development, visualization and many admin tasks.",
+      "Use the Snowflake CLI for scripted commands in deployment/CI workflows.",
+      "Use supported IDE integrations for editor-based development; query execution still follows authorized Snowflake compute."
+    ],
+    "case": "An engineer explores SQL in Snowsight, commits code to Git, then runs deployment commands from a CI runner using Snowflake CLI.",
+    "contrast": "The GUI is not required for every SQL deployment. An IDE extension does not turn local editor memory into the Snowflake warehouse.",
+    "question": "Which interface is most natural for unattended CI/CD deployment commands?",
+    "solution": "Snowflake CLI rather than a manual browser worksheet.",
+    "sharedConceptFrom": "sp169"
+  },
+  "sp171": {
+    "title": "Snowsight, Snowflake CLI and IDEs",
+    "idea": "Snowsight is the browser UI for writing queries and managing Snowflake. Snowflake CLI and IDE extensions help run development workflows in terminals or editors.",
+    "steps": [
+      "Use Snowsight for worksheet development, visualization and many admin tasks.",
+      "Use the Snowflake CLI for scripted commands in deployment/CI workflows.",
+      "Use supported IDE integrations for editor-based development; query execution still follows authorized Snowflake compute."
+    ],
+    "case": "An engineer explores SQL in Snowsight, commits code to Git, then runs deployment commands from a CI runner using Snowflake CLI.",
+    "contrast": "The GUI is not required for every SQL deployment. An IDE extension does not turn local editor memory into the Snowflake warehouse.",
+    "question": "Which interface is most natural for unattended CI/CD deployment commands?",
+    "solution": "Snowflake CLI rather than a manual browser worksheet.",
+    "sharedConceptFrom": "sp169"
+  },
+  "sp238": {
+    "title": "Alerts and notifications",
+    "idea": "Snowflake alerts let you evaluate a specified SQL condition and invoke a supported action when the condition triggers. Notification integrations are one delivery mechanism for alerts or messages.",
+    "steps": [
+      "Define the condition and schedule/trigger semantics.",
+      "Define the action, such as invoking a supported notification.",
+      "Configure appropriate roles, integration permissions and monitoring for failures."
+    ],
+    "case": "An alert periodically checks a data quality metric and sends an email when the number of unexpected NULL values exceeds a threshold.",
+    "contrast": "An alert is the condition/action mechanism. A notification integration manages a supported communication channel. A task is a general scheduled computation unit.",
+    "question": "A data-quality monitor must send an email when a metric crosses a threshold. What components are involved?",
+    "solution": "An alert for the SQL condition/action and an appropriately configured notification integration for delivery.",
+    "sharedConceptFrom": "sp237"
+  },
+  "sp204": {
+    "title": "Cortex Search versus Analyst",
+    "idea": "Cortex Search provides retrieval over indexed text and other supported data for applications such as RAG. Cortex Analyst uses governed semantic definitions to generate SQL for business questions.",
+    "steps": [
+      "Identify your input: unstructured document text or structured relational metrics.",
+      "For document retrieval, maintain a search index with appropriate freshness/cost settings.",
+      "For structured natural-language analytics, define semantic relationships and metrics for Cortex Analyst."
+    ],
+    "case": "“Find the paragraph about support refund policy” points to Cortex Search. “What was approved net revenue last quarter?” points to Analyst with defined business semantics.",
+    "contrast": "Cortex Search retrieves relevant content; it is not by itself an accounting semantic model or a versioned predictive model registry.",
+    "question": "You want users to ask questions over governed sales totals and joins. Which feature is more direct?",
+    "solution": "Cortex Analyst, supported by a semantic model or semantic view.",
+    "sharedConceptFrom": "sp205"
+  },
+  "sp064": {
+    "title": "Cortex Search versus Analyst",
+    "idea": "Cortex Search provides retrieval over indexed text and other supported data for applications such as RAG. Cortex Analyst uses governed semantic definitions to generate SQL for business questions.",
+    "steps": [
+      "Identify your input: unstructured document text or structured relational metrics.",
+      "For document retrieval, maintain a search index with appropriate freshness/cost settings.",
+      "For structured natural-language analytics, define semantic relationships and metrics for Cortex Analyst."
+    ],
+    "case": "“Find the paragraph about support refund policy” points to Cortex Search. “What was approved net revenue last quarter?” points to Analyst with defined business semantics.",
+    "contrast": "Cortex Search retrieves relevant content; it is not by itself an accounting semantic model or a versioned predictive model registry.",
+    "question": "You want users to ask questions over governed sales totals and joins. Which feature is more direct?",
+    "solution": "Cortex Analyst, supported by a semantic model or semantic view.",
+    "sharedConceptFrom": "sp205"
+  },
+  "sp406": {
+    "title": "Future grants and precedence",
+    "idea": "A future grant is a rule for privileges on objects created later, not a grant on the tables that already exist. Snowflake can define future grants at database or schema scope.",
+    "steps": [
+      "Define a future grant for an object type, such as TABLES.",
+      "When a new table of that type appears, Snowflake evaluates applicable future grants.",
+      "If the schema defines a future grant for that type, its future grants take precedence; corresponding database-level future grants are ignored."
+    ],
+    "case": "Database SALES has future SELECT for ROLE_A. Schema SALES.PUBLIC has future SELECT for ROLE_B. A new table in PUBLIC receives the schema-level future SELECT to ROLE_B, not both sets.",
+    "contrast": "Future grants are not the same as privileges on existing tables. The precedence is per object type; a schema future TABLE grant does not override database future VIEW grants.",
+    "question": "A new view is created in PUBLIC, which has schema-level future TABLE grants but no VIEW future grants. Which scope supplies its future VIEW grant?",
+    "solution": "The database-level future VIEW grant can still apply, because a future grant on TABLES is a different object type.",
+    "code": "GRANT SELECT ON FUTURE TABLES IN SCHEMA SALES.PUBLIC TO ROLE ROLE_B;",
+    "sharedConceptFrom": "sp079"
+  },
+  "sp407": {
+    "title": "Row access policies and mapping tables",
+    "idea": "A row access policy determines whether each row is visible for a query. Its policy expression can consult a mapping table without broadly exposing that table to the querying users.",
+    "steps": [
+      "A policy is attached to a table or view and receives specified column values.",
+      "Snowflake evaluates its expression for authorized rows, potentially using a protected mapping table.",
+      "Policy expressions execute with the owner-rights privilege context, so the policy owner needs access to dependent mapping data."
+    ],
+    "case": "Analysts query SALES, while a mapping table holds allowed regions for each role. The analysts need SELECT on SALES, but do not need direct SELECT on the hidden mapping table if the policy owner has the required privileges.",
+    "contrast": "Row access filters rows; masking changes column values; join policies constrain joins. A table owner and policy owner are not automatically the same role.",
+    "question": "A policy references SECURITY.ALLOWED_REGIONS, but analysts lack SELECT on it. What privilege context matters?",
+    "solution": "The role owning the row access policy must be able to read the mapping table for the policy expression to evaluate.",
+    "code": "CREATE ROW ACCESS POLICY region_gate AS (region STRING) RETURNS BOOLEAN -> EXISTS (SELECT 1 FROM security.allowed_regions m WHERE m.region = region AND IS_ROLE_IN_SESSION(m.role_name));",
+    "sharedConceptFrom": "sp082"
+  },
+  "sp408": {
+    "title": "COPY transformation compatibility",
+    "idea": "COPY INTO <table> supports certain source SELECT transformations to map staged fields explicitly. MATCH_BY_COLUMN_NAME is a separate mechanism that is incompatible with the SELECT-transform form.",
+    "steps": [
+      "Choose explicit SELECT $1:field expressions for compatible transformations and map them to target columns.",
+      "Alternatively, use MATCH_BY_COLUMN_NAME where supported for source-to-target column-name matching.",
+      "Do not combine MATCH_BY_COLUMN_NAME with a transformation SELECT; also do not assume load VALIDATION_MODE supports transformations."
+    ],
+    "case": "An incoming JSON object has customerId and total fields. Project them with SELECT expressions to the target column list; avoid adding MATCH_BY_COLUMN_NAME.",
+    "contrast": "MATCH_BY_COLUMN_NAME is not a universal extra safety option. It has incompatibilities with a transformation SELECT and certain validation usage.",
+    "question": "You already wrote COPY INTO t FROM (SELECT $1:id FROM @s). Should you append MATCH_BY_COLUMN_NAME?",
+    "solution": "No. Use the explicit transformation SELECT and target-column mapping without name matching.",
+    "code": "COPY INTO t(id) FROM (SELECT $1:id::NUMBER FROM @s) FILE_FORMAT=(TYPE=JSON);",
+    "sharedConceptFrom": "sp271"
+  },
+  "sp409": {
+    "title": "Loading versus unloading",
+    "idea": "COPY INTO <table> reads staged files into a table. COPY INTO <location> writes data from a query/table to stage files. They have different parameter families.",
+    "steps": [
+      "Identify whether the destination is a table (loading) or an @stage / URL (unloading).",
+      "For loading, validation can return errors and staged row previews.",
+      "For unloading, RETURN_ROWS can preview the unload SELECT; SINGLE, PARTITION BY and OVERWRITE control file layout."
+    ],
+    "case": "A compliance export needs files grouped by country. Use COPY INTO @export ... PARTITION BY country; do not simultaneously demand one global output file with SINGLE=TRUE.",
+    "contrast": "VALIDATION_MODE=RETURN_ALL_ERRORS belongs to loading, not unloading. PARTITION BY for unload is a storage path choice, not SQL GROUP BY.",
+    "question": "What can you run to preview rows of a COPY INTO @stage export without writing the files?",
+    "solution": "The underlying SELECT, or supported unload validation mode RETURN_ROWS.",
+    "code": "COPY INTO @export FROM (SELECT * FROM orders) VALIDATION_MODE=RETURN_ROWS;",
+    "sharedConceptFrom": "sp273"
+  },
+  "sp410": {
+    "title": "CSV NULL tokens versus blank strings",
+    "idea": "NULL_IF is a list of source field text tokens that become SQL NULL. EMPTY_FIELD_AS_NULL controls behavior for an empty CSV field; both must be understood together.",
+    "steps": [
+      "Identify three distinct inputs: the literal letters NULL, an empty quoted value, and an unquoted empty field.",
+      "Configure NULL_IF to match intended null tokens; do not include an empty string if you need to preserve it.",
+      "Configure EMPTY_FIELD_AS_NULL appropriately and test the exact CSV representation in a sample load."
+    ],
+    "case": "Source values are NULL and empty. To map literal NULL to SQL NULL but preserve an empty VARCHAR, use NULL_IF=('NULL') and consider EMPTY_FIELD_AS_NULL=FALSE.",
+    "contrast": "The source text \"NULL\" is not SQL NULL unless configured or converted. `NULL_IF=('NULL','')` will also turn empty strings into SQL NULL.",
+    "question": "Does NULL_IF=('NULL','') preserve a truly empty string?",
+    "solution": "No. The empty-string token appears in the null-conversion list.",
+    "code": "CREATE FILE FORMAT my_csv TYPE=CSV NULL_IF=('NULL') EMPTY_FIELD_AS_NULL=FALSE;",
+    "sharedConceptFrom": "sp261"
+  },
+  "sp411": {
+    "title": "Zero-copy clone versus replication",
+    "idea": "Zero-copy cloning creates a new logical object within supported account boundaries by initially sharing unchanged micro-partitions. Replication is the supported mechanism for maintaining copies between eligible accounts.",
+    "steps": [
+      "CLONE creates a logically independent object with shared initial storage references.",
+      "As either object changes, new micro-partitions accrue separate storage costs.",
+      "Cross-account disaster recovery uses supported replication/failover mechanisms instead of arbitrary account-qualified CLONE."
+    ],
+    "case": "Developers create PROD_ORDERS_CLONE in their Snowflake account for testing. A second Snowflake account needing a refreshed copy requires replication configuration.",
+    "contrast": "CLONE is not a cross-account replication command. A secondary replica is normally read-only until a supported failover promotes it.",
+    "question": "Can ACCOUNT_B simply issue CREATE DATABASE X CLONE ACCOUNT_A.PROD and keep it refreshed?",
+    "solution": "No. Use supported cross-account database replication and refresh for that architecture.",
+    "sharedConceptFrom": "sp055"
+  },
+  "sp412": {
+    "title": "Using shared data in a consumer-owned table",
+    "idea": "An imported shared database is read-only to the consumer. The consumer may use the shared data as a SELECT source and write the result to objects they own.",
+    "steps": [
+      "The provider exposes objects through a share; the consumer creates a database FROM SHARE.",
+      "The consumer queries those shared objects with its own warehouse, without changing the provider data.",
+      "To persist enriched data, the consumer runs CTAS/INSERT/MERGE into a table in a separate writable database."
+    ],
+    "case": "Join a shared ORDERS table to your own FRAUD_RISK table and persist the result as MY_DB.PUBLIC.ENRICHED_ORDERS, not inside the imported shared database.",
+    "contrast": "A consumer can read and transform shared records, but cannot CREATE TABLE or UPDATE provider-owned objects inside an imported shared database.",
+    "question": "Where must you create a persistent table combining shared sales and your own risk score?",
+    "solution": "In a consumer-owned writable database, selecting from the imported share as needed.",
+    "code": "CREATE TABLE MY_DB.PUBLIC.ENRICHED AS SELECT s.*,r.risk FROM SHARED_SALES.PUBLIC.ORDERS s JOIN MY_DB.PUBLIC.RISK r ON r.id=s.id;",
+    "sharedConceptFrom": "sp146"
+  },
+  "sp413": {
+    "title": "Secure views across database boundaries",
+    "idea": "A shared secure view can refer to tables in another database without directly exposing those source tables to the consumer, but the share must have required cross-database reference privileges.",
+    "steps": [
+      "Grant the share the required USAGE on the published database and schema and SELECT on the secure view.",
+      "For a secure view referencing another database, grant required REFERENCE_USAGE on that referenced database to the share.",
+      "Do not grant SELECT on the underlying sensitive table if the consumer should see only the controlled view."
+    ],
+    "case": "PUBLISHED.PUBLIC.SAFE_VIEW references PRIVATE_DB.RAW.PII. Consumers receive access to SAFE_VIEW and REFERENCE_USAGE for PRIVATE_DB, not direct SELECT on RAW.PII.",
+    "contrast": "REFERENCE_USAGE allows resolving a secure view dependency; it is not equivalent to SELECT on the base tables. A separately granted raw base table would bypass view-only restrictions.",
+    "question": "A consumer can query a shared view, but its cross-database source is denied. Which provider-side grant should you investigate?",
+    "solution": "The required REFERENCE_USAGE on the referenced database, as well as view and namespace grants.",
+    "sharedConceptFrom": "sp148"
+  },
+  "sp414": {
+    "title": "QUALIFY and window functions",
+    "idea": "WHERE filters input rows before window-function results exist. QUALIFY filters after the window expressions have been computed.",
+    "steps": [
+      "Partition and order rows inside a window expression such as ROW_NUMBER().",
+      "Compute the analytic value for each resulting row.",
+      "Use QUALIFY to keep rows based on the window result, or use a subquery/CTE followed by an outer WHERE."
+    ],
+    "case": "For the latest order per customer, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_ts DESC)=1 belongs in QUALIFY (or an outer WHERE on a CTE alias).",
+    "contrast": "HAVING filters grouped aggregates; QUALIFY filters window results. WHERE ROW_NUMBER() OVER (...) = 1 at the same query level is not valid.",
+    "question": "Why is WHERE ROW_NUMBER() OVER(...) = 1 wrong in the same SELECT?",
+    "solution": "WHERE is evaluated before window functions; QUALIFY can filter their results.",
+    "code": "SELECT * FROM orders QUALIFY ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_ts DESC)=1;",
+    "sharedConceptFrom": "sp331"
+  },
+  "sp415": {
+    "title": "Predicate shape and micro-partition pruning",
+    "idea": "Snowflake tracks per-micro-partition statistics. Filters expressed as native ranges can help the optimizer skip irrelevant partitions before scanning their data.",
+    "steps": [
+      "A timestamp column has min/max ranges in micro-partition metadata.",
+      "A direct interval predicate exposes a comparison that the optimizer can often prune efficiently.",
+      "Wrapping the column with conversions or functions can sometimes hide a useful range and increase scanned partitions."
+    ],
+    "case": "Instead of TO_VARCHAR(order_ts,'YYYY-MM-DD')='2026-11-10', filter order_ts >= '2026-11-10' AND order_ts < '2026-11-11' with matching timestamp semantics.",
+    "contrast": "A bigger warehouse increases compute but does not change which micro-partitions logically qualify. Some expressions can still be optimized; inspect Query Profile rather than assuming.",
+    "question": "What Query Profile evidence would you seek before increasing warehouse size for a selective filter?",
+    "solution": "Partitions scanned versus total, pruning selectivity, predicates and clustering overlap.",
+    "code": "SELECT * FROM orders WHERE order_ts >= '2026-11-10'::TIMESTAMP AND order_ts < '2026-11-11'::TIMESTAMP;",
+    "sharedConceptFrom": "sp310"
+  },
+  "sp080": {
+    "title": "Managed access schemas",
+    "idea": "A managed access schema centralizes grant administration instead of allowing every table or view owner to grant privileges independently.",
+    "steps": [
+      "The schema owner or a role with appropriate MANAGE GRANTS privilege controls object grants.",
+      "An object owner can still own the table while lacking independent authority to grant its privileges.",
+      "Check future grants and current-object privileges at the proper administration scope."
+    ],
+    "case": "A developer owns FINANCE.RAW.TRANSACTIONS but cannot grant SELECT to a new analyst. The table lives in a managed access schema; ask the schema grants administrator.",
+    "contrast": "Ordinary schemas generally let object owners manage their grants; managed access schemas centralize that control. Ownership and grant administration are not identical.",
+    "question": "Why might the table owner be unable to grant SELECT to another role?",
+    "solution": "Because the table is in a managed access schema, where the schema owner or an authorized MANAGE GRANTS role administers grants."
+  }
+}
