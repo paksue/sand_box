@@ -1,17 +1,23 @@
-# Independent Exam #3 correctness audit — instructions for a separate AI agent/session
+# Independent Exam #3 correctness audit — separate reviewer handoff
 
-You are a **different, independent reviewer** of the attached `exam3-bank.json`, authored by another AI assistant. Do not assume the proposed answers, reasoning, or documentation links are correct. The exam is an unofficial 45-question SnowPro Core COF-C03 gap-focused challenge.
+You are a **new, independent reviewer** of the attached `exam3-bank.json` and `index.html`. This is a **66-question** unofficial SnowPro Core COF-C03 gap-focused challenge, with C001–C045 from an earlier coverage-gap bank and new C046–C066 created for missed Exam #1 and Exam #2 concepts.
 
-For **every** question C001–C045:
+For **every** question C001–C066:
 
-1. Read the full scenario and all four answer choices. Independently determine the correct option(s) before looking at the proposed `answer` field, and record the result.
-2. Confirm the proposed key and whether any alternative is arguably correct, especially SELECT TWO questions. Check the exactly-two answer count.
-3. Verify every technical assertion in the explanation, each option rationale, at least three learning bullets, practical example, and exam trap.
-4. Open official current docs at `docs.snowflake.com`. Cite the exact documentation page and relevant supporting passage. Do not use the submitted doc links as automatic proof.
-5. Check for time- or region-dependent features (warehouse generations and prices, Trust Center notifications, Streamlit runtimes, Native App releases).
-6. Flag outdated, ambiguous, overly easy, repeated, outside-blueprint, or technically unverifiable questions. Categorize as blocker/high/medium/low.
-7. Propose exact revised question text, option(s), answer key, and explanations for every issue.
+1. Read the complete scenario and all four choices. Decide the correct answer(s) **without first trusting** the embedded answer field.
+2. Check there is exactly one or exactly two defensibly correct choices as indicated. Validate all 19 select-two keys under exact-match scoring.
+3. Verify the reason, four individual feedback strings, clue, all learning bullets, worked example, and exam trap. Flag any ambiguous edge cases or incorrect SQL syntax.
+4. Open current official documentation at `docs.snowflake.com`, not merely the submitted docs URL, and cite the exact decisive passage and URL.
+5. Check edition and region limits, current defaults, Snowflake service availability, security privileges, latest data-sharing behavior and cost controls.
+6. Flag unsupported, overly easy, duplicated, ambiguous, outdated or out-of-blueprint questions. Categorize blocker/high/medium/low and propose exact edited wording/answers.
+7. Especially verify **C062**, whose topic is unload validation: COPY INTO <location> supports `VALIDATION_MODE=RETURN_ROWS`, whereas load-validation syntax offers RETURN_ERRORS / RETURN_ALL_ERRORS. Also inspect C046 Iceberg external-volume nuance, C058 join-policy attachment and C061 CSV null formatting.
 
-**Output:** A JSON report keyed by question ID with validated key, pass/fail, official reference URL, confidence and specific edits. Include an overall assessment and a list of questions that should not be scored until repaired.
+Output a per-question report with independently validated key, pass/fail, official citation, confidence, and exact corrections. Give a do-not-score list until issues are repaired.
 
-Exam #3 targets official guide objectives 1.2, 1.3, 1.4, 1.6, 2.1, 2.2, 2.3, 3.1, 3.3, 4.1, 4.3, 5.3. Its distribution is intentionally not the full exam blueprint. Do not penalize uneven blueprint coverage as an error in this targeted form.
+## Coverage and provenance
+
+- The 21 additions have `sourceId` matching the 9 wrong Exam #1 IDs and 12 wrong Exam #2 IDs. They are *new scenarios*, not repeats from those old banks.
+- New IDs: C046–C066; old C001–C045 text and IDs remain unchanged.
+- Domain counts 24/16/12/8/6; deliberately **not** a full COF-C03 blueprint-weighted mock (31/20/18/21/10).
+- Questions C001–C066 have 19 select-two items total. Every item has 4 options.
+- Do not describe the answer keys as independently audited until this review has actually been completed.
