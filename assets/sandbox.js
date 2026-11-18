@@ -234,7 +234,7 @@ function parseTreePaths(tree){
     }else if(parts.length===3&&parts[0]==="camera-safety-notifier"&&parts[1]==="client"){
       id="camera-safety-notifier";entryPath="camera-safety-notifier/client/";
     }
-    if(!id||!/^[a-z0-9][a-z0-9_-]*$/i.test(id))continue;
+    if(!id||id==="king_quest_the_shortcut"||!/^[a-z0-9][a-z0-9_-]*$/i.test(id))continue;
     if(!groups.has(id))groups.set(id,[]);
     groups.get(id).push({entryPath,kind});
   }
