@@ -1,0 +1,63 @@
+name: Capture SandBox Project Artwork
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/index.html'
+      - 'catalog/project-metadata.json'
+      - 'scripts/capture-sandbox-covers.cjs'
+      - '.github/workflows/sandbox-covers.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '42 8 * * 0'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sandbox-covers
+  cancel-in-progress: false
+
+jobs:
+  create-covers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Refresh the list of publishable apps
+        run: node scripts/generate-sandbox-catalog.cjs
+      - name: Install browser and image tools outside the repo
+        run: |
+          npm install --prefix /tmp/sandbox-cover-tools --no-audit --no-fund playwright sharp
+          node /tmp/sandbox-cover-tools/node_modules/playwright/cli.js install --with-deps chromium
+      - name: Start GitHub Pages-compatible local origin
+        run: |
+          cd ..
+          nohup python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/sandbox-cover-server.log 2>&1 &
+          sleep 2
+          curl -fsSL http://127.0.0.1:8765/sand_box/index.html -o /dev/null
+      - name: Generate real application screenshots
+        run: NODE_PATH=/tmp/sandbox-cover-tools/node_modules node scripts/capture-sandbox-covers.cjs
+      - name: Verify image files were generated
+        run: |
+          find assets/covers/screenshots -type f -name '*.webp' | wc -l
+          node --check assets/sandbox.js
+          node scripts/sandbox-library-smoke.cjs
+      - name: Commit new preview images
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/covers/screenshots catalog/apps.json
+          if git diff --cached --quiet; then
+            echo 'Artwork gallery already up to date.'
+          else
+            git commit -m 'Add project-specific visual previews to SandBox App Library'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
