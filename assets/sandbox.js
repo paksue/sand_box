@@ -4,6 +4,8 @@ const BASE="https://paksue.github.io/sand_box/";
 const RAW_CATALOG="https://raw.githubusercontent.com/paksue/sand_box/main/catalog/apps.json";
 const GITHUB_TREE="https://api.github.com/repos/paksue/sand_box/git/trees/main?recursive=1";
 const LS_PREFIX="sandbox:library:v1:";
+const COVER_BASE="https://raw.githubusercontent.com/paksue/sand_box/main/assets/covers/";
+const CURATED_COVERS=new Set(["deep-current-3d","dying-light-survivor-handbook","midnight-japanese-studio","ai-concepts-explorer","camera-safety-notifier","cochrane-integrity-atlas"]);
 const CATEGORIES=[
   {id:"learning",name:"Education",glyph:"▤"},
   {id:"games",name:"Games & Worlds",glyph:"♧"},
@@ -98,15 +100,16 @@ function filteredProjects(){
 }
 function countCategories(){return new Set(state.all.map(x=>x.category)).size;}
 function iconText(item){return esc(item.glyph).slice(0,20);}
+function coverImage(p){const id=encodeURIComponent(p.id),shot=COVER_BASE+"screenshots/"+id+".webp";const first=CURATED_COVERS.has(p.id)?COVER_BASE+"curated/"+id+".webp":shot;return `<img class="cover-photo" data-cover="${esc(p.id)}" src="${esc(first)}" data-fallback="${esc(first===shot?"":shot)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">`;}
 function cardTemplate(p,i){
   const f=state.favorites.has(p.id),cat=getCategory(p.category);
   const badges=p.tags.slice(0,2).map(t=>'<span class="card-tag">'+esc(t)+'</span>').join("");
   const url=esc(p.url),id=esc(p.id),title=esc(p.title);
   return `<article class="project-card" data-project="${id}">
    <div class="card-cover" style="${palette(p)}">
+    ${coverImage(p)}
     <span class="cover-number">SANDBOX / ${String(i+1).padStart(3,"0")}</span>
     <span class="cover-corner">${p.kind==="preview"?"PREVIEW":"PROJECT"}</span>
-    <span class="cover-glyph">${iconText(p)}</span>
     <span class="cover-wordmark">${title.toUpperCase()}</span>
     <button class="favorite-btn ${f?"is-favorite":""}" type="button" data-fav="${id}" aria-label="${f?"Remove from":"Add to"} favorites: ${title}" aria-pressed="${f}">${f?"★":"☆"}</button>
    </div>
@@ -187,7 +190,7 @@ function trackLaunch(id){
 function dialogTemplate(p){
   const variants=p.variants.map(v=>`<div class="variant-row"><span>${esc(v.label)}</span><a target="_blank" rel="noopener noreferrer" data-launch="${esc(p.id)}" href="${esc(v.url)}">Open ↗</a></div>`).join("");
   const fav=state.favorites.has(p.id);
-  return `<div class="detail-art" style="${palette(p)}"><span>${iconText(p)}</span></div>
+  return `<div class="detail-art" style="${palette(p)}">${coverImage(p)}</div>
   <div class="detail-body"><div class="detail-kicker">${esc(getCategory(p.category).name)} / ${p.kind==="preview"?"COMPILED PREVIEW":"GITHUB PAGES PROJECT"}</div>
   <h2 id="detailTitle">${esc(p.title)}</h2><p>${esc(p.description)}</p>
   <div class="detail-tags">${p.tags.map(t=>'<span>'+esc(t)+'</span>').join("")}</div>
@@ -288,6 +291,7 @@ async function loadCatalog(){
   }catch(_){/* Default to the last published catalog when API is unavailable/rate-limited. */}
 }
 function initEvents(){
+  document.addEventListener("error",event=>{const img=event.target;if(!img||!img.matches||!img.matches("img[data-cover]"))return;const fallback=img.dataset.fallback;if(fallback){img.dataset.fallback="";img.src=fallback;}else{img.remove();}},true);
   $("browseButton").addEventListener("click",()=>$("libraryHeading").scrollIntoView({behavior:"smooth",block:"start"}));
   $("surpriseButton").addEventListener("click",()=>{
     if(!state.all.length){toast("No projects available");return;}
