@@ -41,3 +41,11 @@ The launcher uses plain HTML, CSS and JavaScript on the existing branch-based Gi
 New files are isolated to the root homepage, assets/sandbox.*, catalog, the generator and one dedicated GitHub Actions workflow. Other applications and their URLs are untouched.
 
 Design uses charcoal navigation, lime hero, project-specific CSS illustrations and mobile-first app cards. Illustrated card covers are not claimed screenshots of the underlying projects.
+
+## Cover images
+
+The gallery now uses real images instead of oversized emoji glyphs. Seven projects use custom visual artwork stored in `assets/covers/curated/<project-id>.webp`: SAT/ACT Planner, Harran Field Manual, Deep Current 3D, Midnight Japanese, AI Concepts Explorer, Camera Safety Notifier, and Cochrane Integrity Atlas.
+
+All other published apps are shown using project-specific screenshots captured by `.github/workflows/sandbox-covers.yml` and `scripts/capture-sandbox-covers.cjs`. The workflow uses a clean browser with no personal localStorage, stores compressed WebP previews in `assets/covers/screenshots/`, and can be rerun through Actions. On apps that are not renderable in headless Chromium, a styled fallback remains in place. The gallery loads assets through public GitHub raw URLs so new covers do not have to wait for a separate Pages redeploy.
+
+For future projects, provide a curated WebP under the same ID to override the screenshot. A curated image must depict the specific project rather than just its category. Source-only copies, including `king_quest_the_shortcut`, are not listed as published apps.
