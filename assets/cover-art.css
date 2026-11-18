@@ -1,0 +1,16 @@
+/* Cinematic project artwork; overlays preserve card navigation and favorite controls. */
+.card-cover{overflow:hidden}
+.card-cover .cover-photo,.detail-art .cover-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block;z-index:0}
+.card-cover:has(>.cover-photo)::before{content:"";position:absolute;inset:0;z-index:1;mask-image:none;opacity:1;background:linear-gradient(to bottom,rgba(9,21,29,.40),transparent 30%,transparent 58%,rgba(9,21,29,.72));pointer-events:none}
+.card-cover:has(>.cover-photo)::after{display:none}
+.card-cover .cover-number,.card-cover .cover-corner,.card-cover .cover-wordmark{z-index:2;filter:drop-shadow(0 1px 3px rgba(0,0,0,.55))}
+.card-cover .cover-wordmark{font-size:10px;font-weight:800;letter-spacing:1.3px;color:#fff;max-width:calc(100% - 68px)}
+.card-cover .cover-corner{background:rgba(8,20,28,.5);border-color:rgba(255,255,255,.42)}
+.card-cover .favorite-btn{z-index:3;background:rgba(14,29,38,.66);border-color:rgba(255,255,255,.66);backdrop-filter:blur(6px)}
+.card-cover .favorite-btn.is-favorite{background:#def786;color:#172a34;border-color:#def786}
+.project-grid:not(.list-view) .project-card .card-cover{height:auto;aspect-ratio:16/9;min-height:155px}
+.list-view .card-cover{height:100%;aspect-ratio:auto;min-height:132px}
+.detail-art:has(>.cover-photo)::before{display:none}
+.detail-art .cover-photo{border-radius:14px}
+.detail-art{isolation:isolate}
+@media(max-width:520px){.project-grid:not(.list-view) .project-card .card-cover{height:100%;aspect-ratio:auto;min-height:156px}.list-view .card-cover{min-height:120px}}
