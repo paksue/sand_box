@@ -5,7 +5,7 @@ const RAW_CATALOG="https://raw.githubusercontent.com/paksue/sand_box/main/catalo
 const GITHUB_TREE="https://api.github.com/repos/paksue/sand_box/git/trees/main?recursive=1";
 const LS_PREFIX="sandbox:library:v1:";
 const COVER_BASE="https://raw.githubusercontent.com/paksue/sand_box/main/assets/covers/";
-const CURATED_COVERS=new Set(["college-sat-act-planner","deep-current-3d","dying-light-survivor-handbook","midnight-japanese-studio","ai-concepts-explorer","camera-safety-notifier","cochrane-integrity-atlas","frontier-journey","reality-check","worldtap-next","study-desk-studio","price-of-tomorrow","snowpro-recall","murder-investigation","night-signal","read-the-room","trip_guide","the-rule","tag-arena","watchdeck","rc-explorer","the-shortcut","the-forge-movie","glow-gut-journal","human-nature-lab","foot-movement-atlas","ma-firearm-training"]);
+const CURATED_COVERS=new Set(["college-sat-act-planner","deep-current-3d","dying-light-survivor-handbook","midnight-japanese-studio","ai-concepts-explorer","camera-safety-notifier","cochrane-integrity-atlas","frontier-journey","reality-check","worldtap-next","study-desk-studio","price-of-tomorrow","snowpro-recall","murder-investigation","night-signal","read-the-room","trip_guide","the-rule","tag-arena","watchdeck","rc-explorer","the-shortcut","the-forge-movie","glow-gut-journal","human-nature-lab","foot-movement-atlas","ma-firearm-training","chatgpt-pages-qa","frontier-painted-sprite-lab","trello-vault","isometric-timer","sci-fi-writing","todo","worldtap","spy-novel-library","nyc-day-planner","hunger-review"]);
 const CATEGORIES=[
   {id:"learning",name:"Education",glyph:"▤"},
   {id:"games",name:"Games & Worlds",glyph:"♧"},
