@@ -604,6 +604,20 @@
       ],
       "glyph": "🥨",
       "theme": "sand"
+    },
+    "soba-balsamic-shopping-list": {
+      "title": "Soba & Balsamic Shopping List",
+      "description": "Photo-rich shopping guide to Japanese soba dipping sauces and premium balsamic vinegar, with Black Friday prices and value comparisons.",
+      "category": "tools",
+      "tags": [
+        "food",
+        "shopping",
+        "soba",
+        "balsamic",
+        "black friday"
+      ],
+      "glyph": "🍜",
+      "theme": "forest"
     }
   }
 }

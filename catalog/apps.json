@@ -728,6 +728,27 @@
       "updatedAt": "2026-11-17T21:10:01-05:00"
     },
     {
+      "id": "soba-balsamic-shopping-list",
+      "title": "Soba & Balsamic Shopping List",
+      "description": "Photo-rich shopping guide to Japanese soba dipping sauces and premium balsamic vinegar, with Black Friday prices and value comparisons.",
+      "category": "tools",
+      "tags": [
+        "food",
+        "shopping",
+        "soba",
+        "balsamic",
+        "black friday"
+      ],
+      "glyph": "🍜",
+      "theme": "forest",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/soba-balsamic-shopping-list/",
+      "source": "https://github.com/paksue/sand_box/tree/main/soba-balsamic-shopping-list",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-11-25T21:45:00-05:00"
+    },
+    {
       "id": "spy-novel-library",
       "title": "Spy Novel Library",
       "description": "Explore stories and reading recommendations in espionage fiction.",
