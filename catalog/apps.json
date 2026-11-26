@@ -506,6 +506,27 @@
       "updatedAt": "2026-10-26T23:05:55-04:00"
     },
     {
+      "id": "pantry-lab",
+      "title": "Pantry Lab — Interactive Food Guide",
+      "description": "Learn how balsamic vinegar and soba sauce are made, read labels, compare value and cook from scratch with interactive illustrated lessons.",
+      "category": "learning",
+      "tags": [
+        "food",
+        "education",
+        "interactive",
+        "soba",
+        "balsamic"
+      ],
+      "glyph": "◉",
+      "theme": "forest",
+      "featured": false,
+      "url": "https://paksue.github.io/sand_box/pantry-lab/",
+      "source": "https://github.com/paksue/sand_box/tree/main/pantry-lab",
+      "kind": "app",
+      "variants": [],
+      "updatedAt": "2026-11-25T22:00:00-05:00"
+    },
+    {
       "id": "political-violence-audit",
       "title": "Political Violence Audit",
       "description": "Investigate claims and evidence about political violence.",

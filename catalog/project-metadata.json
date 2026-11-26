@@ -618,6 +618,20 @@
       ],
       "glyph": "🍜",
       "theme": "forest"
+    },
+    "pantry-lab": {
+      "title": "Pantry Lab — Interactive Food Guide",
+      "description": "Learn how balsamic vinegar and soba sauce are made, read labels, compare value and cook from scratch with interactive illustrated lessons.",
+      "category": "learning",
+      "tags": [
+        "food",
+        "education",
+        "interactive",
+        "soba",
+        "balsamic"
+      ],
+      "glyph": "◉",
+      "theme": "forest"
     }
   }
 }
